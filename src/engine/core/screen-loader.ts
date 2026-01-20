@@ -62,29 +62,89 @@ export async function loadScreen(path: string) {
     .replace(/^apps-offline\//, "")
     .replace(/^apps\//, "");
 
-
-  const res = await fetch(`${SCREEN_BASE}/${normalized}`);
-
+  // 🔑 CRITICAL: Disable ALL caching to force fresh screen loads
+  // Browser and Next.js cache was preventing screen updates in localhost
+  const cacheBuster = `?t=${Date.now()}`;
+  const fetchUrl = `${SCREEN_BASE}/${normalized}${cacheBuster}`;
+  
+  console.log("[screen-loader] 🔍 Fetching screen", {
+    originalPath: path,
+    normalized,
+    fetchUrl,
+    timestamp: Date.now(),
+  });
+  
+  const res = await fetch(fetchUrl, {
+    cache: "no-store",
+    headers: {
+      "Cache-Control": "no-cache, no-store, must-revalidate",
+      "Pragma": "no-cache",
+    },
+  });
 
   if (!res.ok) {
+    const errorText = await res.text().catch(() => "No error details");
+    console.error("[screen-loader] ❌ Fetch failed", {
+      status: res.status,
+      statusText: res.statusText,
+      normalized,
+      errorText,
+    });
     throw new Error(
-      `Screen load failed (${res.status}): ${normalized}`
+      `Screen load failed (${res.status}): ${normalized} - ${errorText}`
     );
   }
 
 
   const json = await res.json();
 
+  // 🔑 LIFECYCLE: Log screen load
+  console.log("[screen-loader] 📥 LOADED", {
+    path: normalized,
+    id: json?.id,
+    type: json?.type,
+    hasState: !!json?.state,
+    currentView: json?.state?.currentView,
+    childrenCount: json?.children?.length,
+    timestamp: Date.now(),
+  });
 
   /* ==================================================
-     🧠 DEFAULT STATE (SAFE APPLY)
+     🧠 DEFAULT STATE (ALWAYS APPLY ON SCREEN LOAD)
      ================================================== */
   const state = getState();
-  if (
-    json?.state?.currentView &&
-    state.currentView == null
-  ) {
-    dispatchState("currentView", json.state.currentView);
+  // 🔑 CRITICAL: ALWAYS apply JSON's default state when loading a new screen
+  // Previous screen's state persists and causes when conditions to fail
+  // We MUST reset to the new screen's default state
+  if (json?.state?.currentView) {
+    const currentState = state.currentView;
+    const jsonState = json.state.currentView;
+    const needsUpdate = currentState !== jsonState;
+    
+    console.log("[screen-loader] 🧠 State initialization check", {
+      currentState,
+      jsonDefaultState: jsonState,
+      needsUpdate,
+      willApply: needsUpdate,
+      reason: needsUpdate 
+        ? `State mismatch: "${currentState}" !== "${jsonState}" - applying JSON default`
+        : `State matches: "${currentState}" === "${jsonState}" - but applying anyway to ensure sync`,
+    });
+    
+    // ✅ ALWAYS apply - ensures screen loads with correct initial state
+    // Even if state matches, we dispatch to ensure reactive updates trigger
+    console.log("[screen-loader] ✅ Applying default state", {
+      from: currentState,
+      to: jsonState,
+      screenPath: path,
+    });
+    dispatchState("state:currentView", { value: jsonState });
+  } else {
+    console.log("[screen-loader] ⚠️ No default state in JSON", {
+      hasState: !!json?.state,
+      stateKeys: json?.state ? Object.keys(json.state) : [],
+      screenPath: path,
+    });
   }
 
 

@@ -237,10 +237,12 @@ function buildTree(nodes: RawNode[], contentMap: Record<string, any>) {
 
 
       entry.behavior = {
-        type: "Action",
+        type: "Navigation",
         params: {
-          name: "state:currentView",
-          value: idMap[raw],
+          verb: "go",
+          variant: "screen",
+          screenId: idMap[raw],
+          to: idMap[raw],  // For behavior-listener compatibility
         },
       };
     }

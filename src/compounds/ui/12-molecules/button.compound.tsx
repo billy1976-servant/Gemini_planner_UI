@@ -81,10 +81,12 @@ export default function ButtonCompound({
   const handleTap = () => {
     if (onTap) return onTap();
     if (!behavior) return;
-    if (behavior.type === "Navigation")
+    if (behavior.type === "Navigation") {
+      const destination = behavior.params?.to ?? behavior.params?.screenId;
       return window.dispatchEvent(
-        new CustomEvent("navigate", { detail: behavior.params })
+        new CustomEvent("navigate", { detail: { to: destination } })
       );
+    }
     if (behavior.type === "Action")
       return window.dispatchEvent(
         new CustomEvent("action", { detail: behavior })

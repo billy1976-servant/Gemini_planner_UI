@@ -51,9 +51,59 @@ export async function GET(
        1️⃣ JSON PATH (UNCHANGED)
     =============================== */
     const jsonPath = path.join(SCREENS_ROOT, ...params.path);
+    
+    // 🔑 DEBUG: Log file resolution
+    console.log("[api/screens] File resolution", {
+      requestedPath: requestedPath,
+      paramsPath: params.path,
+      jsonPath,
+      exists: fs.existsSync(jsonPath),
+      isJson: jsonPath.endsWith(".json"),
+    });
+    
     if (jsonPath.endsWith(".json") && fs.existsSync(jsonPath)) {
-      const json = JSON.parse(fs.readFileSync(jsonPath, "utf8"));
-      return NextResponse.json(json);
+      const fileContent = fs.readFileSync(jsonPath, "utf8");
+      
+      // 🔑 Validate JSON before parsing
+      if (!fileContent.trim()) {
+        console.error("[api/screens] ❌ Empty file", { jsonPath });
+        return NextResponse.json(
+          { error: "File is empty", path: jsonPath },
+          { status: 500 }
+        );
+      }
+      
+      try {
+        const json = JSON.parse(fileContent);
+        console.log("[api/screens] ✅ File loaded", {
+          path: jsonPath,
+          id: json?.id,
+          type: json?.type,
+          hasState: !!json?.state,
+          currentView: json?.state?.currentView,
+          childrenCount: json?.children?.length,
+        });
+        // 🔑 CRITICAL: Disable caching to force fresh loads
+        // Next.js was caching API responses, preventing screen updates
+        return NextResponse.json(json, {
+          headers: {
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0",
+          },
+        });
+      } catch (parseError: any) {
+        console.error("[api/screens] ❌ JSON parse error", {
+          jsonPath,
+          error: parseError.message,
+          fileLength: fileContent.length,
+          firstChars: fileContent.substring(0, 100),
+        });
+        return NextResponse.json(
+          { error: `Invalid JSON: ${parseError.message}`, path: jsonPath },
+          { status: 500 }
+        );
+      }
     }
 
 

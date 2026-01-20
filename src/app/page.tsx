@@ -7,6 +7,7 @@ import JsonRenderer from "@/engine/core/json-renderer";
 import { loadScreen } from "@/engine/core/screen-loader";
 import SectionLayoutDropdown from "@/dev/section-layout-dropdown";
 import { installRuntimeVerbInterpreter } from "@/engine/runtime/runtime-verb-interpreter";
+import { resolveLandingPage } from "@/logic/runtime/landing-page-resolver";
 
 
 /* ============================================================
@@ -70,6 +71,24 @@ export default function Page() {
   const searchParams = useSearchParams();
   const screen = searchParams.get("screen");
 
+  // 🔑 TOP-LEVEL LOGGING: Track URL, screen param, and remount status
+  const currentUrl = typeof window !== "undefined" ? window.location.href : "SSR";
+  const [lastScreen, setLastScreen] = useState<string | null>(null);
+  const [remountCount, setRemountCount] = useState(0);
+
+  useEffect(() => {
+    if (screen !== lastScreen) {
+      setRemountCount(c => c + 1);
+      setLastScreen(screen);
+      console.log("[page] 🔄 SCREEN CHANGE DETECTED", {
+        currentURL: currentUrl,
+        screenParam: screen,
+        previousScreen: lastScreen,
+        remountCount: remountCount + 1,
+        timestamp: Date.now(),
+      });
+    }
+  }, [screen, lastScreen, currentUrl, remountCount]);
 
   const [json, setJson] = useState<any>(null);
   const [tsxMeta, setTsxMeta] = useState<{ path: string } | null>(null);
@@ -97,7 +116,39 @@ export default function Page() {
      CANONICAL SCREEN LOAD (JSON OR TSX DESCRIPTOR)
   -------------------------------------------------- */
   useEffect(() => {
+    // 🔑 TOP-LEVEL: Log screen param resolution
+    console.log("[page] 📍 SCREEN LOAD EFFECT TRIGGERED", {
+      currentURL: typeof window !== "undefined" ? window.location.href : "SSR",
+      screenParam: screen,
+      searchParamsString: typeof window !== "undefined" ? window.location.search : "SSR",
+      timestamp: Date.now(),
+    });
+
     if (!screen) {
+      // ✅ AUTO-RESOLVE LANDING PAGE
+      try {
+        const { flow, content } = resolveLandingPage();
+
+        if (content) {
+          // Merge content with flow decision
+          const landingPageContent = {
+            ...content,
+            flow,
+            root: {
+              type: "json-skin", // Use JsonSkinEngine
+              children: content.blocks ?? [],
+            },
+          };
+          setJson(landingPageContent);
+          setTsxMeta(null);
+          setTsxComponent(null);
+          setError(null);
+          return;
+        }
+      } catch (err) {
+        console.warn("[page] Landing page resolution failed:", err);
+      }
+
       setJson(null);
       setTsxMeta(null);
       setTsxComponent(null);
@@ -106,8 +157,21 @@ export default function Page() {
     }
 
 
+    // 🔑 Force fresh load - clear previous screen state
+    setJson(null);
+    setTsxMeta(null);
+    setTsxComponent(null);
+    setError(null);
+
     loadScreen(screen)
       .then((data) => {
+        console.log("[page] ✅ SCREEN LOADED", {
+          screenPath: screen,
+          dataType: data?.__type,
+          hasJson: !!data && !data.__type,
+          timestamp: Date.now(),
+        });
+
         // ✅ TSX SCREEN BRANCH (UNCHANGED)
         if (data?.__type === "tsx-screen" && typeof data.path === "string") {
           const C = resolveTsxScreen(data.path);
@@ -187,10 +251,43 @@ export default function Page() {
     json;
 
 
+  // 🔑 CRITICAL: React key MUST be derived from screen path, NEVER from json.id
+  // Many screens share "screenRoot" id, causing React to reuse component instances
+  // This prevents proper mounting/unmounting when switching between files
+  
+  // Simple hash function for JSON content (fallback only)
+  const hashJson = (obj: any): string => {
+    if (!obj) return "empty";
+    const str = JSON.stringify(obj);
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return Math.abs(hash).toString(36);
+  };
+
+  // ✅ ALWAYS use screen path, fallback to JSON hash (NEVER json.id)
+  const screenKey = screen 
+    ? screen.replace(/[^a-zA-Z0-9]/g, "-") // Sanitize path for React key
+    : `screen-${hashJson(json)}`; // Hash entire JSON, not just id
+  
+  // Log once per render to confirm key changes between files
+  console.log("[page] 🔑 JsonRenderer KEY RESOLVED", {
+    currentURL: typeof window !== "undefined" ? window.location.href : "SSR",
+    screenPath: screen,
+    resolvedKey: screenKey,
+    jsonId: json?.id, // For reference only - NOT used in key
+    previousKey: lastScreen ? lastScreen.replace(/[^a-zA-Z0-9]/g, "-") : null,
+    willRemount: lastScreen !== screen,
+    note: screen ? "✅ Using screen path" : "⚠️ Using JSON hash (screen path missing)",
+  });
+
   return (
     <>
       {overlay}
-      <JsonRenderer node={renderNode} />
+      <JsonRenderer key={screenKey} node={renderNode} defaultState={json?.state} />
     </>
   );
 }

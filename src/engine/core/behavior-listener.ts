@@ -145,6 +145,24 @@ export function installBehaviorListener(navigate: (to: string) => void) {
           },
         })
       );
+
+      // ✅ Also update state store for currentView (ensures re-render)
+      // Use the correct intent format that state-resolver expects
+      if (mutation === "currentView" && resolvedValue) {
+        console.log("[behavior-listener] Dispatching state:currentView", { value: resolvedValue });
+        import("@/state/state-store").then(({ dispatchState, getState }) => {
+          dispatchState("state:currentView", { value: resolvedValue });
+          // Check state after a brief delay to see if it updated
+          setTimeout(() => {
+            const currentState = getState();
+            console.log("[behavior-listener] State after dispatch:", { 
+              currentView: currentState?.currentView,
+              expected: resolvedValue 
+            });
+          }, 10);
+        });
+      }
+
       return;
     }
 

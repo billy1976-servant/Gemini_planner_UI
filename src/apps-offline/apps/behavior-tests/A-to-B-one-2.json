@@ -1,0 +1,137 @@
+{
+  "id": "screenRoot",
+  "type": "screen",
+  "state": {
+    "currentView": "A"
+  },
+  "children": [
+    {
+      "type": "section",
+      "when": {
+        "state": "currentView",
+        "equals": "A"
+      },
+      "content": {
+        "title": "Home Screen"
+      },
+      "children": [
+        {
+          "type": "button",
+          "content": {
+            "label": "Go to Screen B"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": {
+              "name": "state:currentView",
+              "value": "B"
+            }
+          }
+        },
+        {
+          "type": "button",
+          "content": {
+            "label": "Go to Screen C"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": {
+              "name": "state:currentView",
+              "value": "C"
+            }
+          }
+        },
+        {
+          "type": "button",
+          "content": {
+            "label": "Go to Screen D"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": {
+              "name": "state:currentView",
+              "value": "D"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "when": {
+        "state": "currentView",
+        "equals": "B"
+      },
+      "content": {
+        "title": "Screen B"
+      },
+      "children": [
+        {
+          "type": "button",
+          "content": {
+            "label": "Back to Home"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": {
+              "name": "state:currentView",
+              "value": "A"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "when": {
+        "state": "currentView",
+        "equals": "C"
+      },
+      "content": {
+        "title": "Screen C"
+      },
+      "children": [
+        {
+          "type": "button",
+          "content": {
+            "label": "Back to Home"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": {
+              "name": "state:currentView",
+              "value": "A"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "when": {
+        "state": "currentView",
+        "equals": "D"
+      },
+      "content": {
+        "title": "Screen D"
+      },
+      "children": [
+        {
+          "type": "button",
+          "content": {
+            "label": "Back to Home"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": {
+              "name": "state:currentView",
+              "value": "A"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+
+

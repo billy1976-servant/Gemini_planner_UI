@@ -3,6 +3,7 @@
 
 import { runCalculator } from "@/logic/actions/run-calculator.action";
 import { run25X } from "@/logic/engines/25x.engine";
+import { resolveOnboardingAction } from "@/logic/actions/resolve-onboarding.action";
 
 
 /**
@@ -31,6 +32,10 @@ const registry: Record<string, ActionHandler> = {
 
   // ✅ ADDITIVE — 25x engine direct action
   "logic:run25x": run25X,
+
+
+  // ✅ NEW: Onboarding flow resolver
+  "logic:resolveOnboarding": resolveOnboardingAction,
 };
 
 
