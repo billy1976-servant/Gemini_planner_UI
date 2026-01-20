@@ -1,0 +1,36 @@
+{
+  "fontFamily": ["Roboto"],
+  "size": [
+    "textSize.xs",
+    "textSize.sm",
+    "textSize.md",
+    "textSize.lg",
+    "textSize.xl"
+  ],
+  "weight": [
+    "textWeight.regular",
+    "textWeight.medium",
+    "textWeight.bold"
+  ],
+  "lineHeight": [
+    "lineHeight.tight",
+    "lineHeight.normal",
+    "lineHeight.relaxed"
+  ],
+  "letterSpacing": [
+    "letterSpacing.tight",
+    "letterSpacing.normal",
+    "letterSpacing.loose"
+  ],
+  "color": [
+    "color.primary",
+    "color.onPrimary",
+    "color.surface",
+    "color.onSurface",
+    "color.secondary",
+    "color.error"
+  ],
+  "align": ["left", "center", "right"],
+  "truncate": [true, false],
+  "wrap": ["normal", "nowrap", "balance"]
+}

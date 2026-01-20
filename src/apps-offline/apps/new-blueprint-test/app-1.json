@@ -1,0 +1,396 @@
+{
+  "id": "screenRoot",
+  "type": "screen",
+  "state": {
+    "currentView": "|home"
+  },
+  "children": [
+    {
+      "id": "|home",
+      "type": "section",
+      "children": [
+        {
+          "id": "|herocard",
+          "type": "card",
+          "children": [],
+          "content": {
+            "title": "Molecule Validation App",
+            "body": "Blueprint drives structure. Content fills only approved slots. No inference.",
+            "media": "hero"
+          }
+        },
+        {
+          "id": "|start",
+          "type": "button",
+          "children": [],
+          "content": {
+            "label": "Get Started"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": {
+              "name": "state:currentView",
+              "value": "|signup"
+            }
+          }
+        },
+        {
+          "id": "|learn",
+          "type": "chip",
+          "children": [],
+          "content": {
+            "title": "Learn",
+            "body": "See how the content manifest prevents blank UI.",
+            "media": "info"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": {
+              "name": "state:currentView",
+              "value": "|info"
+            }
+          }
+        },
+        {
+          "id": "|footernav",
+          "type": "footer",
+          "children": [
+            {
+              "id": "|homelink",
+              "type": "chip",
+              "children": [],
+              "content": {
+                "title": "Home"
+              },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "state:currentView",
+                  "value": "|home"
+                }
+              }
+            },
+            {
+              "id": "|exitlink",
+              "type": "chip",
+              "children": [],
+              "content": {
+                "title": "Exit"
+              },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "state:currentView",
+                  "value": "|success"
+                }
+              }
+            }
+          ],
+          "content": {}
+        }
+      ],
+      "content": {
+        "title": "Welcome"
+      },
+      "when": {
+        "state": "currentView",
+        "equals": "|home"
+      }
+    },
+    {
+      "id": "|signup",
+      "type": "section",
+      "children": [
+        {
+          "id": "|email",
+          "type": "field",
+          "children": [],
+          "content": {
+            "label": "Email",
+            "error": ""
+          }
+        },
+        {
+          "id": "|password",
+          "type": "field",
+          "children": [],
+          "content": {
+            "label": "Password",
+            "error": ""
+          }
+        },
+        {
+          "id": "|submit",
+          "type": "button",
+          "children": [],
+          "content": {
+            "label": "Submit"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": {
+              "name": "state:currentView",
+              "value": "|success"
+            }
+          }
+        },
+        {
+          "id": "|back",
+          "type": "button",
+          "children": [],
+          "content": {
+            "label": "Back"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": {
+              "name": "state:currentView",
+              "value": "|home"
+            }
+          }
+        }
+      ],
+      "content": {
+        "title": "Signup"
+      },
+      "when": {
+        "state": "currentView",
+        "equals": "|signup"
+      }
+    },
+    {
+      "id": "|info",
+      "type": "section",
+      "children": [
+        {
+          "id": "|about",
+          "type": "card",
+          "children": [],
+          "content": {
+            "title": "About",
+            "body": "This flow proves the compiler must merge contentMap[node.rawId] into every node."
+          }
+        },
+        {
+          "id": "|topics2",
+          "type": "list",
+          "children": [],
+          "content": {
+            "items": [
+              {
+                "label": "Compiler must restore content merge step"
+              },
+              {
+                "label": "Renderer must never guess defaults"
+              }
+            ]
+          }
+        },
+        {
+          "id": "|topics2",
+          "type": "list",
+          "children": [],
+          "content": {
+            "items": [
+              {
+                "label": "Compiler must restore content merge step"
+              },
+              {
+                "label": "Renderer must never guess defaults"
+              }
+            ]
+          },
+          "behavior": {
+            "type": "Action",
+            "params": {
+              "name": "state:currentView",
+              "value": "|details"
+            }
+          }
+        },
+        {
+          "id": "|tools",
+          "type": "toolbar",
+          "children": [
+            {
+              "id": "|share",
+              "type": "button",
+              "children": [],
+              "content": {
+                "label": "Share"
+              },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "state:currentView",
+                  "value": "|sharesheet"
+                }
+              }
+            },
+            {
+              "id": "|close",
+              "type": "button",
+              "children": [],
+              "content": {
+                "label": "Close"
+              },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "state:currentView",
+                  "value": "|home"
+                }
+              }
+            }
+          ],
+          "content": {
+            "actions": [
+              {
+                "label": "Share"
+              },
+              {
+                "label": "Close"
+              }
+            ]
+          }
+        }
+      ],
+      "content": {
+        "title": "Info"
+      },
+      "when": {
+        "state": "currentView",
+        "equals": "|info"
+      }
+    },
+    {
+      "id": "|success",
+      "type": "section",
+      "children": [
+        {
+          "id": "|successcard",
+          "type": "card",
+          "children": [],
+          "content": {
+            "title": "Done",
+            "body": "Success. Content merged correctly."
+          }
+        },
+        {
+          "id": "|finish",
+          "type": "button",
+          "children": [],
+          "content": {
+            "label": "Finish"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": {
+              "name": "state:currentView",
+              "value": "|home"
+            }
+          }
+        },
+        {
+          "id": "|notice",
+          "type": "toast",
+          "children": [],
+          "content": {}
+        }
+      ],
+      "content": {
+        "title": "Success"
+      },
+      "when": {
+        "state": "currentView",
+        "equals": "|success"
+      }
+    },
+    {
+      "id": "|details",
+      "type": "section",
+      "children": [
+        {
+          "id": "|steps",
+          "type": "stepper",
+          "children": [],
+          "content": {
+            "steps": [
+              {
+                "label": "Enter email"
+              },
+              {
+                "label": "Enter password"
+              },
+              {
+                "label": "Submit"
+              }
+            ]
+          }
+        },
+        {
+          "id": "|backinfo",
+          "type": "button",
+          "children": [],
+          "content": {
+            "label": "Back"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": {
+              "name": "state:currentView",
+              "value": "|info"
+            }
+          }
+        }
+      ],
+      "content": {
+        "title": "Details"
+      },
+      "when": {
+        "state": "currentView",
+        "equals": "|details"
+      }
+    },
+    {
+      "id": "|sharesheet",
+      "type": "modal",
+      "children": [
+        {
+          "id": "|sharenow",
+          "type": "button",
+          "children": [],
+          "content": {
+            "label": "Share Now"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": {
+              "name": "state:currentView",
+              "value": "|info"
+            }
+          }
+        },
+        {
+          "id": "|dismiss",
+          "type": "button",
+          "children": [],
+          "content": {
+            "label": "Dismiss"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": {
+              "name": "state:currentView",
+              "value": "|info"
+            }
+          }
+        }
+      ],
+      "content": {
+        "title": "Share",
+        "body": "Share this demo to show deterministic content merging."
+      }
+    }
+  ]
+}

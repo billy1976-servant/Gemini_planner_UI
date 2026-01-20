@@ -1,0 +1,25 @@
+{
+    "id": "learning",
+    "description": "Reading / teaching / progression experience",
+    "defaults": {
+      "container": "page",
+      "maxWidth": "800px",
+      "navigation": "hidden",
+      "readingFlow": "vertical"
+    },
+    "sections": {
+      "lesson": {
+        "type": "column",
+        "params": { "gap": "2rem" }
+      },
+      "examples": {
+        "type": "stack",
+        "params": {}
+      },
+      "actions": {
+        "type": "row",
+        "params": { "align": "center" }
+      }
+    }
+  }
+  

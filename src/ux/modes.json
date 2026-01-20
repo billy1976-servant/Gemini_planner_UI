@@ -1,0 +1,51 @@
+{
+  "$kind": "hicurv.ux-modes",
+  "$schemaVersion": "1.0.0",
+  "defaultMode": "normal",
+  "modes": {
+    "normal": {
+      "label": "Normal",
+      "description": "Balanced everyday mode for most screens.",
+      "uiIntensity": "medium",
+      "uiMotion": "standard",
+      "interaction": {
+        "showHints": true,
+        "showAdvanced": false,
+        "safeContent": false
+      }
+    },
+    "focus": {
+      "label": "Focus",
+      "description": "Reduced motion, reduced noise, optimized for reading or tasks.",
+      "uiIntensity": "soft",
+      "uiMotion": "minimal",
+      "interaction": {
+        "showHints": false,
+        "showAdvanced": false,
+        "safeContent": true
+      }
+    },
+    "immersive": {
+      "label": "Immersive",
+      "description": "High-motion, full-screen, media-heavy mode.",
+      "uiIntensity": "hard",
+      "uiMotion": "smooth",
+      "interaction": {
+        "showHints": false,
+        "showAdvanced": true,
+        "safeContent": false
+      }
+    },
+    "kid": {
+      "label": "Kid Mode",
+      "description": "Simplified visuals, higher safety, reduced complexity.",
+      "uiIntensity": "medium",
+      "uiMotion": "playful",
+      "interaction": {
+        "showHints": true,
+        "showAdvanced": false,
+        "safeContent": true
+      }
+    }
+  }
+}

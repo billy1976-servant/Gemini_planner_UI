@@ -1,0 +1,35 @@
+{
+    "id": "construction-cleanup",
+    "type": "module",
+    "domain": "construction",
+  
+  
+    "stateDefaults": {
+      "crewSize": 5,
+      "hourlyWage": 22,
+      "cleanupMinutesPerDay": 45,
+      "monthlyRevenue": 120000
+    },
+  
+  
+    "calculators": [
+      { "ref": "cleanup-labor" },
+      { "ref": "monthly-loss" }
+    ],
+  
+  
+    "stats": {
+      "avgCleanupMinutes": "Most crews spend 30–60 minutes per tech per day on cleanup.",
+      "visualLoss": "~18% of remodels are lost due to visual mess or confusion.",
+      "morale": "~25% higher morale reported when cleanup is handled separately.",
+      "safety": "~40% fewer incidents on consistently clean jobsites."
+    },
+  
+  
+    "content": {
+      "headline": "See what cleanup is really costing your jobs",
+      "description": "Answer a few quick questions to reveal hidden labor loss and missed profit.",
+      "cta": "Calculate My Loss"
+    }
+  }
+  

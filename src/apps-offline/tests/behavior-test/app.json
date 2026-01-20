@@ -1,0 +1,36 @@
+{
+  "id": "screenRoot",
+  "type": "screen",
+  "children": [
+    {
+      "id": "hero",
+      "type": "section",
+      "role": "hero",
+      "content": { "title": "Hero Section" },
+      "children": [
+        { "type": "button", "content": { "label": "Primary CTA" } }
+      ]
+    },
+    {
+      "id": "main",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "Main Content" },
+      "children": [
+        { "type": "card", "content": { "title": "Card A" } },
+        { "type": "card", "content": { "title": "Card B" } }
+      ]
+    },
+    {
+      "id": "features",
+      "type": "section",
+      "role": "features",
+      "content": { "title": "Features" },
+      "children": [
+        { "type": "card", "content": { "title": "Feature 1" } },
+        { "type": "card", "content": { "title": "Feature 2" } },
+        { "type": "card", "content": { "title": "Feature 3" } }
+      ]
+    }
+  ]
+}

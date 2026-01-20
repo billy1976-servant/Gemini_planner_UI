@@ -1,0 +1,44 @@
+FILE 5 — HI-OS_6x7-GRID.md
+(The universal 6 verbs × 7 media categories functional universe)
+# HI OS — 6×7 Universal Function Grid
+
+
+The OS has 6 universal verbs that apply to 7 universal media categories.
+
+
+VERBS (6):
+1. create
+2. read
+3. update
+4. delete
+5. transform
+6. export
+
+
+MEDIA TYPES (7):
+1. text
+2. image
+3. audio
+4. video
+5. pdf/document
+6. data/code
+7. spatial (3D/LiDAR)
+
+
+THE GRID:
+Each media type automatically inherits all 6 universal verbs.
+
+
+Example:
+- text.transform = summarize | rewrite | translate | resize
+- video.transform = cut | split | re-time | layer text | comp
+- audio.transform = trim | normalize | remove noise | split
+- 3D.transform = crop volume | rotate | scale | filter depth
+- pdf.transform = extract text | compress | split pages
+
+
+This grid reduces the functionality surface from thousands of special-case operations
+to 42 universal functions that every atom understands.
+
+
+This is one of the most revolutionary parts of the OS.

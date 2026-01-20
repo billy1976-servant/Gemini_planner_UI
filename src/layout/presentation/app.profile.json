@@ -1,0 +1,25 @@
+{
+    "id": "app",
+    "description": "Task-focused application experience",
+    "defaults": {
+      "container": "page",
+      "maxWidth": "100%",
+      "navigation": "side",
+      "readingFlow": "horizontal"
+    },
+    "sections": {
+      "primary": {
+        "type": "row",
+        "params": { "gap": "1rem" }
+      },
+      "secondary": {
+        "type": "column",
+        "params": { "width": "320px" }
+      },
+      "content": {
+        "type": "stack",
+        "params": {}
+      }
+    }
+  }
+  

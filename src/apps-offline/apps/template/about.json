@@ -1,0 +1,19 @@
+{
+    "id": "about",
+    "type": "section",
+    "layout": { "type": "column", "preset": "centered" },
+    "children": [
+      {
+        "type": "text",
+        "variant": "heading",
+        "content": { "text": "About Us" }
+      },
+      {
+        "type": "text",
+        "content": {
+          "text": "This site is fully JSON-driven."
+        }
+      }
+    ]
+  }
+  

@@ -1,0 +1,35 @@
+{
+  "$kind": "hicurv.ux",
+  "$schemaVersion": "1.0.0",
+  "layers": {
+    "input": {
+      "gestureSensitivity": "@system.parameters.inputSensitivity",
+      "tapDelay": "@system.parameters.tapDelay",
+      "scrollAcceleration": "@system.parameters.scrollAcceleration"
+    },
+    "visual": {
+      "intensity": "@ui.intensity.current",
+      "motion": "@ui.motion.current",
+      "culture": "@ui.cultures.current"
+    },
+    "protection": {
+      "safeMode": "@ux.modes.current.interaction.safeContent",
+      "kidMode": "@ux.modes.current === 'kid'"
+    }
+  },
+  "dependencies": {
+    "modes": "src/ux/modes.json",
+    "driver": "src/ux/driver.json",
+    "ui": {
+      "cultures": "src/ui/cultures.json",
+      "intensity": "src/ui/intensity.json",
+      "motion": "src/ui/motion.json",
+      "tokens": "src/ui/ui.json"
+    },
+    "system": {
+      "definitions": "src/system/0-1-definitions.json",
+      "parameters": "src/system/parameters.json",
+      "sequences": "src/system/sequences.json"
+    }
+  }
+}

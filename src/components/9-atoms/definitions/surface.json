@@ -1,0 +1,42 @@
+{
+  "background": [
+    "color.surface",
+    "color.surfaceVariant",
+    "color.primary",
+    "color.primaryVariant"
+  ],
+  "borderColor": [
+    "color.none",
+    "color.outline",
+    "color.primary"
+  ],
+  "borderWidth": [
+    "borderWidth.none",
+    "borderWidth.sm",
+    "borderWidth.md"
+  ],
+  "radius": [
+    "radius.none",
+    "radius.sm",
+    "radius.md",
+    "radius.lg",
+    "radius.xl"
+  ],
+  "shadow": [
+    "shadow.none",
+    "shadow.sm",
+    "shadow.md",
+    "shadow.lg"
+  ],
+  "opacity": [
+    "opacity.full",
+    "opacity.dim",
+    "opacity.low"
+  ],
+  "padding": [
+    "padding.xs",
+    "padding.sm",
+    "padding.md",
+    "padding.lg"
+  ]
+}

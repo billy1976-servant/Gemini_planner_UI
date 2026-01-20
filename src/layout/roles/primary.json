@@ -1,0 +1,11 @@
+{
+    "role": "primary",
+    "description": "Main content area",
+    "overrides": {
+      "type": "column",
+      "params": {
+        "gap": "2rem"
+      }
+    }
+  }
+  

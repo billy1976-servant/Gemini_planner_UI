@@ -1,0 +1,58 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "strict": false,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "preserve",
+    "lib": ["dom", "dom.iterable", "esnext"],
+
+
+    /* ============================
+       PATH FIX — REQUIRED FOR @/*
+       ============================ */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@/engine/*": ["src/engine/*"],
+      "@/components/*": ["src/components/*"],
+      "@/compounds/*": ["src/compounds/*"],
+      "@/config/*": ["src/config/*"],
+      "@/content/*": ["src/content/*"],
+      "@/app/*": ["src/app/*"],
+      "@/screens/*": ["src/screens/*"],
+      "@/layout/*": ["src/layout/*"],
+      "@/palettes/*": ["src/palettes/*"],
+      "@/ui/*": ["src/ui/*"],
+      "@/scans/*": ["src/scans/*"],
+      "@/state/*": ["src/state/*"],
+      "@/logic/*": ["src/logic/*"],
+      "@/registry/*": ["src/registry/*"]
+    },
+
+
+    "incremental": true,
+    "plugins": [{ "name": "next" }]
+  },
+
+
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "src/engine/core/styler.tsx"
+  ],
+
+
+  "exclude": ["node_modules"]
+}
+
+

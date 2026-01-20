@@ -1,0 +1,93 @@
+{
+    "id": "calculator-test",
+    "type": "screen",
+  
+  
+    "state": {
+      "calculatorInput": {
+        "hours": 0,
+        "hourlyWage": 0
+      },
+      "calculatorResult": null
+    },
+  
+  
+    "children": [
+      {
+        "type": "card",
+        "children": [
+          {
+            "type": "text",
+            "content": {
+              "text": "Enter hours worked and hourly wage to see true labor cost."
+            }
+          }
+        ]
+      },
+  
+  
+      {
+        "type": "field",
+        "state": {
+          "mode": "two-way",
+          "key": "calculatorInput.hours"
+        },
+        "params": {
+          "label": "Hours Worked",
+          "inputType": "number"
+        }
+      },
+  
+  
+      {
+        "type": "field",
+        "state": {
+          "mode": "two-way",
+          "key": "calculatorInput.hourlyWage"
+        },
+        "params": {
+          "label": "Hourly Wage",
+          "inputType": "number"
+        }
+      },
+  
+  
+      {
+        "type": "button",
+        "content": {
+          "text": "Run Calculator"
+        },
+        "behavior": {
+          "type": "Action",
+          "params": {
+            "name": "logic:runCalculator",
+            "calculatorId": "cleanup_labor_monthly",
+            "inputKey": "calculatorInput",
+            "outputKey": "calculatorResult"
+          }
+        }
+      },
+  
+  
+      {
+        "type": "card",
+        "children": [
+          {
+            "type": "text",
+            "content": {
+              "text": "Result:"
+            }
+          },
+          {
+            "type": "UserInputViewer",
+            "params": {
+              "stateKey": "calculatorResult"
+            }
+          }
+        ]
+      }
+    ]
+  }
+  
+  
+  

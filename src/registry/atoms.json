@@ -1,0 +1,41 @@
+{
+    "collection": {
+      "component": "@/components/9-atoms/primitives/collection",
+      "defs": "@/components/9-atoms/definitions/collection.json"
+    },
+    "condition": {
+      "component": "@/components/9-atoms/primitives/condition",
+      "defs": "@/components/9-atoms/definitions/condition.json"
+    },
+    "field": {
+      "component": "@/components/9-atoms/primitives/field",
+      "defs": "@/components/9-atoms/definitions/field.json"
+    },
+    "media": {
+      "component": "@/components/9-atoms/primitives/media",
+      "defs": "@/components/9-atoms/definitions/media.json"
+    },
+    "sequence": {
+      "component": "@/components/9-atoms/primitives/sequence",
+      "defs": "@/components/9-atoms/definitions/sequence.json"
+    },
+    "shell": {
+      "component": "@/components/9-atoms/primitives/shell",
+      "defs": "@/components/9-atoms/definitions/shell.json"
+    },
+    "surface": {
+      "component": "@/components/9-atoms/primitives/surface",
+      "defs": "@/components/9-atoms/definitions/surface.json"
+    },
+    "text": {
+      "component": "@/components/9-atoms/primitives/text",
+      "defs": "@/components/9-atoms/definitions/text.json"
+    },
+    "trigger": {
+      "component": "@/components/9-atoms/primitives/trigger",
+      "defs": "@/components/9-atoms/definitions/trigger.json"
+    }
+  }
+  
+  
+  

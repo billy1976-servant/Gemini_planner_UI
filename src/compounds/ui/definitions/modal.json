@@ -1,0 +1,68 @@
+{
+  "variants": {
+    "centered": {
+      "surface": {
+        "background": "color.surface",
+        "radius": "radius.lg",
+        "padding": "padding.lg",
+        "shadow": "shadow.lg"
+      },
+      "title": {
+        "size": "textSize.lg",
+        "weight": "textWeight.medium",
+        "color": "color.onSurface",
+        "lineHeight": "lineHeight.normal"
+      },
+      "body": {
+        "size": "textSize.md",
+        "weight": "textWeight.regular",
+        "color": "color.secondary",
+        "lineHeight": "lineHeight.relaxed"
+      }
+    },
+    "bottomSheet": {
+      "surface": {
+        "background": "color.surface",
+        "radius": "radius.lg",
+        "padding": "padding.md",
+        "shadow": "shadow.md"
+      },
+      "title": {
+        "size": "textSize.lg",
+        "weight": "textWeight.medium",
+        "color": "color.onSurface",
+        "lineHeight": "lineHeight.normal"
+      },
+      "body": {
+        "size": "textSize.md",
+        "weight": "textWeight.regular",
+        "color": "color.secondary",
+        "lineHeight": "lineHeight.relaxed"
+      }
+    }
+  },
+  "sizes": {
+    "sm": {
+      "surface": {
+        "padding": "padding.sm"
+      },
+      "title": {
+        "size": "textSize.md"
+      },
+      "body": {
+        "size": "textSize.sm"
+      }
+    },
+    "md": {
+      "surface": {
+        "padding": "padding.md"
+      }
+    },
+    "lg": {
+      "surface": {
+        "padding": "padding.lg"
+      }
+    }
+  }
+}
+

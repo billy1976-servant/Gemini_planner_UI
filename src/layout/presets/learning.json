@@ -1,0 +1,25 @@
+{
+    "id": "learning",
+    "description": "Focused reading / teaching experience",
+    "page": {
+      "type": "column",
+      "params": {
+        "maxWidth": 720,
+        "padding": "3rem",
+        "gap": "3rem"
+      }
+    },
+    "section": {
+      "type": "column",
+      "params": {
+        "gap": "2.5rem"
+      }
+    },
+    "nav": {
+      "type": "row",
+      "params": {
+        "justify": "center"
+      }
+    }
+  }
+  

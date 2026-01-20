@@ -1,0 +1,12 @@
+{
+    "role": "action",
+    "description": "Call-to-action grouping",
+    "overrides": {
+      "type": "row",
+      "params": {
+        "justify": "flex-end",
+        "gap": "1rem"
+      }
+    }
+  }
+  

@@ -1,0 +1,38 @@
+{
+    "id": "globalLayout",
+    "type": "layout",
+  
+  
+    "mode": {
+      "value": "hybrid",
+      "options": ["web", "app", "hybrid"]
+    },
+  
+  
+    "navigation": {
+      "value": "top",
+      "options": ["top", "side", "bottom", "none"]
+    },
+  
+  
+    "density": {
+      "value": "comfortable",
+      "options": ["compact", "comfortable", "spacious"]
+    },
+  
+  
+    "flow": {
+      "value": "single",
+      "options": ["single", "stack", "modal"]
+    },
+  
+  
+    "regions": {
+      "header": { "enabled": true },
+      "content": { "enabled": true },
+      "footer": { "enabled": true }
+    }
+  }
+  
+  
+  

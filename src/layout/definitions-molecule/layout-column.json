@@ -1,0 +1,12 @@
+{
+    "molecule": "Button",
+    "layout": {
+      "flow": "column",
+      "params": {
+        "gap": "0.5rem",
+        "align": "flex-start",
+        "justify": "flex-start"
+      }
+    }
+  }
+  

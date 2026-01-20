@@ -1,0 +1,11 @@
+{
+    "role": "secondary",
+    "description": "Supporting content or sidebar",
+    "overrides": {
+      "type": "column",
+      "params": {
+        "gap": "1.25rem"
+      }
+    }
+  }
+  

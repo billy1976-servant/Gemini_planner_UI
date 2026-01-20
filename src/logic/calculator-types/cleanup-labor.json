@@ -1,0 +1,16 @@
+{
+  "calculators": [
+    {
+      "id": "cleanup_labor_monthly",
+      "inputs": ["crewSize", "cleanupMinutesPerDay", "hourlyWage"],
+      "formula": "(crewSize * (cleanupMinutesPerDay / 60) * (hourlyWage * 1.5)) * 22",
+      "output": "cleanupLaborMonthly"
+    },
+    {
+      "id": "morale_rework",
+      "inputs": ["enjoysCleanup", "thorough", "callbacks"],
+      "formula": "(enjoysCleanup ? 0 : 200) + (thorough ? 0 : 200) + (callbacks ? 200 : 0)",
+      "output": "moraleLossMonthly"
+    }
+  ]
+}

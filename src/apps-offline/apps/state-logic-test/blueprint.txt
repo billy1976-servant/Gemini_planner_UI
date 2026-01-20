@@ -1,0 +1,55 @@
+APP: StateLogicTest
+
+
+1.0 | Start | Section [none]
+
+
+  1.1 | Question | Section [none]
+
+
+    1.1.1 | Prompt | Card [body]
+
+
+    1.1.2 | Answer | Field [label]
+          state.bind: user.answer
+
+
+    1.1.3 | Save | Button [label] (tap)
+          state.write:
+            target: user.answer
+            source: field
+
+
+          -> 2.0 Decision
+
+
+
+
+2.0 | Decision | Section [none]
+
+
+    logic.when:
+      state.read: user.answer
+
+
+    logic.if:
+      equals: "yes"
+      -> 3.0 Success
+
+
+    logic.else:
+      -> 4.0 Failure
+
+
+
+
+3.0 | Success | Section [none]
+  3.1 | SuccessCard | Card [title, body]
+
+
+
+
+4.0 | Failure | Section [none]
+  4.1 | FailureCard | Card [title, body]
+
+

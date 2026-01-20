@@ -1,0 +1,200 @@
+{
+  "id": "screenRoot",
+  "type": "screen",
+  "children": [
+    {
+      "id": "tracklesson",
+      "type": "section",
+      "content": {},
+      "params": {},
+      "layout": {},
+      "children": [
+        {
+          "id": "thinkpanel",
+          "type": "section",
+          "content": {},
+          "params": {},
+          "layout": {},
+          "children": [
+            {
+              "id": "thinkprompt",
+              "type": "card",
+              "content": {},
+              "params": {},
+              "layout": {},
+              "children": []
+            },
+            {
+              "id": "thinkjournal",
+              "type": "field",
+              "content": {},
+              "params": {},
+              "layout": {},
+              "children": [],
+              "state": {
+                "key": "journal.thinkjournal",
+                "mode": "two-way"
+              }
+            },
+            {
+              "id": "thinksave",
+              "type": "button",
+              "content": {},
+              "params": {},
+              "layout": {},
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "repentpanel",
+          "type": "section",
+          "content": {},
+          "params": {},
+          "layout": {},
+          "children": [
+            {
+              "id": "repentprompt",
+              "type": "card",
+              "content": {},
+              "params": {},
+              "layout": {},
+              "children": []
+            },
+            {
+              "id": "repentjournal",
+              "type": "field",
+              "content": {},
+              "params": {},
+              "layout": {},
+              "children": [],
+              "state": {
+                "key": "journal.repentjournal",
+                "mode": "two-way"
+              }
+            },
+            {
+              "id": "repentsave",
+              "type": "button",
+              "content": {},
+              "params": {},
+              "layout": {},
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "askpanel",
+          "type": "section",
+          "content": {},
+          "params": {},
+          "layout": {},
+          "children": [
+            {
+              "id": "askprompt",
+              "type": "card",
+              "content": {},
+              "params": {},
+              "layout": {},
+              "children": []
+            },
+            {
+              "id": "askjournal",
+              "type": "field",
+              "content": {},
+              "params": {},
+              "layout": {},
+              "children": [],
+              "state": {
+                "key": "journal.askjournal",
+                "mode": "two-way"
+              }
+            },
+            {
+              "id": "asksave",
+              "type": "button",
+              "content": {},
+              "params": {},
+              "layout": {},
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "conformpanel",
+          "type": "section",
+          "content": {},
+          "params": {},
+          "layout": {},
+          "children": [
+            {
+              "id": "conformprompt",
+              "type": "card",
+              "content": {},
+              "params": {},
+              "layout": {},
+              "children": []
+            },
+            {
+              "id": "conformjournal",
+              "type": "field",
+              "content": {},
+              "params": {},
+              "layout": {},
+              "children": [],
+              "state": {
+                "key": "journal.conformjournal",
+                "mode": "two-way"
+              }
+            },
+            {
+              "id": "conformsave",
+              "type": "button",
+              "content": {},
+              "params": {},
+              "layout": {},
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "keeppanel",
+          "type": "section",
+          "content": {},
+          "params": {},
+          "layout": {},
+          "children": [
+            {
+              "id": "keepprompt",
+              "type": "card",
+              "content": {},
+              "params": {},
+              "layout": {},
+              "children": []
+            },
+            {
+              "id": "keepjournal",
+              "type": "field",
+              "content": {},
+              "params": {},
+              "layout": {},
+              "children": [],
+              "state": {
+                "key": "journal.keepjournal",
+                "mode": "two-way"
+              }
+            },
+            {
+              "id": "keepsave",
+              "type": "button",
+              "content": {},
+              "params": {},
+              "layout": {},
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

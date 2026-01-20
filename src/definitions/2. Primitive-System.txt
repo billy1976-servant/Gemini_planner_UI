@@ -1,0 +1,55 @@
+FILE 2 — HI-OS_PRIMITIVE-SYSTEM.md
+(Definitions of atoms, molecules, compounds, UX primitives, UI primitives)
+# HI OS — Primitive System (Atoms, Molecules, Compounds)
+
+
+## 1. ATOMS (9)
+Atoms are the smallest irreducible building blocks of the OS. They do not know context.
+They do not know screens. They only know how to express data and actions.
+
+
+Atoms:
+1. text
+2. media
+3. field
+4. surface
+5. shell
+6. collection
+7. condition
+8. trigger
+9. sequence
+
+
+Each atom:
+- Has a normalized signature.
+- Accepts 0→1 scaled parameters.
+- Exposes its behavior through the 6×7 function grid.
+- Must render identically anywhere in the OS.
+
+
+Atoms ARE the instruction set of the OS.
+
+
+## 2. UX MOLECULES (3)
+These wrap atoms into user-friendly interface units:
+- MediaPrimitive
+- SurfacePrimitive
+- ContentPrimitive
+
+
+They convert atomic outputs into coherent interface blocks.
+
+
+## 3. UI COMPOUNDS (12)
+These assemble molecules into real app behaviors (button, card, modal, toolbar, avatar, etc.).
+
+
+A compound:
+- Has no logic of its own.
+- Delegates actions to Behavior Engine.
+- Delegates rendering to molecules.
+- Delegates meaning to JSON.
+
+
+Compounds are the “interface layer” of the OS — but they remain parametric and universal.
+

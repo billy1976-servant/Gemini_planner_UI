@@ -1,0 +1,11 @@
+{
+    "defaults": {
+      "align": "center",
+      "justify": "center"
+    },
+    "presets": {
+      "topLeft": { "align": "flex-start", "justify": "flex-start" },
+      "bottomRight": { "align": "flex-end", "justify": "flex-end" }
+    }
+  }
+  

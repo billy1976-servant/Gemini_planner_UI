@@ -1,0 +1,74 @@
+{
+  "variants": {
+    "standard": {
+      "surface": {
+        "background": "color.surfaceVariant",
+        "radius": "radius.none",
+        "padding": "padding.md",
+        "borderColor": "color.outline",
+        "borderWidth": "borderWidth.sm"
+      },
+      "sequence": {
+        "direction": "row",
+        "justify": "space-between",
+        "align": "center",
+        "gap": "gap.md"
+      },
+      "text": {
+        "size": "textSize.sm",
+        "weight": "textWeight.regular",
+        "color": "color.secondary",
+        "lineHeight": "lineHeight.normal"
+      }
+    },
+
+    "dense": {
+      "surface": {
+        "background": "color.surfaceVariant",
+        "radius": "radius.none",
+        "padding": "padding.sm",
+        "borderColor": "color.outline",
+        "borderWidth": "borderWidth.sm"
+      },
+      "sequence": {
+        "direction": "row",
+        "justify": "space-between",
+        "align": "center",
+        "gap": "gap.sm"
+      },
+      "text": {
+        "size": "textSize.xs",
+        "weight": "textWeight.regular",
+        "color": "color.secondary",
+        "lineHeight": "lineHeight.normal"
+      }
+    }
+  },
+
+  "sizes": {
+    "sm": {
+      "surface": {
+        "padding": "padding.sm"
+      },
+      "sequence": {
+        "gap": "gap.sm"
+      },
+      "text": {
+        "size": "textSize.xs"
+      }
+    },
+
+    "md": {
+      "surface": {
+        "padding": "padding.md"
+      },
+      "sequence": {
+        "gap": "gap.md"
+      },
+      "text": {
+        "size": "textSize.sm"
+      }
+    }
+  }
+}
+

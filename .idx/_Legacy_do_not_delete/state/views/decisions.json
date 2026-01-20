@@ -1,0 +1,7 @@
+{
+    "id": "decisions",
+    "label": "Decision History",
+    "mode": "branch",
+    "filters": ["decision"]
+  }
+  

@@ -1,0 +1,11 @@
+{
+    "id": "journal",
+    "fields": [
+      {
+        "key": "entry",
+        "default": "",
+        "persist": true
+      }
+    ]
+  }
+  

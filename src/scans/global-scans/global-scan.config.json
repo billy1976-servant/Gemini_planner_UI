@@ -1,0 +1,29 @@
+[
+  {
+    "id": "test-scan-1",
+    "schedule": { "runOnce": true, "intervalMinutes": 15 },
+    "source": { "provider": "stub", "query": "goat milk soap", "scope": "US" }
+  },
+  {
+    "id": "test-scan-2",
+    "schedule": { "runOnce": true, "intervalMinutes": 15 },
+    "source": { "provider": "stub", "query": "beef tallow soap", "scope": "US" }
+  },
+  {
+    "id": "test-scan-3",
+    "schedule": { "runOnce": true, "intervalMinutes": 30 },
+    "source": { "provider": "stub", "query": "organic lotion", "scope": "US" }
+  },
+  {
+    "id": "test-scan-4",
+    "schedule": { "runOnce": true, "intervalMinutes": 60 },
+    "source": { "provider": "stub", "query": "natural deodorant", "scope": "US" }
+  },
+  {
+    "id": "test-scan-5",
+    "schedule": { "runOnce": true, "intervalMinutes": 90 },
+    "source": { "provider": "stub", "query": "zero waste skincare", "scope": "US" }
+  }
+]
+
+

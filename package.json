@@ -1,0 +1,31 @@
+{
+  "name": "hiclarify-genesis",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "apps": "ts-node src/map/engine/map-engine.ts",
+    "blueprint": "ts-node src/scripts/blueprint.ts",
+    "content": "ts-node src/map/engine/content-engine.ts",
+    "build": "next build",
+    "start": "next start",
+    "allfiles": "ts-node src/scripts/generate-allfiles.ts",
+    "diagnostics": "ts-node ./src/scripts/run-diagnostics.ts",
+    "chain": "ts-node src/scripts/run-chain-test.ts",
+    "globalscan": "ts-node -r tsconfig-paths/register src/scripts/global-scan.ts",
+    "schema": "ts-node src/scripts/generate-schema.ts"
+  },
+  "dependencies": {
+    "@types/chalk": "^0.4.31",
+    "chalk": "^5.6.2",
+    "next": "14.2.3",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.6",
+    "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "5.5.3"
+  }
+}

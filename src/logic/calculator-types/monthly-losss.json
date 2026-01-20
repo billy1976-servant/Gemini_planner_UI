@@ -1,0 +1,12 @@
+{
+    "type": "calculator",
+    "calculators": [
+      {
+        "id": "monthly_loss",
+        "inputs": ["monthlyRevenue", "cleanupLaborMonthly"],
+        "formula": "monthlyRevenue - cleanupLaborMonthly",
+        "output": "effectiveMonthlyRevenue"
+      }
+    ]
+  }
+  

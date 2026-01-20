@@ -1,0 +1,57 @@
+{
+    "type": "screen",
+    "layout": {
+      "type": "column",
+      "params": { "gap": "2rem" }
+    },
+    "children": [
+      {
+        "type": "button",
+        "id": "column",
+        "params": {
+          "moleculeLayout": {
+            "type": "column",
+            "params": { "gap": "0.5rem" }
+          }
+        },
+        "content": {
+          "label": "BUTTON COLUMN",
+          "supportingText": "This text should appear UNDER the button."
+        }
+      },
+      {
+        "type": "button",
+        "id": "row",
+        "params": {
+          "moleculeLayout": {
+            "type": "row",
+            "params": { "gap": "1rem" }
+          }
+        },
+        "content": {
+          "label": "BUTTON ROW",
+          "supportingText": "This text should appear NEXT TO the button."
+        }
+      },
+      {
+        "type": "button",
+        "id": "grid",
+        "params": {
+          "moleculeLayout": {
+            "type": "grid",
+            "params": {
+              "columns": 1,
+              "gap": "0.5rem"
+            }
+          }
+        },
+        "content": {
+          "label": "BUTTON GRID",
+          "supportingText": "This text should appear BELOW using grid."
+        }
+      }
+    ]
+  }
+  
+  
+  

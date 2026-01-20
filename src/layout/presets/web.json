@@ -1,0 +1,26 @@
+{
+    "id": "web",
+    "description": "Classic responsive website experience",
+    "page": {
+      "type": "column",
+      "params": {
+        "maxWidth": 1200,
+        "padding": "2rem",
+        "gap": "2.5rem"
+      }
+    },
+    "section": {
+      "type": "column",
+      "params": {
+        "gap": "2rem"
+      }
+    },
+    "nav": {
+      "type": "row",
+      "params": {
+        "justify": "space-between",
+        "align": "center"
+      }
+    }
+  }
+  

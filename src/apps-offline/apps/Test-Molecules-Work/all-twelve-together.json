@@ -1,0 +1,227 @@
+{
+    "id": "screenRoot",
+    "type": "screen",
+    "state": {
+      "currentView": "|lab"
+    },
+    "children": [
+      {
+        "id": "||lab",
+        "type": "section",
+        "content": {
+          "title": "Molecule Lab — Full Render Test"
+        },
+        "when": {
+          "state": "currentView",
+          "equals": "|lab"
+        },
+        "children": [
+  
+  
+          {
+            "id": "||section-test",
+            "type": "section",
+            "content": {
+              "title": "1. Section"
+            },
+            "children": []
+          },
+  
+  
+          {
+            "id": "||button-test",
+            "type": "button",
+            "content": {
+              "label": "2. Button (Tap Me)"
+            },
+            "behavior": {
+              "type": "Action",
+              "params": {
+                "name": "state:noop"
+              }
+            }
+          },
+  
+  
+          {
+            "id": "||chip-test",
+            "type": "chip",
+            "content": {
+              "title": "3. Chip"
+            },
+            "behavior": {
+              "type": "Action",
+              "params": {
+                "name": "state:noop"
+              }
+            }
+          },
+  
+  
+          {
+            "id": "||card-test",
+            "type": "card",
+            "content": {
+              "title": "4. Card",
+              "body": "This card should render text and spacing.",
+              "media": "https://via.placeholder.com/150"
+            },
+            "children": []
+          },
+  
+  
+          {
+            "id": "||avatar-test",
+            "type": "avatar",
+            "params": {
+              "surface": {
+                "width": 64,
+                "height": 64
+              }
+            },
+            "content": {
+              "media": "https://placehold.co/64x64/png",
+              "text": "Avatar Test"
+            },
+            "behavior": {
+              "type": "Action",
+              "params": {
+                "name": "state:noop"
+              }
+            }
+          },
+          
+          
+          
+          
+  
+          {
+            "id": "||field-email",
+            "type": "field",
+            "content": {
+              "label": "6. Field — Email"
+            }
+          },
+  
+  
+          {
+            "id": "||field-password",
+            "type": "field",
+            "content": {
+              "label": "7. Field — Password"
+            }
+          },
+  
+  
+          {
+            "id": "||list-test",
+            "type": "list",
+            "content": {
+              "items": [
+             { "label": "List Item One"},
+             { "label": "List Item two"},
+             { "label": "List Item three"}
+              ]
+            }
+          },
+  
+  
+          {
+            "id": "||stepper-test",
+            "type": "stepper",
+            "content": {
+              "steps": [
+                { "time": "Step 1", "label": "Start" },
+                { "time": "Step 2", "label": "Middle" },
+                { "time": "Step 3", "label": "Finish" }
+              ]
+            }
+          },
+  
+  
+          {
+            "id": "||toolbar-test",
+            "type": "toolbar",
+            "content": {
+              "text": "10. Toolbar",
+              "actions": [
+                {
+                  "label": "Action A",
+                  "behavior": {
+                    "type": "Action",
+                    "params": { "name": "state:noop" }
+                  }
+                },
+                {
+                  "label": "Action B",
+                  "behavior": {
+                    "type": "Action",
+                    "params": { "name": "state:noop" }
+                  }
+                }
+              ]
+            }
+          },
+  
+  
+          {
+            "id": "||footer-test",
+            "type": "footer",
+            "content": {
+              "text": "11. Footer"
+            },
+            "children": [
+              {
+                "id": "||footer-chip",
+                "type": "chip",
+                "content": {
+                  "title": "Footer Action"
+                },
+                "behavior": {
+                  "type": "Action",
+                  "params": { "name": "state:noop" }
+                }
+              }
+            ]
+          },
+  
+  
+          {
+            "id": "||toast-test",
+            "type": "toast",
+            "content": {
+              "text": "12. Toast — should float"
+            }
+          },
+  
+  
+          {
+            "id": "||modal-test",
+            "type": "modal",
+            "content": {
+              "title": "13. Modal",
+              "body": "This modal should overlay the page."
+            },
+            "children": [
+              {
+                "id": "||modal-close",
+                "type": "button",
+                "content": {
+                  "label": "Close Modal"
+                },
+                "behavior": {
+                  "type": "Action",
+                  "params": { "name": "state:noop" }
+                }
+              }
+            ]
+          }
+  
+  
+        ]
+      }
+    ]
+  }
+  
+  
+  

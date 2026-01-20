@@ -1,0 +1,83 @@
+"use client";
+
+
+import { runBehavior } from "@/behavior/behavior-runner";
+import { useUIState } from "@/engine/core/ui-state";
+
+
+export default function ButtonCompound({ content, behavior = {}, params = {} }) {
+
+
+
+
+
+  // ---------------------------------------------
+  // 1. LABEL
+  // ---------------------------------------------
+  const label =
+    content?.value ||
+    content?.key ||
+    "Button";
+
+
+  // ---------------------------------------------
+  // 2. SUBSCRIBE TO UI STATE
+  // ---------------------------------------------
+  // ui.lastEvent → "tap", "double", "long"
+  // ui.lastArgs  → JSON from behavior
+
+  const ui = useUIState();          // ← REACTIVE
+  const msg = ui.lastEvent || "";   // ← TRIGGERS RE-RENDER
+
+
+  // ---------------------------------------------
+  // 3. BUTTON EVENT HANDLERS
+  // ---------------------------------------------
+  const handleTap = () => {
+    console.log("Button tapped");
+    if (behavior?.tap?.args) {
+      runBehavior("interact", "tap", {}, behavior.tap.args);
+    }
+  };
+
+
+  const handleDouble = () => {
+    console.log("Button double tapped");
+    if (behavior?.double?.args) {
+      runBehavior("interact", "double", {}, behavior.double.args);
+    }
+  };
+
+
+  const handleLong = (e) => {
+    e.preventDefault();
+    console.log("Button long press");
+    if (behavior?.long?.args) {
+      runBehavior("interact", "long", {}, behavior.long.args);
+    }
+  };
+
+
+  // ---------------------------------------------
+  // 4. RENDER
+  // ---------------------------------------------
+  return (
+    <button
+      style={{
+        padding: "10px 16px",
+        background: params.surface?.backgroundColor || "#eee",
+        color: params.text?.color || "#000",
+        fontWeight: params.text?.weight || "400",
+        borderRadius: "6px",
+        border: "1px solid #ccc",
+        cursor: "pointer",
+      }}
+      onClick={handleTap}
+      onDoubleClick={handleDouble}
+      onContextMenu={handleLong}
+    >
+      {/* ⭐ If UI-state message exists → show it */}
+      {msg || label}
+    </button>
+  );
+}

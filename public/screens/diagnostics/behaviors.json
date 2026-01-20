@@ -1,0 +1,10 @@
+{
+  "type": "button",
+  "id": "test",
+  "content": {
+    "kind": "text",
+    "value": "Hello"
+  }
+}
+
+

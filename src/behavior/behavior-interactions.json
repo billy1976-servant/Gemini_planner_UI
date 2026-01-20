@@ -1,0 +1,26 @@
+{
+  "tap": "interact.tap",
+  "double": "interact.double",
+  "long": "interact.long",
+
+
+  "drag": {
+    "horizontal": "interact.dragX",
+    "vertical": "interact.dragY",
+    "free": "interact.dragXY"
+  },
+
+
+  "scroll": {
+    "up": "interact.scrollUp",
+    "down": "interact.scrollDown"
+  },
+
+
+  "swipe": {
+    "left": "interact.swipeLeft",
+    "right": "interact.swipeRight",
+    "up": "interact.swipeUp",
+    "down": "interact.swipeDown"
+  }
+}

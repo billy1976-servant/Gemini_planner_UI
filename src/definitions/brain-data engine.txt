@@ -1,0 +1,151 @@
+========================================
+ HI CURV — BRAIN / CONTENT ENGINE
+ (QuickBooks-style content organizer)
+========================================
+
+
+1. PURPOSE
+
+
+The Brain is the **central content engine** of HI CURV.
+
+
+It does NOT render UI.
+It does NOT decide visual layout.
+It does NOT care if content is shown as Kanban, Calendar, Journal, or Website.
+
+
+Its only job is to:
+- Collect content and events from everywhere in the system
+- Normalize it into a small set of core entities
+- Track relationships between those entities
+- Answer questions like “What should this view show right now?”
+
+
+Think of it exactly like QuickBooks:
+- Every click a user makes is like a “transaction”
+- Every task, note, event, or file is an “item” or “record”
+- Kanban / Calendar / Reports are just **different reports** of the SAME data
+
+
+
+
+2. CORE ENTITIES
+
+
+The Brain stores everything as a small set of canonical entities
+(even if they come from different apps/organs):
+
+
+- PERSON: contacts, family, friends, clients, mentors
+- PROJECT: any goal or initiative (build chicken coop, buy a house, launch app)
+- TASK: actionable items (call roofer, buy lumber, email pastor)
+- EVENT: time-bound entries (meeting, due date, appointment)
+- RESOURCE: content or media (docs, links, videos, PDFs, verses, website chunks)
+- TAG / CONTEXT: labels and locations (home, church, business, finance, drift type)
+- STATE SNAPSHOT: emotional, spiritual, or focus “state” at a certain time
+
+
+The Brain always cares about:
+  - WHAT is this? (entity type)
+  - WHO is it related to?
+  - WHICH project does it touch?
+  - WHEN does it matter?
+  - WHERE should it show up? (Kanban, Calendar, Journal, etc.)
+  - WHY is it important? (priority, drift, goals, calling)
+
+
+
+
+3. INPUTS — WHERE DATA COMES FROM
+
+
+The Brain receives inputs from:
+
+
+- ATOMS: text typed, media added, checkboxes toggled, selections made
+- MOLECULES: button clicks, form submits, list interactions, card moves
+- ORGANS: Kanban moves, Calendar edits, Journal entries, Website builder steps
+- IMPORTERS: scraped church site, copied landing page, uploaded docs
+- BEHAVIOR ENGINE: “save”, “complete”, “archive”, “drift detected”, etc.
+
+
+Every interaction is turned into a **Brain event**, for example:
+- `task.created`
+- `task.completed`
+- `task.moved.stage`
+- `project.created`
+- `resource.imported`
+- `state.driftDetected`
+… and those events update the canonical entities.
+
+
+
+
+4. OUTPUTS — WHAT THE BRAIN PROVIDES
+
+
+The Brain does NOT format UI.
+Instead, it answers **queries** from organs/views, like:
+
+
+- “Give me all TASKS for project = ‘Chicken Coop’ grouped by stage”
+- “Give me all EVENTS for this week for this user”
+- “Give me all TASKS and EVENTS related to ‘Church Website’”
+- “Give me all RESOURCES related to ‘Buying a House’ tagged ‘finance’”
+- “What are the top 5 drifts for this person this month?”
+
+
+Organs use those answers to render their version:
+- Kanban organ draws columns and cards from TASKS
+- Calendar organ draws blocks from EVENTS
+- Journal organ draws ordered entries from TASKS + NOTES + STATE
+- Website builder organ draws SECTIONS from RESOURCES + TASKS
+
+
+
+
+5. VIEW vs DATA — QUICKBOOKS ANALOGY
+
+
+QUICKBOOKS:
+- Transactions = raw content
+- Chart of Accounts = structure
+- Reports = different lenses (P&L, Balance Sheet, Inventory)
+
+
+HI CURV:
+- Brain entities = raw content
+- Relationships = structure (person–project–task–event–resource)
+- Organs (Kanban, Calendar, Journal, Website) = different lenses / reports
+
+
+So:
+- Changing the view NEVER changes the canonical data model
+- One project can appear as Kanban + Calendar + Journal + Drift map simultaneously
+- Morphing between views is just: “ask the Brain a different question, draw it differently”
+
+
+
+
+6. ROLE IN THE ORGANISM
+
+
+If:
+- ATOMS are physics,
+- MOLECULES are components,
+- ORGANS are functional systems (Kanban, Calendar, Journal),
+
+
+…then the BRAIN is the **nervous system + memory** that keeps them all in sync.
+
+
+Every organ:
+- Subscribes to the Brain
+- Asks for its slice of the world
+- Renders that slice with atoms and molecules, nothing else
+
+
+The Brain is the **one and only source of truth** for content.
+
+

@@ -1,0 +1,88 @@
+{
+  "variants": {
+    "filled": {
+      "surface": {
+        "background": "color.primary",
+        "radius": "radius.lg",
+        "padding": "padding.md",
+        "shadow": "shadow.sm"
+      },
+      "text": {
+        "color": "color.onPrimary",
+        "size": "textSize.md",
+        "weight": "textWeight.medium"
+      },
+      "trigger": {
+        "hoverFeedback": "medium",
+        "pressFeedback": "medium",
+        "cursor": "pointer"
+      }
+    },
+    "tonal": {
+      "surface": {
+        "background": "color.surfaceVariant",
+        "radius": "radius.lg",
+        "padding": "padding.md"
+      },
+      "text": {
+        "color": "color.onSurface",
+        "size": "textSize.md",
+        "weight": "textWeight.medium"
+      },
+      "trigger": {
+        "hoverFeedback": "soft",
+        "pressFeedback": "light",
+        "cursor": "pointer"
+      }
+    },
+    "outlined": {
+      "surface": {
+        "background": "color.surface",
+        "borderColor": "color.primary",
+        "borderWidth": "borderWidth.sm",
+        "radius": "radius.lg",
+        "padding": "padding.md"
+      },
+      "text": {
+        "color": "color.primary",
+        "size": "textSize.md",
+        "weight": "textWeight.medium"
+      },
+      "trigger": {
+        "hoverFeedback": "soft",
+        "pressFeedback": "light",
+        "cursor": "pointer"
+      }
+    },
+    "text": {
+      "surface": {
+        "background": "color.surface",
+        "padding": "padding.xs"
+      },
+      "text": {
+        "color": "color.primary",
+        "size": "textSize.md",
+        "weight": "textWeight.medium"
+      },
+      "trigger": {
+        "hoverFeedback": "soft",
+        "pressFeedback": "light",
+        "cursor": "pointer"
+      }
+    }
+  },
+  "sizes": {
+    "sm": {
+      "surface": { "padding": "padding.sm" },
+      "text": { "size": "textSize.sm" }
+    },
+    "md": {
+      "surface": { "padding": "padding.md" },
+      "text": { "size": "textSize.md" }
+    },
+    "lg": {
+      "surface": { "padding": "padding.lg" },
+      "text": { "size": "textSize.lg" }
+    }
+  }
+}

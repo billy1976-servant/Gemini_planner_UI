@@ -1,0 +1,253 @@
+{
+    "id": "screenRoot",
+    "type": "screen",
+    "children": [
+      {
+        "type": "text",
+        "content": { "label": "TRACK Journal" }
+      },
+  
+  
+      {
+        "type": "text",
+        "content": { "label": "Think About the Scriptures" }
+      },
+      {
+        "type": "card",
+        "content": {
+          "body": "Read the Scripture carefully and consider what God is revealing about Himself, His will, and His truth."
+        }
+      },
+      {
+        "id": "thinkInput",
+        "type": "field",
+        "state": {
+          "mode": "two-way",
+          "key": "journal.think"
+        },
+        "params": {
+          "field": {
+            "multiline": true,
+            "rows": 4,
+            "fieldKey": "journal.think"
+          }
+        }
+      },
+      {
+        "type": "button",
+        "content": { "label": "Save Think Entry" },
+        "behavior": {
+          "type": "Action",
+          "params": {
+            "name": "state:journal.add",
+            "track": "think",
+            "key": "think",
+            "valueFrom": "input",
+            "fieldKey": "journal.think"
+          }
+        }
+      },
+      {
+        "type": "UserInputViewer",
+        "params": {
+          "track": "think",
+          "stateKey": "journal.think"
+        }
+      },
+  
+  
+      {
+        "type": "text",
+        "content": { "label": "Repent to God" }
+      },
+      {
+        "type": "card",
+        "content": {
+          "body": "Ask the Lord to reveal any sin, disobedience, or wrong thinking exposed by this Scripture."
+        }
+      },
+      {
+        "id": "repentInput",
+        "type": "field",
+        "state": {
+          "mode": "two-way",
+          "key": "journal.repent"
+        },
+        "params": {
+          "field": {
+            "multiline": true,
+            "rows": 4,
+            "fieldKey": "journal.repent"
+          }
+        }
+      },
+      {
+        "type": "button",
+        "content": { "label": "Save Repent Entry" },
+        "behavior": {
+          "type": "Action",
+          "params": {
+            "name": "state:journal.add",
+            "track": "repent",
+            "key": "repent",
+            "valueFrom": "input",
+            "fieldKey": "journal.repent"
+          }
+        }
+      },
+      {
+        "type": "UserInputViewer",
+        "params": {
+          "track": "repent",
+          "stateKey": "journal.repent"
+        }
+      },
+  
+  
+      {
+        "type": "text",
+        "content": { "label": "Ask God for Wisdom" }
+      },
+      {
+        "type": "card",
+        "content": {
+          "body": "Pray for wisdom, understanding, and strength to walk in obedience."
+        }
+      },
+      {
+        "id": "askInput",
+        "type": "field",
+        "state": {
+          "mode": "two-way",
+          "key": "journal.ask"
+        },
+        "params": {
+          "field": {
+            "multiline": true,
+            "rows": 4,
+            "fieldKey": "journal.ask"
+          }
+        }
+      },
+      {
+        "type": "button",
+        "content": { "label": "Save Ask Entry" },
+        "behavior": {
+          "type": "Action",
+          "params": {
+            "name": "state:journal.add",
+            "track": "ask",
+            "key": "ask",
+            "valueFrom": "input",
+            "fieldKey": "journal.ask"
+          }
+        }
+      },
+      {
+        "type": "UserInputViewer",
+        "params": {
+          "track": "ask",
+          "stateKey": "journal.ask"
+        }
+      },
+  
+  
+      {
+        "type": "text",
+        "content": { "label": "Conform to Christ" }
+      },
+      {
+        "type": "card",
+        "content": {
+          "body": "Consider how your life needs to change to align with Christ."
+        }
+      },
+      {
+        "id": "conformInput",
+        "type": "field",
+        "state": {
+          "mode": "two-way",
+          "key": "journal.conform"
+        },
+        "params": {
+          "field": {
+            "multiline": true,
+            "rows": 4,
+            "fieldKey": "journal.conform"
+          }
+        }
+      },
+      {
+        "type": "button",
+        "content": { "label": "Save Conform Entry" },
+        "behavior": {
+          "type": "Action",
+          "params": {
+            "name": "state:journal.add",
+            "track": "conform",
+            "key": "conform",
+            "valueFrom": "input",
+            "fieldKey": "journal.conform"
+          }
+        }
+      },
+      {
+        "type": "UserInputViewer",
+        "params": {
+          "track": "conform",
+          "stateKey": "journal.conform"
+        }
+      },
+  
+  
+      {
+        "type": "text",
+        "content": { "label": "Keep Your Heart" }
+      },
+      {
+        "type": "card",
+        "content": {
+          "body": "Identify dangers that could pull you away from obedience."
+        }
+      },
+      {
+        "id": "keepInput",
+        "type": "field",
+        "state": {
+          "mode": "two-way",
+          "key": "journal.keep"
+        },
+        "params": {
+          "field": {
+            "multiline": true,
+            "rows": 4,
+            "fieldKey": "journal.keep"
+          }
+        }
+      },
+      {
+        "type": "button",
+        "content": { "label": "Save Keep Entry" },
+        "behavior": {
+          "type": "Action",
+          "params": {
+            "name": "state:journal.add",
+            "track": "keep",
+            "key": "keep",
+            "valueFrom": "input",
+            "fieldKey": "journal.keep"
+          }
+        }
+      },
+      {
+        "type": "UserInputViewer",
+        "params": {
+          "track": "keep",
+          "stateKey": "journal.keep"
+        }
+      }
+    ]
+  }
+  
+  
+  

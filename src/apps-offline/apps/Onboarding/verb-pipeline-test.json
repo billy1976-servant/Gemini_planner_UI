@@ -1,0 +1,66 @@
+{
+  "id": "state-proof-test",
+  "type": "screen",
+  "children": [
+    {
+      "type": "card",
+      "children": [
+        { "type": "text", "value": "STATE PROOF TEST" }
+      ]
+    },
+
+
+    {
+      "type": "button",
+      "label": "1️⃣ Direct State (should ALWAYS work)",
+      "action": {
+        "type": "dispatch",
+        "name": "state:currentView",
+        "payload": { "value": "A" }
+      }
+    },
+
+
+    {
+      "type": "button",
+      "label": "2️⃣ Journal Only (state changes, no engine)",
+      "action": {
+        "type": "dispatch",
+        "name": "state:journal.add",
+        "payload": {
+          "track": "proof",
+          "key": "step",
+          "value": "B"
+        }
+      }
+    },
+
+
+    {
+      "type": "button",
+      "label": "3️⃣ Engine → State (your failing case)",
+      "action": {
+        "type": "dispatch",
+        "name": "state:calculator.run",
+        "payload": {
+          "engine": "25x",
+          "inputKey": "calc.q1",
+          "outputKey": "calc.totalLoss"
+        }
+      }
+    },
+
+
+    {
+      "type": "card",
+      "children": [
+        {
+          "type": "UserInputViewer",
+          "key": "proof"
+        }
+      ]
+    }
+  ]
+}
+
+

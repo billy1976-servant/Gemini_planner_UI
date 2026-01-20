@@ -1,0 +1,50 @@
+{
+  "variants": {
+    "info": {
+      "surface": {
+        "background": "color.surfaceVariant",
+        "radius": "radius.lg",
+        "padding": "padding.md",
+        "shadow": "shadow.sm"
+      },
+      "text": {
+        "size": "textSize.sm",
+        "weight": "textWeight.medium",
+        "color": "color.onSurface"
+      }
+    },
+    "error": {
+      "surface": {
+        "background": "color.errorContainer",
+        "radius": "radius.lg",
+        "padding": "padding.md",
+        "shadow": "shadow.sm"
+      },
+      "text": {
+        "size": "textSize.sm",
+        "weight": "textWeight.medium",
+        "color": "color.onErrorContainer"
+      }
+    }
+  },
+  "sizes": {
+    "sm": {
+      "surface": {
+        "padding": "padding.sm"
+      },
+      "text": {
+        "size": "textSize.xs"
+      }
+    },
+    "md": {
+      "surface": {
+        "padding": "padding.md"
+      },
+      "text": {
+        "size": "textSize.sm"
+      }
+    }
+  }
+}
+
+

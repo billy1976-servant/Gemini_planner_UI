@@ -1,0 +1,6 @@
+{
+  "hoverFeedback": ["soft", "medium", "strong"],
+  "pressFeedback": ["light", "medium", "heavy"],
+  "cursor": ["pointer", "default"],
+  "disabledOpacity": "opacity.low"
+}

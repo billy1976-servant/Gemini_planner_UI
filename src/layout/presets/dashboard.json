@@ -1,0 +1,26 @@
+{
+    "id": "dashboard",
+    "description": "Information-dense, multi-panel layout",
+    "page": {
+      "type": "grid",
+      "params": {
+        "columns": 12,
+        "gap": "1rem",
+        "padding": "1.5rem"
+      }
+    },
+    "section": {
+      "type": "grid",
+      "params": {
+        "columns": 6,
+        "gap": "1rem"
+      }
+    },
+    "nav": {
+      "type": "column",
+      "params": {
+        "width": 240
+      }
+    }
+  }
+  

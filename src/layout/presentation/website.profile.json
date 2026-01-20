@@ -1,0 +1,29 @@
+{
+    "id": "website",
+    "description": "Marketing / content-first website experience",
+    "defaults": {
+      "container": "page",
+      "maxWidth": "1200px",
+      "navigation": "top",
+      "readingFlow": "vertical"
+    },
+    "sections": {
+      "hero": {
+        "type": "column",
+        "params": { "align": "center", "gap": "2rem" }
+      },
+      "content": {
+        "type": "column",
+        "params": { "gap": "1.5rem" }
+      },
+      "features": {
+        "type": "grid",
+        "params": { "columns": 3, "gap": "2rem" }
+      },
+      "footer": {
+        "type": "column",
+        "params": { "align": "center" }
+      }
+    }
+  }
+  

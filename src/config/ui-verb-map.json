@@ -1,0 +1,15 @@
+{
+  "tap": "action.primary",
+  "toggle": "state.toggle",
+  "select": "state.selected",
+  "open": "state.open",
+  "close": "state.closed",
+  "expand": "state.expanded",
+  "collapse": "state.collapsed",
+  "navigate": "nav.route",
+  "submit": "form.submit",
+  "reveal": "ui.reveal",
+  "menu": "menu.open",
+  "longpress": "action.alt"
+}
+

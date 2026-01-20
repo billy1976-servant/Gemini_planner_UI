@@ -1,0 +1,15 @@
+{
+    "type": "calculator",
+    "calculators": [
+      {
+        "id": "effective_revenue",
+        "inputs": [
+          "monthlyRevenue",
+          "monthlyCleanupLaborCost"
+        ],
+        "formula": "monthlyRevenue - monthlyCleanupLaborCost",
+        "output": "effectiveMonthlyRevenue"
+      }
+    ]
+  }
+  

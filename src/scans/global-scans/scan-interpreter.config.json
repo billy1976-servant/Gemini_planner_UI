@@ -1,0 +1,57 @@
+{
+    "id": "default-scan-interpreter",
+    "version": "0.1.0",
+    "description": "Baseline interpreter that converts raw scan signals into normalized metrics and simple triggers.",
+  
+  
+    "inputs": {
+      "requiredFields": ["id", "timestamp", "query", "value"]
+    },
+  
+  
+    "normalization": {
+      "valueScale": {
+        "min": 0,
+        "max": 100
+      },
+      "timestampUnit": "ms"
+    },
+  
+  
+    "metrics": {
+      "score": {
+        "type": "number",
+        "formula": "value"
+      },
+      "momentum": {
+        "type": "number",
+        "formula": "delta(value)"
+      }
+    },
+  
+  
+    "triggers": [
+      {
+        "id": "high-interest",
+        "condition": "score >= 70",
+        "action": "flag"
+      },
+      {
+        "id": "rising-trend",
+        "condition": "momentum > 0",
+        "action": "flag"
+      }
+    ],
+  
+  
+    "output": {
+      "emit": [
+        "score",
+        "momentum",
+        "triggers"
+      ]
+    }
+  }
+  
+  
+  

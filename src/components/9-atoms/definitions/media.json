@@ -1,0 +1,7 @@
+{
+  "size": ["size.xs", "size.sm", "size.md", "size.lg"],
+  "aspectRatio": ["1:1", "16:9", "4:3"],
+  "objectFit": ["cover", "contain", "fill"],
+  "radius": ["radius.none", "radius.sm", "radius.md", "radius.lg"],
+  "opacity": ["opacity.full", "opacity.dim", "opacity.low"]
+}

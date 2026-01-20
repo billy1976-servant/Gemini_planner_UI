@@ -1,0 +1,17 @@
+APP: DashBehaviorTest
+CONTENT
+
+
+1.0 Home (Section)
+- title: "Behavior Test Home"
+
+
+1.1 TestButton (Button)
+- label: "CLICK ME"
+
+
+2.0 Success (Card)
+- title: "SUCCESS"
+- body: "The behavior system worked."
+
+

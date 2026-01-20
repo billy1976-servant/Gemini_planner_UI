@@ -1,0 +1,258 @@
+{
+  "id": "screenRoot",
+  "type": "screen",
+  "state": {
+    "currentView": "||home"
+  },
+  "children": [
+    {
+      "id": "||home",
+      "type": "section",
+      "content": {
+        "title": "Welcome to Molecule Validation"
+      },
+      "when": { "state": "currentView", "equals": "||home" },
+      "children": [
+        {
+          "id": "||herocard",
+          "type": "card",
+          "content": {
+            "image": "profile-avatar.png",
+            "label": "Your Profile"
+          },
+          "children": []
+        },
+        {
+          "id": "||start",
+          "type": "button",
+          "content": { "label": "Get Started" },
+          "behavior": {
+            "type": "Action",
+            "params": { "name": "state:currentView", "value": "||signup" }
+          },
+          "children": []
+        },
+        {
+          "id": "||learn",
+          "type": "chip",
+          "content": { "label": "Learn More" },
+          "behavior": {
+            "type": "Action",
+            "params": { "name": "state:currentView", "value": "||info" }
+          },
+          "children": []
+        }
+      ]
+    },
+
+
+    {
+      "id": "||signup",
+      "type": "section",
+      "content": { "title": "Create Account" },
+      "when": { "state": "currentView", "equals": "||signup" },
+      "children": [
+        {
+          "id": "||email",
+          "type": "field",
+          "content": {
+            "label": "Email Address",
+            "input": {
+              "type": "text",
+              "fieldKey": "email"
+            }
+          },
+          "children": []
+        },
+        {
+          "id": "||password",
+          "type": "field",
+          "content": {
+            "label": "Password",
+            "input": {
+              "type": "password",
+              "fieldKey": "password"
+            }
+          },
+          "children": []
+        },
+        {
+          "id": "||submit",
+          "type": "button",
+          "content": { "label": "Submit" },
+          "behavior": {
+            "type": "Action",
+            "params": { "name": "state:currentView", "value": "||success" }
+          },
+          "children": []
+        },
+        {
+          "id": "||back",
+          "type": "button",
+          "content": { "label": "Cancel" },
+          "behavior": {
+            "type": "Action",
+            "params": { "name": "state:currentView", "value": "||home" }
+          },
+          "children": []
+        }
+      ]
+    },
+
+
+    {
+      "id": "||info",
+      "type": "section",
+      "content": { "title": "Information" },
+      "when": { "state": "currentView", "equals": "||info" },
+      "children": [
+        {
+          "id": "||about",
+          "type": "card",
+          "content": {
+            "title": "About This App",
+            "body": "This section explains the purpose and structure of the system."
+          },
+          "children": []
+        },
+        {
+          "id": "||topics",
+          "type": "list",
+          "content": {
+            "items": [
+              { "id": "t1", "title": "Details" }
+            ]
+          },
+          "behavior": {
+            "type": "Action",
+            "params": { "name": "state:currentView", "value": "||details" }
+          },
+          "children": []
+        },
+        {
+          "id": "||tools",
+          "type": "toolbar",
+          "content": { "label": "Actions" },
+          "children": [
+            {
+              "id": "||share",
+              "type": "button",
+              "content": { "label": "Share" },
+              "behavior": {
+                "type": "Action",
+                "params": { "name": "state:currentView", "value": "||sharesheet" }
+              },
+              "children": []
+            },
+            {
+              "id": "||close",
+              "type": "button",
+              "content": { "label": "Close" },
+              "behavior": {
+                "type": "Action",
+                "params": { "name": "state:currentView", "value": "||home" }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+
+
+    {
+      "id": "||success",
+      "type": "section",
+      "content": { "title": "Success" },
+      "when": { "state": "currentView", "equals": "||success" },
+      "children": [
+        {
+          "id": "||successcard",
+          "type": "card",
+          "content": {
+            "title": "You're All Set",
+            "body": "Your information has been submitted successfully."
+          },
+          "children": []
+        },
+        {
+          "id": "||finish",
+          "type": "button",
+          "content": { "label": "Finish" },
+          "behavior": {
+            "type": "Action",
+            "params": { "name": "state:currentView", "value": "||home" }
+          },
+          "children": []
+        },
+        {
+          "id": "||notice",
+          "type": "toast",
+          "content": { "text": "Saved successfully." },
+          "children": []
+        }
+      ]
+    },
+
+
+    {
+      "id": "||details",
+      "type": "section",
+      "when": { "state": "currentView", "equals": "||details" },
+      "children": [
+        {
+          "id": "||steps",
+          "type": "stepper",
+          "content": {
+            "steps": [
+              { "time": "1", "label": "Review" },
+              { "time": "2", "label": "Confirm" }
+            ]
+          },
+          "children": []
+        },
+        {
+          "id": "||backinfo",
+          "type": "button",
+          "content": { "label": "Back" },
+          "behavior": {
+            "type": "Action",
+            "params": { "name": "state:currentView", "value": "||info" }
+          },
+          "children": []
+        }
+      ]
+    },
+
+
+    {
+      "id": "||sharesheet",
+      "type": "modal",
+      "when": { "state": "currentView", "equals": "||sharesheet" },
+      "children": [
+        {
+          "id": "||sharenow",
+          "type": "button",
+          "content": { "label": "Share Now" },
+          "behavior": {
+            "type": "Action",
+            "params": { "name": "state:currentView", "value": "||info" }
+          },
+          "children": []
+        },
+        {
+          "id": "||dismiss",
+          "type": "button",
+          "content": { "label": "Dismiss" },
+          "behavior": {
+            "type": "Action",
+            "params": { "name": "state:currentView", "value": "||info" }
+          },
+          "children": []
+        }
+      ]
+    }
+  ]
+}
+
+

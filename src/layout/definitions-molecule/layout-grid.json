@@ -1,0 +1,19 @@
+{
+    "molecule": "Button",
+    "layout": {
+      "flow": "grid",
+      "params": {
+        "gap": "0.5rem",
+        "columns": 2
+      },
+      "responsive": {
+        "breakpoint": 768,
+        "flow": "column",
+        "params": {
+          "gap": "0.5rem"
+        }
+      }
+    }
+  }
+  
+  

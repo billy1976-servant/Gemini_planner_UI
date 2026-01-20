@@ -1,0 +1,46 @@
+{
+  "variants": {
+    "elevated": {
+      "surface": {
+        "background": "color.surface",
+        "radius": "radius.lg",
+        "shadow": "shadow.md",
+        "padding": "padding.md"
+      },
+      "text": {
+        "size": "textSize.md",
+        "weight": "textWeight.medium",
+        "color": "color.onSurface"
+      },
+      "media": {
+        "size": "size.lg",
+        "radius": "radius.md",
+        "objectFit": "cover"
+      }
+    },
+    "outlined": {
+      "surface": {
+        "background": "color.surface",
+        "borderColor": "color.secondary",
+        "borderWidth": "borderWidth.sm",
+        "radius": "radius.lg",
+        "padding": "padding.md"
+      },
+      "text": {
+        "size": "textSize.md",
+        "weight": "textWeight.medium",
+        "color": "color.onSurface"
+      },
+      "media": {
+        "size": "size.lg",
+        "radius": "radius.md",
+        "objectFit": "cover"
+      }
+    }
+  },
+  "sizes": {
+    "sm": { "surface": { "padding": "padding.sm" } },
+    "md": { "surface": { "padding": "padding.md" } },
+    "lg": { "surface": { "padding": "padding.lg" } }
+  }
+}

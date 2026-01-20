@@ -1,0 +1,50 @@
+{
+  "variants": {
+    "primary": {
+      "sequence": {
+        "direction": "row",
+        "gap": "gap.md"
+      },
+      "surface": {
+        "background": "color.surface",
+        "radius": "radius.lg",
+        "padding": "padding.sm"
+      },
+      "text": {
+        "size": "textSize.sm",
+        "weight": "textWeight.medium",
+        "color": "color.primary"
+      }
+    },
+    "line": {
+      "sequence": {
+        "direction": "row",
+        "gap": "gap.sm"
+      },
+      "surface": {
+        "background": "color.surface",
+        "radius": "radius.none",
+        "padding": "padding.xs"
+      },
+      "text": {
+        "size": "textSize.xs",
+        "weight": "textWeight.medium",
+        "color": "color.secondary"
+      }
+    }
+  },
+  "sizes": {
+    "sm": {
+      "sequence": {
+        "gap": "gap.sm"
+      }
+    },
+    "md": {
+      "sequence": {
+        "gap": "gap.md"
+      }
+    }
+  }
+}
+
+

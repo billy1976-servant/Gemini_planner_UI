@@ -1,0 +1,39 @@
+{
+    "id": "screenRoot",
+    "type": "screen",
+    "children": [
+      {
+        "id": "|home",
+        "type": "section",
+        "content": { "title": "Home Screen" },
+        "children": [
+          {
+            "type": "button",
+            "content": { "label": "Go to Screen B" },
+            "behavior": {
+              "type": "Action",
+              "params": { "name": "state:currentView", "value": "|b" }
+            }
+          }
+        ]
+      },
+      {
+        "id": "|b",
+        "type": "section",
+        "content": { "title": "Screen B" },
+        "children": [
+          {
+            "type": "button",
+            "content": { "label": "Back to Home" },
+            "behavior": {
+              "type": "Action",
+              "params": { "name": "state:currentView", "value": "|home" }
+            }
+          }
+        ]
+      }
+    ]
+  }
+  
+  
+  

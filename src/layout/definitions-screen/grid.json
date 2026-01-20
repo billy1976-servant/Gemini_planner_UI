@@ -1,0 +1,14 @@
+{
+    "defaults": {
+      "columns": 2,
+      "gap": "1rem",
+      "align": "stretch",
+      "justify": "stretch"
+    },
+    "presets": {
+      "twoColumn": { "columns": 2 },
+      "threeColumn": { "columns": 3, "gap": "1.5rem" },
+      "wideGap": { "gap": "2rem" }
+    }
+  }
+  

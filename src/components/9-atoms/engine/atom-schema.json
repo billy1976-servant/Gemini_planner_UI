@@ -1,0 +1,101 @@
+{
+  "collection": {
+    "props": {
+      "params": "any",
+      "style": "any"
+    },
+    "events": [
+      "onClick",
+      "onChange"
+    ],
+    "children": true
+  },
+  "condition": {
+    "props": {
+      "params": "any",
+      "style": "any"
+    },
+    "events": [
+      "onClick",
+      "onChange"
+    ],
+    "children": true
+  },
+  "field": {
+    "props": {
+      "params": "any",
+      "style": "any"
+    },
+    "events": [
+      "onClick",
+      "onChange"
+    ],
+    "children": true
+  },
+  "media": {
+    "props": {
+      "params": "any",
+      "style": "any"
+    },
+    "events": [
+      "onClick",
+      "onChange"
+    ],
+    "children": true
+  },
+  "sequence": {
+    "props": {
+      "params": "any",
+      "style": "any"
+    },
+    "events": [
+      "onClick",
+      "onChange"
+    ],
+    "children": true
+  },
+  "shell": {
+    "props": {
+      "params": "any",
+      "style": "any"
+    },
+    "events": [
+      "onClick",
+      "onChange"
+    ],
+    "children": true
+  },
+  "surface": {
+    "props": {
+      "params": "any",
+      "style": "any"
+    },
+    "events": [
+      "onClick",
+      "onChange"
+    ],
+    "children": true
+  },
+  "text": {
+    "props": {
+      "params": "any",
+      "style": "any"
+    },
+    "events": [
+      "onClick",
+      "onChange"
+    ],
+    "children": true
+  },
+  "trigger": {
+    "props": {
+      "params": "any",
+      "style": "any"
+    },
+    "events": [
+      "onClick",
+      "onChange"
+    ],
+    "children": true
+  }
+}

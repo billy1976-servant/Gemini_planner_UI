@@ -1,0 +1,27 @@
+{
+    "id": "screenRoot",
+    "type": "screen",
+    "children": [
+      {
+        "type": "section",
+        "content": { "title": "Navigation Test" },
+        "children": [
+          {
+            "type": "button",
+            "content": { "label": "Go To Next Screen" },
+            "behavior": {
+              "type": "Navigation",
+              "verb": "go",
+              "variant": "screen",
+              "params": {
+                "target": "src/apps-offline/behavior-tests/screenB.json"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+  
+  
+  

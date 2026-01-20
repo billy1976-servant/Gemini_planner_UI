@@ -1,0 +1,97 @@
+{
+  "variants": {
+    "default": {
+      "surface": {
+        "background": "color.surface",
+        "radius": "radius.none",
+        "padding": "padding.md",
+        "borderColor": "color.outline",
+        "borderWidth": "borderWidth.sm"
+      },
+      "sequence": {
+        "direction": "row",
+        "align": "center",
+        "justify": "space-between",
+        "gap": "gap.md"
+      },
+      "text": {
+        "size": "textSize.sm",
+        "weight": "textWeight.medium",
+        "color": "color.onSurface",
+        "lineHeight": "lineHeight.normal"
+      }
+    },
+    "info": {
+      "surface": {
+        "background": "color.surfaceVariant",
+        "radius": "radius.none",
+        "padding": "padding.md"
+      },
+      "sequence": {
+        "direction": "row",
+        "align": "center",
+        "justify": "space-between",
+        "gap": "gap.md"
+      },
+      "text": {
+        "size": "textSize.sm",
+        "weight": "textWeight.regular",
+        "color": "color.onSurface"
+      }
+    },
+    "error": {
+      "surface": {
+        "background": "color.error",
+        "radius": "radius.none",
+        "padding": "padding.md"
+      },
+      "sequence": {
+        "direction": "row",
+        "align": "center",
+        "justify": "space-between",
+        "gap": "gap.md"
+      },
+      "text": {
+        "size": "textSize.sm",
+        "weight": "textWeight.medium",
+        "color": "color.onPrimary"
+      }
+    }
+  },
+  "sizes": {
+    "sm": {
+      "surface": {
+        "padding": "padding.sm"
+      },
+      "sequence": {
+        "gap": "gap.sm"
+      },
+      "text": {
+        "size": "textSize.xs"
+      }
+    },
+    "md": {
+      "surface": {
+        "padding": "padding.md"
+      },
+      "sequence": {
+        "gap": "gap.md"
+      },
+      "text": {
+        "size": "textSize.sm"
+      }
+    },
+    "lg": {
+      "surface": {
+        "padding": "padding.lg"
+      },
+      "sequence": {
+        "gap": "gap.lg"
+      },
+      "text": {
+        "size": "textSize.md"
+      }
+    }
+  }
+}
+

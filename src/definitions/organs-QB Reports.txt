@@ -1,0 +1,146 @@
+========================================
+ HI CURV — ORGANS / VIEW ENGINES
+ (Kanban, Calendar, Journal, Website, etc.)
+========================================
+
+
+1. PURPOSE
+
+
+ORGANS are higher-level “view engines” built from MOLECULES.
+
+
+- An organ is NOT a whole app.
+- It is a **reusable functional chunk** (like “Kanban Board” or “Calendar Grid”)
+- The same organ can appear in many screens and many apps.
+
+
+Each organ:
+- Chooses WHICH MOLECULES to use (buttons, lists, cards, surfaces)
+- Decides HOW they are arranged
+- Asks the BRAIN WHAT data to show
+- Knows HOW to translate Brain data into visible UI atoms
+
+
+Example organs:
+- Kanban Organ
+- Calendar Organ
+- Journal Organ
+- Drift Scanner Organ
+- Website Builder Organ
+- Scripture Memory Organ
+- Video Editor Organ (cut/split/stamp engine surface)
+
+
+
+
+2. ORGANS vs MOLECULES vs ATOMS
+
+
+- ATOMS = universal physics (text, surface, media, field, trigger, etc.)
+- MOLECULES = reusable component recipes (button, card, list, navbar, chip, modal)
+- ORGANS = functional systems composed of many molecules
+
+
+For example, a KANBAN ORGAN might use:
+- Surface molecules for columns
+- Card molecules for tasks
+- Button molecules for actions
+- List molecules for backlogs
+- Trigger molecules for moves and filters
+
+
+None of the organ files reinvent physics.
+They just orchestrate molecules and ask the Brain for the right data.
+
+
+
+
+3. HOW ORGANS GET DATA (BRAIN QUERIES)
+
+
+Each organ defines its “questions” to the Brain.
+
+
+Kanban Organ example:
+- Query: “all tasks where project = X, grouped by stage”
+- Renders: one column per stage, one card per task
+
+
+Calendar Organ:
+- Query: “all events for date range [start, end] and user = X”
+- Renders: grid of days, events snapped to dates
+
+
+Website Builder Organ:
+- Query: “all sections belonging to site = X ordered by position”
+- Renders: stacked surface + media + text molecules per section
+
+
+Journal Organ:
+- Query: “all entries, tasks, and events for day = X, grouped by context”
+- Renders: timeline of text + events + drifts
+
+
+
+
+4. HOW ORGANS LIVE IN SCREENS (MORPHING)
+
+
+Screens are **just JSON** that place organs on a layout surface.
+
+
+One screen can:
+- Place multiple organs at once (Kanban + Calendar + Journal)
+- Show shared content from the Brain in different ways
+- Swap one organ configuration for another (“Kanban view” → “Calendar view”)
+
+
+Morphing is simply:
+- The screen JSON changing which organ is active / visible
+- Or the organ changing its “mode” (e.g., Kanban organ toggles “group by project” vs “group by stage”)
+
+
+The user experiences everything as if it’s ONE app, because:
+- The same Brain data underlies all organs
+- The same atoms/molecules render everything
+- The same screen can host multiple organ modes
+
+
+
+
+5. ORGANS AND SEQUENCES (OPERATIONS)
+
+
+Some organs represent not just views, but **operations**.
+
+
+Example: Video Editor Organ (cut / split / stamp / overlay / export)
+- Reuses the same atoms (media, surface, trigger, sequence)
+- Uses sequences to call behaviors: cut video, extract audio, apply 6×7 pipeline, etc.
+- Still gets inputs/outputs from the Brain (resources & tasks)
+
+
+Similarly, Website Builder Organ:
+- Uses sequences to scaffold a page from imported content
+- Links tasks, resources, and events into a build plan
+
+
+
+
+6. ORGAN LAYER SUMMARY
+
+
+Organs are:
+- NOT full apps
+- NOT atoms or molecules
+- The “organs” of the organism — each with a clear role (motion, memory, time, structure)
+
+
+They:
+- Consume Brain data
+- Arrange molecules
+- Render atoms
+- Can be turned ON/OFF or swapped per screen without breaking the system
+
+

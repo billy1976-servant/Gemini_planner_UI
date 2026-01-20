@@ -1,0 +1,42 @@
+FILE 4 — HI-OS_0-TO-1-SYSTEM.md
+(Exhaustive explanation of theme scaling, UI scaling, and how atoms map to 0→1)
+# HI OS — The 0→1 Universal Parameter System
+
+
+The 0→1 engine is the root of UI consistency.
+
+
+Every display property is defined between 0.0 (minimum state) and 1.0 (maximum state).
+This includes:
+- typography scale
+- spacing scale
+- roundness
+- density
+- shadow depth
+- surface elevation
+- opacity
+- animation intensity
+- contrast
+- motion softness
+- color logic
+- cultural UI modes
+- child modes (Kids, Simple, Developer, Minimalist)
+
+
+Example:
+font-size = interpolate(0→1, min=12px, mid=16px, max=22px)
+
+
+Everything in the UI becomes predictable:
+0.0 = smallest, simplest, flattest  
+0.5 = standard Google/Material size  
+0.8 = Apple-like high-clarity, softer/rounder  
+1.0 = Kids mode (big, chunky, playful)
+
+
+Atoms accept 0→1 directly.  
+Molecules aggregate multiple 0→1 values.  
+Compounds map UI state onto 0→1 for rendering.
+
+
+This file defines how scaling works system-wide.

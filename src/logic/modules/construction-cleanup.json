@@ -1,0 +1,20 @@
+{
+    "id": "construction-cleanup",
+    "stateDefaults": {
+      "crewSize": 5,
+      "cleanupMinutesPerDay": 45,
+      "hourlyWage": 22
+    },
+    "stats": {
+      "cleanupTime": "Most crews spend 30–60 minutes per tech per day on cleanup."
+    },
+    "calculators": [
+      {
+        "id": "cleanup-labor",
+        "inputs": ["crewSize", "cleanupMinutesPerDay", "hourlyWage"],
+        "formula": "(crewSize * (cleanupMinutesPerDay / 60) * (hourlyWage * 1.5)) * 22",
+        "output": "cleanupLaborMonthly"
+      }
+    ]
+  }
+  

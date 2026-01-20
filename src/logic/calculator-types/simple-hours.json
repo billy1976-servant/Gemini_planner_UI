@@ -1,0 +1,15 @@
+{
+    "type": "calculator",
+    "calculators": [
+      {
+        "id": "cleanup_labor_monthly",
+        "inputs": ["hours", "hourlyWage"],
+        "formula": "hours * hourlyWage",
+        "output": "total"
+      }
+    ]
+  }
+  
+  
+    
+  

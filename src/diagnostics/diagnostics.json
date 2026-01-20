@@ -1,0 +1,49 @@
+{
+    "$kind": "hicurv.diagnostics.config",
+    "$version": "1.0.0",
+  
+    "root": ".",
+  
+    "directories": [
+      "src",
+      "src/app",
+      "src/app/morph",
+  
+      "src/behavior",
+      "src/behavior/binding",
+      "src/behavior/content",
+      "src/behavior/modules",
+      "src/behavior/progression",
+      "src/behavior/semantics",
+      "src/behavior/sequences",
+      "src/behavior/timecore",
+  
+      "src/components",
+      "src/components/9-atoms",
+      "src/components/definitions",
+  
+      "src/compounds",
+      "src/compounds/3-molecules",
+      "src/compounds/definitions",
+      "src/compounds/schema",
+  
+      "src/content",
+  
+      "src/diagnostics",
+  
+      "src/engine",
+      "src/engine/core",
+      "src/engine/maps",
+      "src/engine/runners",
+  
+      "src/lib",
+      "src/screens",
+      "src/scripts",
+  
+      "src/system",
+      "src/ui",
+      "src/ux"
+    ]
+  }
+  
+  

@@ -1,0 +1,26 @@
+{
+    "id": "app",
+    "description": "Native app-style flow, vertical stacking",
+    "page": {
+      "type": "column",
+      "params": {
+        "maxWidth": "100%",
+        "padding": "1rem",
+        "gap": "1.25rem"
+      }
+    },
+    "section": {
+      "type": "stack",
+      "params": {
+        "gap": "1rem"
+      }
+    },
+    "nav": {
+      "type": "column",
+      "params": {
+        "width": 72,
+        "align": "center"
+      }
+    }
+  }
+  

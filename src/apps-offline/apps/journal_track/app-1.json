@@ -1,0 +1,258 @@
+{
+  "id": "screenRoot",
+  "type": "screen",
+  "children": [1
+  
+    {
+      "id": "|tracklesson",
+      "type": "section",
+      "content": { "title": "TRACK Journal" },
+      "children": [
+        {
+          "id": "|thinkpanel",
+          "type": "section",
+          "content": { "title": "Think About the Scriptures" },
+          "children": [
+            {
+              "id": "|thinkprompt",
+              "type": "card",
+              "content": {
+                "body": "Read the Scripture carefully and consider what God is revealing about Himself, His will, and His truth."
+              }
+            },
+            {
+              "id": "|thinkjournal",
+              "type": "field",
+              "state": {
+                "mode": "two-way",
+                "key": "journal.|thinkjournal"
+              },
+              "content": { "label": "What stands out to you from this passage?" },
+              "params": {
+                "field": {
+                  "multiline": true,
+                  "rows": 4
+                }
+              }
+            },
+            {
+              "id": "|thinksave",
+              "type": "button",
+              "content": { "label": "Save Think Entry" },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "state:journal.add",
+                  "section": "think",
+                  "text": "{{journal.|thinkjournal}}"
+                }
+              }
+            }
+          ]
+        },
+
+
+        {
+          "id": "|repentpanel",
+          "type": "section",
+          "content": { "title": "Repent to God" },
+          "children": [
+            {
+              "id": "|repentprompt",
+              "type": "card",
+              "content": {
+                "body": "Ask the Lord to reveal any sin, disobedience, or wrong thinking exposed by this Scripture."
+              }
+            },
+            {
+              "id": "|repentjournal",
+              "type": "field",
+              "state": {
+                "mode": "two-way",
+                "key": "journal.|repentjournal"
+              },
+              "content": { "label": "What do you need to confess or turn away from?" },
+              "params": {
+                "field": {
+                  "multiline": true,
+                  "rows": 4
+                }
+              }
+            },
+            {
+              "id": "|repentsave",
+              "type": "button",
+              "content": { "label": "Save Repent Entry" },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "state:journal.add",
+                  "section": "repent",
+                  "text": "{{journal.|repentjournal}}"
+                }
+              }
+            }
+          ]
+        },
+
+
+        {
+          "id": "|askpanel",
+          "type": "section",
+          "content": { "title": "Ask God for Wisdom" },
+          "children": [
+            {
+              "id": "|askprompt",
+              "type": "card",
+              "content": {
+                "body": "Pray for wisdom, understanding, and strength to walk in obedience."
+              }
+            },
+            {
+              "id": "|askjournal",
+              "type": "field",
+              "state": {
+                "mode": "two-way",
+                "key": "journal.|askjournal"
+              },
+              "content": { "label": "What are you asking God to help you understand or do?" },
+              "params": {
+                "field": {
+                  "multiline": true,
+                  "rows": 4
+                }
+              }
+            },
+            {
+              "id": "|asksave",
+              "type": "button",
+              "content": { "label": "Save Ask Entry" },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "state:journal.add",
+                  "section": "ask",
+                  "text": "{{journal.|askjournal}}"
+                }
+              }
+            }
+          ]
+        },
+
+
+        {
+          "id": "|conformpanel",
+          "type": "section",
+          "content": { "title": "Conform to Christ" },
+          "children": [
+            {
+              "id": "|conformprompt",
+              "type": "card",
+              "content": {
+                "body": "Consider how your life needs to change to align with Christ."
+              }
+            },
+            {
+              "id": "|conformjournal",
+              "type": "field",
+              "state": {
+                "mode": "two-way",
+                "key": "journal.|conformjournal"
+              },
+              "content": { "label": "How will you live differently?" },
+              "params": {
+                "field": {
+                  "multiline": true,
+                  "rows": 4
+                }
+              }
+            },
+            {
+              "id": "|conformsave",
+              "type": "button",
+              "content": { "label": "Save Conform Entry" },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "state:journal.add",
+                  "section": "conform",
+                  "text": "{{journal.|conformjournal}}"
+                }
+              }
+            }
+          ]
+        },
+
+
+        {
+          "id": "|keeppanel",
+          "type": "section",
+          "content": { "title": "Keep Your Heart" },
+          "children": [
+            {
+              "id": "|keepprompt",
+              "type": "card",
+              "content": {
+                "body": "Identify dangers that could pull you away from obedience."
+              }
+            },
+            {
+              "id": "|keepjournal",
+              "type": "field",
+              "state": {
+                "mode": "two-way",
+                "key": "journal.|keepjournal"
+              },
+              "content": { "label": "What will you guard against?" },
+              "params": {
+                "field": {
+                  "multiline": true,
+                  "rows": 4
+                }
+              }
+            },
+            {
+              "id": "|keepsave",
+              "type": "button",
+              "content": { "label": "Save Keep Entry" },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "state:journal.add",
+                  "section": "keep",
+                  "text": "{{journal.|keepjournal}}"
+                }
+              }
+            }
+          ]
+        },
+
+        {
+          "id": "|journaloutput",
+          "type": "section",
+          "content": { "title": "Saved Journal Entries" },
+          "children": [
+            {
+              "id": "|journalitems",
+              "type": "list",
+              "state": {
+                "mode": "read",
+                "key": "journal"
+              },
+              "params": {
+                "item": {
+                  "type": "card",
+                  "content": {
+                    "body": "{{item}}"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+

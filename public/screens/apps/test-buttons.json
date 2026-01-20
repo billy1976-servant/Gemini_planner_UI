@@ -1,0 +1,8 @@
+{
+  "type": "button",
+  "id": "go-next",
+  "content": {
+    "label": "Go Next"
+  },
+  "target": "next"
+}

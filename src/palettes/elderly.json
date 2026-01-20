@@ -1,0 +1,104 @@
+{
+    "color": {
+      "surface": "#FFFFFF",
+      "surfaceVariant": "#F2F2F2",
+      "primary": "#0D47A1",
+      "primaryVariant": "#08306B",
+      "onPrimary": "#FFFFFF",
+      "onSurface": "#000000",
+      "outline": "#9E9E9E",
+      "secondary": "#424242",
+      "error": "#B00020",
+      "errorContainer": "#FADADD",
+      "onErrorContainer": "#3B0008"
+    },
+  
+  
+    "radius": {
+      "none": 0,
+      "sm": 4,
+      "md": 8,
+      "lg": 14,
+      "xl": 20
+    },
+  
+  
+    "padding": {
+      "none": 0,
+      "xs": 10,
+      "sm": 16,
+      "md": 24,
+      "lg": 36
+    },
+  
+  
+    "gap": {
+      "xs": 10,
+      "sm": 16,
+      "md": 24,
+      "lg": 36
+    },
+  
+  
+    "textSize": {
+      "xs": 16,
+      "sm": 18,
+      "md": 20,
+      "lg": 26,
+      "xl": 32
+    },
+  
+  
+    "textWeight": {
+      "regular": 500,
+      "medium": 600,
+      "bold": 700
+    },
+  
+  
+    "lineHeight": {
+      "tight": 1.4,
+      "normal": 1.6,
+      "relaxed": 1.8
+    },
+  
+  
+    "letterSpacing": {
+      "tight": 0,
+      "normal": 0.4,
+      "loose": 1.0
+    },
+  
+  
+    "shadow": {
+      "none": "none",
+      "sm": "0px 1px 2px rgba(0,0,0,0.15)",
+      "md": "0px 2px 4px rgba(0,0,0,0.2)",
+      "lg": "0px 4px 8px rgba(0,0,0,0.25)"
+    },
+  
+  
+    "opacity": {
+      "full": 1.0,
+      "dim": 0.97,
+      "low": 0.9
+    },
+  
+  
+    "borderWidth": {
+      "none": 0,
+      "sm": 2,
+      "md": 3
+    },
+  
+  
+    "size": {
+      "xs": 32,
+      "sm": 48,
+      "md": 64,
+      "lg": 88
+    }
+  }
+  
+  
+  

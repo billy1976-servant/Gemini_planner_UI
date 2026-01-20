@@ -1,0 +1,75 @@
+{
+    "id": "25x-real-estate",
+    "industry": "real-estate",
+  
+  
+    "copy": {
+      "headline": "See how much poor presentation is costing your listings",
+      "cta": "Calculate My Hidden Loss"
+    },
+  
+  
+    "questions": [
+      {
+        "id": "stagingUsed",
+        "label": "Do you professionally stage listings?",
+        "type": "yesno",
+        "scoring": {
+          "yes": { "points": 10 },
+          "no": {
+            "points": 30,
+            "reason": "Listings without staging sell slower and for less"
+          }
+        }
+      },
+      {
+        "id": "daysOnMarketConcern",
+        "label": "Do long days-on-market hurt your deals?",
+        "type": "yesno",
+        "scoring": {
+          "yes": {
+            "points": 40,
+            "reason": "Speed-to-close is a major profit lever"
+          }
+        }
+      },
+      {
+        "id": "presentationLosesBuyers",
+        "label": "Have you lost buyers due to presentation?",
+        "type": "yesno",
+        "scoring": {
+          "yes": {
+            "points": 50,
+            "reason": "Buyer confidence drops instantly on poor presentation"
+          }
+        }
+      }
+    ],
+  
+  
+    "calculators": [
+      {
+        "type": "laborCost",
+        "minutesPerDay": 30,
+        "hourlyRate": 25,
+        "multiplier": 1.4,
+        "workDays": 22
+      }
+    ],
+  
+  
+    "flow": [
+      {
+        "id": "highIntent",
+        "when": { "key": "tier", "equals": "high" }
+      },
+      {
+        "id": "mediumIntent",
+        "when": { "key": "tier", "equals": "medium" }
+      },
+      { "id": "education" }
+    ]
+  }
+  
+  
+  

@@ -1,0 +1,111 @@
+{
+  "id": "screenRoot",
+  "type": "screen",
+  "state": {
+    "currentView": "|home"
+  },
+  "children": [
+    {
+      "id": "|start",
+      "type": "section",
+      "children": [
+        {
+          "id": "|question",
+          "type": "section",
+          "children": [
+            {
+              "id": "|prompt",
+              "type": "card",
+              "children": [],
+              "content": {}
+            },
+            {
+              "id": "|answer",
+              "type": "field",
+              "children": [],
+              "content": {}
+            },
+            {
+              "id": "|save",
+              "type": "button",
+              "children": [],
+              "content": {},
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "state:currentView",
+                  "value": "|decision"
+                }
+              }
+            }
+          ],
+          "content": {
+            "body": "Write what is on your mind."
+          },
+          "when": {
+            "state": "currentView",
+            "equals": "|question"
+          }
+        }
+      ],
+      "content": {
+        "title": "Journal"
+      },
+      "when": {
+        "state": "currentView",
+        "equals": "|start"
+      }
+    },
+    {
+      "id": "|decision",
+      "type": "section",
+      "children": [],
+      "content": {},
+      "when": {
+        "state": "currentView",
+        "equals": "|decision"
+      },
+      "behavior": {
+        "type": "Action",
+        "params": {
+          "name": "state:currentView",
+          "value": "|failure"
+        }
+      }
+    },
+    {
+      "id": "|success",
+      "type": "section",
+      "children": [
+        {
+          "id": "|successcard",
+          "type": "card",
+          "children": [],
+          "content": {}
+        }
+      ],
+      "content": {},
+      "when": {
+        "state": "currentView",
+        "equals": "|success"
+      }
+    },
+    {
+      "id": "|failure",
+      "type": "section",
+      "children": [
+        {
+          "id": "|failurecard",
+          "type": "card",
+          "children": [],
+          "content": {}
+        }
+      ],
+      "content": {},
+      "when": {
+        "state": "currentView",
+        "equals": "|failure"
+      }
+    }
+  ]
+}

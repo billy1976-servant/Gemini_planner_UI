@@ -1,0 +1,1 @@
+The current src> app> route.ts & [...path]> route.ts do not allow for additional folders in apps-offline. Update to allow all new folders in apps-offline.

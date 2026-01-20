@@ -1,0 +1,40 @@
+{
+    "id": "screenRoot",
+    "type": "screen",
+    "state": {
+      "calculatorInput": {
+        "hours": 2,
+        "hourlyWage": 10
+      }
+    },
+    "children": [
+      {
+        "type": "card",
+        "content": {
+          "body": "Click to run logic:runCalculator and write calculatorResult into state."
+        }
+      },
+      {
+        "type": "button",
+        "content": { "label": "RUN CALCULATOR ACTION" },
+        "behavior": {
+          "type": "Action",
+          "params": {
+            "name": "logic:runCalculator",
+            "calculatorId": "25x",
+            "inputKey": "calculatorInput",
+            "outputKey": "calculatorResult"
+          }
+        }
+      },
+      {
+        "type": "UserInputViewer",
+        "params": {
+          "stateKey": "calculatorResult"
+        }
+      }
+    ]
+  }
+  
+  
+  

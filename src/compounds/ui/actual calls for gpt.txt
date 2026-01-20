@@ -1,0 +1,37 @@
+{
+  "$schema": "https://hiclarify/screen-schema-v1.json",
+  "description": "Screen schema for HIclarify JSON Renderer",
+
+
+  "node": {
+    "type": "string",
+
+
+    "allowedTypes": [
+      "page", "section", "button", "card", "avatar", "chip", "field",
+      "footer", "list", "modal", "stepper", "toast", "toolbar",
+      "row", "column", "grid", "stack",
+      "text", "media", "surface", "sequence", "trigger",
+      "collection", "condition", "shell", "fieldAtom"
+    ],
+
+
+    "commonProps": {
+      "variant": "string",
+      "size": "string",
+      "label": "string",
+      "title": "string",
+      "body": "string",
+      "src": "string",
+      "alt": "string",
+      "image": "string",
+      "items": "array",
+      "steps": "array",
+      "icon": "string",
+      "contentKey": "string",
+      "children": "array of node"
+    }
+  }
+}
+
+

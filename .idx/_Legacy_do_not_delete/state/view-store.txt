@@ -1,0 +1,33 @@
+// src/state/view-store.ts
+"use client";
+
+
+import views from "@/state/views";
+
+
+let activeViewId = "views.journal";
+const listeners = new Set<() => void>();
+
+
+export function getViewId() {
+  return activeViewId;
+}
+
+
+export function setViewId(id: string) {
+  if (id === activeViewId) return;
+  if (!views[id]) {
+    console.warn("[view-store] unknown view:", id);
+    return;
+  }
+  activeViewId = id;
+  listeners.forEach(l => l());
+}
+
+
+export function subscribeView(cb: () => void) {
+  listeners.add(cb);
+  return () => listeners.delete(cb);
+}
+
+

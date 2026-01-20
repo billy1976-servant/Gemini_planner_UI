@@ -1,0 +1,38 @@
+{
+    "id": "globalScanRoot",
+    "type": "screen",
+    "children": [
+      {
+        "type": "Section",
+        "content": {
+          "title": "Global Scan – Engine Status"
+        },
+        "children": [
+          {
+            "type": "Card",
+            "content": {
+              "title": "Purpose",
+              "body": "This screen confirms that the JSON-driven renderer, navigation, and state pipeline are wired correctly. No execution occurs here."
+            }
+          },
+          {
+            "type": "Card",
+            "content": {
+              "title": "Current State",
+              "body": "Global scan results are now written to application state instead of the CLI. A visual state viewer has not yet been introduced."
+            }
+          },
+          {
+            "type": "Card",
+            "content": {
+              "title": "Next Step",
+              "body": "Introduce a read-only visualization molecule or map state into existing display molecules such as List or Card."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  
+  
+  

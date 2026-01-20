@@ -1,0 +1,13 @@
+{
+    "defaults": {
+      "maxWidth": "900px",
+      "padding": "2rem",
+      "gap": "2rem"
+    },
+    "presets": {
+      "wide": { "maxWidth": "1200px" },
+      "narrow": { "maxWidth": "600px" },
+      "tight": { "gap": "1rem" }
+    }
+  }
+  

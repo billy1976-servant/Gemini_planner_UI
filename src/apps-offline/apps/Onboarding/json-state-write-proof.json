@@ -1,0 +1,33 @@
+{
+    "id": "screenRoot",
+    "type": "screen",
+    "children": [
+      {
+        "type": "card",
+        "content": {
+          "body": "This test proves: JSON → verb → dispatchState → render."
+        }
+      },
+      {
+        "type": "button",
+        "content": { "label": "WRITE STATE VALUE" },
+        "behavior": {
+          "type": "Action",
+          "params": {
+            "name": "state:update",
+            "key": "calculatorResult",
+            "value": 12345
+          }
+        }
+      },
+      {
+        "type": "UserInputViewer",
+        "params": {
+          "stateKey": "calculatorResult"
+        }
+      }
+    ]
+  }
+  
+  
+  

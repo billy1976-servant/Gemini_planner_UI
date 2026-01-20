@@ -1,0 +1,158 @@
+========================================
+ HI CURV — ASSISTANT / INVOLUNTARY LOGIC
+ (Voluntary vs involuntary actions, UX brain)
+========================================
+
+
+1. PURPOSE
+
+
+The Assistant layer is the **guidance brain** of HI CURV.
+
+
+It is NOT the Brain (content engine).
+It is NOT the Organs (views).
+It is the part that behaves like a **coach + reflex system**:
+
+
+- Voluntary: user clicks, drags, types, requests help
+- Involuntary: system nudges, warns, suggests, auto-chains sequences
+
+
+Analogy:
+- Heartbeat is involuntary.
+- Hand movements are voluntary.
+- Reflexes (pull hand from fire) are a mix of both.
+
+
+The Assistant layer is where those “reflexes” and “coaching moments” live.
+
+
+
+
+2. INPUTS — WHAT THE ASSISTANT WATCHES
+
+
+The Assistant listens to:
+
+
+- Brain events:
+  - tasks created/completed
+  - drifts detected
+  - overdue items
+  - cluster of related tasks
+- Organ activity:
+  - Kanban stuck columns
+  - Calendar overload
+  - Journal patterns (many sad entries, many angry entries)
+- Time patterns:
+  - midnight habits
+  - weekend behaviors
+  - long gaps with no progress
+
+
+It DOES NOT own the data.
+It only **observes** what the Brain and Organs are already doing.
+
+
+
+
+3. OUTPUTS — WHAT THE ASSISTANT DOES
+
+
+The Assistant responds with:
+
+
+- Nudges:
+  - “Do you want to turn this pattern into a Project?”
+  - “This task has been delayed 3 times; move it to a smaller chunk?”
+  - “You seem overwhelmed; want to see a simpler Kanban?”
+
+
+- Auto-sequences:
+  - Trigger a short HI FIREWALL scan when drift spikes
+  - Trigger a micro-planning sequence for a big task
+  - Suggest website-build steps after content import
+
+
+- Smart defaults:
+  - When user adds “Build chicken coop,” offer a scaffold:
+    - Organs: Kanban + Calendar
+    - Tasks: pre-filled template
+    - Views: initial Kanban board + timeline
+
+
+
+
+4. VOLUNTARY vs INVOLUNTARY
+
+
+Voluntary:
+- User clicks a button: “Add Project,” “Open Kanban,” “Import Website”
+- User chooses a slider: small / medium / large, view modes, filters
+
+
+Involuntary:
+- System quietly flags risky patterns and offers help
+- “You’ve moved this task 4 times; want to break it down?”
+- “You just captured 5 links about home buying; start a Home Buying Project?”
+
+
+Both use the same building blocks:
+- Behaviors
+- Sequences
+- Organs
+- Brain events
+
+
+The Assistant layer simply decides **when to call them without being asked.**
+
+
+
+
+5. QUICKBOOKS ANALOGY (ASSISTANT LAYER)
+
+
+In QuickBooks:
+- User voluntarily enters transactions
+- System involuntarily:
+  - warns about duplicates
+  - suggests categories
+  - gives alerts for taxes, payroll, overdue invoices
+
+
+In HI CURV:
+- User voluntarily creates tasks, projects, journal entries, imports content
+- Assistant involuntarily:
+  - suggests grouping items into projects/organs
+  - nudges to run HI FIREWALL when patterns look dangerous
+  - offers different views (Kanban vs Calendar) when complexity increases
+
+
+
+
+6. UX ROLE IN THE ORGANISM
+
+
+If:
+- Brain = memory + nervous system
+- Organs = functional systems (motion, planning, time, reflection)
+- Atoms/Molecules = cells and tissues
+
+
+Then:
+- The Assistant = **the part of the brain that watches everything and helps you adapt.**
+
+
+It:
+- Never owns the content
+- Never owns the view
+- Only orchestrates behaviors to keep the user safe, focused, and encouraged
+
+
+This is the layer that will eventually make HI CURV feel like:
+- “It understands what I’m trying to do”
+- “It warns me before I crash”
+- “It gently steers me toward simplicity and faithfulness”
+
+

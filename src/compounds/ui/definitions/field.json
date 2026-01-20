@@ -1,0 +1,60 @@
+{
+  "variants": {
+    "outlined": {
+      "label": {
+        "size": "textSize.sm",
+        "weight": "textWeight.medium",
+        "color": "color.secondary"
+      },
+      "field": {
+        "background": "color.surface",
+        "borderColor": "color.primary",
+        "borderWidth": "borderWidth.sm",
+        "radius": "radius.md",
+        "padding": "padding.md",
+        "labelSize": "textSize.md",
+        "labelColor": "color.onSurface"
+      },
+      "errorStyle": {
+        "size": "textSize.sm",
+        "weight": "textWeight.regular",
+        "color": "color.error"
+      }
+    },
+    "filled": {
+      "label": {
+        "size": "textSize.sm",
+        "weight": "textWeight.medium",
+        "color": "color.secondary"
+      },
+      "field": {
+        "background": "color.surfaceVariant",
+        "borderColor": "color.secondary",
+        "borderWidth": "borderWidth.none",
+        "radius": "radius.md",
+        "padding": "padding.md",
+        "labelSize": "textSize.md",
+        "labelColor": "color.onSurface"
+      },
+      "errorStyle": {
+        "size": "textSize.sm",
+        "weight": "textWeight.regular",
+        "color": "color.error"
+      }
+    }
+  },
+  "sizes": {
+    "sm": {
+      "field": {
+        "padding": "padding.sm",
+        "labelSize": "textSize.sm"
+      }
+    },
+    "md": {
+      "field": {
+        "padding": "padding.md",
+        "labelSize": "textSize.md"
+      }
+    }
+  }
+}

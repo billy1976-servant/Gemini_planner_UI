@@ -1,0 +1,36 @@
+{
+  "background": [
+    "color.surface",
+    "color.surfaceVariant",
+    "color.error"
+  ],
+  "borderColor": [
+    "color.outline",
+    "color.primary",
+    "color.error"
+  ],
+  "borderWidth": [
+    "borderWidth.none",
+    "borderWidth.sm",
+    "borderWidth.md"
+  ],
+  "radius": [
+    "radius.sm",
+    "radius.md",
+    "radius.lg"
+  ],
+  "padding": [
+    "padding.sm",
+    "padding.md",
+    "padding.lg"
+  ],
+  "labelSize": [
+    "textSize.sm",
+    "textSize.md"
+  ],
+  "labelColor": [
+    "color.onSurface",
+    "color.secondary",
+    "color.error"
+  ]
+}

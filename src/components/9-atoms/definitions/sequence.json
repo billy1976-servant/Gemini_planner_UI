@@ -1,0 +1,9 @@
+{
+  "direction": ["row", "column"],
+  "align": ["start", "center", "end"],
+  "justify": ["start", "center", "end", "space-between"],
+  "gap": ["gap.none", "gap.xs", "gap.sm", "gap.md", "gap.lg"],
+  "padding": ["padding.none", "padding.sm", "padding.md"],
+  "wrap": [true, false],
+  "scrollable": [true, false]
+}

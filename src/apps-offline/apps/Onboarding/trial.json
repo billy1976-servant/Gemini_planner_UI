@@ -1,0 +1,55 @@
+{
+  "id": "screen-25x",
+  "type": "screen",
+  "children": [
+    {
+      "type": "section",
+      "content": { "title": "25× Reality Check" },
+      "children": [
+        {
+          "type": "card",
+          "content": {
+            "body": "Do crews clean daily? (yes / no)"
+          }
+        },
+        {
+          "type": "field",
+          "state": { "mode": "two-way", "key": "calc.q1" },
+          "params": {
+            "field": {
+              "fieldKey": "calc.q1",
+              "placeholder": "Type yes or no"
+            }
+          }
+        },
+        {
+          "type": "button",
+          "content": { "label": "Calculate" },
+          "behavior": {
+            "type": "Action",
+            "params": {
+              "name": "state:calculator.run",
+              "engine": "25x",
+              "inputKey": "calc.q1",
+              "outputKey": "calc.totalLoss"
+            }
+          }
+        },
+        {
+          "type": "card",
+          "content": {
+            "body": "Current Estimate"
+          }
+        },
+        {
+          "type": "UserInputViewer",
+          "params": {
+            "stateKey": "calc.totalLoss"
+          }
+        }
+      ]
+    }
+  ]
+}
+
+
