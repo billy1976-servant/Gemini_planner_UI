@@ -1,8 +1,10 @@
 import cleanup from "./cleanup.logic.json";
+import { EDUCATION_FLOW } from "./education.flow";
 
 
 export const CONTENT_MAP = {
-  "construction-cleanup": cleanup
+  "construction-cleanup": cleanup,
+  "education-flow": EDUCATION_FLOW,
 };
 
 

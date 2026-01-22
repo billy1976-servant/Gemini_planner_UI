@@ -13,7 +13,9 @@
     "diagnostics": "ts-node ./src/scripts/run-diagnostics.ts",
     "chain": "ts-node src/scripts/run-chain-test.ts",
     "globalscan": "ts-node -r tsconfig-paths/register src/scripts/global-scan.ts",
-    "schema": "ts-node src/scripts/generate-schema.ts"
+    "schema": "ts-node src/scripts/generate-schema.ts",
+    "logic:compile": "ts-node src/scripts/logic-compiler/compile.ts",
+    "logic": "ts-node src/scripts/logic/compile.ts"
   },
   "dependencies": {
     "@types/chalk": "^0.4.31",

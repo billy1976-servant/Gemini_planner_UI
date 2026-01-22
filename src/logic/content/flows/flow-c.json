@@ -1,0 +1,57 @@
+{
+  "id": "flow-c",
+  "title": "Client Communication",
+  "steps": [
+    {
+      "id": "communication-frequency",
+      "title": "Communication Frequency",
+      "body": "Regular updates build trust and prevent misunderstandings.",
+      "image": "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop",
+      "imageAlt": "Communication",
+      "choices": [
+        {
+          "id": "daily",
+          "label": "Daily updates",
+          "kind": "understand",
+          "outcome": {
+            "signals": ["communication_frequency"],
+            "opportunities": ["daily_updates_understood"],
+            "severity": "medium",
+            "affects": ["client_satisfaction", "trust"]
+          }
+        },
+        {
+          "id": "weekly",
+          "label": "Weekly updates",
+          "kind": "unsure",
+          "outcome": {
+            "signals": ["communication_frequency"],
+            "blockers": ["weekly_updates_insufficient"],
+            "severity": "low",
+            "affects": ["client_satisfaction"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "expectation-setting",
+      "title": "Expectation Setting",
+      "body": "Clear expectations prevent scope creep and disputes.",
+      "image": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=400&fit=crop",
+      "imageAlt": "Expectation setting",
+      "choices": [
+        {
+          "id": "next",
+          "label": "Continue",
+          "kind": "understand",
+          "outcome": {
+            "signals": ["expectation_setting"],
+            "opportunities": ["expectation_setting_understood"],
+            "severity": "high",
+            "affects": ["scope_management", "client_satisfaction"]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "id": "flow-b",
+  "title": "Project Planning Essentials",
+  "steps": [
+    {
+      "id": "timeline-planning",
+      "title": "Timeline Planning",
+      "body": "Accurate timelines prevent cost overruns and client frustration.",
+      "image": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=400&fit=crop",
+      "imageAlt": "Project timeline visualization",
+      "choices": [
+        {
+          "id": "next",
+          "label": "Continue",
+          "kind": "understand",
+          "outcome": {
+            "signals": ["timeline_planning"],
+            "opportunities": ["timeline_planning_understood"],
+            "severity": "high",
+            "affects": ["budget", "client_satisfaction", "reputation"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "budget-allocation",
+      "title": "Budget Allocation",
+      "body": "Proper budget allocation ensures project completion without surprises.",
+      "image": "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&h=400&fit=crop",
+      "imageAlt": "Budget planning",
+      "choices": [
+        {
+          "id": "yes",
+          "label": "I track budgets",
+          "kind": "yes",
+          "outcome": {
+            "signals": ["budget_allocation"],
+            "opportunities": ["budget_tracking_understood"],
+            "severity": "high",
+            "affects": ["profitability", "client_trust"]
+          }
+        },
+        {
+          "id": "no",
+          "label": "I need help",
+          "kind": "no",
+          "outcome": {
+            "signals": ["budget_allocation"],
+            "blockers": ["budget_tracking_blocked"],
+            "severity": "high",
+            "affects": ["profitability", "project_success"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "quality-standards",
+      "title": "Quality Standards",
+      "body": "Consistent quality builds reputation and repeat business.",
+      "image": "https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&h=400&fit=crop",
+      "imageAlt": "Quality standards",
+      "choices": [
+        {
+          "id": "next",
+          "label": "Next",
+          "kind": "understand",
+          "outcome": {
+            "signals": ["quality_standards"],
+            "opportunities": ["quality_standards_understood"],
+            "severity": "medium",
+            "affects": ["reputation", "referrals"]
+          }
+        }
+      ]
+    }
+  ]
+}

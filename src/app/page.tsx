@@ -125,6 +125,37 @@ export default function Page() {
     });
 
     if (!screen) {
+      // ✅ CHECK FOR FLOW PARAMETER - Load engine-viewer if flow is present
+      const flowParam = searchParams.get("flow");
+      if (flowParam) {
+        // Load engine-viewer as TSX screen when flow parameter is present
+        const engineViewerPath = "tsx:tsx-screens/onboarding/engine-viewer";
+        loadScreen(engineViewerPath)
+          .then((data) => {
+            if (data?.__type === "tsx-screen" && typeof data.path === "string") {
+              const C = resolveTsxScreen(data.path);
+              if (C) {
+                setTsxMeta({ path: data.path });
+                setTsxComponent(() => C);
+                setJson(null);
+                setError(null);
+                return;
+              }
+            }
+            setError(`TSX screen not found: ${data.path}`);
+            setTsxMeta(null);
+            setTsxComponent(null);
+            setJson(null);
+          })
+          .catch((err) => {
+            setError(err?.message || "Failed to load engine-viewer");
+            setJson(null);
+            setTsxMeta(null);
+            setTsxComponent(null);
+          });
+        return;
+      }
+
       // ✅ AUTO-RESOLVE LANDING PAGE
       try {
         const { flow, content } = resolveLandingPage();
@@ -203,7 +234,7 @@ export default function Page() {
         setTsxMeta(null);
         setTsxComponent(null);
       });
-  }, [screen]);
+  }, [screen, searchParams]);
 
 
   /* --------------------------------------------------
