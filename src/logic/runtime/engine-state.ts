@@ -2,41 +2,20 @@
  * EngineState - Single derived state object computed once per choice
  * Consolidates all step order, progress, signals, and export data
  * No re-derivation elsewhere - single source of truth
+ * 
+ * CONTRACT-BOUNDARY: Do not change shape without updating SystemContract.ts
  */
 
 import type { EducationFlow } from "../content/flow-loader";
 import type { PresentationModel } from "../engines/presentation-types";
+import type { EngineStateContract, ExportSliceContract } from "@/system/contracts/SystemContract";
 
 export const ENGINE_STATE_KEY = "engine.engineState";
 
-export type EngineState = {
-  orderedStepIds: string[]; // Step IDs in presentation order
-  currentStepIndex: number; // Current step index in orderedStepIds
-  totalSteps: number; // Total number of steps
-  completedStepIds: string[]; // Step IDs that have been completed
-  accumulatedSignals: string[]; // All signals from completed choices
-  accumulatedBlockers: string[]; // All blockers from completed choices
-  accumulatedOpportunities: string[]; // All opportunities from completed choices
-  severityDensity: number; // Sum of severity weights (high=3, medium=2, low=1)
-  weightSum: number; // Sum of all step and choice weights
-  calcOutputs: Record<string, any>; // Calculator outputs keyed by calc ID
-  engineId: string; // Active engine ID
-  exportSlices: ExportSlice[]; // Pre-computed export data slices
-};
+// EngineState must satisfy EngineStateContract
+export type EngineState = EngineStateContract;
 
-export type ExportSlice = {
-  stepId: string;
-  stepTitle: string;
-  stepPurpose: "input" | "explain" | "decide" | "summarize";
-  stepWeight: number;
-  exportRole: "primary" | "supporting";
-  choiceId: string | null;
-  choiceLabel: string | null;
-  signals: string[];
-  blockers: string[];
-  opportunities: string[];
-  severity: "low" | "medium" | "high" | null;
-};
+export type ExportSlice = ExportSliceContract;
 
 /**
  * Derive EngineState from flow, presentation, outcomes, and current step

@@ -141,6 +141,27 @@ function initializeDefaultCalcs(): void {
       };
     },
   });
+
+  // Product Cost Calculator
+  registerCalc({
+    id: "product-cost",
+    name: "Product Cost Calculator",
+    description: "Calculates product costs, savings, and ROI based on selected products and usage",
+    inputs: ["selectedProductIds", "products", "yearsOwned", "usageFrequency", "budgetRange", "scenarioType"],
+    fn: async (inputs: CalcInput): Promise<CalcResult> => {
+      const { calculateProductCosts } = await import("./product-calculator");
+      const result = calculateProductCosts(inputs as any);
+      
+      return {
+        value: result.totalCost,
+        metadata: {
+          unit: "dollars",
+          label: "Product Total Cost",
+          ...result,
+        },
+      };
+    },
+  });
 }
 
 // Initialize on module load

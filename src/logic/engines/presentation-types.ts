@@ -2,19 +2,13 @@
  * Presentation Model - Output contract for all presentation engines
  * Defines how a flow should be presented (ordering, grouping, emphasis)
  * without changing the underlying flow content or logic
+ * 
+ * CONTRACT-BOUNDARY: Do not change shape without updating SystemContract.ts
  */
 
-export type PresentationGroup = {
-  id: string;
-  title: string;
-  stepIds: string[];
-};
+import type { PresentationModelContract, PresentationGroupContract } from "@/system/contracts/SystemContract";
 
-export type PresentationModel = {
-  engineId: string;
-  title: string;
-  stepOrder: string[]; // Array of step IDs in render order
-  groups?: PresentationGroup[]; // Optional grouping of steps
-  badges?: Record<string, string[]>; // stepId -> array of badge labels
-  notes?: string[]; // Short engine notes (1-2 lines)
-};
+// PresentationModel must satisfy PresentationModelContract
+export type PresentationModel = PresentationModelContract;
+
+export type PresentationGroup = PresentationGroupContract;

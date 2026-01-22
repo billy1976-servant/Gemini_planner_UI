@@ -491,9 +491,22 @@ async function main() {
   // Build flow
   const flow = buildFlow(nodes, contentMap);
 
+  // Post-compile annotation: Add value translation annotations
+  // This runs after JSON compilation, before rendering/export
+  let annotatedFlow = flow;
+  try {
+    const { annotateFlowWithValue } = require("../../logic/value/value-annotation");
+    // Default to "cleanup" industry model if not specified
+    // In the future, this could come from blueprint.txt or content.txt
+    annotatedFlow = annotateFlowWithValue(flow, "cleanup");
+    console.log(`✓ Value annotations attached to flow`);
+  } catch (error: any) {
+    // If value annotation fails, still write the flow without annotations
+    console.warn(`⚠ Value annotation failed: ${error.message}. Writing flow without annotations.`);
+  }
 
   // Write output
-  const output = JSON.stringify(flow, null, 2) + "\n";
+  const output = JSON.stringify(annotatedFlow, null, 2) + "\n";
   fs.writeFileSync(outputPath, output, "utf8");
 
 

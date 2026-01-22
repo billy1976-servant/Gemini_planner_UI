@@ -20,6 +20,8 @@
  * - Step routing loops
  * - Engine selector UI (execution flow)
  * - Step progression logic
+ * 
+ * CONTRACT-BOUNDARY: Do not change shape without updating SystemContract.ts
  */
 
 import { learningEngine, learningPresentation } from "./learning.engine";
@@ -30,6 +32,7 @@ import { summaryEngine, summaryPresentation } from "./summary.engine";
 import type { EducationFlow } from "@/logic/content/flow-loader";
 import type { EngineFlow } from "./learning.engine";
 import type { PresentationModel } from "./presentation-types";
+import type { ExecutionEngineContract, PresentationModelContract } from "@/system/contracts/SystemContract";
 
 export type EngineId = "learning" | "calculator" | "abc" | "decision" | "summary";
 

@@ -1,5 +1,9 @@
 // src/logic/engines/decision-types.ts
 // Canonical Decision State types
+// 
+// CONTRACT-BOUNDARY: Do not change shape without updating SystemContract.ts
+
+import type { ExportDocumentContract } from "@/system/contracts/SystemContract";
 
 export type DecisionState = {
   signals: string[];
@@ -65,10 +69,5 @@ export type UIBlock = {
   metadata?: Record<string, any>;
 };
 
-export type DocumentBlock = {
-  type: "summary" | "steps" | "actions" | "checklist" | "appendix";
-  title: string;
-  content?: Record<string, any>;
-  items?: any[];
-  metadata?: Record<string, any>;
-};
+// DocumentBlock must satisfy ExportDocumentContract
+export type DocumentBlock = ExportDocumentContract;
