@@ -116,3 +116,52 @@ export function calculatorPresentation(flow: EducationFlow): PresentationModel {
     notes: ["Data collection and calculation focus"],
   };
 }
+
+/**
+ * Run calculators with given state
+ * Executes calculator definitions and returns results
+ */
+export function runCalculators(
+  calculators: Array<{ id: string; output: string; [key: string]: any }>,
+  state: Record<string, any>
+): Record<string, any> {
+  const results: Record<string, any> = {};
+  
+  for (const calc of calculators) {
+    try {
+      // Simple calculator execution - extract inputs from state
+      const inputs: Record<string, any> = {};
+      
+      // Extract inputs based on calculator definition
+      if (calc.inputs && Array.isArray(calc.inputs)) {
+        for (const inputKey of calc.inputs) {
+          inputs[inputKey] = state[inputKey] ?? state[calc.inputKey] ?? 0;
+        }
+      }
+      
+      // Execute calculation based on calculator type
+      let result: any = 0;
+      
+      if (calc.type === "simple-hours" || calc.id === "cleanup_labor_monthly") {
+        const hours = Number(inputs.hours ?? inputs.hoursPerDay ?? 0);
+        const wage = Number(inputs.wage ?? inputs.hourlyWage ?? 0);
+        result = hours * wage * 20; // Monthly (20 working days)
+      } else if (calc.type === "profit" || calc.id === "profit") {
+        const monthlyLoss = Number(inputs.monthlyLoss ?? inputs.monthly_cost ?? 0);
+        result = monthlyLoss * 25; // 25x rule
+      } else {
+        // Default: try to compute from inputs
+        result = Object.values(inputs).reduce((sum: number, val: any) => {
+          return sum + (Number(val) || 0);
+        }, 0);
+      }
+      
+      results[calc.output || calc.id] = result;
+    } catch (error) {
+      console.error(`[runCalculators] Error executing calculator ${calc.id}:`, error);
+      results[calc.output || calc.id] = 0;
+    }
+  }
+  
+  return results;
+}

@@ -1,3 +1,6 @@
 node_modules/
 env.download
 .next/
+pro
+# Compiled website artifacts (keep reports, ignore cache)
+content/compiled/**/cache/

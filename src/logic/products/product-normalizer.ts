@@ -143,7 +143,7 @@ export function normalizeProduct(
   const images = normalizeImages(raw.images || [], raw.url);
   
   // Normalize attributes from specs
-  const { attributes, attributeWarnings } = normalizeAttributes(
+  const { attributes, warnings: attributeWarnings } = normalizeAttributes(
     raw.specTable || [],
     dictionary,
     raw.url
