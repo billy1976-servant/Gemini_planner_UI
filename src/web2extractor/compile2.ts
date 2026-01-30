@@ -106,13 +106,24 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
+  const domainSlug = (() => {
+    try {
+      return new URL(siteUrl).hostname.replace(/^www\./, "");
+    } catch {
+      return "website";
+    }
+  })();
+  const outDir = path.join(process.cwd(), "src", "web2extractor", domainSlug);
+  const outPath = path.join(outDir, "web2-results.json");
+
   console.log("Normalized URL:", siteUrl);
+  console.log("Output:", outPath);
   console.log("");
 
   const productUrls = await discoverProductUrls(siteUrl);
   if (productUrls.length === 0) {
     console.log("No product URLs found. Writing empty web2-results.json");
-    const outPath = path.join(process.cwd(), "web2-results.json");
+    if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
     fs.writeFileSync(outPath, JSON.stringify({ products: [] }, null, 2), "utf-8");
     console.log("Wrote", outPath);
     return;
@@ -135,7 +146,7 @@ async function main(): Promise<void> {
   const products = deduplicateVariants(results);
   const catalog: ProductCatalog = { products };
 
-  const outPath = path.join(process.cwd(), "web2-results.json");
+  if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
   fs.writeFileSync(outPath, JSON.stringify(catalog, null, 2), "utf-8");
   console.log("");
   console.log("Wrote", catalog.products.length, "product entries to", outPath);

@@ -857,9 +857,10 @@ function extractSectionsFromPage(page: any): Section[] {
 }
 
 /**
- * Normalize products from product graph
+ * Normalize products from product graph.
+ * Exported for use by product-screen adapter and other callers that need products only.
  */
-function normalizeProducts(products: RawProductGraph | null): NormalizedProduct[] {
+export function normalizeProducts(products: RawProductGraph | null): NormalizedProduct[] {
   if (!products?.products || !Array.isArray(products.products)) {
     return [];
   }

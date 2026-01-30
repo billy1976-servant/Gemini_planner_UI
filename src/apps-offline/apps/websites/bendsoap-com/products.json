@@ -1,0 +1,38 @@
+{
+  "id": "screenRoot",
+  "type": "screen",
+  "state": {
+    "currentView": "|products"
+  },
+  "children": [
+    {
+      "id": "products_section",
+      "type": "Section",
+      "content": {
+        "title": "Products"
+      },
+      "children": [
+        {
+          "id": "products_layout",
+          "type": "Grid",
+          "params": {
+            "columns": 3,
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "id": "product:prod_vjbzty",
+              "type": "Card",
+              "content": {
+                "media": "https://www.bendsoap.com/cdn/shop/files/hero-banner_2x_f3e02c50-05d1-4435-8b49-32a141d10868.jpg?v=1614299656&width=3840",
+                "title": "Goat Milk Soap and All Natural Skincare",
+                "body": "Cleanse, exfoliate, and moisturize your skin from head to toe with these 5-star favorites."
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

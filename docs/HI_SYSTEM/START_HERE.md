@@ -11,6 +11,7 @@ HiSense is a **JSON-driven UI system**: screens and skins are defined in JSON (b
 | **Screens** | JSON: `src/apps-offline/apps/<category>/<folder>/` (blueprint.txt, content.txt, app.json). TSX: `src/screens/` (all subfolders). Served via `/api/screens/*`. |
 | **Skins** | Skin JSON: loaded by `src/lib/site-skin/loadSiteSkin.ts` (e.g. `/api/sites/:domain/skins/:pageId`). Compiled skins under `src/content/sites/*/compiled/skins/`. Shells: `src/lib/site-skin/shells/` (WebsiteShell, AppShell, LearningShell). |
 | **Logic** | Behavior: `src/engine/core/behavior-listener.ts`, `src/behavior/` (runner, engine, verb resolver). State: `src/state/state-store.ts`, `src/state/state-resolver.ts`. Runtime verbs (TSX path): `src/engine/runtime/`, `src/logic/runtime/`. |
+| **Adapters** | Product-to-screen: `src/lib/product-screen-adapter/` (compiled product data → offline JSON screen). Script: `npm run product-screen -- <domain>`. See ADAPTERS.md. |
 
 ## Current goal
 

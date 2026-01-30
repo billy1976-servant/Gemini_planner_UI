@@ -24,9 +24,11 @@
     "compile": "ts-node -r tsconfig-paths/register src/scripts/websites/compile.ts",
     "website": "ts-node -r tsconfig-paths/register src/scripts/websites/build-site.ts",
     "extract-2": "ts-node src/web2extractor/compile2.ts",
+    "export-2": "ts-node src/web2extractor/compile2.ts",
     "catalog": "ts-node src/web2extractor/buildProductCatalog.ts",
     "cleanup": "node scripts/cleanup-docs.js",
-    "plan": "node scripts/plan-runner.js"
+    "plan": "node scripts/plan-runner.js",
+    "product-screen": "ts-node -r tsconfig-paths/register src/scripts/compile-product-screen.ts"
   },
   "dependencies": {
     "@types/chalk": "^0.4.31",

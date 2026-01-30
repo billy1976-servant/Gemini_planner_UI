@@ -1,0 +1,208 @@
+{
+  "id": "screenRoot",
+  "type": "screen",
+  "state": {
+    "currentView": "|products"
+  },
+  "children": [
+    {
+      "id": "products_section",
+      "type": "Section",
+      "content": {
+        "title": "Products"
+      },
+      "children": [
+        {
+          "id": "products_layout",
+          "type": "Grid",
+          "params": {
+            "columns": 3,
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "id": "product:MF-RL-25T",
+              "type": "Card",
+              "content": {
+                "media": "https://www.containercreations.com/cdn/shop/files/10_Louver_Vents.jpg?v=1741487812&width=1920",
+                "title": "2.5-inch Intake Vents (10-pack)",
+                "body": "These intake vents fit on the vertical ribs of your shipping container walls to provide airflow for your AdaptAIR™ roof ventilation. \nWe recommend installing at least ten of these 2.5-inch louver vents for each AdaptAIR vent on your container. \nVery simple to install. Use a 2.5-inch carbide-tipped hole saw to drill a hole. Pop in the louver vents and press the tabs on the inside wall to keep it in place.\nThese vents can be installed a few inches above the floor evenly spaced on the sidewalls.\nThese vents use a .020-gauge aluminum for our round aluminum louvers, screens and plugs - most manufacturers use a thinner gauge, which leads to a weaker product. This thick, durable material maximizes lifespan and ensures proper ventilation needs."
+              },
+              "children": []
+            },
+            {
+              "id": "product:CC-AA-TA-10",
+              "type": "Card",
+              "content": {
+                "media": "https://www.containercreations.com/cdn/shop/files/AdaptAIR_10-pack.png?v=1739834922&width=1920",
+                "title": "AdaptAIR™ (10-PACK) Roof Vent Adapter for Shipping Containers",
+                "body": "WHOLESALE PRICING WITH THIS 10-PACK OF ADAPTAIR™ VENTS!\n\nThis product includes:\n\nTen (10) AdaptAIR™ vent adapters for 3.5-inch corrugationPLUS ten (10) complete installation kits:\nDrill bits\nDriver bit\nScrews\nAbrasive pad\n\nStep-by-step photo instructions\n\n\nNot included:\n\nWIND TURBINES: We are out of stock until late April 2025. You can Google search \"12 in. Lomanco Whirlybird\" to find the Lomanco turbine we recommend.\nADHESIVE is not included. Only use a professional grade structural adhesive for metal. We highly recommend Chem Link M1: (Click here to buy Chem Link M1 on Amazon)\n------------------------------------------\nAdaptAIR™ is an easy-to-install, epoxy-coated steel adapter for adding ventilation to the corrugated roof of your shipping container.\nAdaptAIR™ will fit any turbine with a 12-inch collar (Whirlybird turbine, solar powered turbine, or static vent) which can be found online or at your local hardware store.\nPRECISE DESIGN • Only product designed for standard 3.5\" ribbing on Conex shipping container roof corrugation. Please refer to our measurement chart.\nDO-IT-YOURSELF • Includes complete installation kit and instructions for easy installation.\nGUARANTEED FIT • No hassle guarantee on fit or quality. Molded with tight tolerances to match your container roof corrugation.\nMASSIVE AIRFLOW • Add any full size 12-inch turbine vent, static vent, or solar powered vent. ALL sold separately.\nMOLDED STEEL • One piece stamped steel coated in gray epoxy for a lifetime guarantee.\nEPOXY COATING • Durable industrial grade coating far exceeds the coating used on shipping containers. Epoxy can be coated with any roof paint or coating.\nGUARANTEED FOR THE LIFE OF YOUR CONTAINER"
+              },
+              "children": []
+            },
+            {
+              "id": "product:CC-AA-TA-02",
+              "type": "Card",
+              "content": {
+                "media": "https://www.containercreations.com/cdn/shop/files/AdaptAIR2-packv2.png?v=1739834922&width=1920",
+                "title": "AdaptAIR™ (2-PACK) Roof Vent Adapter for Shipping Containers",
+                "body": "SAVE WITH THIS 2-PACK OF ADAPTAIR™ VENTS!\n\nThis product includes:\n\nTwo (2) AdaptAIR™ vent adapters for 3.5-inch corrugationPLUS two complete installation kits:\nDrill bits\nDriver bit\nScrews\nAbrasive pad\n\nStep-by-step photo instructions\n\n\nNot included:\n\nWIND TURBINES: We are out of stock until mid August 2025. You can Google search \"12 in. Lomanco Whirlybird\" to find the Lomanco turbine we recommend.\nADHESIVE is not included. Only use a professional grade structural adhesive for metal. We highly recommend Chem Link M1: (Click here to buy Chem Link M1 on Amazon)\n------------------------------------------\n20-FOOT CONTAINER = We recommend one (1) roof vent40-FOOT CONTAINER = We recommend two (2) roof vents\nAdaptAIR™ is an easy-to-install, epoxy-coated steel adapter for adding ventilation to the corrugated roof of your shipping container.\nAdaptAIR™ will fit any turbine with a 12-inch collar (Whirlybird turbine, solar powered turbine, or static vent) which can be found online or at your local hardware store.\nPRECISE DESIGN • Only product designed for standard 3.5\" ribbing on Conex shipping container roof corrugation. Please refer to our measurement chart.\nDO-IT-YOURSELF • Includes complete installation kit and instructions for easy installation.\nGUARANTEED FIT • No hassle guarantee on fit or quality. Molded with tight tolerances to match your container roof corrugation.\nMASSIVE AIRFLOW • Add any full size 12-inch turbine vent, static vent, or solar powered vent. ALL sold separately.\nMOLDED STEEL • One piece stamped steel coated in gray epoxy for a lifetime guarantee.\nEPOXY COATING • Durable industrial grade coating far exceeds the coating used on shipping containers. Epoxy can be coated with any roof paint or coating.\nGUARANTEED FOR THE LIFE OF YOUR CONTAINER"
+              },
+              "children": []
+            },
+            {
+              "id": "product:CC-AA-TA-01",
+              "type": "Card",
+              "content": {
+                "media": "https://www.containercreations.com/cdn/shop/files/Top_Down_Flat_720x_c17a6ed6-b674-4e9c-888f-793e50b6b3d6.webp?v=1720441295&width=1920",
+                "title": "AdaptAIR™ Roof Vent Adapter for Shipping Containers",
+                "body": "This product includes:\n\nOne (1) AdaptAIR™ vent adapter for 3.5-inch corrugationPLUS complete installation kit:\nDrill bits\nDriver bit\nScrews\nAbrasive pad\n\nStep-by-step photo instructions\n\n\nNot included:\n\nWIND TURBINE: We are out of stock until mid August 2025. You can Google search \"12 in. Lomanco Whirlybird\" to find the Lomanco turbine we recommend.\nADHESIVE is not included. Only use a professional grade structural adhesive for metal. We highly recommend Chem Link M1: (Click here to buy Chem Link M1 on Amazon)\n------------------------------------------\n20-FOOT CONTAINER = We recommend one (1) roof vent40-FOOT CONTAINER = We recommend two (2) roof vents\nAdaptAIR™ is an easy-to-install, epoxy-coated steel adapter for adding ventilation to the corrugated roof of your shipping container.\nAdaptAIR™ will fit any turbine with a 12-inch collar (Whirlybird turbine, solar powered turbine, or static vent) which can be found online or at your local hardware store.\nPRECISE DESIGN • Only product designed for standard 3.5\" ribbing on Conex shipping container roof corrugation. Please refer to our measurement chart.\nDO-IT-YOURSELF • Includes complete installation kit and instructions for easy installation.\nGUARANTEED FIT • No hassle guarantee on fit or quality. Molded with tight tolerances to match your container roof corrugation.\nMASSIVE AIRFLOW • Add any full size 12-inch turbine vent, static vent, or solar powered vent. ALL sold separately.\nMOLDED STEEL • One piece stamped steel coated in gray epoxy for a lifetime guarantee.\nEPOXY COATING • Durable industrial grade coating far exceeds the coating used on shipping containers. Epoxy can be coated with any roof paint or coating.\nGUARANTEED FOR THE LIFE OF YOUR CONTAINER"
+              },
+              "children": []
+            },
+            {
+              "id": "product:CC-AATA-WT-FBA",
+              "type": "Card",
+              "content": {
+                "media": "https://www.containercreations.com/cdn/shop/files/MAIN_IMAGE_KIT.png?v=1729360478&width=1920",
+                "title": "COMPLETE VENT SYSTEM: AdaptAIR™ Vent + Whirlybird Turbine for Shipping Containers",
+                "body": "COMPLETE ROOF VENTILATION SYSTEM(Adapter + wind turbine)\n\nThis product includes:\n\nOne (1) AdaptAIR™ roof vent adapter for 3.5-inch corrugation\nOne (1) Wind Turbine designed for AdaptAIR™PLUS installation kit:\nDrill bits\nDriver bit\nScrews\nAbrasive pad\nStep-by-step photo instructions\n\n\nNot included:\n\nADHESIVE is not included. Only use a professional grade structural adhesive for metal. We highly recommend Chem Link M1: (Click here to buy Chem Link M1 on Amazon)\n------------------------------------------\nAdaptAIR™ Vent Adapter\nAdaptAIR™ vent adapter is an easy-to-install, epoxy-coated steel adapter for adding ventilation to the corrugated roof of your shipping container.\nContainer ventilation is critical to reduce high temperatures and avoid condensation known as \"container rain,\" which can cause damage to your stored items.\nPRECISE DESIGN • Only product designed for standard 3.5\" ribbing on Conex shipping container roof corrugation. Please refer to our measurement chart.\nDO-IT-YOURSELF • Includes complete installation kit and instructions for easy installation.\nGUARANTEED FIT • No hassle guarantee on fit or quality. Molded with tight tolerances to match your container roof corrugation.\nMASSIVE AIRFLOW • Add any full size 12-inch turbine vent, static vent, or solar powered vent. ALL sold separately.\nMOLDED STEEL • One piece stamped steel coated in gray epoxy for a lifetime guarantee.\nEPOXY COATING • Durable industrial grade coating far exceeds the coating used on shipping containers. Epoxy can be coated with any roof paint or coating.\nGUARANTEED FOR THE LIFE OF YOUR CONTAINER\n ------------------------------------------\nWind Turbine for AdaptAIR™\nWe designed our wind turbine for AdaptAIR™ to be the best performing shipping container ventilator on the market for our AdaptAIR™ ventilation system.\nContainer Creations designed this custom 12-inch wind-powered turbine vent to be the best performing shipping container ventilator on the market for our AdaptAIR™ product.\n\n24 CURVED BLADES deliver powerful airflow capture while protecting against rain and water entry. **Compare to the industry standard of 21 blades fans.\nTHICKENED 201 STAINLESS STEEL for the highest-rated durability and resistance to rust and corrosion. You can feel the difference compared to other turbines.**Compare to the industry standard of galvanized steel.\n PRECISION COLLAR designed to fit precisely on the AdaptAIR™ vent adapter with (3) mounting screw holes.\nPERMANENTLY LUBRICATED BEARINGS are maintenance-free and designed to enable near fiction-less spin with the lightest of breeze.\nSELF-TAPPING MOUNT SCREWS are included to easily affix the turbine to your AdaptAIR™ vent adapter.\nWIND SPEED = CUBIC FEET PER MINUTE:3.5 mph = 470 CFM5 mph wind = 1236 CFM7.5 mph breeze = 1471 CFM10 mph = 1650 CFM"
+              },
+              "children": []
+            },
+            {
+              "id": "product:CC-SD-TA-FBA",
+              "type": "Card",
+              "content": {
+                "media": "https://www.containercreations.com/cdn/shop/files/SkyDOME_-_Inside_Dome.png?v=1769117347&width=1920",
+                "title": "SkyDOME™  Skylight for Shipping Containers",
+                "body": "SkyDOME™ is an easy-to-install, 12-inch polycarbonate skylight for adding natural light to the corrugated roof of your Conex shipping container.\nSkyDOME™ is an innovative daylight-enhancing dome that will light from any angle all year long. Designed to install quickly, you can bring much needed light to the darkest corners of your shipping container. The 4mm thick injection molded dome has a diamond cut surface allow the greatest refraction of light without creating any hot spots.\nEach skylight includes an installation kit:\n\nStep-by-step photo instructions\n(2) drill bits\n(1) driver bit\n(30) screws\n(30) rubber tips for screw points\nAbrasive pad\n\nFOR BEST RESULTS, USE A PROFESSIONAL GRADE STRUCTURAL ADHESIVE.  WE HIGHLY RECOMMEND CHEM LINK M1 (Click here for link to Amazon)\n------------------------------------------\nPRECISE DESIGN • Only product is designed for standard 3.5\" ribbing on Conex shipping container roof corrugation. Please refer to our measurement chart.\nDO-IT-YOURSELF • Includes complete installation kit and instructions for easy installation.\nBLOCKS UVA &amp; UVB RAYS • Polycarbonate has built in protection against damaging UV rays.\nREPLACEABLE DOME &amp; GASKET • If you ever need to replace the dome on your SkyDome™, we offer a replacement kit so you don't need to remove the metal adapter from your container.\nMOLDED STEEL • One piece stamped steel coated in gray epoxy for a lifetime guarantee.\nEPOXY COATING • Durable industrial grade coating far exceeds the coating used on shipping containers. Epoxy can be coated with any roof paint or coating.\nGUARANTEED FOR THE LIFE OF YOUR CONTAINER"
+              },
+              "children": []
+            },
+            {
+              "id": "product:CC-WT-12-FBA",
+              "type": "Card",
+              "content": {
+                "media": "https://www.containercreations.com/cdn/shop/files/Turbine_Studio_Cutout.png?v=1730839842&width=1920",
+                "title": "Whirlybird Wind Turbine for AdaptAIR™",
+                "body": "Container Creations designed this custom 12-inch stainless steel wind-powered turbine vent to be the best performing shipping container ventilator on the market for our AdaptAIR™ product.\n24 CURVED BLADES deliver powerful airflow capture while protecting against rain and water entry. **Compare to the industry standard of 21 blades fans.\nTHICKENED 201 STAINLESS STEEL for the highest-rated durability and resistance to rust and corrosion. You can feel the difference compared to other turbines.**Compare to the industry standard of galvanized steel.\n PRECISION COLLAR designed to fit precisely on the AdaptAIR™ vent adapter with (3) mounting screw holes.\nPERMANENTLY LUBRICATED BEARINGS are maintenance-free and designed to enable near fiction-less spin with the lightest of breeze.\nSELF-TAPPING MOUNT SCREWS are included to easily affix the turbine to your AdaptAIR™ vent adapter.\nWIND SPEED = CUBIC FEET PER MINUTE:3.5 mph = 470 CFM5 mph wind = 1236 CFM7.5 mph breeze = 1471 CFM10 mph = 1650 CFM"
+              },
+              "children": []
+            },
+            {
+              "id": "product:CC-AA-TA-01",
+              "type": "Card",
+              "content": {
+                "media": "https://www.containercreations.com/cdn/shop/files/Top_Down_Flat_720x_c17a6ed6-b674-4e9c-888f-793e50b6b3d6.webp?v=1720441295&width=1920",
+                "title": "AdaptAIR™ Roof Vent Adapter for Shipping Containers",
+                "body": "This product includes:\n\nOne (1) AdaptAIR™ vent adapter for 3.5-inch corrugationPLUS complete installation kit:\nDrill bits\nDriver bit\nScrews\nAbrasive pad\n\nStep-by-step photo instructions\n\n\nNot included:\n\nWIND TURBINE: We are out of stock until mid August 2025. You can Google search \"12 in. Lomanco Whirlybird\" to find the Lomanco turbine we recommend.\nADHESIVE is not included. Only use a professional grade structural adhesive for metal. We highly recommend Chem Link M1: (Click here to buy Chem Link M1 on Amazon)\n------------------------------------------\n20-FOOT CONTAINER = We recommend one (1) roof vent40-FOOT CONTAINER = We recommend two (2) roof vents\nAdaptAIR™ is an easy-to-install, epoxy-coated steel adapter for adding ventilation to the corrugated roof of your shipping container.\nAdaptAIR™ will fit any turbine with a 12-inch collar (Whirlybird turbine, solar powered turbine, or static vent) which can be found online or at your local hardware store.\nPRECISE DESIGN • Only product designed for standard 3.5\" ribbing on Conex shipping container roof corrugation. Please refer to our measurement chart.\nDO-IT-YOURSELF • Includes complete installation kit and instructions for easy installation.\nGUARANTEED FIT • No hassle guarantee on fit or quality. Molded with tight tolerances to match your container roof corrugation.\nMASSIVE AIRFLOW • Add any full size 12-inch turbine vent, static vent, or solar powered vent. ALL sold separately.\nMOLDED STEEL • One piece stamped steel coated in gray epoxy for a lifetime guarantee.\nEPOXY COATING • Durable industrial grade coating far exceeds the coating used on shipping containers. Epoxy can be coated with any roof paint or coating.\nGUARANTEED FOR THE LIFE OF YOUR CONTAINER"
+              },
+              "children": []
+            },
+            {
+              "id": "product:CC-WT-12-FBA",
+              "type": "Card",
+              "content": {
+                "media": "https://www.containercreations.com/cdn/shop/files/Turbine_Studio_Cutout.png?v=1730839842&width=1920",
+                "title": "Whirlybird Wind Turbine for AdaptAIR™",
+                "body": "Container Creations designed this custom 12-inch stainless steel wind-powered turbine vent to be the best performing shipping container ventilator on the market for our AdaptAIR™ product.\n24 CURVED BLADES deliver powerful airflow capture while protecting against rain and water entry. **Compare to the industry standard of 21 blades fans.\nTHICKENED 201 STAINLESS STEEL for the highest-rated durability and resistance to rust and corrosion. You can feel the difference compared to other turbines.**Compare to the industry standard of galvanized steel.\n PRECISION COLLAR designed to fit precisely on the AdaptAIR™ vent adapter with (3) mounting screw holes.\nPERMANENTLY LUBRICATED BEARINGS are maintenance-free and designed to enable near fiction-less spin with the lightest of breeze.\nSELF-TAPPING MOUNT SCREWS are included to easily affix the turbine to your AdaptAIR™ vent adapter.\nWIND SPEED = CUBIC FEET PER MINUTE:3.5 mph = 470 CFM5 mph wind = 1236 CFM7.5 mph breeze = 1471 CFM10 mph = 1650 CFM"
+              },
+              "children": []
+            },
+            {
+              "id": "product:MF-RL-25T",
+              "type": "Card",
+              "content": {
+                "media": "https://www.containercreations.com/cdn/shop/files/10_Louver_Vents.jpg?v=1741487812&width=1920",
+                "title": "2.5-inch Intake Vents (10-pack)",
+                "body": "These intake vents fit on the vertical ribs of your shipping container walls to provide airflow for your AdaptAIR™ roof ventilation. \nWe recommend installing at least ten of these 2.5-inch louver vents for each AdaptAIR vent on your container. \nVery simple to install. Use a 2.5-inch carbide-tipped hole saw to drill a hole. Pop in the louver vents and press the tabs on the inside wall to keep it in place.\nThese vents can be installed a few inches above the floor evenly spaced on the sidewalls.\nThese vents use a .020-gauge aluminum for our round aluminum louvers, screens and plugs - most manufacturers use a thinner gauge, which leads to a weaker product. This thick, durable material maximizes lifespan and ensures proper ventilation needs."
+              },
+              "children": []
+            },
+            {
+              "id": "product:CC-AA-TA-02",
+              "type": "Card",
+              "content": {
+                "media": "https://www.containercreations.com/cdn/shop/files/AdaptAIR2-packv2.png?v=1739834922&width=1920",
+                "title": "AdaptAIR™ (2-PACK) Roof Vent Adapter for Shipping Containers",
+                "body": "SAVE WITH THIS 2-PACK OF ADAPTAIR™ VENTS!\n\nThis product includes:\n\nTwo (2) AdaptAIR™ vent adapters for 3.5-inch corrugationPLUS two complete installation kits:\nDrill bits\nDriver bit\nScrews\nAbrasive pad\n\nStep-by-step photo instructions\n\n\nNot included:\n\nWIND TURBINES: We are out of stock until mid August 2025. You can Google search \"12 in. Lomanco Whirlybird\" to find the Lomanco turbine we recommend.\nADHESIVE is not included. Only use a professional grade structural adhesive for metal. We highly recommend Chem Link M1: (Click here to buy Chem Link M1 on Amazon)\n------------------------------------------\n20-FOOT CONTAINER = We recommend one (1) roof vent40-FOOT CONTAINER = We recommend two (2) roof vents\nAdaptAIR™ is an easy-to-install, epoxy-coated steel adapter for adding ventilation to the corrugated roof of your shipping container.\nAdaptAIR™ will fit any turbine with a 12-inch collar (Whirlybird turbine, solar powered turbine, or static vent) which can be found online or at your local hardware store.\nPRECISE DESIGN • Only product designed for standard 3.5\" ribbing on Conex shipping container roof corrugation. Please refer to our measurement chart.\nDO-IT-YOURSELF • Includes complete installation kit and instructions for easy installation.\nGUARANTEED FIT • No hassle guarantee on fit or quality. Molded with tight tolerances to match your container roof corrugation.\nMASSIVE AIRFLOW • Add any full size 12-inch turbine vent, static vent, or solar powered vent. ALL sold separately.\nMOLDED STEEL • One piece stamped steel coated in gray epoxy for a lifetime guarantee.\nEPOXY COATING • Durable industrial grade coating far exceeds the coating used on shipping containers. Epoxy can be coated with any roof paint or coating.\nGUARANTEED FOR THE LIFE OF YOUR CONTAINER"
+              },
+              "children": []
+            },
+            {
+              "id": "product:CC-AATA-WT-FBA",
+              "type": "Card",
+              "content": {
+                "media": "https://www.containercreations.com/cdn/shop/files/MAIN_IMAGE_KIT.png?v=1729360478&width=1920",
+                "title": "COMPLETE VENT SYSTEM: AdaptAIR™ Vent + Whirlybird Turbine for Shipping Containers",
+                "body": "COMPLETE ROOF VENTILATION SYSTEM(Adapter + wind turbine)\n\nThis product includes:\n\nOne (1) AdaptAIR™ roof vent adapter for 3.5-inch corrugation\nOne (1) Wind Turbine designed for AdaptAIR™PLUS installation kit:\nDrill bits\nDriver bit\nScrews\nAbrasive pad\nStep-by-step photo instructions\n\n\nNot included:\n\nADHESIVE is not included. Only use a professional grade structural adhesive for metal. We highly recommend Chem Link M1: (Click here to buy Chem Link M1 on Amazon)\n------------------------------------------\nAdaptAIR™ Vent Adapter\nAdaptAIR™ vent adapter is an easy-to-install, epoxy-coated steel adapter for adding ventilation to the corrugated roof of your shipping container.\nContainer ventilation is critical to reduce high temperatures and avoid condensation known as \"container rain,\" which can cause damage to your stored items.\nPRECISE DESIGN • Only product designed for standard 3.5\" ribbing on Conex shipping container roof corrugation. Please refer to our measurement chart.\nDO-IT-YOURSELF • Includes complete installation kit and instructions for easy installation.\nGUARANTEED FIT • No hassle guarantee on fit or quality. Molded with tight tolerances to match your container roof corrugation.\nMASSIVE AIRFLOW • Add any full size 12-inch turbine vent, static vent, or solar powered vent. ALL sold separately.\nMOLDED STEEL • One piece stamped steel coated in gray epoxy for a lifetime guarantee.\nEPOXY COATING • Durable industrial grade coating far exceeds the coating used on shipping containers. Epoxy can be coated with any roof paint or coating.\nGUARANTEED FOR THE LIFE OF YOUR CONTAINER\n ------------------------------------------\nWind Turbine for AdaptAIR™\nWe designed our wind turbine for AdaptAIR™ to be the best performing shipping container ventilator on the market for our AdaptAIR™ ventilation system.\nContainer Creations designed this custom 12-inch wind-powered turbine vent to be the best performing shipping container ventilator on the market for our AdaptAIR™ product.\n\n24 CURVED BLADES deliver powerful airflow capture while protecting against rain and water entry. **Compare to the industry standard of 21 blades fans.\nTHICKENED 201 STAINLESS STEEL for the highest-rated durability and resistance to rust and corrosion. You can feel the difference compared to other turbines.**Compare to the industry standard of galvanized steel.\n PRECISION COLLAR designed to fit precisely on the AdaptAIR™ vent adapter with (3) mounting screw holes.\nPERMANENTLY LUBRICATED BEARINGS are maintenance-free and designed to enable near fiction-less spin with the lightest of breeze.\nSELF-TAPPING MOUNT SCREWS are included to easily affix the turbine to your AdaptAIR™ vent adapter.\nWIND SPEED = CUBIC FEET PER MINUTE:3.5 mph = 470 CFM5 mph wind = 1236 CFM7.5 mph breeze = 1471 CFM10 mph = 1650 CFM"
+              },
+              "children": []
+            },
+            {
+              "id": "product:CC-SD-TA-FBA",
+              "type": "Card",
+              "content": {
+                "media": "https://www.containercreations.com/cdn/shop/files/SkyDOME_-_Inside_Dome.png?v=1769117347&width=1920",
+                "title": "SkyDOME™  Skylight for Shipping Containers",
+                "body": "SkyDOME™ is an easy-to-install, 12-inch polycarbonate skylight for adding natural light to the corrugated roof of your Conex shipping container.\nSkyDOME™ is an innovative daylight-enhancing dome that will light from any angle all year long. Designed to install quickly, you can bring much needed light to the darkest corners of your shipping container. The 4mm thick injection molded dome has a diamond cut surface allow the greatest refraction of light without creating any hot spots.\nEach skylight includes an installation kit:\n\nStep-by-step photo instructions\n(2) drill bits\n(1) driver bit\n(30) screws\n(30) rubber tips for screw points\nAbrasive pad\n\nFOR BEST RESULTS, USE A PROFESSIONAL GRADE STRUCTURAL ADHESIVE.  WE HIGHLY RECOMMEND CHEM LINK M1 (Click here for link to Amazon)\n------------------------------------------\nPRECISE DESIGN • Only product is designed for standard 3.5\" ribbing on Conex shipping container roof corrugation. Please refer to our measurement chart.\nDO-IT-YOURSELF • Includes complete installation kit and instructions for easy installation.\nBLOCKS UVA &amp; UVB RAYS • Polycarbonate has built in protection against damaging UV rays.\nREPLACEABLE DOME &amp; GASKET • If you ever need to replace the dome on your SkyDome™, we offer a replacement kit so you don't need to remove the metal adapter from your container.\nMOLDED STEEL • One piece stamped steel coated in gray epoxy for a lifetime guarantee.\nEPOXY COATING • Durable industrial grade coating far exceeds the coating used on shipping containers. Epoxy can be coated with any roof paint or coating.\nGUARANTEED FOR THE LIFE OF YOUR CONTAINER"
+              },
+              "children": []
+            },
+            {
+              "id": "product:CC-AA-TA-10",
+              "type": "Card",
+              "content": {
+                "media": "https://www.containercreations.com/cdn/shop/files/AdaptAIR_10-pack.png?v=1739834922&width=1920",
+                "title": "AdaptAIR™ (10-PACK) Roof Vent Adapter for Shipping Containers",
+                "body": "WHOLESALE PRICING WITH THIS 10-PACK OF ADAPTAIR™ VENTS!\n\nThis product includes:\n\nTen (10) AdaptAIR™ vent adapters for 3.5-inch corrugationPLUS ten (10) complete installation kits:\nDrill bits\nDriver bit\nScrews\nAbrasive pad\n\nStep-by-step photo instructions\n\n\nNot included:\n\nWIND TURBINES: We are out of stock until late April 2025. You can Google search \"12 in. Lomanco Whirlybird\" to find the Lomanco turbine we recommend.\nADHESIVE is not included. Only use a professional grade structural adhesive for metal. We highly recommend Chem Link M1: (Click here to buy Chem Link M1 on Amazon)\n------------------------------------------\nAdaptAIR™ is an easy-to-install, epoxy-coated steel adapter for adding ventilation to the corrugated roof of your shipping container.\nAdaptAIR™ will fit any turbine with a 12-inch collar (Whirlybird turbine, solar powered turbine, or static vent) which can be found online or at your local hardware store.\nPRECISE DESIGN • Only product designed for standard 3.5\" ribbing on Conex shipping container roof corrugation. Please refer to our measurement chart.\nDO-IT-YOURSELF • Includes complete installation kit and instructions for easy installation.\nGUARANTEED FIT • No hassle guarantee on fit or quality. Molded with tight tolerances to match your container roof corrugation.\nMASSIVE AIRFLOW • Add any full size 12-inch turbine vent, static vent, or solar powered vent. ALL sold separately.\nMOLDED STEEL • One piece stamped steel coated in gray epoxy for a lifetime guarantee.\nEPOXY COATING • Durable industrial grade coating far exceeds the coating used on shipping containers. Epoxy can be coated with any roof paint or coating.\nGUARANTEED FOR THE LIFE OF YOUR CONTAINER"
+              },
+              "children": []
+            },
+            {
+              "id": "product:CC-AA-TA-01",
+              "type": "Card",
+              "content": {
+                "media": "https://www.containercreations.com/cdn/shop/files/Top_Down_Flat_720x_c17a6ed6-b674-4e9c-888f-793e50b6b3d6.webp?v=1720441295&width=1920",
+                "title": "AdaptAIR™ Roof Vent Adapter for Shipping Containers",
+                "body": "This product includes:\n\nOne (1) AdaptAIR™ vent adapter for 3.5-inch corrugationPLUS complete installation kit:\nDrill bits\nDriver bit\nScrews\nAbrasive pad\n\nStep-by-step photo instructions\n\n\nNot included:\n\nWIND TURBINE: We are out of stock until mid August 2025. You can Google search \"12 in. Lomanco Whirlybird\" to find the Lomanco turbine we recommend.\nADHESIVE is not included. Only use a professional grade structural adhesive for metal. We highly recommend Chem Link M1: (Click here to buy Chem Link M1 on Amazon)\n------------------------------------------\n20-FOOT CONTAINER = We recommend one (1) roof vent40-FOOT CONTAINER = We recommend two (2) roof vents\nAdaptAIR™ is an easy-to-install, epoxy-coated steel adapter for adding ventilation to the corrugated roof of your shipping container.\nAdaptAIR™ will fit any turbine with a 12-inch collar (Whirlybird turbine, solar powered turbine, or static vent) which can be found online or at your local hardware store.\nPRECISE DESIGN • Only product designed for standard 3.5\" ribbing on Conex shipping container roof corrugation. Please refer to our measurement chart.\nDO-IT-YOURSELF • Includes complete installation kit and instructions for easy installation.\nGUARANTEED FIT • No hassle guarantee on fit or quality. Molded with tight tolerances to match your container roof corrugation.\nMASSIVE AIRFLOW • Add any full size 12-inch turbine vent, static vent, or solar powered vent. ALL sold separately.\nMOLDED STEEL • One piece stamped steel coated in gray epoxy for a lifetime guarantee.\nEPOXY COATING • Durable industrial grade coating far exceeds the coating used on shipping containers. Epoxy can be coated with any roof paint or coating.\nGUARANTEED FOR THE LIFE OF YOUR CONTAINER"
+              },
+              "children": []
+            },
+            {
+              "id": "product:CC-SD-TA-FBA",
+              "type": "Card",
+              "content": {
+                "media": "https://www.containercreations.com/cdn/shop/files/SkyDOME_-_Inside_Dome.png?v=1769117347&width=1920",
+                "title": "SkyDOME™  Skylight for Shipping Containers",
+                "body": "SkyDOME™ is an easy-to-install, 12-inch polycarbonate skylight for adding natural light to the corrugated roof of your Conex shipping container.\nSkyDOME™ is an innovative daylight-enhancing dome that will light from any angle all year long. Designed to install quickly, you can bring much needed light to the darkest corners of your shipping container. The 4mm thick injection molded dome has a diamond cut surface allow the greatest refraction of light without creating any hot spots.\nEach skylight includes an installation kit:\n\nStep-by-step photo instructions\n(2) drill bits\n(1) driver bit\n(30) screws\n(30) rubber tips for screw points\nAbrasive pad\n\nFOR BEST RESULTS, USE A PROFESSIONAL GRADE STRUCTURAL ADHESIVE.  WE HIGHLY RECOMMEND CHEM LINK M1 (Click here for link to Amazon)\n------------------------------------------\nPRECISE DESIGN • Only product is designed for standard 3.5\" ribbing on Conex shipping container roof corrugation. Please refer to our measurement chart.\nDO-IT-YOURSELF • Includes complete installation kit and instructions for easy installation.\nBLOCKS UVA &amp; UVB RAYS • Polycarbonate has built in protection against damaging UV rays.\nREPLACEABLE DOME &amp; GASKET • If you ever need to replace the dome on your SkyDome™, we offer a replacement kit so you don't need to remove the metal adapter from your container.\nMOLDED STEEL • One piece stamped steel coated in gray epoxy for a lifetime guarantee.\nEPOXY COATING • Durable industrial grade coating far exceeds the coating used on shipping containers. Epoxy can be coated with any roof paint or coating.\nGUARANTEED FOR THE LIFE OF YOUR CONTAINER"
+              },
+              "children": []
+            },
+            {
+              "id": "product:MF-RL-25T",
+              "type": "Card",
+              "content": {
+                "media": "https://www.containercreations.com/cdn/shop/files/10_Louver_Vents.jpg?v=1741487812&width=1920",
+                "title": "2.5-inch Intake Vents (10-pack)",
+                "body": "These intake vents fit on the vertical ribs of your shipping container walls to provide airflow for your AdaptAIR™ roof ventilation. \nWe recommend installing at least ten of these 2.5-inch louver vents for each AdaptAIR vent on your container. \nVery simple to install. Use a 2.5-inch carbide-tipped hole saw to drill a hole. Pop in the louver vents and press the tabs on the inside wall to keep it in place.\nThese vents can be installed a few inches above the floor evenly spaced on the sidewalls.\nThese vents use a .020-gauge aluminum for our round aluminum louvers, screens and plugs - most manufacturers use a thinner gauge, which leads to a weaker product. This thick, durable material maximizes lifespan and ensures proper ventilation needs."
+              },
+              "children": []
+            },
+            {
+              "id": "product:CC-WT-12-FBA",
+              "type": "Card",
+              "content": {
+                "media": "https://www.containercreations.com/cdn/shop/files/Turbine_Studio_Cutout.png?v=1730839842&width=1920",
+                "title": "Whirlybird Wind Turbine for AdaptAIR™",
+                "body": "Container Creations designed this custom 12-inch stainless steel wind-powered turbine vent to be the best performing shipping container ventilator on the market for our AdaptAIR™ product.\n24 CURVED BLADES deliver powerful airflow capture while protecting against rain and water entry. **Compare to the industry standard of 21 blades fans.\nTHICKENED 201 STAINLESS STEEL for the highest-rated durability and resistance to rust and corrosion. You can feel the difference compared to other turbines.**Compare to the industry standard of galvanized steel.\n PRECISION COLLAR designed to fit precisely on the AdaptAIR™ vent adapter with (3) mounting screw holes.\nPERMANENTLY LUBRICATED BEARINGS are maintenance-free and designed to enable near fiction-less spin with the lightest of breeze.\nSELF-TAPPING MOUNT SCREWS are included to easily affix the turbine to your AdaptAIR™ vent adapter.\nWIND SPEED = CUBIC FEET PER MINUTE:3.5 mph = 470 CFM5 mph wind = 1236 CFM7.5 mph breeze = 1471 CFM10 mph = 1650 CFM"
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

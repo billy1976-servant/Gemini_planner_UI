@@ -142,7 +142,7 @@ Last refreshed: 2026-01-30T15:14:39.548Z
 - **Site compiler / normalizer**
   - New path: `src/lib/site-compiler/` (compileSiteToSchema.ts, normalizeSiteData.ts, compileSiteToScreenModel.ts); `src/lib/site-normalizer/` (derivePagesFromNav.ts, derivePages.ts). Legacy: `src/lib/siteCompiler/` (compileSite.ts, normalize.ts, loaders.ts).
 - **Scripts**
-  - `src/scripts/blueprint.ts`, contract-validate.ts, contract-report.ts, pipeline-proof.ts; `src/scripts/websites/build-site.ts`, compile.ts, compile-website.ts; adapters under `src/scripts/websites/adapters/`; onboarding under `src/scripts/onboarding/`.
+  - `src/scripts/blueprint.ts`, contract-validate.ts, contract-report.ts, pipeline-proof.ts; `src/scripts/websites/build-site.ts`, compile.ts, compile-website.ts; adapters under `src/scripts/websites/adapters/`; onboarding under `src/scripts/onboarding/`. Product-screen adapter: `src/lib/product-screen-adapter/`, script `src/scripts/compile-product-screen.ts` (`npm run product-screen -- <domain>`); see ADAPTERS.md.
 - **API**
   - Screens: `src/app/api/screens/route.ts`, `src/app/api/screens/[...path]/route.ts`. Sites: `src/app/api/sites/[domain]/schema/route.ts`, normalized, brand, onboarding, screen, skins, etc.; `src/app/api/local-screens/[...path]/route.ts`.
 - **App entry**
