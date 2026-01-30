@@ -1,0 +1,48 @@
+{
+  "domain": "containercreations.com",
+  "pages": [
+    {
+      "id": "home",
+      "path": "/",
+      "title": "Home",
+      "sections": [
+        {
+          "id": "block-home-0",
+          "type": "nav",
+          "content": {
+            "type": "nav"
+          }
+        },
+        {
+          "id": "block-home-1",
+          "type": "hero",
+          "content": {
+            "heading": "containercreations"
+          },
+          "heading": "containercreations",
+          "role": "hero"
+        },
+        {
+          "id": "block-home-2",
+          "type": "footer",
+          "content": {
+            "type": "footer",
+            "role": "footer"
+          },
+          "role": "footer"
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "generatedAt": "2026-01-28T19:04:15.413Z",
+    "domain": "containercreations.com",
+    "rulesVersion": "1.0.0",
+    "stats": {
+      "pages": 1,
+      "products": 0,
+      "images": 0,
+      "categories": 0
+    }
+  }
+}

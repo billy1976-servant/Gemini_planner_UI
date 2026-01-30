@@ -11,7 +11,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { writeEngineState, readEngineState } from "@/logic/runtime/engine-bridge";
-import { calculateProductCosts } from "@/logic/calcs/product-calculator";
+import { calculateProductCosts } from "@/logic/engines/calculator/calcs/product-calculator";
 import type { Product } from "@/logic/products/product-types";
 
 type ProductCalculatorCardProps = {

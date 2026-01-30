@@ -1,0 +1,25 @@
+{
+  "researchFacts": [
+    "health_001",
+    "health_002",
+    "health_003",
+    "health_004",
+    "exposure_001"
+  ],
+  "bindings": {
+    "sensitivity_rate": [
+      "health_001",
+      "health_003"
+    ],
+    "daily_exposure_frequency": [
+      "exposure_001"
+    ],
+    "skin_barrier_impact": [
+      "health_001",
+      "health_002"
+    ],
+    "long_term_exposure_accumulation": [
+      "health_003"
+    ]
+  }
+}

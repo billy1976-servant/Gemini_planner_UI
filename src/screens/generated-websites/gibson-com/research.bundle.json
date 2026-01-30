@@ -1,0 +1,27 @@
+{
+  "researchFacts": [
+    "materials_001",
+    "materials_002",
+    "materials_003",
+    "materials_004",
+    "longevity_001"
+  ],
+  "bindings": {
+    "maintenance_cost": [
+      "longevity_001"
+    ],
+    "wood_aging_resonance": [
+      "materials_001",
+      "materials_004"
+    ],
+    "hardware_durability": [
+      "materials_002"
+    ],
+    "finish_longevity": [
+      "materials_003"
+    ],
+    "maintenance_frequency": [
+      "longevity_001"
+    ]
+  }
+}

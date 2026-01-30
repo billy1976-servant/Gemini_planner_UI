@@ -14,11 +14,11 @@
  * - Optional calculations
  */
 
-import { translateValue } from "../../logic/value/value-translation.engine";
-import { compareProducts } from "../../logic/comparison/value-comparison.engine";
+import { translateValue } from "../../logic/engines/comparison/value-translation.engine";
+import { compareProducts } from "../../logic/engines/comparison/value-comparison.engine";
 import { getResearchFact } from "../../logic/research/research-fact-library";
 import { getIndustryModel } from "../../logic/value/assumption-library";
-import { getDefaultActiveDimensions } from "../../logic/value/value-dimensions";
+import { getDefaultActiveDimensions } from "../../logic/engines/comparison/value-dimensions";
 
 interface ProofRunResult {
   productUrl: string;

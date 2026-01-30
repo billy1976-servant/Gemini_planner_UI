@@ -19,6 +19,8 @@
 
 
 1.4 FooterNav (Footer)
+- left: { "label": "Home" }
+- right: { "label": "Exit" }
 
 
 1.4.1 HomeLink (Chip)
@@ -110,6 +112,7 @@
 
 
 4.3 Notice (Toast)
+- message: "Saved."
 
 
 

@@ -1,0 +1,48 @@
+{
+  "meta": {
+    "domain": "containercreations.com",
+    "pageId": "home",
+    "version": 1,
+    "generatedAt": "2026-01-29"
+  },
+  "nodes": [
+    {
+      "id": "header_brand",
+      "type": "Section",
+      "role": "header",
+      "content": { "title": "Container Creations" }
+    },
+    {
+      "id": "header_actions",
+      "type": "Row",
+      "role": "header",
+      "params": { "gap": "0.75rem", "align": "center" },
+      "children": [
+        { "id": "cta_quote", "type": "Button", "content": { "label": "Get a quote" } },
+        { "id": "cta_shop", "type": "Button", "content": { "label": "Shop parts" } }
+      ]
+    },
+    {
+      "id": "hero_section",
+      "type": "Section",
+      "role": "hero",
+      "content": { "title": "Build smarter containers" },
+      "children": [
+        { "id": "hero_text", "type": "text", "content": { "text": "Same content nodes; layout engine recomposes regions by experience." } },
+        { "id": "hero_primary", "type": "Button", "content": { "label": "Find your best fit" } }
+      ]
+    },
+    {
+      "id": "products_title",
+      "type": "Section",
+      "role": "products",
+      "content": { "title": "Products" }
+    },
+    { "id": "products_cards", "type": "slot", "role": "products", "slotKey": "products.cards", "renderAs": "Card" },
+    { "id": "footer", "type": "Footer", "role": "footer" }
+  ],
+  "dataSlots": {
+    "products.cards": { "description": "Mapped product card molecules (engine-bridge output)." }
+  }
+}
+

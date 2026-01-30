@@ -8,8 +8,8 @@
  * - Only processes steps with: "understand", "learned", "comprehension", "readiness", "education", "explain" signals
  */
 
-import type { EducationFlow } from "@/logic/content/flow-loader";
-import type { PresentationModel } from "./presentation-types";
+import type { EducationFlow } from "@/logic/flows/flow-loader";
+import type { PresentationModel } from "../engines/presentation-types";
 
 export type EngineFlow = EducationFlow;
 

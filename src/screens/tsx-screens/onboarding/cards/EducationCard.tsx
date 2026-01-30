@@ -1,16 +1,15 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { loadFlow, getAvailableFlows, type EducationFlow } from "@/logic/content/flow-loader";
+import { loadFlow, getAvailableFlows, type EducationFlow } from "@/logic/flows/flow-loader";
 import { readEngineState, writeEngineState, subscribeEngineState } from "@/logic/runtime/engine-bridge";
 import { dispatchState } from "@/state/state-store";
 import { aggregateDecisionState } from "@/logic/engines/decision-engine";
 import { resolveNextStep } from "@/logic/engines/flow-router";
-import { explainNextStep } from "@/logic/engines/engine-explain";
+import { explainNextStep } from "@/logic/engine-system/engine-explain";
 import type { PresentationModel } from "@/logic/engines/presentation-types";
-import { selectExecutionEngine } from "@/logic/engines/engine-selector";
 import { ENGINE_STATE_KEY, type EngineState } from "@/logic/runtime/engine-state";
-import type { ExecutionEngineId } from "@/logic/engines/engine-registry";
+import { runHIEngines, type HIEngineId } from "@/logic/engines/post-processing/hi-engine-runner";
 
 type CardResult = {
   cardId: string;
@@ -30,6 +29,7 @@ type CardProps = {
   restoreState: CardState | null;
   onExplain?: (explain: any) => void; // Optional explain callback
   presentation?: PresentationModel | null; // Optional presentation model for ordering/grouping
+  hiEngineId?: HIEngineId; // HI engine to run on completion
 };
 
 // Engine state keys
@@ -38,12 +38,12 @@ const STEP_KEY = `${ENGINE_KEY}.stepIndex`;
 const OUTCOMES_KEY = `${ENGINE_KEY}.outcomes`;
 const RESULTS_KEY = `${ENGINE_KEY}.results`;
 
-export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, presentation }: CardProps) {
+export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, presentation, hiEngineId }: CardProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   
-  // Get flow ID from query param or default to flow-a
-  const flowId = searchParams.get("flow") || "flow-a";
+  // Get flow ID from query param or default to test-flow (registered flow)
+  const flowId = searchParams.get("flow") || "test-flow";
   const [availableFlows, setAvailableFlows] = useState<string[]>([]);
   
   // Load available flows on mount
@@ -57,12 +57,15 @@ export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, 
   const [flowError, setFlowError] = useState<string | null>(null);
   const [lastFlowId, setLastFlowId] = useState<string | null>(null);
   
+  // Get screen param for screen-specific flow loading
+  const screenParam = searchParams.get("screen") ?? undefined;
+
   // Load flow when flowId changes
   useEffect(() => {
     setFlowLoading(true);
     setFlowError(null);
     
-    loadFlow(flowId)
+    loadFlow(flowId, undefined, screenParam)
       .then((loadedFlow) => {
         setFlow(loadedFlow);
         setFlowLoading(false);
@@ -88,13 +91,16 @@ export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, 
         setFlowError(err.message);
         setFlowLoading(false);
       });
-  }, [flowId, lastFlowId]);
+  }, [flowId, lastFlowId, screenParam]);
   
   // Local UI state only (for restoreState compatibility)
   const [localStep, setLocalStep] = useState(restoreState?.step ?? 0);
   
   // Engine state (source of truth)
   const [engineState, setEngineState] = useState(() => readEngineState());
+  
+  // Store explain/reasoning data for UI rendering
+  const [explainData, setExplainData] = useState<any>(null);
   
   // Subscribe to engine state changes
   useEffect(() => {
@@ -168,9 +174,6 @@ export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, 
   const currentStepIndex = engineStateData?.currentStepIndex ?? engineState[STEP_KEY] ?? localStep ?? 0;
   const totalSteps = engineStateData?.totalSteps ?? orderedStepIds.length;
   const completedStepIds = engineStateData?.completedStepIds ?? [];
-  
-  // Get current execution engine from EngineState (or default to learning)
-  const currentExecutionEngine: ExecutionEngineId = (engineStateData?.engineId as ExecutionEngineId) || "learning";
   
   // Get current step using ordered step IDs from EngineState
   const currentStepId = orderedStepIds[currentStepIndex];
@@ -253,6 +256,21 @@ export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, 
         previousOpportunities
       );
       onExplain(explainEvent);
+      // Also store locally for UI rendering
+      setExplainData(explainEvent);
+    } else if (flow) {
+      // Generate explain event even if no callback, for UI display
+      const explainEvent = explainNextStep(
+        flow,
+        currentStepIndex,
+        currentStep.id,
+        choice.id,
+        choice.outcome,
+        previousSignals,
+        previousBlockers,
+        previousOpportunities
+      );
+      setExplainData(explainEvent);
     }
     
     const updatedOutcomes = [...previousOutcomes, outcome];
@@ -274,26 +292,9 @@ export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, 
     const accumulatedBlockers = updatedOutcomes.flatMap((o: any) => o.outcome?.blockers ?? []);
     const accumulatedOpportunities = updatedOutcomes.flatMap((o: any) => o.outcome?.opportunities ?? []);
     
-    // PRE-ROUTING: Select execution engine based on accumulated state
-    // This is the "brain" that decides which engine owns the user next
-    // Create a temporary EngineState snapshot for selection
-    const tempEngineState: EngineState = engineStateData || {
-      orderedStepIds,
-      currentStepIndex,
-      totalSteps,
-      completedStepIds,
-      accumulatedSignals,
-      accumulatedBlockers,
-      accumulatedOpportunities,
-      severityDensity: 0,
-      weightSum: 0,
-      calcOutputs: current.calculatorResult || {},
-      engineId: currentExecutionEngine,
-      exportSlices: [],
-    };
-    
-    // Select the best-fit execution engine
-    const selectedEngineId = selectExecutionEngine(tempEngineState, currentExecutionEngine);
+    // Engine selection comes from parent screen via flow-loader context
+    // The flow is already engine-transformed by the parent, so we use the engine ID from EngineState
+    const engineIdFromState = engineStateData?.engineId || "learning";
     
     // INVARIANT: resolveNextStep is called exactly once per choice and returns authoritative EngineState
     const { nextStepIndex, engineState: derivedEngineState } = resolveNextStep(
@@ -309,7 +310,7 @@ export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, 
       })),
       presentation,
       current.calculatorResult || {},
-      selectedEngineId
+      engineIdFromState
     );
     
     const nextStep = nextStepIndex !== null ? nextStepIndex : totalSteps;
@@ -322,18 +323,12 @@ export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, 
       [ENGINE_STATE_KEY]: derivedEngineState,
     });
 
-    // Aggregate decision state from all outcomes
-    const calculatorResults = current.calculatorResult || null;
-    const context = current.context || {};
-    const decisionState = aggregateDecisionState(updatedOutcomes, calculatorResults, context);
-
-    // Also update global state for downstream use
+    // Update global state for downstream use (without aftermath processors during routing)
     dispatchState("state.update", {
       key: "educationResults",
       value: {
         outcomes: updatedOutcomes,
         results: updatedResults,
-        decisionState, // Canonical decision state
         completed: nextStep >= totalSteps, // Driven by EngineState
       },
     });
@@ -342,14 +337,32 @@ export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, 
     onAdvance(nextStep);
 
     // Completion check driven by EngineState
+    // AFTERMATH PROCESSORS: Only run decision/summary engines AFTER completion, not during step routing
     if (nextStep >= totalSteps) {
+      // Run aftermath processors (decision + summary) ONLY after execution completion
+      const calculatorResults = current.calculatorResult || null;
+      const context = current.context || {};
+      const decisionState = aggregateDecisionState(updatedOutcomes, calculatorResults, context);
+      
+      // Run HI engine post-processing if hiEngineId is provided
+      if (hiEngineId && derivedEngineState) {
+        const updatedEngineState = runHIEngines(derivedEngineState, hiEngineId);
+        // Write updated EngineState with HI results
+        writeEngineState({
+          [ENGINE_STATE_KEY]: updatedEngineState,
+        });
+      }
+      
+      // TODO: Run summary engine here if needed
+      // const summaryState = processSummaryState(derivedEngineState);
+      
       onComplete({
         cardId: "education",
         completed: true,
         output: {
           outcomes: updatedOutcomes,
           results: updatedResults,
-          decisionState, // Canonical decision state
+          decisionState, // Canonical decision state (from aftermath processor)
           educationResults: {
             outcomes: updatedOutcomes,
             results: updatedResults,
@@ -361,6 +374,9 @@ export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, 
       });
     }
   }
+
+  // STEP 4: Prove Presentation Is Engine-Driven, Not Hardcoded
+  console.log("[PRESENTATION MODEL RECEIVED FROM ENGINE]", presentation);
 
   return (
     <div style={cardContainer}>
@@ -396,6 +412,11 @@ export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, 
         </div>
         <div style={stepCounter}>
           {isComplete ? "Complete" : `Step ${displayStep} / ${totalSteps}`}
+          {presentation && (
+            <span style={stepOrderIndicator} title={`Step order from ${presentation.engineId} engine`}>
+              {" "}• {presentation.engineId}
+            </span>
+          )}
         </div>
       </div>
       
@@ -411,6 +432,138 @@ export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, 
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Presentation Engine Notes */}
+      {presentation && presentation.notes && presentation.notes.length > 0 && (
+        <div style={notesPanel}>
+          <div style={notesHeader}>Engine: {presentation.engineId}</div>
+          {presentation.notes.map((note, i) => (
+            <div key={i} style={noteItem}>
+              {note}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* WHY / REASONING PANEL */}
+      {explainData && (
+        <div style={reasoningPanel}>
+          <div style={reasoningHeader}>Why This Step</div>
+          <div style={reasoningContent}>
+            {explainData.emitted && (
+              <div style={reasoningSection}>
+                <div style={reasoningSectionTitle}>Signals Emitted:</div>
+                <div style={reasoningSectionList}>
+                  {explainData.emitted.signals && explainData.emitted.signals.length > 0 ? (
+                    explainData.emitted.signals.map((signal: string, i: number) => (
+                      <span key={i} style={reasoningBadge}>
+                        {signal}
+                      </span>
+                    ))
+                  ) : (
+                    <span style={reasoningEmpty}>None</span>
+                  )}
+                </div>
+                {explainData.emitted.blockers && explainData.emitted.blockers.length > 0 && (
+                  <>
+                    <div style={reasoningSectionTitle}>Blockers:</div>
+                    <div style={reasoningSectionList}>
+                      {explainData.emitted.blockers.map((blocker: string, i: number) => (
+                        <span key={i} style={reasoningBadgeBlocked}>
+                          {blocker}
+                        </span>
+                      ))}
+                    </div>
+                  </>
+                )}
+                {explainData.emitted.opportunities && explainData.emitted.opportunities.length > 0 && (
+                  <>
+                    <div style={reasoningSectionTitle}>Opportunities:</div>
+                    <div style={reasoningSectionList}>
+                      {explainData.emitted.opportunities.map((opp: string, i: number) => (
+                        <span key={i} style={reasoningBadgeOpportunity}>
+                          {opp}
+                        </span>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+            {explainData.routing && (
+              <div style={reasoningSection}>
+                <div style={reasoningSectionTitle}>Routing Decision:</div>
+                <div style={reasoningRouting}>
+                  {explainData.routing.mode === "rule-matched" ? (
+                    <>
+                      <span style={reasoningRoutingMode}>Rule Matched</span>
+                      {explainData.routing.matchedRuleId && (
+                        <span style={reasoningRoutingRule}>({explainData.routing.matchedRuleId})</span>
+                      )}
+                    </>
+                  ) : (
+                    <span style={reasoningRoutingMode}>Linear Progression</span>
+                  )}
+                </div>
+              </div>
+            )}
+            {explainData.nextStepId && (
+              <div style={reasoningSection}>
+                <div style={reasoningSectionTitle}>Next Step:</div>
+                <div style={reasoningNextStep}>
+                  {flow.steps.find((s) => s.id === explainData.nextStepId)?.title || explainData.nextStepId}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* DECISION LOGIC PANEL */}
+      {engineStateData?.exportSlices && engineStateData.exportSlices.length > 0 && (
+        <div style={decisionLogicPanel}>
+          <div style={decisionLogicHeader}>Decision Logic</div>
+          <div style={decisionLogicContent}>
+            {engineStateData.exportSlices.map((slice, i) => (
+              <div key={i} style={decisionLogicItem}>
+                <div style={decisionLogicStepTitle}>{slice.stepTitle}</div>
+                <div style={decisionLogicDetails}>
+                  {slice.signals && slice.signals.length > 0 && (
+                    <div style={decisionLogicRow}>
+                      <span style={decisionLogicLabel}>Signals:</span>
+                      <span style={decisionLogicValue}>{slice.signals.join(", ")}</span>
+                    </div>
+                  )}
+                  {slice.blockers && slice.blockers.length > 0 && (
+                    <div style={decisionLogicRow}>
+                      <span style={decisionLogicLabel}>Blockers:</span>
+                      <span style={decisionLogicValueBlocked}>{slice.blockers.join(", ")}</span>
+                    </div>
+                  )}
+                  {slice.opportunities && slice.opportunities.length > 0 && (
+                    <div style={decisionLogicRow}>
+                      <span style={decisionLogicLabel}>Opportunities:</span>
+                      <span style={decisionLogicValueOpportunity}>{slice.opportunities.join(", ")}</span>
+                    </div>
+                  )}
+                  {slice.severity && (
+                    <div style={decisionLogicRow}>
+                      <span style={decisionLogicLabel}>Severity:</span>
+                      <span style={decisionLogicSeverity(slice.severity)}>{slice.severity}</span>
+                    </div>
+                  )}
+                  {slice.stepWeight !== undefined && (
+                    <div style={decisionLogicRow}>
+                      <span style={decisionLogicLabel}>Weight:</span>
+                      <span style={decisionLogicValue}>{slice.stepWeight}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
@@ -846,4 +999,224 @@ const flowSelector: React.CSSProperties = {
   color: "#e5e7eb",
   fontSize: 13,
   cursor: "pointer",
+};
+
+const notesPanel: React.CSSProperties = {
+  marginBottom: 16,
+  padding: 12,
+  background: "#1e293b",
+  borderRadius: 8,
+  border: "1px solid #334155",
+  fontSize: 13,
+  color: "#cbd5e1",
+  fontStyle: "italic",
+};
+
+const notesHeader: React.CSSProperties = {
+  fontSize: 11,
+  fontWeight: 600,
+  color: "#60a5fa",
+  textTransform: "uppercase",
+  letterSpacing: 0.5,
+  marginBottom: 8,
+  fontStyle: "normal",
+};
+
+const noteItem: React.CSSProperties = {
+  lineHeight: 1.5,
+  marginBottom: 4,
+};
+
+const stepOrderIndicator: React.CSSProperties = {
+  fontSize: 10,
+  opacity: 0.6,
+  fontWeight: 400,
+  fontStyle: "italic",
+};
+
+const reasoningPanel: React.CSSProperties = {
+  marginBottom: 16,
+  padding: 16,
+  background: "#1e293b",
+  borderRadius: 10,
+  border: "1px solid #334155",
+};
+
+const reasoningHeader: React.CSSProperties = {
+  fontSize: 14,
+  fontWeight: 700,
+  color: "#60a5fa",
+  marginBottom: 12,
+  textTransform: "uppercase",
+  letterSpacing: 0.5,
+};
+
+const reasoningContent: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: 12,
+};
+
+const reasoningSection: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: 6,
+};
+
+const reasoningSectionTitle: React.CSSProperties = {
+  fontSize: 12,
+  fontWeight: 600,
+  color: "#94a3b8",
+  textTransform: "uppercase",
+  letterSpacing: 0.3,
+};
+
+const reasoningSectionList: React.CSSProperties = {
+  display: "flex",
+  flexWrap: "wrap",
+  gap: 6,
+};
+
+const reasoningBadge: React.CSSProperties = {
+  padding: "4px 8px",
+  borderRadius: 4,
+  fontSize: 11,
+  fontWeight: 600,
+  background: "rgba(59, 130, 246, 0.2)",
+  color: "#60a5fa",
+  border: "1px solid rgba(59, 130, 246, 0.3)",
+};
+
+const reasoningBadgeBlocked: React.CSSProperties = {
+  padding: "4px 8px",
+  borderRadius: 4,
+  fontSize: 11,
+  fontWeight: 600,
+  background: "rgba(239, 68, 68, 0.2)",
+  color: "#f87171",
+  border: "1px solid rgba(239, 68, 68, 0.3)",
+};
+
+const reasoningBadgeOpportunity: React.CSSProperties = {
+  padding: "4px 8px",
+  borderRadius: 4,
+  fontSize: 11,
+  fontWeight: 600,
+  background: "rgba(16, 185, 129, 0.2)",
+  color: "#34d399",
+  border: "1px solid rgba(16, 185, 129, 0.3)",
+};
+
+const reasoningEmpty: React.CSSProperties = {
+  fontSize: 11,
+  color: "#64748b",
+  fontStyle: "italic",
+};
+
+const reasoningRouting: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 8,
+  fontSize: 13,
+  color: "#cbd5e1",
+};
+
+const reasoningRoutingMode: React.CSSProperties = {
+  fontWeight: 600,
+  color: "#60a5fa",
+};
+
+const reasoningRoutingRule: React.CSSProperties = {
+  fontSize: 11,
+  color: "#94a3b8",
+  fontStyle: "italic",
+};
+
+const reasoningNextStep: React.CSSProperties = {
+  fontSize: 13,
+  fontWeight: 600,
+  color: "#f1f5f9",
+};
+
+const decisionLogicPanel: React.CSSProperties = {
+  marginBottom: 16,
+  padding: 16,
+  background: "#1e293b",
+  borderRadius: 10,
+  border: "1px solid #334155",
+};
+
+const decisionLogicHeader: React.CSSProperties = {
+  fontSize: 14,
+  fontWeight: 700,
+  color: "#60a5fa",
+  marginBottom: 12,
+  textTransform: "uppercase",
+  letterSpacing: 0.5,
+};
+
+const decisionLogicContent: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: 12,
+};
+
+const decisionLogicItem: React.CSSProperties = {
+  padding: 12,
+  background: "rgba(255, 255, 255, 0.03)",
+  borderRadius: 8,
+  border: "1px solid rgba(255, 255, 255, 0.05)",
+};
+
+const decisionLogicStepTitle: React.CSSProperties = {
+  fontSize: 13,
+  fontWeight: 600,
+  color: "#f1f5f9",
+  marginBottom: 8,
+};
+
+const decisionLogicDetails: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: 4,
+};
+
+const decisionLogicRow: React.CSSProperties = {
+  display: "flex",
+  alignItems: "flex-start",
+  gap: 8,
+  fontSize: 12,
+};
+
+const decisionLogicLabel: React.CSSProperties = {
+  fontWeight: 600,
+  color: "#94a3b8",
+  minWidth: 80,
+};
+
+const decisionLogicValue: React.CSSProperties = {
+  color: "#cbd5e1",
+  flex: 1,
+};
+
+const decisionLogicValueBlocked: React.CSSProperties = {
+  color: "#f87171",
+  flex: 1,
+};
+
+const decisionLogicValueOpportunity: React.CSSProperties = {
+  color: "#34d399",
+  flex: 1,
+};
+
+const decisionLogicSeverity = (severity: "low" | "medium" | "high"): React.CSSProperties => {
+  const colors = {
+    low: "#94a3b8",
+    medium: "#fbbf24",
+    high: "#f87171",
+  };
+  return {
+    color: colors[severity],
+    fontWeight: 600,
+  };
 };

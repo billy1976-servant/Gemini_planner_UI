@@ -16,7 +16,7 @@ import type {
   ProductSelection,
 } from "./product-types";
 import type { EngineState } from "../runtime/engine-state";
-import type { ProductCalculatorResult } from "../calcs/product-calculator";
+import type { ProductCalculatorResult } from "../engines/calculator/calcs/product-calculator";
 
 export type DecisionLedger = {
   title: string;

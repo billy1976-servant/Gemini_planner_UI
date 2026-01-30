@@ -1,5 +1,5 @@
 import { getCalculator } from "@/logic/registries/calculator.registry";
-import { runCalculators } from "@/logic/engines/calculator.engine";
+import { runCalculators } from "@/logic/engines/calculator/calculator.engine";
 import { dispatchState } from "@/state/state-store";
 
 

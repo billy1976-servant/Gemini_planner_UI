@@ -54,8 +54,11 @@ export function dispatchState(intent: string, payload?: any) {
     isDeriving = false;
   }
 
-
-  persist();
+  // Phase B: keep high-frequency candidate typing out of persistence.
+  // We still keep it in-memory for reactive rendering.
+  if (intent !== "state.update") {
+    persist();
+  }
   listeners.forEach(l => l());
 }
 

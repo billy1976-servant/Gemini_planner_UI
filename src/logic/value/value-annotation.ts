@@ -12,7 +12,7 @@
 import type { ValueTranslationInput, ValueTranslationOutput } from "./value-translation.engine";
 import { translateValue } from "./value-translation.engine";
 import { getDefaultActiveDimensions } from "./value-dimensions";
-import type { EducationFlow } from "../content/flow-loader";
+import type { EducationFlow } from "../flows/flow-loader";
 
 export interface AnnotatedFlow extends EducationFlow {
   valueAnnotations?: {

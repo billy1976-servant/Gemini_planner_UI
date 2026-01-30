@@ -30,6 +30,7 @@ import Toolbar from "@/compounds/ui/12-molecules/toolbar.compound";
 // STATE-AWARE VIEWERS (NON-MOLECULE, SAFE)
 // =====================================================
 import userInputViewer from "@/ui/user-input-viewer";
+import JournalHistory from "@/ui/molecules/JournalHistory";
 // =====================================================
 // LAYOUT MOLECULES (STRUCTURAL ONLY)
 // =====================================================
@@ -140,6 +141,10 @@ export const Registry = {
   // 🔹 STATE-AWARE VIEWERS
   UserInputViewer: userInputViewer,
   userinputviewer: userInputViewer,
+
+  // 🔹 Journal display (non-molecule, safe)
+  JournalHistory: JournalHistory,
+  journalhistory: JournalHistory,
 
 
   // 🔹 Layout molecules (screen-level)

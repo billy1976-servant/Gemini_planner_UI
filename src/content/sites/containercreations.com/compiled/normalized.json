@@ -1,0 +1,23 @@
+{
+  "domain": "containercreations.com",
+  "pages": [
+    {
+      "slug": "/",
+      "title": "Home",
+      "sections": []
+    }
+  ],
+  "products": [],
+  "navigation": [],
+  "media": [],
+  "derivedPages": [
+    {
+      "id": "home",
+      "title": "Home",
+      "slug": "/",
+      "sectionIds": [
+        "block-home-hero"
+      ]
+    }
+  ]
+}

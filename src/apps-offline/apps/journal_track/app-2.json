@@ -1,10 +1,55 @@
 {
     "id": "screenRoot",
     "type": "screen",
+    "state": { "currentView": "|think" },
     "children": [
       {
         "type": "text",
         "content": { "label": "TRACK Journal" }
+      },
+
+      {
+        "id": "trackList",
+        "type": "list",
+        "content": {
+          "items": [
+            {
+              "label": "Think",
+              "behavior": {
+                "type": "Action",
+                "params": { "name": "state:currentView", "value": "|think" }
+              }
+            },
+            {
+              "label": "Repent",
+              "behavior": {
+                "type": "Action",
+                "params": { "name": "state:currentView", "value": "|repent" }
+              }
+            },
+            {
+              "label": "Ask",
+              "behavior": {
+                "type": "Action",
+                "params": { "name": "state:currentView", "value": "|ask" }
+              }
+            },
+            {
+              "label": "Conform",
+              "behavior": {
+                "type": "Action",
+                "params": { "name": "state:currentView", "value": "|conform" }
+              }
+            },
+            {
+              "label": "Keep",
+              "behavior": {
+                "type": "Action",
+                "params": { "name": "state:currentView", "value": "|keep" }
+              }
+            }
+          ]
+        }
       },
   
   

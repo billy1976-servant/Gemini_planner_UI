@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 
-const FLOWS_ROOT = path.join(process.cwd(), "src", "logic", "content", "flows");
+const FLOWS_ROOT = path.join(process.cwd(), "src", "logic", "flows");
 
 export async function GET(
   _req: Request,
@@ -22,10 +22,48 @@ export async function GET(
       return NextResponse.json({ error: "Invalid flow ID" }, { status: 400 });
     }
 
-    const jsonPath = path.join(FLOWS_ROOT, `${flowId}.json`);
-
+    // Try direct path first, then check subfolders (including generated/)
+    // Also check JSON files by their "id" field, not just filename
+    let jsonPath = path.join(FLOWS_ROOT, `${flowId}.json`);
+    
     if (!fs.existsSync(jsonPath)) {
-      return NextResponse.json({ error: `Flow not found: ${flowId}` }, { status: 404 });
+      // Check in subfolders recursively, matching by filename OR by JSON "id" field
+      const findFlowInSubfolders = (dir: string): string | null => {
+        if (!fs.existsSync(dir)) return null;
+        
+        const entries = fs.readdirSync(dir, { withFileTypes: true });
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+          if (entry.isFile() && entry.name.endsWith(".json")) {
+            // Check if filename matches OR if JSON id field matches
+            if (entry.name === `${flowId}.json`) {
+              return fullPath;
+            }
+            // Check JSON id field
+            try {
+              const content = fs.readFileSync(fullPath, "utf8");
+              const json = JSON.parse(content);
+              if (json.id === flowId) {
+                return fullPath;
+              }
+            } catch {
+              // Skip invalid JSON files
+            }
+          }
+          if (entry.isDirectory()) {
+            const found = findFlowInSubfolders(fullPath);
+            if (found) return found;
+          }
+        }
+        return null;
+      };
+      
+      const foundPath = findFlowInSubfolders(FLOWS_ROOT);
+      if (foundPath) {
+        jsonPath = foundPath;
+      } else {
+        return NextResponse.json({ error: `Flow not found: ${flowId}` }, { status: 404 });
+      }
     }
 
     const fileContent = fs.readFileSync(jsonPath, "utf8");

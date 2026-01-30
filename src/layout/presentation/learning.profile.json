@@ -8,6 +8,14 @@
       "readingFlow": "vertical"
     },
     "sections": {
+      "header": {
+        "type": "row",
+        "params": { "gap": "1rem", "justify": "space-between", "align": "center", "wrap": "wrap" }
+      },
+      "content": {
+        "type": "column",
+        "params": { "gap": "2rem" }
+      },
       "lesson": {
         "type": "column",
         "params": { "gap": "2rem" }
@@ -18,6 +26,10 @@
       },
       "actions": {
         "type": "row",
+        "params": { "align": "center" }
+      },
+      "footer": {
+        "type": "column",
         "params": { "align": "center" }
       }
     }

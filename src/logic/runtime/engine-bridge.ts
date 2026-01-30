@@ -41,6 +41,9 @@ export function subscribeEngineState(listener: Listener) {
  * WRITE + NOTIFY
  */
 export function writeEngineState(next: Record<string, any>) {
+  // STEP 3: Prove Engine Bridge Is Using Runtime Engine State
+  console.log("[ENGINE STATE UPDATED FROM RUNTIME]", next);
+  
   Object.assign(engineState, next);
 
 

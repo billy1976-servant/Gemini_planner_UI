@@ -8,9 +8,21 @@
       "readingFlow": "horizontal"
     },
     "sections": {
+      "nav": {
+        "type": "column",
+        "params": { "gap": "0.75rem", "width": "280px" }
+      },
+      "header": {
+        "type": "row",
+        "params": { "gap": "1rem", "justify": "space-between", "align": "center" }
+      },
       "primary": {
         "type": "row",
         "params": { "gap": "1rem" }
+      },
+      "sidebar": {
+        "type": "column",
+        "params": { "gap": "1rem", "width": "320px" }
       },
       "secondary": {
         "type": "column",
@@ -19,6 +31,10 @@
       "content": {
         "type": "stack",
         "params": {}
+      },
+      "actions": {
+        "type": "row",
+        "params": { "gap": "0.75rem", "align": "center" }
       }
     }
   }

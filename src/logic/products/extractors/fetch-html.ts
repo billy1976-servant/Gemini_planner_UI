@@ -31,6 +31,10 @@ export async function fetchHtml(
   url: string,
   options: FetchOptions = {}
 ): Promise<string> {
+  console.log("[URLTRACE] fetchHtml  IN=" + url + "  OUT=same  FILE=fetch-html.ts  FN=fetchHtml");
+  if (url.includes("/products/")) {
+    try { console.log("[URLTRACE] fetchHtml caller stack:", new Error().stack); } catch (_) {}
+  }
   const opts = { ...DEFAULT_OPTIONS, ...options };
   
   let lastError: Error | null = null;
@@ -41,6 +45,9 @@ export async function fetchHtml(
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      if (url.includes("/products/")) {
+        console.log("[URLTRACE] fetchHtml response_status  IN=" + url + "  status=" + response.status + "  FILE=fetch-html.ts  FN=fetchHtml");
       }
       
       const html = await response.text();

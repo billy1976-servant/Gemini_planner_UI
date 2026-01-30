@@ -8,8 +8,12 @@
  * ✔ PURE event routing
  * ✔ HARD DIAGNOSTICS for valueFrom:"input"
  */
-import { interpretRuntimeVerb } from "@/logic/runtime/runtime-verb-interpreter"; // ADD
-import { getState } from "@/state/state-store"; // ADD
+import { dispatchState, getState } from "@/state/state-store"; // ADD
+import {
+  normalizeBehaviorPayload,
+  normalizeNavigateDetail,
+} from "@/contracts/behavior-normalize";
+import runBehavior from "@/behavior/behavior-runner";
 
 
 let installed = false;
@@ -43,6 +47,13 @@ if (typeof window !== "undefined") {
       inputByFieldKey[fieldKey] = value;
       lastFieldKey = fieldKey;
       console.log("[input-change] captured:", { value, fieldKey });
+
+      // Phase B: reconnect Field typing → state-store (candidate surface)
+      // Writes into DerivedState.values via intent === "state.update".
+      // This enables other components to read live input without waiting for a click action.
+      if (value !== undefined) {
+        dispatchState("state.update", { key: fieldKey, value });
+      }
       return;
     }
 
@@ -65,12 +76,31 @@ export function installBehaviorListener(navigate: (to: string) => void) {
      NAVIGATION
   ========================= */
   window.addEventListener("navigate", (e: any) => {
-    const to = e.detail?.to;
-    if (!to) {
-      console.warn("[navigate] Missing destination");
+    const { intent, warnings } = normalizeNavigateDetail(e?.detail);
+    warnings.forEach((w) => console.warn("[navigate][normalize]", w, e?.detail));
+
+    if (intent.kind === "navigation") {
+      const args = intent.args ?? {};
+      const destination =
+        (args.to as string | undefined) ??
+        (args.screenId as string | undefined) ??
+        (args.target as string | undefined);
+
+      if (!destination) {
+        console.warn("[navigate] Missing destination after normalization", {
+          detail: e?.detail,
+          intent,
+        });
+        return;
+      }
+      navigate(destination);
       return;
     }
-    navigate(to);
+
+    console.warn("[navigate] Unhandled navigation payload", {
+      detail: e?.detail,
+      intent,
+    });
   });
 
 
@@ -92,6 +122,13 @@ export function installBehaviorListener(navigate: (to: string) => void) {
       return;
     }
 
+    // Phase 2: normalize legacy behavior into contract-shaped intent (warn-only)
+    // Phase 5: keep the normalized intent available for the eventual simplified runtime surface.
+    const normalized = normalizeBehaviorPayload(behavior);
+    normalized.warnings.forEach((w) =>
+      console.warn("[action][normalize]", w, { actionName, params, intent: normalized.intent })
+    );
+
 
     /* =========================
        STATE MUTATION BRIDGE
@@ -111,18 +148,32 @@ export function installBehaviorListener(navigate: (to: string) => void) {
 
 
       if (valueFrom === "input") {
-        const fk =
-          typeof fkParam === "string" && fkParam
-            ? fkParam
-            : typeof lastFieldKey === "string"
-            ? lastFieldKey
-            : undefined;
+        // Phase B (final): journal.add must read from state.values, not legacy input buffers.
+        if (mutation === "journal.add") {
+          const fk = typeof fkParam === "string" && fkParam ? fkParam : undefined;
+          const inputValue = fk ? getState()?.values?.[fk] : undefined;
+          resolvedValue = inputValue;
 
+          // Debug (logging only): confirm journal.add input resolution source
+          console.log("[journal.add][resolve]", {
+            track: rest.track,
+            fieldKey: fk,
+            value: inputValue,
+          });
+        } else {
+          // Legacy fallback for other state:* mutations that still reference input buffers.
+          const fk =
+            typeof fkParam === "string" && fkParam
+              ? fkParam
+              : typeof lastFieldKey === "string"
+              ? lastFieldKey
+              : undefined;
 
-        resolvedValue =
-          fk && Object.prototype.hasOwnProperty.call(inputByFieldKey, fk)
-            ? inputByFieldKey[fk]
-            : lastInputValue;
+          resolvedValue =
+            fk && Object.prototype.hasOwnProperty.call(inputByFieldKey, fk)
+              ? inputByFieldKey[fk]
+              : lastInputValue;
+        }
       }
 
 
@@ -135,33 +186,48 @@ export function installBehaviorListener(navigate: (to: string) => void) {
         });
       }
 
-
-      window.dispatchEvent(
-        new CustomEvent("state-mutate", {
-          detail: {
-            name: mutation,
-            value: resolvedValue,
-            ...rest,
-          },
-        })
-      );
-
-      // ✅ Also update state store for currentView (ensures re-render)
-      // Use the correct intent format that state-resolver expects
-      if (mutation === "currentView" && resolvedValue) {
-        console.log("[behavior-listener] Dispatching state:currentView", { value: resolvedValue });
-        import("@/state/state-store").then(({ dispatchState, getState }) => {
+      // Phase 2: map legacy state:* action names onto the state-store's real intents
+      import("@/state/state-store").then(({ dispatchState }) => {
+        // View selection
+        if (mutation === "currentView" && resolvedValue !== undefined) {
           dispatchState("state:currentView", { value: resolvedValue });
-          // Check state after a brief delay to see if it updated
-          setTimeout(() => {
-            const currentState = getState();
-            console.log("[behavior-listener] State after dispatch:", { 
-              currentView: currentState?.currentView,
-              expected: resolvedValue 
+          return;
+        }
+
+        // Generic key/value update (matches state-resolver intent === "state.update")
+        if (mutation === "update") {
+          const key = rest.key ?? rest.target;
+          if (typeof key === "string" && key.length > 0) {
+            dispatchState("state.update", { key, value: resolvedValue });
+            return;
+          }
+        }
+
+        // Journal add (matches state-resolver intent === "journal.add")
+        if (mutation === "journal.add") {
+          const track = rest.track;
+          const key = rest.key;
+          if (typeof key === "string") {
+            dispatchState("journal.add", {
+              track,
+              key,
+              value: resolvedValue,
             });
-          }, 10);
-        });
-      }
+            return;
+          }
+        }
+
+        // Fallback (legacy): keep emitting state-mutate so older consumers can observe it.
+        window.dispatchEvent(
+          new CustomEvent("state-mutate", {
+            detail: {
+              name: mutation,
+              value: resolvedValue,
+              ...rest,
+            },
+          })
+        );
+      });
 
       return;
     }
@@ -177,6 +243,57 @@ export function installBehaviorListener(navigate: (to: string) => void) {
         return;
       }
       navigate(to);
+      return;
+    }
+
+    /* =========================
+       CONTRACT VERB PATH (PHASE 3)
+       - If actionName is a contract verb token, route it through BehaviorRunner
+       - Otherwise fall through to the existing runtime verb interpreter
+    ========================= */
+    if (
+      actionName === "tap" ||
+      actionName === "double" ||
+      actionName === "long" ||
+      actionName === "drag" ||
+      actionName === "scroll" ||
+      actionName === "swipe" ||
+      actionName === "go" ||
+      actionName === "back" ||
+      actionName === "open" ||
+      actionName === "close" ||
+      actionName === "route" ||
+      actionName === "crop" ||
+      actionName === "filter" ||
+      actionName === "frame" ||
+      actionName === "layout" ||
+      actionName === "motion" ||
+      actionName === "overlay"
+    ) {
+      // Best-effort domain inference for Action verbs (contract says infer from content type).
+      const domain =
+        actionName === "crop" ||
+        actionName === "filter" ||
+        actionName === "frame" ||
+        actionName === "layout" ||
+        actionName === "motion" ||
+        actionName === "overlay"
+          ? (params.domain ?? "image")
+          : actionName === "tap" ||
+            actionName === "double" ||
+            actionName === "long" ||
+            actionName === "drag" ||
+            actionName === "scroll" ||
+            actionName === "swipe"
+          ? "interaction"
+          : "navigation";
+
+      try {
+        runBehavior(domain, actionName, { navigate }, params);
+      } catch (err) {
+        console.warn("[behavior-runner] failed", { domain, actionName, err });
+      }
+
       return;
     }
 
@@ -222,6 +339,11 @@ export function installBehaviorListener(navigate: (to: string) => void) {
 
 
       try {
+        // Lazy-load the runtime interpreter to avoid pulling in engine-only action modules
+        // for code paths that never use it (keeps the core behavior bridge lightweight).
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const { interpretRuntimeVerb } = require("../../logic/runtime/runtime-verb-interpreter");
+
         interpretRuntimeVerb(
           {
             name: actionName,

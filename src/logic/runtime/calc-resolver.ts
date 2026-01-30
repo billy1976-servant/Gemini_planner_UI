@@ -1,8 +1,8 @@
 // src/logic/runtime/calc-resolver.ts
 // Resolves and executes calcRefs from Flow JSON
 
-import type { CalcRef } from "../calcs/types";
-import { executeCalc } from "../calcs/calc-registry";
+import type { CalcRef } from "../engines/calculator/calcs/types";
+import { executeCalc } from "../engines/calculator/calcs/calc-registry";
 import { readEngineState, writeEngineState } from "./engine-bridge";
 
 /**

@@ -84,6 +84,9 @@ export type RawExtraction = {
   specTable?: Array<{ key: string; value: string; rowHtml?: string }>; // Spec table rows
   descriptionBlocks?: Array<{ heading?: string; text: string }>; // Description blocks
   images?: Array<{ url: string; alt?: string }>; // Images found
+  title?: string; // Optional extracted title
+  description?: string; // Optional flattened description text
+  specs?: Array<{ key: string; value: string }>; // Optional specs array used in rip logs
   price?: {
     amount: number;
     currency: string;

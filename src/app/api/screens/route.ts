@@ -52,7 +52,8 @@ function collectTsxScreens() {
               f =>
                 f.isFile() &&
                 f.name.endsWith(".tsx") &&
-                !f.name.endsWith(".d.ts")
+                !f.name.endsWith(".d.ts") &&
+                !f.name.startsWith("_template") // Exclude template files
             )
             .map(f => f.name.replace(/\.tsx$/, ""));
 

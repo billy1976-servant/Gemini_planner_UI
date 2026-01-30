@@ -20,7 +20,7 @@ export interface CompiledReport {
   valueModel: any;
 }
 
-const COMPILED_SITES_DIR = path.join(process.cwd(), "content", "compiled", "sites");
+const COMPILED_SITES_DIR = path.join(process.cwd(), "src", "screens", "generated-websites");
 
 /**
  * Load compiled report by site key

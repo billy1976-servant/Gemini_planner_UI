@@ -1,5 +1,5 @@
-import simpleHours from "@/logic/calculator-types/simple-hours.json";
-import profit from "@/logic/calculator-types/profit.calculator.json";
+import simpleHours from "@/logic/engines/calculator/calculator-types/simple-hours.json";
+import profit from "@/logic/engines/calculator/calculator-types/profit.calculator.json";
 
 
 /**

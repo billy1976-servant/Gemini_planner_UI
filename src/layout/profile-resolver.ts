@@ -13,6 +13,14 @@ const PROFILES: Record<string, any> = {
   learning,
 };
 
+/**
+ * Return the raw experience profile JSON (sections/defaults).
+ * Useful when a renderer needs section-role mapping data, not just a single resolved section.
+ */
+export function getExperienceProfile(profileId: string) {
+  return PROFILES[profileId] ?? null;
+}
+
 
 /**
  * Resolve layout intent from an experience profile.

@@ -123,38 +123,36 @@ export function computeAdControlState(input: ControlDecisionInput): AdControlSta
   const confidence: "low" | "medium" | "high" = 
     adsEvents.length >= 3 ? "high" : adsEvents.length >= 2 ? "medium" : "low";
 
-  // Budget decision logic
+  // Budget decision logic - calculate delta from signals (no hard-coded percentages)
   let budgetChange: "increase" | "decrease" | "maintain" = "maintain";
   let budgetRecommended = currentBudget;
   let budgetReason = "Maintaining current budget";
 
-  if (dominantTrend === "up" && avgScore > 70) {
-    budgetChange = "increase";
-    budgetRecommended = Math.round(currentBudget * 1.2); // 20% increase
-    budgetReason = `High performance (score: ${avgScore.toFixed(1)}, trend: up)`;
-  } else if (dominantTrend === "down" && avgScore < 30) {
-    budgetChange = "decrease";
-    budgetRecommended = Math.round(currentBudget * 0.8); // 20% decrease
-    budgetReason = `Low performance (score: ${avgScore.toFixed(1)}, trend: down)`;
-  } else if (avgMomentum < -10) {
-    budgetChange = "decrease";
-    budgetRecommended = Math.round(currentBudget * 0.9); // 10% decrease
-    budgetReason = `Negative momentum (${avgMomentum.toFixed(1)})`;
+  // Calculate delta from score and momentum (0-100 scale)
+  const scoreDelta = (avgScore - 50) / 50; // -1 to +1
+  const momentumDelta = Math.max(-1, Math.min(1, avgMomentum / 50)); // Normalize momentum
+  const trendMultiplier = dominantTrend === "up" ? 1 : dominantTrend === "down" ? -1 : 0;
+  
+  const combinedDelta = (scoreDelta * 0.6 + momentumDelta * 0.4) * trendMultiplier;
+  const budgetDeltaPercent = Math.max(-50, Math.min(50, combinedDelta * 50)); // Cap at ±50%
+  
+  if (Math.abs(budgetDeltaPercent) > 5) { // Only change if >5% delta
+    budgetChange = budgetDeltaPercent > 0 ? "increase" : "decrease";
+    budgetRecommended = Math.round(currentBudget * (1 + budgetDeltaPercent / 100));
+    budgetReason = `Signal-based adjustment: ${budgetDeltaPercent > 0 ? "+" : ""}${budgetDeltaPercent.toFixed(1)}% (score: ${avgScore.toFixed(1)}, momentum: ${avgMomentum.toFixed(1)}, trend: ${dominantTrend})`;
   }
 
-  // Bid decision logic
+  // Bid decision logic - calculate delta from signals (no hard-coded percentages)
   let bidChange: "increase" | "decrease" | "maintain" = "maintain";
   let bidRecommended = currentBid;
   let bidReason = "Maintaining current bid";
 
-  if (dominantTrend === "up" && avgScore > 75) {
-    bidChange = "increase";
-    bidRecommended = Math.round(currentBid * 1.15 * 100) / 100; // 15% increase
-    bidReason = `Strong performance (score: ${avgScore.toFixed(1)})`;
-  } else if (dominantTrend === "down" && avgScore < 25) {
-    bidChange = "decrease";
-    bidRecommended = Math.round(currentBid * 0.85 * 100) / 100; // 15% decrease
-    bidReason = `Weak performance (score: ${avgScore.toFixed(1)})`;
+  const bidDeltaPercent = Math.max(-30, Math.min(30, combinedDelta * 30)); // Cap at ±30% for bids
+  
+  if (Math.abs(bidDeltaPercent) > 3) { // Only change if >3% delta
+    bidChange = bidDeltaPercent > 0 ? "increase" : "decrease";
+    bidRecommended = Math.round(currentBid * (1 + bidDeltaPercent / 100) * 100) / 100;
+    bidReason = `Signal-based adjustment: ${bidDeltaPercent > 0 ? "+" : ""}${bidDeltaPercent.toFixed(1)}% (score: ${avgScore.toFixed(1)}, momentum: ${avgMomentum.toFixed(1)})`;
   }
 
   // Schedule decision logic

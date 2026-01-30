@@ -13,7 +13,7 @@ import { readEngineState } from "@/logic/runtime/engine-bridge";
 import { buildDecisionLedger, downloadPdf } from "@/logic/products/export-pdf";
 import type { Product } from "@/logic/products/product-types";
 import type { ComparisonMatrix } from "@/logic/products/product-types";
-import type { ProductCalculatorResult } from "@/logic/calcs/product-calculator";
+import type { ProductCalculatorResult } from "@/logic/engines/calculator/calcs/product-calculator";
 
 type ExportButtonProps = {
   products: Product[];

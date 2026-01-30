@@ -1,5 +1,29 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'www.gibson.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'gibson.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.containercreations.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'containercreations.com',
+        pathname: '/**',
+      },
+    ],
+  },
   webpack: (config) => {
     // Ignore .txt files - treat them as raw text assets
     // This prevents webpack from trying to parse them as JavaScript

@@ -4,11 +4,7 @@
        -> 2.0 Signup
   1.3 | Learn | Chip [title, body, media]
        -> 3.0 Info
-  1.4 | FooterNav | Footer [text, children]
-       1.4.1 | HomeLink | Chip [title]
-              -> 1.0 Home
-       1.4.2 | ExitLink | Chip [title]
-              -> 4.0 Success
+1.4 | FooterNav | Footer [left, right]
 
 
 2.0 | Signup | Section [title, children]

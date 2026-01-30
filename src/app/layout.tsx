@@ -14,6 +14,11 @@ import { setPalette, getPaletteName } from "@/engine/core/palette-store";
 ============================================================ */
 import { setLayout } from "@/engine/core/layout-store";
 
+/* ============================================================
+   🧠 STATE (PHASE B: INTERNAL VIEW NAV)
+============================================================ */
+import { dispatchState } from "@/state/state-store";
+
 
 /* ============================================================
    🧠 BEHAVIOR LISTENER
@@ -80,6 +85,12 @@ export default function RootLayout({ children }: any) {
   ============================================================ */
   useEffect(() => {
     installBehaviorListener((to: string) => {
+      // Phase B: Back-compat for legacy multi-view screens.
+      // Destinations like "|Signup" are *view IDs*, not screen file paths.
+      if (typeof to === "string" && to.startsWith("|")) {
+        dispatchState("state:currentView", { value: to });
+        return;
+      }
       router.replace(`/?screen=${encodeURIComponent(to)}`);
     });
   }, [router]);
@@ -89,7 +100,7 @@ export default function RootLayout({ children }: any) {
      🧱 APPLY EXPERIENCE PRESET
   ============================================================ */
   useEffect(() => {
-    setLayout({ preset: experience });
+    setLayout({ experience });
   }, [experience]);
 
 

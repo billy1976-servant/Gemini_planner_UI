@@ -1,0 +1,202 @@
+{
+  "id": "screenRoot",
+  "type": "screen",
+  "state": { "currentView": "|home" },
+  "children": [
+    {
+      "id": "|PipelineProofHome",
+      "type": "section",
+      "content": { "title": "FULL_PIPELINE_PROOF — Home" },
+      "when": { "state": "currentView", "equals": "|home" },
+      "children": [
+        {
+          "id": "proofCard",
+          "type": "card",
+          "content": {
+            "title": "Pipeline Proof",
+            "body": "This screen exercises all molecules and the input→state→journal pipeline.",
+            "media": "https://via.placeholder.com/300x120"
+          }
+        },
+        {
+          "id": "proofAvatar",
+          "type": "avatar",
+          "content": {
+            "media": "https://placehold.co/64x64/png",
+            "text": "Avatar"
+          }
+        },
+        {
+          "id": "proofChip",
+          "type": "chip",
+          "content": {
+            "title": "Chip",
+            "body": "Body",
+            "media": "icon:check"
+          }
+        },
+        {
+          "id": "diagEmailField",
+          "type": "field",
+          "content": {
+            "label": "Email (diag.email)",
+            "input": ""
+          },
+          "params": {
+            "field": {
+              "multiline": false,
+              "fieldKey": "diag.email"
+            }
+          }
+        },
+        {
+          "id": "saveJournalBtn",
+          "type": "button",
+          "content": { "label": "Save (journal.add → pipeline.entry)" },
+          "behavior": {
+            "type": "Action",
+            "params": {
+              "name": "state:journal.add",
+              "track": "pipeline",
+              "key": "entry",
+              "valueFrom": "input",
+              "fieldKey": "diag.email"
+            }
+          }
+        },
+        {
+          "id": "goAltViewBtn",
+          "type": "button",
+          "content": { "label": "Go to |alt (view navigation)" },
+          "behavior": {
+            "type": "Navigation",
+            "params": {
+              "verb": "go",
+              "variant": "screen",
+              "to": "|alt"
+            }
+          }
+        },
+        {
+          "id": "goLinkedScreenBtn",
+          "type": "button",
+          "content": { "label": "Go to linked.json (screen path navigation)" },
+          "behavior": {
+            "type": "Navigation",
+            "params": {
+              "verb": "go",
+              "variant": "screen",
+              "to": "apps/diagnostics/linked.json"
+            }
+          }
+        },
+        {
+          "id": "proofList",
+          "type": "list",
+          "content": {
+            "items": [
+              {
+                "label": "List item → |alt",
+                "behavior": {
+                  "type": "Navigation",
+                  "params": { "to": "|alt" }
+                }
+              },
+              {
+                "label": "List item → state.update demo",
+                "behavior": {
+                  "type": "Action",
+                  "params": { "name": "state:update", "key": "diag.listDemo", "value": "clicked" }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "proofStepper",
+          "type": "stepper",
+          "content": {
+            "steps": [
+              { "label": "Step 1" },
+              { "label": "Step 2" }
+            ]
+          },
+          "steps": [
+            {
+              "content": { "label": "Step 1" },
+              "behavior": { "type": "Navigation", "params": { "to": "|alt" } }
+            },
+            {
+              "content": { "label": "Step 2" },
+              "behavior": { "type": "Navigation", "params": { "to": "|home" } }
+            }
+          ]
+        },
+        {
+          "id": "proofToolbar",
+          "type": "toolbar",
+          "content": {
+            "actions": [
+              {
+                "label": "Toolbar action → |alt",
+                "behavior": { "type": "Navigation", "params": { "to": "|alt" } }
+              }
+            ]
+          }
+        },
+        {
+          "id": "proofFooter",
+          "type": "footer",
+          "content": {
+            "left": {
+              "label": "Home",
+              "behavior": { "type": "Navigation", "params": { "to": "|home" } }
+            },
+            "right": {
+              "label": "Alt",
+              "behavior": { "type": "Navigation", "params": { "to": "|alt" } }
+            }
+          }
+        },
+        {
+          "id": "proofToast",
+          "type": "toast",
+          "content": { "message": "Toast message" },
+          "behavior": { "type": "Navigation", "params": { "to": "|alt" } }
+        },
+        {
+          "id": "proofModal",
+          "type": "modal",
+          "content": { "title": "Modal title", "body": "Modal body" }
+        }
+      ]
+    },
+    {
+      "id": "|PipelineProofAlt",
+      "type": "section",
+      "content": { "title": "FULL_PIPELINE_PROOF — Alt View" },
+      "when": { "state": "currentView", "equals": "|alt" },
+      "children": [
+        {
+          "id": "altCard",
+          "type": "card",
+          "content": {
+            "title": "Alt view",
+            "body": "If you can see this, |view navigation works.",
+            "media": "https://via.placeholder.com/300x120"
+          }
+        },
+        {
+          "id": "backHomeBtn",
+          "type": "button",
+          "content": { "label": "Back to |home" },
+          "behavior": {
+            "type": "Navigation",
+            "params": { "verb": "go", "variant": "screen", "to": "|home" }
+          }
+        }
+      ]
+    }
+  ]
+}
+

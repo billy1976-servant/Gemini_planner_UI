@@ -8,11 +8,13 @@
  * 4) Support links (manuals, specs PDFs) discovered on the page
  */
 
-import { fetchHtml, validateUrl } from "./fetch-html";
+import { fetchHtml } from "./fetch-html";
 import { parseJsonLd, findProductSchema, extractFromJsonLd, parseMetaTags } from "./parse-jsonld";
 import type { RawExtraction } from "../product-types";
-import { ProductRepository } from "../product-repository";
 
+function trace(label: string, data: any) {
+  console.log(`🔎 [TRACE] ${label}:`, data);
+}
 export type ProductExtractorConfig = {
   selectors?: {
     specTable?: string[]; // CSS selectors for spec tables
@@ -47,33 +49,21 @@ const DEFAULT_CONFIG: ProductExtractorConfig = {
 };
 
 /**
- * Extract product data from product page
+ * Extract product data from product page.
+ *
+ * IMPORTANT: This function must NEVER modify or rebuild the URL.
+ * It always fetches the exact URL it is given.
  */
 export async function extractProduct(
   productUrl: string,
-  config: ProductExtractorConfig = {},
-  repository?: ProductRepository
+  config: ProductExtractorConfig = {}
 ): Promise<RawExtraction> {
-  // Validate URL
-  if (!validateUrl(productUrl)) {
-    throw new Error(`Invalid product URL: ${productUrl}`);
-  }
-  
-  // Check cache first
-  let html: string;
-  if (repository) {
-    const cachedHtml = repository.getCachedHtml(productUrl);
-    if (cachedHtml) {
-      html = cachedHtml;
-    } else {
-      html = await fetchHtml(productUrl);
-      await repository.cacheHtml(productUrl, html);
-    }
-  } else {
-    html = await fetchHtml(productUrl);
-  }
-  
-  // Extract from HTML
+  console.log("[URLTRACE] extractProduct  IN=" + productUrl + "  OUT=same  FILE=extract-product.ts  FN=extractProduct");
+  trace("RAW URL", productUrl);
+  console.log("[extractProduct] URL IN:", productUrl);
+  const html = await fetchHtml(productUrl, {});
+  const htmlPreview = typeof html === "string" ? html.slice(0, 120) : "";
+  console.log("[URLTRACE] extractProduct html_preview(120)  IN=" + productUrl + "  preview=" + JSON.stringify(htmlPreview) + "  FILE=extract-product.ts  FN=extractProduct");
   return extractFromHtml(html, productUrl, config);
 }
 
@@ -97,6 +87,7 @@ function extractFromHtml(
   const productSchema = findProductSchema(jsonLdData);
   
   if (productSchema) {
+    trace("EXTRACTOR USED", "jsonld");
     const jsonLdExtraction = extractFromJsonLd(productSchema);
     Object.assign(extraction, jsonLdExtraction);
   }
@@ -111,6 +102,7 @@ function extractFromHtml(
   if (!extraction.descriptionBlocks || extraction.descriptionBlocks.length === 0) {
     extraction.descriptionBlocks = extractDescriptionBlocks(html, opts);
   }
+  trace("EXTRACTOR USED", "dom");
   
   // Extract support links
   extraction.supportLinks = extractSupportLinks(html, opts);
@@ -118,6 +110,10 @@ function extractFromHtml(
   // Extract additional images (if not already extracted from JSON-LD)
   if (!extraction.images || extraction.images.length === 0) {
     extraction.images = extractImages(html, productUrl);
+  }
+  
+  if (!productSchema && (!extraction.descriptionBlocks || extraction.descriptionBlocks.length === 0) && (!extraction.specTable || extraction.specTable.length === 0)) {
+    trace("EXTRACTOR USED", "fallback");
   }
   
   return extraction;

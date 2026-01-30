@@ -8,6 +8,10 @@
       "readingFlow": "vertical"
     },
     "sections": {
+      "header": {
+        "type": "row",
+        "params": { "gap": "1rem", "justify": "space-between", "align": "center", "wrap": "wrap" }
+      },
       "hero": {
         "type": "column",
         "params": { "align": "center", "gap": "2rem" }
@@ -17,6 +21,10 @@
         "params": { "gap": "1.5rem" }
       },
       "features": {
+        "type": "grid",
+        "params": { "columns": 3, "gap": "2rem" }
+      },
+      "products": {
         "type": "grid",
         "params": { "columns": 3, "gap": "2rem" }
       },

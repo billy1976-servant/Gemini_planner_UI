@@ -6,22 +6,21 @@ import dynamic from "next/dynamic";
 import JsonRenderer from "@/engine/core/json-renderer";
 import { loadScreen } from "@/engine/core/screen-loader";
 import SectionLayoutDropdown from "@/dev/section-layout-dropdown";
-import { installRuntimeVerbInterpreter } from "@/engine/runtime/runtime-verb-interpreter";
 import { resolveLandingPage } from "@/logic/runtime/landing-page-resolver";
 
 
 /* ============================================================
    TSX SCREEN LOADER (NO JSON-RENDERER INVOLVEMENT)
    - This is the ONLY place TSX screens are handled.
-   - Auto-discovers ALL files under /screens/tsx-screens
+   - Auto-discovers ALL files under /screens (all subfolders)
 ============================================================ */
 
 
 /* ------------------------------------------------------------
-   🔑 AUTO TSX MAP (EXISTING — UNCHANGED)
+   🔑 AUTO TSX MAP (UPDATED — SCANS ALL SCREENS FOLDERS)
 ------------------------------------------------------------ */
 const tsxContext = (require as any).context(
-  "@/screens/tsx-screens",
+  "@/screens",
   true,
   /\.tsx$/
 );
@@ -36,15 +35,17 @@ const AUTO_TSX_MAP: Record<
 tsxContext.keys().forEach((key: string) => {
   const normalized = key.replace(/^.\//, "").replace(/\.tsx$/, "");
   AUTO_TSX_MAP[normalized] = () =>
-    import(`@/screens/tsx-screens/${normalized}`);
+    import(`@/screens/${normalized}`);
 });
 
 
 /* ------------------------------------------------------------
-   🔧 PATH NORMALIZER (UNCHANGED)
+   🔧 PATH NORMALIZER (UPDATED — HANDLES ALL SUBDIRECTORIES)
 ------------------------------------------------------------ */
 function normalizeTsxPath(path: string) {
+  // Remove common prefixes (tsx:, tsx-screens/, etc.) and file extensions
   return path
+    .replace(/^tsx:/, "")
     .replace(/^tsx-screens\//, "")
     .replace(/\.screen$/, "")
     .replace(/\.tsx$/, "");
@@ -52,19 +53,31 @@ function normalizeTsxPath(path: string) {
 
 
 /* ------------------------------------------------------------
-   🔑 RESOLVER (UNCHANGED)
+   🔑 RESOLVER (UPDATED — TRIES MULTIPLE PATH FORMATS)
 ------------------------------------------------------------ */
 function resolveTsxScreen(path: string) {
+  // Try multiple path formats for backward compatibility
   const normalized = normalizeTsxPath(path);
-  const loader = AUTO_TSX_MAP[normalized];
+  
+  // Try exact match first
+  let loader = AUTO_TSX_MAP[normalized];
+  
+  // If not found, try with tsx-screens prefix (for backward compatibility)
+  if (!loader && !normalized.startsWith("tsx-screens/")) {
+    loader = AUTO_TSX_MAP[`tsx-screens/${normalized}`];
+  }
+  
+  // If still not found, try without any prefix
+  if (!loader && normalized.includes("/")) {
+    const parts = normalized.split("/");
+    loader = AUTO_TSX_MAP[parts.slice(1).join("/")];
+  }
+  
   if (loader) {
     return dynamic(loader, { ssr: false });
   }
   return null;
 }
-
-
-installRuntimeVerbInterpreter();
 
 
 export default function Page() {

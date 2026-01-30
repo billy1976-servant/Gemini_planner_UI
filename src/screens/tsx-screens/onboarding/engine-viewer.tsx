@@ -1,13 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { loadFlow, getAvailableFlows, setEngineFlow, setCurrentEngine, type EducationFlow } from "@/logic/content/flow-loader";
-import { getAvailableEngines, applyEngine, getPresentation, type EngineId, type ExecutionEngineId, isExecutionEngine } from "@/logic/engines/engine-registry";
-import type { EngineExplainEvent } from "@/logic/engines/engine-explain";
+import { loadFlow, getAvailableFlows, setEngineFlow, setCurrentEngine, type EducationFlow } from "@/logic/flows/flow-loader";
+import { getAvailableEngines, applyEngine, getPresentation, type EngineId, type ExecutionEngineId, isExecutionEngine } from "@/logic/engine-system/engine-registry";
+import type { EngineExplainEvent } from "@/logic/engine-system/engine-explain";
 import type { PresentationModel } from "@/logic/engines/presentation-types";
 import type { NextStepReason } from "@/logic/engines/next-step-reason";
 import { createNextStepReason, formatNextStepReasonAsJSON } from "@/logic/engines/next-step-reason";
-import { getSelectionReason } from "@/logic/engines/engine-selector";
+import { getSelectionReason } from "@/logic/engines/shared/engine-selector";
 import { readEngineState, subscribeEngineState } from "@/logic/runtime/engine-bridge";
 import type { EngineState } from "@/logic/runtime/engine-state";
 import { ENGINE_STATE_KEY } from "@/logic/runtime/engine-state";
@@ -286,6 +286,11 @@ export default function EngineViewer() {
         
         <div style={selectorRow}>
           <label style={selectorLabel}>Select Engine:</label>
+          {/* STEP 5: Prove No Legacy Engine Is Controlling Behavior */}
+          {(() => {
+            console.log("[LEGACY ENGINE SELECTOR FOUND HERE]", "src/screens/tsx-screens/onboarding/engine-viewer.tsx");
+            return null;
+          })()}
           <select
             value={selectedEngineId}
             onChange={(e) => handleEngineChange(e.target.value as EngineId)}

@@ -1,0 +1,64 @@
+{
+  "id": "screenRoot",
+  "type": "screen",
+  "children": [
+    {
+      "id": "|signup",
+      "type": "section",
+      "children": [
+        {
+          "id": "|email",
+          "type": "field",
+          "children": [],
+          "content": {
+            "label": "Email"
+          }
+        },
+        {
+          "id": "|password",
+          "type": "field",
+          "children": [],
+          "content": {
+            "label": "Password"
+          }
+        },
+        {
+          "id": "|submit",
+          "type": "button",
+          "children": [],
+          "content": {
+            "label": "Submit"
+          },
+          "behavior": {
+            "type": "Navigation",
+            "params": {
+              "verb": "go",
+              "variant": "screen",
+              "screenId": "apps/new-blueprint-test/success.json"
+            }
+          }
+        },
+        {
+          "id": "|back",
+          "type": "button",
+          "children": [],
+          "content": {
+            "label": "Back"
+          },
+          "behavior": {
+            "type": "Navigation",
+            "params": {
+              "verb": "go",
+              "variant": "screen",
+              "screenId": "apps/new-blueprint-test/app-30-40.json"
+            }
+          }
+        }
+      ],
+      "content": {
+        "title": "Signup"
+      }
+    }
+  ]
+}
+

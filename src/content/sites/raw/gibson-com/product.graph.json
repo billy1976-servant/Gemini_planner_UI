@@ -1,0 +1,855 @@
+{
+  "products": [
+    {
+      "id": "prod_c0axtl",
+      "brand": "gibson",
+      "name": "Gibson  Dual Falcon 20 2x10 Combo, Cream Bronco Vinyl with Oxblood Grille",
+      "category": "effects/amplifiers",
+      "url": "https://gibson.com/products/gibson-amplifiers-dual-falcon-20-2x10-combo-cream-bronco-vinyl-with-oxblood-grille",
+      "price": {
+        "amount": 0,
+        "currency": "USD",
+        "source": {
+          "label": "Extracted from page",
+          "url": "https://gibson.com/products/gibson-amplifiers-dual-falcon-20-2x10-combo-cream-bronco-vinyl-with-oxblood-grille",
+          "snippet": "Price found on https://gibson.com/products/gibson-amplifiers-dual-falcon-20-2x10-combo-cream-bronco-vinyl-with-oxblood-grille",
+          "kind": "price"
+        }
+      },
+      "images": [
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/1.DF20.CO.J10_1_Front.png?v=1751382138&amp;width=1100",
+          "alt": "Gibson  Dual Falcon 20 2x10 Combo, Cream Bronco Vinyl with Oxblood Grille",
+          "sourceUrl": "https://gibson.com/products/gibson-amplifiers-dual-falcon-20-2x10-combo-cream-bronco-vinyl-with-oxblood-grille"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/1.DF20.CO.J10_2_Back.png?v=1751382138&amp;width=880",
+          "alt": "Gibson  Dual Falcon 20 2x10 Combo, Cream Bronco Vinyl with Oxblood Grille",
+          "sourceUrl": "https://gibson.com/products/gibson-amplifiers-dual-falcon-20-2x10-combo-cream-bronco-vinyl-with-oxblood-grille"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/1.DF20.CO.J10_3_Right.png?v=1751382138&amp;width=880",
+          "alt": "Gibson  Dual Falcon 20 2x10 Combo, Cream Bronco Vinyl with Oxblood Grille",
+          "sourceUrl": "https://gibson.com/products/gibson-amplifiers-dual-falcon-20-2x10-combo-cream-bronco-vinyl-with-oxblood-grille"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/1.DF20.CO.J10_4_Left.png?v=1751382138&amp;width=880",
+          "alt": "Gibson  Dual Falcon 20 2x10 Combo, Cream Bronco Vinyl with Oxblood Grille",
+          "sourceUrl": "https://gibson.com/products/gibson-amplifiers-dual-falcon-20-2x10-combo-cream-bronco-vinyl-with-oxblood-grille"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/1.DF20.CO.J10_5_Top.png?v=1751382138&amp;width=880",
+          "alt": "Gibson  Dual Falcon 20 2x10 Combo, Cream Bronco Vinyl with Oxblood Grille",
+          "sourceUrl": "https://gibson.com/products/gibson-amplifiers-dual-falcon-20-2x10-combo-cream-bronco-vinyl-with-oxblood-grille"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/FC.DF20_6_Footswitch.png?v=1751382138&amp;width=880",
+          "alt": "Gibson  Dual Falcon 20 2x10 Combo, Cream Bronco Vinyl with Oxblood Grille",
+          "sourceUrl": "https://gibson.com/products/gibson-amplifiers-dual-falcon-20-2x10-combo-cream-bronco-vinyl-with-oxblood-grille"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/FC.DF20_7_FootswitchRight.png?v=1751382138&amp;width=880",
+          "alt": "Gibson  Dual Falcon 20 2x10 Combo, Cream Bronco Vinyl with Oxblood Grille",
+          "sourceUrl": "https://gibson.com/products/gibson-amplifiers-dual-falcon-20-2x10-combo-cream-bronco-vinyl-with-oxblood-grille"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/1.DF20.CO.J10_1_Front.png?v=1751382138&amp;width=533",
+          "alt": "Gibson  Dual Falcon 20 2x10 Combo, Cream Bronco Vinyl with Oxblood Grille",
+          "sourceUrl": "https://gibson.com/products/gibson-amplifiers-dual-falcon-20-2x10-combo-cream-bronco-vinyl-with-oxblood-grille"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/1.DF20M2M000001091_1_Front_2163c68c-70e4-4fea-a781-86b2a7fe5406.png?v=1751381711&amp;width=533",
+          "alt": "Gibson  Dual Falcon 20 2x10 Combo, Cream Bronco Vinyl with Oxblood Grille",
+          "sourceUrl": "https://gibson.com/products/gibson-amplifiers-dual-falcon-20-2x10-combo-cream-bronco-vinyl-with-oxblood-grille"
+        },
+        {
+          "url": "https://cdn.shopify.com/s/files/1/0659/3966/9171/files/Group_1634.png?v=1750278354",
+          "alt": "Gibson  Dual Falcon 20 2x10 Combo, Cream Bronco Vinyl with Oxblood Grille",
+          "sourceUrl": "https://gibson.com/products/gibson-amplifiers-dual-falcon-20-2x10-combo-cream-bronco-vinyl-with-oxblood-grille"
+        }
+      ],
+      "descriptionBlocks": [
+        {
+          "text": "Details Two channel, 2x10&quot; all-tube combo amplifier with Multi-Watt™ (... more",
+          "sourceUrl": "https://gibson.com/products/gibson-amplifiers-dual-falcon-20-2x10-combo-cream-bronco-vinyl-with-oxblood-grille"
+        }
+      ],
+      "attributes": {},
+      "specs": [],
+      "sources": [
+        {
+          "label": "Extracted from page",
+          "url": "https://gibson.com/products/gibson-amplifiers-dual-falcon-20-2x10-combo-cream-bronco-vinyl-with-oxblood-grille",
+          "snippet": "Product data extracted from https://gibson.com/products/gibson-amplifiers-dual-falcon-20-2x10-combo-cream-bronco-vinyl-with-oxblood-grille",
+          "kind": "description"
+        }
+      ]
+    },
+    {
+      "id": "prod_qwqqsq",
+      "brand": "gibson",
+      "name": "Gibson Falcon 5 1x10 Combo, Cream Bronco Vinyl with Oxblood Grille",
+      "category": "effects/amplifiers",
+      "url": "https://gibson.com/products/gibson-amplifiers-falcon-5-1x10-combo-cream-bronco-vinyl-with-oxblood-grille",
+      "price": {
+        "amount": 0,
+        "currency": "USD",
+        "source": {
+          "label": "Extracted from page",
+          "url": "https://gibson.com/products/gibson-amplifiers-falcon-5-1x10-combo-cream-bronco-vinyl-with-oxblood-grille",
+          "snippet": "Price found on https://gibson.com/products/gibson-amplifiers-falcon-5-1x10-combo-cream-bronco-vinyl-with-oxblood-grille",
+          "kind": "price"
+        }
+      },
+      "images": [
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/1.FA5.CO.J10__1_Front.png?v=1751388406&amp;width=1100",
+          "alt": "Gibson Falcon 5 1x10 Combo, Cream Bronco Vinyl with Oxblood Grille",
+          "sourceUrl": "https://gibson.com/products/gibson-amplifiers-falcon-5-1x10-combo-cream-bronco-vinyl-with-oxblood-grille"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/1.FA5.CO.J10_2_Back.png?v=1751388406&amp;width=880",
+          "alt": "Gibson Falcon 5 1x10 Combo, Cream Bronco Vinyl with Oxblood Grille",
+          "sourceUrl": "https://gibson.com/products/gibson-amplifiers-falcon-5-1x10-combo-cream-bronco-vinyl-with-oxblood-grille"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/1.FA5.CO.J10_3_Right.png?v=1751388406&amp;width=880",
+          "alt": "Gibson Falcon 5 1x10 Combo, Cream Bronco Vinyl with Oxblood Grille",
+          "sourceUrl": "https://gibson.com/products/gibson-amplifiers-falcon-5-1x10-combo-cream-bronco-vinyl-with-oxblood-grille"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/1.FA5.CO.J10_4_Left.png?v=1751388406&amp;width=880",
+          "alt": "Gibson Falcon 5 1x10 Combo, Cream Bronco Vinyl with Oxblood Grille",
+          "sourceUrl": "https://gibson.com/products/gibson-amplifiers-falcon-5-1x10-combo-cream-bronco-vinyl-with-oxblood-grille"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/1.FA5.CO.J10_5_Top.png?v=1751388406&amp;width=880",
+          "alt": "Gibson Falcon 5 1x10 Combo, Cream Bronco Vinyl with Oxblood Grille",
+          "sourceUrl": "https://gibson.com/products/gibson-amplifiers-falcon-5-1x10-combo-cream-bronco-vinyl-with-oxblood-grille"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/1.FA5M2M000001089_1_Front.png?v=1751382882&amp;width=533",
+          "alt": "Gibson Falcon 5 1x10 Combo, Cream Bronco Vinyl with Oxblood Grille",
+          "sourceUrl": "https://gibson.com/products/gibson-amplifiers-falcon-5-1x10-combo-cream-bronco-vinyl-with-oxblood-grille"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/1.FA5.CO.J10__1_Front.png?v=1751388406&amp;width=533",
+          "alt": "Gibson Falcon 5 1x10 Combo, Cream Bronco Vinyl with Oxblood Grille",
+          "sourceUrl": "https://gibson.com/products/gibson-amplifiers-falcon-5-1x10-combo-cream-bronco-vinyl-with-oxblood-grille"
+        },
+        {
+          "url": "https://cdn.shopify.com/s/files/1/0659/3966/9171/files/Group_1634.png?v=1750278354",
+          "alt": "Gibson Falcon 5 1x10 Combo, Cream Bronco Vinyl with Oxblood Grille",
+          "sourceUrl": "https://gibson.com/products/gibson-amplifiers-falcon-5-1x10-combo-cream-bronco-vinyl-with-oxblood-grille"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/1.FA5.CO.J10__1_Front.png?v=1751388406&width=1445",
+          "alt": "Gibson Falcon 5 1x10 Combo, Cream Bronco Vinyl with Oxblood Grille",
+          "sourceUrl": "https://gibson.com/products/gibson-amplifiers-falcon-5-1x10-combo-cream-bronco-vinyl-with-oxblood-grille"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/1.FA5.CO.J10_2_Back.png?v=1751388406&width=1445",
+          "alt": "Gibson Falcon 5 1x10 Combo, Cream Bronco Vinyl with Oxblood Grille",
+          "sourceUrl": "https://gibson.com/products/gibson-amplifiers-falcon-5-1x10-combo-cream-bronco-vinyl-with-oxblood-grille"
+        }
+      ],
+      "descriptionBlocks": [
+        {
+          "text": "For a limited time only, receive a three-month subscription to the Gibson App for free with the purchase of this product. Click here to learn more about the Gibson App.",
+          "sourceUrl": "https://gibson.com/products/gibson-amplifiers-falcon-5-1x10-combo-cream-bronco-vinyl-with-oxblood-grille"
+        }
+      ],
+      "attributes": {},
+      "specs": [],
+      "sources": [
+        {
+          "label": "Extracted from page",
+          "url": "https://gibson.com/products/gibson-amplifiers-falcon-5-1x10-combo-cream-bronco-vinyl-with-oxblood-grille",
+          "snippet": "Product data extracted from https://gibson.com/products/gibson-amplifiers-falcon-5-1x10-combo-cream-bronco-vinyl-with-oxblood-grille",
+          "kind": "description"
+        }
+      ]
+    },
+    {
+      "id": "prod_qo9u1r",
+      "brand": "gibson",
+      "name": "Maestro Fuzz-Tone FZ-M Effects Pedal",
+      "category": "effects/pedals",
+      "url": "https://gibson.com/products/maestro-fuzz-tone-fz-m-effects-pedal",
+      "price": {
+        "amount": 250,
+        "currency": "USD",
+        "source": {
+          "label": "Extracted from page",
+          "url": "https://gibson.com/products/maestro-fuzz-tone-fz-m-effects-pedal",
+          "snippet": "Price found on https://gibson.com/products/maestro-fuzz-tone-fz-m-effects-pedal",
+          "kind": "price"
+        }
+      },
+      "images": [
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCFTP_front_33395936-bf6b-44de-b80f-e036bcc5b225.png?v=1744396649&amp;width=1100",
+          "alt": "Maestro Fuzz-Tone FZ-M Effects Pedal",
+          "sourceUrl": "https://gibson.com/products/maestro-fuzz-tone-fz-m-effects-pedal"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCFTP_3qtr.png?v=1744396909&amp;width=880",
+          "alt": "Maestro Fuzz-Tone FZ-M Effects Pedal",
+          "sourceUrl": "https://gibson.com/products/maestro-fuzz-tone-fz-m-effects-pedal"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCFTP_rear.png?v=1744396909&amp;width=880",
+          "alt": "Maestro Fuzz-Tone FZ-M Effects Pedal",
+          "sourceUrl": "https://gibson.com/products/maestro-fuzz-tone-fz-m-effects-pedal"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCFTP_side_a.png?v=1744396909&amp;width=880",
+          "alt": "Maestro Fuzz-Tone FZ-M Effects Pedal",
+          "sourceUrl": "https://gibson.com/products/maestro-fuzz-tone-fz-m-effects-pedal"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCFTP_side_b.png?v=1744396909&amp;width=880",
+          "alt": "Maestro Fuzz-Tone FZ-M Effects Pedal",
+          "sourceUrl": "https://gibson.com/products/maestro-fuzz-tone-fz-m-effects-pedal"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCFTP_packaging_top.png?v=1744396990&amp;width=880",
+          "alt": "Maestro Fuzz-Tone FZ-M Effects Pedal",
+          "sourceUrl": "https://gibson.com/products/maestro-fuzz-tone-fz-m-effects-pedal"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCAEFP_front.png?v=1733944695&amp;width=533",
+          "alt": "Maestro Fuzz-Tone FZ-M Effects Pedal",
+          "sourceUrl": "https://gibson.com/products/maestro-fuzz-tone-fz-m-effects-pedal"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCTBP_front.webp?v=1742933403&amp;width=533",
+          "alt": "Maestro Fuzz-Tone FZ-M Effects Pedal",
+          "sourceUrl": "https://gibson.com/products/maestro-fuzz-tone-fz-m-effects-pedal"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCCCP_front.png?v=1736440692&amp;width=533",
+          "alt": "Maestro Fuzz-Tone FZ-M Effects Pedal",
+          "sourceUrl": "https://gibson.com/products/maestro-fuzz-tone-fz-m-effects-pedal"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCDDP_front.png?v=1736439254&amp;width=533",
+          "alt": "Maestro Fuzz-Tone FZ-M Effects Pedal",
+          "sourceUrl": "https://gibson.com/products/maestro-fuzz-tone-fz-m-effects-pedal"
+        }
+      ],
+      "descriptionBlocks": [
+        {
+          "text": "Details All-analog fuzz pedal with modern and classic modes and a three-con... more",
+          "sourceUrl": "https://gibson.com/products/maestro-fuzz-tone-fz-m-effects-pedal"
+        }
+      ],
+      "attributes": {},
+      "specs": [],
+      "sources": [
+        {
+          "label": "Extracted from page",
+          "url": "https://gibson.com/products/maestro-fuzz-tone-fz-m-effects-pedal",
+          "snippet": "Product data extracted from https://gibson.com/products/maestro-fuzz-tone-fz-m-effects-pedal",
+          "kind": "description"
+        }
+      ]
+    },
+    {
+      "id": "prod_3l85n8",
+      "brand": "gibson",
+      "name": "Maestro Titan Boost",
+      "category": "effects/pedals",
+      "url": "https://gibson.com/products/maestro-titan-boost",
+      "price": {
+        "amount": 250,
+        "currency": "USD",
+        "source": {
+          "label": "Extracted from page",
+          "url": "https://gibson.com/products/maestro-titan-boost",
+          "snippet": "Price found on https://gibson.com/products/maestro-titan-boost",
+          "kind": "price"
+        }
+      },
+      "images": [
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCACSP_front.png?v=1736438200&amp;width=1100",
+          "alt": "Maestro Titan Boost",
+          "sourceUrl": "https://gibson.com/products/maestro-titan-boost"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCACSP_beauty.png?v=1736438201&amp;width=880",
+          "alt": "Maestro Titan Boost",
+          "sourceUrl": "https://gibson.com/products/maestro-titan-boost"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCACSP_jacks.png?v=1744396819&amp;width=880",
+          "alt": "Maestro Titan Boost",
+          "sourceUrl": "https://gibson.com/products/maestro-titan-boost"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCACSP_side_1.png?v=1744396819&amp;width=880",
+          "alt": "Maestro Titan Boost",
+          "sourceUrl": "https://gibson.com/products/maestro-titan-boost"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCACSP_side_2.png?v=1744396819&amp;width=880",
+          "alt": "Maestro Titan Boost",
+          "sourceUrl": "https://gibson.com/products/maestro-titan-boost"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCACSP_box_side.png?v=1736438200&amp;width=880",
+          "alt": "Maestro Titan Boost",
+          "sourceUrl": "https://gibson.com/products/maestro-titan-boost"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCAEFP_front.png?v=1733944695&amp;width=533",
+          "alt": "Maestro Titan Boost",
+          "sourceUrl": "https://gibson.com/products/maestro-titan-boost"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCTBP_front.webp?v=1742933403&amp;width=533",
+          "alt": "Maestro Titan Boost",
+          "sourceUrl": "https://gibson.com/products/maestro-titan-boost"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCCCP_front.png?v=1736440692&amp;width=533",
+          "alt": "Maestro Titan Boost",
+          "sourceUrl": "https://gibson.com/products/maestro-titan-boost"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCDDP_front.png?v=1736439254&amp;width=533",
+          "alt": "Maestro Titan Boost",
+          "sourceUrl": "https://gibson.com/products/maestro-titan-boost"
+        }
+      ],
+      "descriptionBlocks": [
+        {
+          "text": "Details Boost pedal with 25dB of boost with high-pass filter, tone control,... more",
+          "sourceUrl": "https://gibson.com/products/maestro-titan-boost"
+        }
+      ],
+      "attributes": {},
+      "specs": [],
+      "sources": [
+        {
+          "label": "Extracted from page",
+          "url": "https://gibson.com/products/maestro-titan-boost",
+          "snippet": "Product data extracted from https://gibson.com/products/maestro-titan-boost",
+          "kind": "description"
+        }
+      ]
+    },
+    {
+      "id": "prod_pzdcoo",
+      "brand": "gibson",
+      "name": "Maestro Orbit Phaser",
+      "category": "effects/pedals",
+      "url": "https://gibson.com/products/maestro-orbit-phaser",
+      "price": {
+        "amount": 250,
+        "currency": "USD",
+        "source": {
+          "label": "Extracted from page",
+          "url": "https://gibson.com/products/maestro-orbit-phaser",
+          "snippet": "Price found on https://gibson.com/products/maestro-orbit-phaser",
+          "kind": "price"
+        }
+      },
+      "images": [
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCOPP_front.png?v=1736440689&amp;width=1100",
+          "alt": "Maestro Orbit Phaser",
+          "sourceUrl": "https://gibson.com/products/maestro-orbit-phaser"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCOPP_beauty.png?v=1736440688&amp;width=880",
+          "alt": "Maestro Orbit Phaser",
+          "sourceUrl": "https://gibson.com/products/maestro-orbit-phaser"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCOPP_jack.png?v=1744396826&amp;width=880",
+          "alt": "Maestro Orbit Phaser",
+          "sourceUrl": "https://gibson.com/products/maestro-orbit-phaser"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCOPP_side_1.png?v=1744396826&amp;width=880",
+          "alt": "Maestro Orbit Phaser",
+          "sourceUrl": "https://gibson.com/products/maestro-orbit-phaser"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCOPP_side_2.png?v=1744396826&amp;width=880",
+          "alt": "Maestro Orbit Phaser",
+          "sourceUrl": "https://gibson.com/products/maestro-orbit-phaser"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCOPP_box_side.png?v=1736440689&amp;width=880",
+          "alt": "Maestro Orbit Phaser",
+          "sourceUrl": "https://gibson.com/products/maestro-orbit-phaser"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCAEFP_front.png?v=1733944695&amp;width=533",
+          "alt": "Maestro Orbit Phaser",
+          "sourceUrl": "https://gibson.com/products/maestro-orbit-phaser"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCTBP_front.webp?v=1742933403&amp;width=533",
+          "alt": "Maestro Orbit Phaser",
+          "sourceUrl": "https://gibson.com/products/maestro-orbit-phaser"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCCCP_front.png?v=1736440692&amp;width=533",
+          "alt": "Maestro Orbit Phaser",
+          "sourceUrl": "https://gibson.com/products/maestro-orbit-phaser"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCDDP_front.png?v=1736439254&amp;width=533",
+          "alt": "Maestro Orbit Phaser",
+          "sourceUrl": "https://gibson.com/products/maestro-orbit-phaser"
+        }
+      ],
+      "descriptionBlocks": [
+        {
+          "text": "Details All-analog phaser pedal with 4-stage and 6-stage modes and a three-... more",
+          "sourceUrl": "https://gibson.com/products/maestro-orbit-phaser"
+        }
+      ],
+      "attributes": {},
+      "specs": [],
+      "sources": [
+        {
+          "label": "Extracted from page",
+          "url": "https://gibson.com/products/maestro-orbit-phaser",
+          "snippet": "Product data extracted from https://gibson.com/products/maestro-orbit-phaser",
+          "kind": "description"
+        }
+      ]
+    },
+    {
+      "id": "prod_ac36jd",
+      "brand": "gibson",
+      "name": "Maestro Invader Distortion Effects Pedal",
+      "category": "effects/pedals",
+      "url": "https://gibson.com/products/maestro-invader-distortion-effects-pedal",
+      "price": {
+        "amount": 250,
+        "currency": "USD",
+        "source": {
+          "label": "Extracted from page",
+          "url": "https://gibson.com/products/maestro-invader-distortion-effects-pedal",
+          "snippet": "Price found on https://gibson.com/products/maestro-invader-distortion-effects-pedal",
+          "kind": "price"
+        }
+      },
+      "images": [
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCIDP_front.png?v=1736439248&amp;width=1100",
+          "alt": "Maestro Invader Distortion Effects Pedal",
+          "sourceUrl": "https://gibson.com/products/maestro-invader-distortion-effects-pedal"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCIDP_3qtr.png?v=1744396803&amp;width=880",
+          "alt": "Maestro Invader Distortion Effects Pedal",
+          "sourceUrl": "https://gibson.com/products/maestro-invader-distortion-effects-pedal"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCIDP_rear.png?v=1744396803&amp;width=880",
+          "alt": "Maestro Invader Distortion Effects Pedal",
+          "sourceUrl": "https://gibson.com/products/maestro-invader-distortion-effects-pedal"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCIDP_side_a.png?v=1744396803&amp;width=880",
+          "alt": "Maestro Invader Distortion Effects Pedal",
+          "sourceUrl": "https://gibson.com/products/maestro-invader-distortion-effects-pedal"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCIDP_side_b.png?v=1744396803&amp;width=880",
+          "alt": "Maestro Invader Distortion Effects Pedal",
+          "sourceUrl": "https://gibson.com/products/maestro-invader-distortion-effects-pedal"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCIDP_packaging_top.png?v=1744396957&amp;width=880",
+          "alt": "Maestro Invader Distortion Effects Pedal",
+          "sourceUrl": "https://gibson.com/products/maestro-invader-distortion-effects-pedal"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCAEFP_front.png?v=1733944695&amp;width=533",
+          "alt": "Maestro Invader Distortion Effects Pedal",
+          "sourceUrl": "https://gibson.com/products/maestro-invader-distortion-effects-pedal"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCTBP_front.webp?v=1742933403&amp;width=533",
+          "alt": "Maestro Invader Distortion Effects Pedal",
+          "sourceUrl": "https://gibson.com/products/maestro-invader-distortion-effects-pedal"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCCCP_front.png?v=1736440692&amp;width=533",
+          "alt": "Maestro Invader Distortion Effects Pedal",
+          "sourceUrl": "https://gibson.com/products/maestro-invader-distortion-effects-pedal"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/MOCDDP_front.png?v=1736439254&amp;width=533",
+          "alt": "Maestro Invader Distortion Effects Pedal",
+          "sourceUrl": "https://gibson.com/products/maestro-invader-distortion-effects-pedal"
+        }
+      ],
+      "descriptionBlocks": [
+        {
+          "text": "Details All-analog distortion pedal with onboard noise gate with internal t... more",
+          "sourceUrl": "https://gibson.com/products/maestro-invader-distortion-effects-pedal"
+        }
+      ],
+      "attributes": {},
+      "specs": [],
+      "sources": [
+        {
+          "label": "Extracted from page",
+          "url": "https://gibson.com/products/maestro-invader-distortion-effects-pedal",
+          "snippet": "Product data extracted from https://gibson.com/products/maestro-invader-distortion-effects-pedal",
+          "kind": "description"
+        }
+      ]
+    },
+    {
+      "id": "prod_7ct4ib",
+      "brand": "gibson",
+      "name": "Gibson Headstock Tuner",
+      "category": "effects/amplifiers",
+      "url": "https://gibson.com/products/gibson-gibson-headstock-tuner",
+      "price": {
+        "amount": 0,
+        "currency": "USD",
+        "source": {
+          "label": "Extracted from page",
+          "url": "https://gibson.com/products/gibson-gibson-headstock-tuner",
+          "snippet": "Price found on https://gibson.com/products/gibson-gibson-headstock-tuner",
+          "kind": "price"
+        }
+      },
+      "images": [
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/GA-TUNER_display.png?v=1736440459&amp;width=1100",
+          "alt": "Gibson Headstock Tuner",
+          "sourceUrl": "https://gibson.com/products/gibson-gibson-headstock-tuner"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/GA-TUNER_closed.png?v=1736440460&amp;width=880",
+          "alt": "Gibson Headstock Tuner",
+          "sourceUrl": "https://gibson.com/products/gibson-gibson-headstock-tuner"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/GA-TUNER_back.png?v=1736440459&amp;width=880",
+          "alt": "Gibson Headstock Tuner",
+          "sourceUrl": "https://gibson.com/products/gibson-gibson-headstock-tuner"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/GA-TUNER_display.png?v=1736440459&width=1445",
+          "alt": "Gibson Headstock Tuner",
+          "sourceUrl": "https://gibson.com/products/gibson-gibson-headstock-tuner"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/GA-TUNER_closed.png?v=1736440460&width=1445",
+          "alt": "Gibson Headstock Tuner",
+          "sourceUrl": "https://gibson.com/products/gibson-gibson-headstock-tuner"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/GA-TUNER_back.png?v=1736440459&width=1445",
+          "alt": "Gibson Headstock Tuner",
+          "sourceUrl": "https://gibson.com/products/gibson-gibson-headstock-tuner"
+        }
+      ],
+      "descriptionBlocks": [
+        {
+          "text": "The Gibson Headstock Tuner precisely tunes guitars, basses, and other stringed instruments by analyzing string vibration instead of sound. The precise piezo sensor and vivid, multi-color display make tuning your instrument in noisy and dimly lit spaces simple. The tuner’s flip-up display automatically powers the unit on when opened, and off when closed. Equipped with a 360° rotatable display, this tuner works great for both righties and lefties alike. Reversible, multi-color display Flip-up display powers on when opened and off when down",
+          "sourceUrl": "https://gibson.com/products/gibson-gibson-headstock-tuner"
+        }
+      ],
+      "attributes": {},
+      "specs": [],
+      "sources": [
+        {
+          "label": "Extracted from page",
+          "url": "https://gibson.com/products/gibson-gibson-headstock-tuner",
+          "snippet": "Product data extracted from https://gibson.com/products/gibson-gibson-headstock-tuner",
+          "kind": "description"
+        }
+      ]
+    },
+    {
+      "id": "prod_w5pyyy",
+      "brand": "gibson",
+      "name": "Gibson Custom Keith Richards 1960 ES-355 Collector’s Edition, Signed Guitar and Label, Ebony, Exclusive",
+      "category": "guitars/electric",
+      "url": "https://gibson.com/products/gibson-custom-keith-richards-1960-es-355-collectors-edition-signed-guitar-and-label-ebony",
+      "price": {
+        "amount": 0,
+        "currency": "USD",
+        "source": {
+          "label": "Extracted from page",
+          "url": "https://gibson.com/products/gibson-custom-keith-richards-1960-es-355-collectors-edition-signed-guitar-and-label-ebony",
+          "snippet": "Price found on https://gibson.com/products/gibson-custom-keith-richards-1960-es-355-collectors-edition-signed-guitar-and-label-ebony",
+          "kind": "price"
+        }
+      },
+      "images": [
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/60ES355KREBMLGH1_1_Body.png?v=1763076188&amp;width=1100",
+          "alt": "Gibson Custom Keith Richards 1960 ES-355 Collector’s Edition, Signed Guitar and Label, Ebony, Exclusive",
+          "sourceUrl": "https://gibson.com/products/gibson-custom-keith-richards-1960-es-355-collectors-edition-signed-guitar-and-label-ebony"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/60ES355KREBMLGH1_2_BackBody.png?v=1763076190&amp;width=880",
+          "alt": "Gibson Custom Keith Richards 1960 ES-355 Collector’s Edition, Signed Guitar and Label, Ebony, Exclusive",
+          "sourceUrl": "https://gibson.com/products/gibson-custom-keith-richards-1960-es-355-collectors-edition-signed-guitar-and-label-ebony"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/60ES355KREBMLGH1_3_Front.png?v=1763076188&amp;width=880",
+          "alt": "Gibson Custom Keith Richards 1960 ES-355 Collector’s Edition, Signed Guitar and Label, Ebony, Exclusive",
+          "sourceUrl": "https://gibson.com/products/gibson-custom-keith-richards-1960-es-355-collectors-edition-signed-guitar-and-label-ebony"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/60ES355KREBMLGH1_4_Back.png?v=1763076188&amp;width=880",
+          "alt": "Gibson Custom Keith Richards 1960 ES-355 Collector’s Edition, Signed Guitar and Label, Ebony, Exclusive",
+          "sourceUrl": "https://gibson.com/products/gibson-custom-keith-richards-1960-es-355-collectors-edition-signed-guitar-and-label-ebony"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/60ES355KREBMLGH1_5_Headstock.png?v=1763076188&amp;width=880",
+          "alt": "Gibson Custom Keith Richards 1960 ES-355 Collector’s Edition, Signed Guitar and Label, Ebony, Exclusive",
+          "sourceUrl": "https://gibson.com/products/gibson-custom-keith-richards-1960-es-355-collectors-edition-signed-guitar-and-label-ebony"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/60ES355KREBMLGH1_6_BackHeadstock.png?v=1763076188&amp;width=880",
+          "alt": "Gibson Custom Keith Richards 1960 ES-355 Collector’s Edition, Signed Guitar and Label, Ebony, Exclusive",
+          "sourceUrl": "https://gibson.com/products/gibson-custom-keith-richards-1960-es-355-collectors-edition-signed-guitar-and-label-ebony"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/60ES355KREBMLGH1_7_Pickup.png?v=1763076191&amp;width=880",
+          "alt": "Gibson Custom Keith Richards 1960 ES-355 Collector’s Edition, Signed Guitar and Label, Ebony, Exclusive",
+          "sourceUrl": "https://gibson.com/products/gibson-custom-keith-richards-1960-es-355-collectors-edition-signed-guitar-and-label-ebony"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/60ES355KREBMLGH1_8_Knobs.png?v=1763076188&amp;width=880",
+          "alt": "Gibson Custom Keith Richards 1960 ES-355 Collector’s Edition, Signed Guitar and Label, Ebony, Exclusive",
+          "sourceUrl": "https://gibson.com/products/gibson-custom-keith-richards-1960-es-355-collectors-edition-signed-guitar-and-label-ebony"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/60ES355KREBMLGH1_Signature.png?v=1763076218&amp;width=880",
+          "alt": "Gibson Custom Keith Richards 1960 ES-355 Collector’s Edition, Signed Guitar and Label, Ebony, Exclusive",
+          "sourceUrl": "https://gibson.com/products/gibson-custom-keith-richards-1960-es-355-collectors-edition-signed-guitar-and-label-ebony"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/60ES355KREBMLGH1_F-HoleBody.png?v=1768258405&amp;width=880",
+          "alt": "Gibson Custom Keith Richards 1960 ES-355 Collector’s Edition, Signed Guitar and Label, Ebony, Exclusive",
+          "sourceUrl": "https://gibson.com/products/gibson-custom-keith-richards-1960-es-355-collectors-edition-signed-guitar-and-label-ebony"
+        }
+      ],
+      "descriptionBlocks": [
+        {
+          "text": "Details Collector’s Edition reproduction of Keith Richards’ 1960 ES-355, ha... more",
+          "sourceUrl": "https://gibson.com/products/gibson-custom-keith-richards-1960-es-355-collectors-edition-signed-guitar-and-label-ebony"
+        }
+      ],
+      "attributes": {},
+      "specs": [],
+      "sources": [
+        {
+          "label": "Extracted from page",
+          "url": "https://gibson.com/products/gibson-custom-keith-richards-1960-es-355-collectors-edition-signed-guitar-and-label-ebony",
+          "snippet": "Product data extracted from https://gibson.com/products/gibson-custom-keith-richards-1960-es-355-collectors-edition-signed-guitar-and-label-ebony",
+          "kind": "description"
+        }
+      ]
+    },
+    {
+      "id": "prod_iw6juu",
+      "brand": "gibson",
+      "name": "Epiphone Fatoumata Diawara SG, Ember Red with Malian Graphic",
+      "category": "guitars/electric",
+      "url": "https://gibson.com/products/epiphone-fatoumata-diawara-sg",
+      "price": {
+        "amount": 0,
+        "currency": "USD",
+        "source": {
+          "label": "Extracted from page",
+          "url": "https://gibson.com/products/epiphone-fatoumata-diawara-sg",
+          "snippet": "Price found on https://gibson.com/products/epiphone-fatoumata-diawara-sg",
+          "kind": "price"
+        }
+      },
+      "images": [
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/EIFDSGMGH1_24041526413_1_Body.png?v=1763503401&amp;width=1100",
+          "alt": "Epiphone Fatoumata Diawara SG, Ember Red with Malian Graphic",
+          "sourceUrl": "https://gibson.com/products/epiphone-fatoumata-diawara-sg"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/EILPS6RDPNH3_25021529996_49312_BackBody.png?v=1763503416&amp;width=880",
+          "alt": "Epiphone Fatoumata Diawara SG, Ember Red with Malian Graphic",
+          "sourceUrl": "https://gibson.com/products/epiphone-fatoumata-diawara-sg"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/EIFDSGMGH1_24041526413_3_Front.png?v=1763503416&amp;width=880",
+          "alt": "Epiphone Fatoumata Diawara SG, Ember Red with Malian Graphic",
+          "sourceUrl": "https://gibson.com/products/epiphone-fatoumata-diawara-sg"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/EILPS6RDPNH3_25021529996_49314_Back.png?v=1763503416&amp;width=880",
+          "alt": "Epiphone Fatoumata Diawara SG, Ember Red with Malian Graphic",
+          "sourceUrl": "https://gibson.com/products/epiphone-fatoumata-diawara-sg"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/EIFDSGMGH1_24041526413_5_Headstock.png?v=1763503416&amp;width=880",
+          "alt": "Epiphone Fatoumata Diawara SG, Ember Red with Malian Graphic",
+          "sourceUrl": "https://gibson.com/products/epiphone-fatoumata-diawara-sg"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/EILPS6RDPNH3_25021529996_49316_BackHeadstock.png?v=1763503416&amp;width=880",
+          "alt": "Epiphone Fatoumata Diawara SG, Ember Red with Malian Graphic",
+          "sourceUrl": "https://gibson.com/products/epiphone-fatoumata-diawara-sg"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/EIFDSGMGH1_24041526413_7_Pickup.png?v=1763503416&amp;width=880",
+          "alt": "Epiphone Fatoumata Diawara SG, Ember Red with Malian Graphic",
+          "sourceUrl": "https://gibson.com/products/epiphone-fatoumata-diawara-sg"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/EIFDSGMGH1_24041526413_8_Knobs.png?v=1763503416&amp;width=880",
+          "alt": "Epiphone Fatoumata Diawara SG, Ember Red with Malian Graphic",
+          "sourceUrl": "https://gibson.com/products/epiphone-fatoumata-diawara-sg"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/EIFDSGMGH1_24041526413_20_Case.png?v=1763503416&amp;width=880",
+          "alt": "Epiphone Fatoumata Diawara SG, Ember Red with Malian Graphic",
+          "sourceUrl": "https://gibson.com/products/epiphone-fatoumata-diawara-sg"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/EIFDSGMGH1_24041526413_21_CaseOpen.png?v=1763503416&amp;width=880",
+          "alt": "Epiphone Fatoumata Diawara SG, Ember Red with Malian Graphic",
+          "sourceUrl": "https://gibson.com/products/epiphone-fatoumata-diawara-sg"
+        }
+      ],
+      "descriptionBlocks": [
+        {
+          "text": "Details Mahogany body, set mahogany neck with Custom C profile, rosewood fr... more",
+          "sourceUrl": "https://gibson.com/products/epiphone-fatoumata-diawara-sg"
+        }
+      ],
+      "attributes": {},
+      "specs": [],
+      "sources": [
+        {
+          "label": "Extracted from page",
+          "url": "https://gibson.com/products/epiphone-fatoumata-diawara-sg",
+          "snippet": "Product data extracted from https://gibson.com/products/epiphone-fatoumata-diawara-sg",
+          "kind": "description"
+        }
+      ]
+    },
+    {
+      "id": "prod_a6l4s4",
+      "brand": "gibson",
+      "name": "Mesa/Boogie 90s Triple Rectifier, Black Bronco",
+      "category": "effects/amplifiers",
+      "url": "https://gibson.com/products/mesa-boogie-90s-triple-rectifier",
+      "price": {
+        "amount": 0,
+        "currency": "USD",
+        "source": {
+          "label": "Extracted from page",
+          "url": "https://gibson.com/products/mesa-boogie-90s-triple-rectifier",
+          "snippet": "Price found on https://gibson.com/products/mesa-boogie-90s-triple-rectifier",
+          "kind": "price"
+        }
+      },
+      "images": [
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/2.TR2B.3.A_2000x2000-front.png?v=1765813172&amp;width=1100",
+          "alt": "Mesa/Boogie 90s Triple Rectifier, Black Bronco",
+          "sourceUrl": "https://gibson.com/products/mesa-boogie-90s-triple-rectifier"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/2.TR2B.3.A-back.png?v=1765813182&amp;width=880",
+          "alt": "Mesa/Boogie 90s Triple Rectifier, Black Bronco",
+          "sourceUrl": "https://gibson.com/products/mesa-boogie-90s-triple-rectifier"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/2.TR2B.3.A-right.png?v=1765813196&amp;width=880",
+          "alt": "Mesa/Boogie 90s Triple Rectifier, Black Bronco",
+          "sourceUrl": "https://gibson.com/products/mesa-boogie-90s-triple-rectifier"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/2.TR2B.3.A-left.png?v=1765813190&amp;width=880",
+          "alt": "Mesa/Boogie 90s Triple Rectifier, Black Bronco",
+          "sourceUrl": "https://gibson.com/products/mesa-boogie-90s-triple-rectifier"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/2.TR2B.3.A_2000x2000-front.png?v=1765813172&amp;width=533",
+          "alt": "Mesa/Boogie 90s Triple Rectifier, Black Bronco",
+          "sourceUrl": "https://gibson.com/products/mesa-boogie-90s-triple-rectifier"
+        },
+        {
+          "url": "https://cdn.shopify.com/s/files/1/0659/3966/9171/files/Group_1634.png?v=1750278354",
+          "alt": "Mesa/Boogie 90s Triple Rectifier, Black Bronco",
+          "sourceUrl": "https://gibson.com/products/mesa-boogie-90s-triple-rectifier"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/2.TR2B.3.A_2000x2000-front.png?v=1765813172&width=1445",
+          "alt": "Mesa/Boogie 90s Triple Rectifier, Black Bronco",
+          "sourceUrl": "https://gibson.com/products/mesa-boogie-90s-triple-rectifier"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/2.TR2B.3.A-back.png?v=1765813182&width=1445",
+          "alt": "Mesa/Boogie 90s Triple Rectifier, Black Bronco",
+          "sourceUrl": "https://gibson.com/products/mesa-boogie-90s-triple-rectifier"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/2.TR2B.3.A-right.png?v=1765813196&width=1445",
+          "alt": "Mesa/Boogie 90s Triple Rectifier, Black Bronco",
+          "sourceUrl": "https://gibson.com/products/mesa-boogie-90s-triple-rectifier"
+        },
+        {
+          "url": "https://www.gibson.com/cdn/shop/files/2.TR2B.3.A-left.png?v=1765813190&width=1445",
+          "alt": "Mesa/Boogie 90s Triple Rectifier, Black Bronco",
+          "sourceUrl": "https://gibson.com/products/mesa-boogie-90s-triple-rectifier"
+        }
+      ],
+      "descriptionBlocks": [
+        {
+          "text": "Details An authentic recreation of the legendary 90s Triple Rectifier Head ... more",
+          "sourceUrl": "https://gibson.com/products/mesa-boogie-90s-triple-rectifier"
+        }
+      ],
+      "attributes": {},
+      "specs": [],
+      "sources": [
+        {
+          "label": "Extracted from page",
+          "url": "https://gibson.com/products/mesa-boogie-90s-triple-rectifier",
+          "snippet": "Product data extracted from https://gibson.com/products/mesa-boogie-90s-triple-rectifier",
+          "kind": "description"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    "effects/amplifiers",
+    "effects/pedals",
+    "guitars/electric"
+  ],
+  "brands": [
+    "gibson"
+  ],
+  "extractedAt": "2026-01-27T05:03:37.539Z",
+  "sourceUrls": [
+    "https://gibson.com/products/gibson-amplifiers-dual-falcon-20-2x10-combo-cream-bronco-vinyl-with-oxblood-grille",
+    "https://gibson.com/products/gibson-amplifiers-falcon-5-1x10-combo-cream-bronco-vinyl-with-oxblood-grille",
+    "https://gibson.com/products/maestro-fuzz-tone-fz-m-effects-pedal",
+    "https://gibson.com/products/maestro-titan-boost",
+    "https://gibson.com/products/maestro-orbit-phaser",
+    "https://gibson.com/products/maestro-invader-distortion-effects-pedal",
+    "https://gibson.com/products/gibson-gibson-headstock-tuner",
+    "https://gibson.com/products/gibson-custom-keith-richards-1960-es-355-collectors-edition-signed-guitar-and-label-ebony",
+    "https://gibson.com/products/epiphone-fatoumata-diawara-sg",
+    "https://gibson.com/products/mesa-boogie-90s-triple-rectifier"
+  ]
+}

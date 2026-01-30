@@ -75,6 +75,30 @@ export function DebugWrapper({ node, children }: any) {
   );
 }
 
+function isDebugMode(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const sp = new URLSearchParams(window.location.search);
+    return sp.get("debug") === "1";
+  } catch {
+    return false;
+  }
+}
+
+function MaybeDebugWrapper({ node, children }: any) {
+  // Default: real UI (no debug boxes)
+  // Opt-in: `?debug=1` brings back DebugWrapper overlays
+  if (isDebugMode()) return <DebugWrapper node={node}>{children}</DebugWrapper>;
+
+  // Preserve `data-node-id` for tooling (e.g. visual-proof selectors) without affecting layout.
+  // `display: contents` avoids extra box-model impact.
+  return (
+    <div data-node-id={node?.id} style={{ display: "contents" }}>
+      {children}
+    </div>
+  );
+}
+
 
 /* ======================================================
    INTERNAL GUARDS
@@ -182,9 +206,9 @@ export function renderNode(
   // ✅ JSON-SKIN ENGINE INTEGRATION (ONLY for json-skin type)
   if (node.type === "json-skin") {
     return (
-      <DebugWrapper node={node}>
+      <MaybeDebugWrapper node={node}>
         <JsonSkinEngine screen={node} />
-      </DebugWrapper>
+      </MaybeDebugWrapper>
     );
   }
 
@@ -197,8 +221,26 @@ export function renderNode(
 
 
   const def = (definitions as any)[profiledNode.type] ?? {};
-  const variantPreset =
-    def.variants?.[profiledNode.variant || "filled"] ?? {};
+  // Variant selection (definition-driven, deterministic):
+  // 1) Use node.variant if present
+  // 2) Else use "default" if present in def.variants
+  // 3) Else use "filled" if present
+  // 4) Else use first key of def.variants
+  const variants: Record<string, any> | undefined = def.variants;
+  const requestedVariant =
+    typeof profiledNode.variant === "string" && profiledNode.variant.length > 0
+      ? profiledNode.variant
+      : undefined;
+  const variantKey =
+    requestedVariant ??
+    (variants && Object.prototype.hasOwnProperty.call(variants, "default")
+      ? "default"
+      : variants && Object.prototype.hasOwnProperty.call(variants, "filled")
+      ? "filled"
+      : variants
+      ? Object.keys(variants)[0]
+      : undefined);
+  const variantPreset = (variantKey && variants ? variants[variantKey] : null) ?? {};
   const sizePreset =
     def.sizes?.[profiledNode.size || "md"] ?? {};
 
@@ -224,11 +266,11 @@ export function renderNode(
 
   if (!Component) {
     return (
-      <DebugWrapper node={resolvedNode}>
+      <MaybeDebugWrapper node={resolvedNode}>
         <div style={{ color: "red" }}>
           Missing registry entry: <b>{resolvedNode.type}</b>
         </div>
-      </DebugWrapper>
+      </MaybeDebugWrapper>
     );
   }
 
@@ -272,6 +314,49 @@ export function renderNode(
     onTap: resolvedNode.onTap,
   };
 
+  // Phase C: journal display injection (display-only)
+  if (resolvedNode.type === "JournalHistory" || resolvedNode.type === "journalhistory") {
+    const track = props.params?.track;
+    const entry = typeof track === "string" && track.length > 0
+      ? getState()?.journal?.[track]?.entry
+      : undefined;
+
+    const entries = Array.isArray(entry)
+      ? entry
+      : typeof entry === "string" && entry.length > 0
+      ? [entry]
+      : [];
+
+    props.params = {
+      ...(props.params ?? {}),
+      entries,
+    };
+  }
+
+  // Phase B: minimal state → Field value binding (no general adapter yet)
+  // If we have a state-backed value for this fieldKey, pass it into FieldAtom as a controlled value.
+  if (
+    (resolvedNode.type === "field" || resolvedNode.type === "Field") &&
+    resolvedNode.params?.field?.fieldKey
+  ) {
+    const fk = resolvedNode.params.field.fieldKey;
+    if (typeof fk === "string" && fk.length > 0) {
+      const nextValue =
+        stateSnapshot?.values && stateSnapshot.values[fk] !== undefined
+          ? stateSnapshot.values[fk]
+          : stateSnapshot?.[fk];
+      if (nextValue !== undefined) {
+        props.params = {
+          ...(props.params ?? {}),
+          field: {
+            ...(props.params?.field ?? {}),
+            value: nextValue,
+          },
+        };
+      }
+    }
+  }
+
 
   delete props.type;
   delete props.key;
@@ -292,9 +377,9 @@ export function renderNode(
 
 
   return (
-    <DebugWrapper node={resolvedNode}>
+    <MaybeDebugWrapper node={resolvedNode}>
       <Component {...props}>{wrappedChildren}</Component>
-    </DebugWrapper>
+    </MaybeDebugWrapper>
   );
 }
 
@@ -302,7 +387,19 @@ export function renderNode(
 /* ======================================================
    ROOT — REACTIVE SNAPSHOT
 ====================================================== */
-export default function JsonRenderer({ node, defaultState }: { node: any; defaultState?: any }) {
+export default function JsonRenderer({
+  node,
+  defaultState,
+  profileOverride,
+}: {
+  node: any;
+  defaultState?: any;
+  /**
+   * Optional experience profile JSON providing `sections` mapping for role-based section layout.
+   * If omitted, JsonRenderer falls back to the layout-store snapshot (legacy behavior).
+   */
+  profileOverride?: any;
+}) {
   // 🔑 Track if user has interacted (state changed from default) - use reactive state after interaction
   const hasInteracted = React.useRef(false);
   const lastDefaultState = React.useRef(defaultState?.currentView);
@@ -347,11 +444,12 @@ export default function JsonRenderer({ node, defaultState }: { node: any; defaul
   );
 
 
-  const profile = useSyncExternalStore(
+  const layoutSnapshot = useSyncExternalStore(
     subscribeLayout,
     getLayout,
     getLayout
   );
+  const profile = profileOverride ?? layoutSnapshot;
 
 
   // 🔑 Single authoritative reactive snapshot
@@ -386,12 +484,14 @@ export default function JsonRenderer({ node, defaultState }: { node: any; defaul
   
   const stateSnapshot = {
     ...rawState,
-    currentView: effectiveCurrentView,
     ...rawState?.values,
+    // IMPORTANT: ensure state.values can never override currentView (breaks `when` gating)
+    currentView: effectiveCurrentView,
   };
 
-  // Use defaultState from JSON if provided (for initial render before state is initialized)
-  const effectiveDefaultState = defaultState ?? node?.state;
+  // Contract migration (Phase 1.3): do NOT read state from the node tree.
+  // Default state must be supplied externally (e.g. by screen-loader / page.tsx).
+  const effectiveDefaultState = defaultState;
 
 
   traceOnce("root", "Root render");

@@ -18,6 +18,7 @@
 import fs from "fs";
 import path from "path";
 import readline from "readline";
+import { warnBlueprintViolations } from "../contracts/blueprint-universe.validator";
 
 
 /* ============================================================
@@ -62,6 +63,8 @@ type RawNode = {
   rawId: string;
   name: string;
   type: string;
+  slots?: string[];
+  behaviorToken?: string;
   target?: string;
   state?: { type: string; key: string }[];
   logic?: { type: string; expr: string }[];
@@ -104,12 +107,29 @@ function parseBlueprint(text: string): RawNode[] {
     }
 
 
-    const match = line.trim().match(/^([\d.]+)\s*\|\s*(.+?)\s*\|\s*(\w+)/);
+    // Contract-style: `1.1 | Name | Type [slot,slot] (verb)`
+    const match = line
+      .trim()
+      .match(/^([\d.]+)\s*\|\s*(.+?)\s*\|\s*(\w+)(?:\s*\[([^\]]*)\])?(?:\s*\(([^)]+)\))?/);
     if (!match) continue;
 
 
-    const [, rawId, name, type] = match;
-    nodes.push({ indent, rawId, name, type });
+    const [, rawId, name, type, slotsRaw, behaviorTokenRaw] = match as any;
+
+    const slots =
+      typeof slotsRaw === "string" && slotsRaw.trim().length
+        ? slotsRaw
+            .split(",")
+            .map((s: string) => s.trim())
+            .filter(Boolean)
+        : undefined;
+
+    const behaviorToken =
+      typeof behaviorTokenRaw === "string" && behaviorTokenRaw.trim().length
+        ? behaviorTokenRaw.trim()
+        : undefined;
+
+    nodes.push({ indent, rawId, name, type, slots, behaviorToken });
     last = nodes[nodes.length - 1];
   }
 
@@ -312,6 +332,17 @@ async function run() {
     state: { currentView: DEFAULT_VIEW },
     children,
   };
+
+  // Contract validator (WARN-ONLY). Never blocks compilation.
+  try {
+    warnBlueprintViolations(output, {
+      source: "blueprint-cli",
+      dedupeKeyPrefix: `blueprint-cli:${cat}/${app}`,
+      maxWarnings: 200,
+    });
+  } catch (e) {
+    console.warn("[ContractValidator] blueprint validation failed:", e);
+  }
 
 
   fs.writeFileSync(path.join(appPath, "app.json"), JSON.stringify(output, null, 2));

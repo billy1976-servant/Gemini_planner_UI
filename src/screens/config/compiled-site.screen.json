@@ -1,0 +1,5 @@
+{
+  "id": "compiled-site",
+  "layout": "site-layout",
+  "sectionsSource": "compiledSite.pages[pagePath].sections"
+}

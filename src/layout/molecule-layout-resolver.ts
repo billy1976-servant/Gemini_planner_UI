@@ -149,22 +149,26 @@ export function resolveMoleculeLayout(
   const resolvedLayout = resolveResponsive(def.layout);
 
 
-  const translated = translateFlow(
-    resolvedLayout.flow,
-    resolvedLayout.params ?? {}
-  );
-
-
   const presetParams =
     preset && def.presets ? def.presets[preset] ?? {} : {};
 
-
-  return {
+  // Merge all params BEFORE calling translateFlow so it can process columns/gap from passed params
+  // This ensures translateFlow sees the full merged params, not just definition params
+  const mergedParams = {
     ...(def.defaults ?? {}),
-    ...translated,
+    ...(resolvedLayout.params ?? {}),
     ...presetParams,
     ...(params ?? {}),
   };
+
+  const translated = translateFlow(
+    resolvedLayout.flow,
+    mergedParams
+  );
+
+  // Return translated result (which includes display, gridTemplateColumns, etc.)
+  // mergedParams are already included in translated via translateFlow
+  return translated;
 }
 
 

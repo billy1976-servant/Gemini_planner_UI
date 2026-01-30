@@ -69,15 +69,16 @@ export class ProductRepository {
   }
   
   /**
-   * Load product graph from JSON file
+   * Load product graph: use injected graph from setProductRepository() if set, else from JSON file.
    */
   async loadProductGraph(): Promise<ProductGraph | null> {
+    if (_injectedProductGraph) {
+      return _injectedProductGraph;
+    }
     const filePath = path.join(this.config.dataDir, "product-graph.json");
-    
     if (!fs.existsSync(filePath)) {
       return null;
     }
-    
     try {
       const content = fs.readFileSync(filePath, "utf-8");
       return JSON.parse(content) as ProductGraph;
@@ -307,6 +308,27 @@ export class ProductRepository {
       return null;
     }
   }
+}
+
+/**
+ * Global product graph set by API (e.g. onboarding) so engines can pull from compiled report.
+ * When set, loadProductGraph() on the default repository returns this instead of reading from disk.
+ */
+let _injectedProductGraph: ProductGraph | null = null;
+
+/**
+ * Set the current product graph for this process (e.g. from compiled report).
+ * Used by /api/sites/[domain]/onboarding so engines get real products from compiled data.
+ */
+export function setProductRepository(graph: ProductGraph | null): void {
+  _injectedProductGraph = graph;
+}
+
+/**
+ * Get the currently injected product graph, if any.
+ */
+export function getInjectedProductGraph(): ProductGraph | null {
+  return _injectedProductGraph;
 }
 
 /**
