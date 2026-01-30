@@ -1,7 +1,7 @@
 /**
  * Web2Extractor V2 — entry script.
  * Prompts for domain, normalizes URL, crawls, extracts, normalizes, writes web2-results.json.
- * Fully standalone: no imports from old pipeline.
+ * Separates universal fields from discovered attributes; dedupes variants. Attribute groups are generated later by pattern analysis.
  */
 
 import * as fs from "fs";
@@ -10,7 +10,7 @@ import * as readline from "readline";
 import { normalizeSiteUrl, discoverProductUrls } from "./crawler";
 import { extractProduct } from "./extractor";
 import { normalizeProduct } from "./normalizer";
-import type { NormalizedProduct, ProductCatalogEntry } from "./types";
+import type { NormalizedProduct, ProductCatalogEntry, ProductCatalog, CatalogAttributes } from "./types";
 
 function prompt(question: string): Promise<string> {
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
@@ -20,6 +20,74 @@ function prompt(question: string): Promise<string> {
       resolve(answer);
     });
   });
+}
+
+/** Parse price string to number; null if missing or invalid. */
+function priceToNumber(price: string | null | undefined): number | null {
+  if (price == null || price === "") return null;
+  const cleaned = String(price).replace(/[$,\s]/g, "");
+  const n = parseFloat(cleaned);
+  return Number.isFinite(n) ? n : null;
+}
+
+/** Canonical product name for variant grouping: strip pack size / variant suffix. */
+function canonicalName(name: string): string {
+  return name
+    .replace(/\s*\(?\d+\s*[-]?(?:pack|pk|pc|piece|unit)s?\)?/gi, "")
+    .replace(/\s*-\s*\d+\s*pack\s*$/gi, "")
+    .replace(/\s*\(\d+[\s-]?pack\)\s*$/gi, "")
+    .replace(/\s{2,}/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+/** Deduplicate variants: group by canonical name + brand, keep one canonical entry with variants[]. */
+function deduplicateVariants(products: NormalizedProduct[]): ProductCatalogEntry[] {
+  const byCanonical = new Map<string, NormalizedProduct[]>();
+  for (const p of products) {
+    const key = `${canonicalName(p.universal.name)}|${(p.attributes.brand ?? "").toLowerCase()}`;
+    if (!byCanonical.has(key)) byCanonical.set(key, []);
+    byCanonical.get(key)!.push(p);
+  }
+  const entries: ProductCatalogEntry[] = [];
+  for (const group of byCanonical.values()) {
+    const canonical = group[0];
+    const hasVariants = group.length > 1;
+    const attrs = canonical.attributes;
+    const catalogAttrs: CatalogAttributes = {
+      sku: attrs.sku,
+      brand: attrs.brand,
+      availability: attrs.availability,
+      features: attrs.features,
+      specs: attrs.specs,
+    };
+    const entry: ProductCatalogEntry = {
+      name: canonical.universal.name,
+      url: canonical.universal.url,
+      price: priceToNumber(canonical.universal.price),
+      description: canonical.universal.description,
+      images: canonical.universal.images,
+    };
+    if (attrs.content != null && attrs.content !== "") entry.rawContent = attrs.content;
+    if (
+      catalogAttrs.sku != null ||
+      catalogAttrs.brand != null ||
+      catalogAttrs.availability != null ||
+      catalogAttrs.features.length > 0 ||
+      Object.keys(catalogAttrs.specs).length > 0
+    ) {
+      entry.attributes = catalogAttrs;
+    }
+    if (hasVariants) {
+      entry.variants = group.slice(1).map((p) => ({
+        url: p.universal.url,
+        price: priceToNumber(p.universal.price),
+        sku: p.attributes.sku ?? undefined,
+      }));
+    }
+    entries.push(entry);
+  }
+  return entries;
 }
 
 async function main(): Promise<void> {
@@ -45,7 +113,7 @@ async function main(): Promise<void> {
   if (productUrls.length === 0) {
     console.log("No product URLs found. Writing empty web2-results.json");
     const outPath = path.join(process.cwd(), "web2-results.json");
-    fs.writeFileSync(outPath, "[]", "utf-8");
+    fs.writeFileSync(outPath, JSON.stringify({ products: [] }, null, 2), "utf-8");
     console.log("Wrote", outPath);
     return;
   }
@@ -58,34 +126,19 @@ async function main(): Promise<void> {
       const raw = await extractProduct(url);
       const normalized = normalizeProduct(raw);
       results.push(normalized);
-      console.log(normalized.name || "(no name)");
+      console.log(normalized.universal.name || "(no name)");
     } catch (err) {
       console.log("FAILED:", (err as Error).message);
     }
   }
 
-  // Product catalog only: product-specific info from each product page. No page UI.
-  const catalog: ProductCatalogEntry[] = results.map((p) => {
-    const entry: ProductCatalogEntry = {
-      url: p.url,
-      name: p.name,
-      price: p.price,
-      description: p.description,
-      images: p.images,
-      sku: p.sku,
-    };
-    if (p.content) entry.content = p.content;
-    if (p.brand) entry.brand = p.brand;
-    if (p.availability) entry.availability = p.availability;
-    if (p.features.length > 0) entry.features = p.features;
-    if (Object.keys(p.specs).length > 0) entry.specs = p.specs;
-    return entry;
-  });
+  const products = deduplicateVariants(results);
+  const catalog: ProductCatalog = { products };
 
   const outPath = path.join(process.cwd(), "web2-results.json");
   fs.writeFileSync(outPath, JSON.stringify(catalog, null, 2), "utf-8");
   console.log("");
-  console.log("Wrote", catalog.length, "product catalog entries to", outPath);
+  console.log("Wrote", catalog.products.length, "product entries to", outPath);
 }
 
 main().catch((err) => {

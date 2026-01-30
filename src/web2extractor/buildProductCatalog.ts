@@ -90,10 +90,14 @@ export function buildProductCatalog(
     throw new Error(`web2-results.json not found: ${web2Path}`);
   }
 
-  const raw: Web2Entry[] = JSON.parse(fs.readFileSync(web2Path, "utf-8"));
-  if (!Array.isArray(raw)) {
-    throw new Error("web2-results.json must be an array");
-  }
+  const parsed: unknown = JSON.parse(fs.readFileSync(web2Path, "utf-8"));
+  const raw: Web2Entry[] = Array.isArray(parsed)
+    ? (parsed as Web2Entry[])
+    : typeof parsed === "object" && parsed !== null && "products" in parsed && Array.isArray((parsed as { products: unknown }).products)
+    ? ((parsed as { products: Web2Entry[] }).products)
+    : (() => {
+        throw new Error("web2-results.json must be an array or { products }");
+      })();
 
   const byCanonical = new Map<string, Web2Entry>();
   for (const entry of raw) {
@@ -114,7 +118,7 @@ export function buildProductCatalog(
       url,
       handle: handleFromUrl(url),
       name: (entry.name && String(entry.name).trim()) || "",
-      price: entry.price != null ? String(entry.price).trim() : null,
+      price: entry.price != null ? (typeof entry.price === "number" ? String(entry.price) : String(entry.price).trim()) : null,
       description: entry.description != null ? String(entry.description).trim() : null,
       images: Array.isArray(entry.images) ? entry.images.filter((u): u is string => typeof u === "string") : [],
     });

@@ -1,38 +1,58 @@
 /**
  * Web2Extractor V2 — product type definitions.
- * Single normalized shape for all extracted products.
+ * Universal fields (name, url, price, images, description) are separate from discovered attributes.
  */
 
-export interface NormalizedProduct {
-  url: string;
+/** Universal product fields — always present and normalized. */
+export interface UniversalFields {
   name: string;
+  url: string;
   price: string | null;
-  description: string | null;
-  content: string | null;
   images: string[];
-  sku: string | null;
-  brand: string | null;
-  availability: string | null;
+  description: string | null;
+}
+
+/** Discovered attributes — extracted from page (specs, features, sku, brand, etc.). */
+export interface DiscoveredAttributes {
+  sku?: string | null;
+  brand?: string | null;
+  availability?: string | null;
+  content?: string | null;
   features: string[];
   specs: Record<string, string>;
 }
 
-/**
- * Product catalog entry — only product-specific data for search/catalog.
- * No page UI. Specs included only when non-empty (from product tables/dl).
- */
+/** Catalog attributes — discovered attributes without content (content is top-level rawContent). */
+export type CatalogAttributes = Omit<DiscoveredAttributes, "content">;
+
+/** Single normalized product: universal + discovered. */
+export interface NormalizedProduct {
+  /** Universal fields (name, url, price, images, description). */
+  universal: UniversalFields;
+  /** Discovered attributes (specs, features, sku, brand, availability, content). */
+  attributes: DiscoveredAttributes;
+}
+
+/** Product catalog entry — universal fields + rawContent + discovered attributes. Attribute groups are generated later by pattern analysis. */
 export interface ProductCatalogEntry {
-  url: string;
+  /** Universal fields. */
   name: string;
-  price: string | null;
+  url: string;
+  /** Price as number (e.g. 49.99). */
+  price: number | null;
   description: string | null;
-  content?: string | null;
   images: string[];
-  sku: string | null;
-  brand?: string | null;
-  availability?: string | null;
-  features?: string[];
-  specs?: Record<string, string>;
+  /** Raw product content (moved from attributes.content). */
+  rawContent?: string | null;
+  /** Discovered attributes without content (only non-empty). */
+  attributes?: CatalogAttributes;
+  /** Variant URLs when this entry is the canonical product for a variant group. */
+  variants?: Array<{ url: string; price: number | null; sku?: string | null }>;
+}
+
+/** Catalog output: product entries only. Attribute groups are generated later by pattern analysis. */
+export interface ProductCatalog {
+  products: ProductCatalogEntry[];
 }
 
 /**

@@ -60,8 +60,19 @@ function extractLinks(html: string, baseUrl: string, pathContains: string): stri
   return Array.from(seen);
 }
 
+/** Path segments that indicate non-product links; drop these even if URL contains /product/. */
+const NON_PRODUCT_PATH_PATTERN = /\/(cart|account|login|checkout|search|register|wishlist)(\/|$)/i;
+
+/** True if URL is a product PDP; drops cart, account, login, checkout, search, etc. */
+function isProductPdpUrl(url: string): boolean {
+  if (!url.includes("/products/") && !url.includes("/product/")) return false;
+  if (NON_PRODUCT_PATH_PATTERN.test(url)) return false;
+  return true;
+}
+
 /**
  * Get product URLs from a single HTML page (any URL that contains /products/ or /product/).
+ * Drops non-product links: cart, account, login, checkout, search.
  */
 function productUrlsFromHtml(html: string, baseUrl: string): string[] {
   const origin = getOrigin(baseUrl);
@@ -74,6 +85,7 @@ function productUrlsFromHtml(html: string, baseUrl: string): string[] {
       if (!href.includes("/products/") && !href.includes("/product/")) continue;
       const absolute = new URL(href, origin).href;
       const clean = absolute.split("#")[0].split("?")[0];
+      if (!isProductPdpUrl(clean)) continue;
       seen.add(clean);
     } catch {
       // skip
@@ -220,7 +232,7 @@ export async function discoverProductUrls(siteUrl: string): Promise<string[]> {
   const fromHome = productUrlsFromHtml(homepageHtml, normalized);
   fromHome.forEach((u) => productUrls.push(u));
 
-  const unique = Array.from(new Set(productUrls));
-  console.log("[crawler] Found", unique.length, "product URLs");
+  const unique = Array.from(new Set(productUrls)).filter(isProductPdpUrl);
+  console.log("[crawler] Found", unique.length, "product URLs (non-product links dropped)");
   return unique;
 }
