@@ -15,7 +15,7 @@ export default function LearningShell({
 }) {
   return (
     <div style={{ minHeight: "100vh", background: "var(--color-bg-primary)" }}>
-      <div
+      <header
         style={{
           borderBottom: "1px solid var(--color-border)",
           background: "var(--color-bg-primary)",
@@ -25,15 +25,15 @@ export default function LearningShell({
         }}
       >
         <div style={{ maxWidth: 820, margin: "0 auto", padding: "16px 16px" }}>{header}</div>
-      </div>
+      </header>
 
-      <main style={{ maxWidth: 820, margin: "0 auto", padding: "24px 16px" }}>
-        <div style={{ marginBottom: 18 }}>{content}</div>
+      <main style={{ maxWidth: 820, margin: "0 auto", padding: "32px 16px 40px" }}>
+        <div style={{ marginBottom: 32 }}>{content}</div>
         {actions ? (
           <div
             style={{
-              marginTop: 24,
-              paddingTop: 16,
+              marginTop: 32,
+              paddingTop: 24,
               borderTop: "1px dashed var(--color-border)",
             }}
           >

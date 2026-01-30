@@ -40,7 +40,7 @@ export default function AppShell({
         {nav}
       </aside>
 
-      <div style={{ display: "grid", gridTemplateRows: "auto 1fr auto", minHeight: "100vh" }}>
+      <div style={{ display: "grid", gridTemplateRows: "auto 1fr auto", minHeight: "100vh", background: "var(--color-bg-primary)" }}>
         <div
           style={{
             position: "sticky",
@@ -48,7 +48,7 @@ export default function AppShell({
             zIndex: 10,
             borderBottom: "1px solid var(--color-border)",
             background: "var(--color-bg-primary)",
-            padding: 12,
+            padding: "8px 16px",
           }}
         >
           {header}
@@ -61,6 +61,7 @@ export default function AppShell({
             gap: 16,
             padding: 16,
             alignItems: "start",
+            minWidth: 0,
           }}
         >
           <section style={{ minWidth: 0 }}>{primary}</section>
@@ -68,7 +69,7 @@ export default function AppShell({
             <aside
               style={{
                 border: "1px solid var(--color-border)",
-                background: "var(--color-bg-primary)",
+                background: "var(--color-bg-secondary)",
                 borderRadius: "var(--radius-lg)",
                 padding: 12,
                 minHeight: 120,
@@ -83,7 +84,7 @@ export default function AppShell({
           style={{
             borderTop: "1px solid var(--color-border)",
             background: "var(--color-bg-primary)",
-            padding: 12,
+            padding: "12px 16px",
           }}
         >
           {actions}

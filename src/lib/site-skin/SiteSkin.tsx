@@ -1,5 +1,15 @@
 "use client";
 
+/**
+ * PROOF PATH (JSON → DOM): Screen is rendered from JSON molecules, not TSX hardcoding.
+ * 1. skin JSON → loadSiteSkin / applySkinBindings
+ * 2. siteSkinToRoleTaggedNodes → composeScreen (region ordering by experience)
+ * 3. collectRegionSections → renderRegion(JsonRenderer) per region
+ * 4. JsonRenderer → Registry lookup by node.type → molecule/atom components
+ * TSX screens must not render fixed copy or structure for hero/header/cards; only shells add layout containers.
+ * Root element has data-skin-source="json", data-skin-domain, data-skin-page-id for DOM inspection.
+ */
+
 import React, { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import JsonRenderer from "@/engine/core/json-renderer";
 import { usePaletteCSS } from "@/lib/site-renderer/palette-bridge";
@@ -147,6 +157,38 @@ export default function SiteSkin({ domain, pageId, skin, data, defaultState, deb
     };
   }, [domain, pageId, skin]);
 
+  // Region structure computed unconditionally so hooks below can depend on it
+  const resolvedDoc = useMemo(
+    () => (doc ? applySkinBindings(doc, data ?? {}) : null),
+    [doc, data]
+  );
+  const roleTaggedNodes = useMemo(
+    () => (resolvedDoc ? siteSkinToRoleTaggedNodes(resolvedDoc) : []),
+    [resolvedDoc]
+  );
+  const nodeTree = useMemo(
+    () =>
+      composeScreen({
+        roleTaggedNodes,
+        layoutState: layoutSnapshot as any,
+        experienceProfile,
+      }),
+    [roleTaggedNodes, layoutSnapshot, experienceProfile]
+  );
+  const regionStructure = useMemo(() => collectRegionSections(nodeTree), [nodeTree]);
+  const { byKey, debug } = regionStructure;
+
+  useEffect(() => {
+    if (!debugRegions) return;
+    // eslint-disable-next-line no-console
+    console.log("[SiteSkin][regions]", {
+      experience,
+      domain,
+      pageId,
+      regions: debug,
+    });
+  }, [debugRegions, experience, domain, pageId, debug]);
+
   if (loading) {
     return (
       <div style={{ minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -173,29 +215,6 @@ export default function SiteSkin({ domain, pageId, skin, data, defaultState, deb
       </div>
     );
   }
-
-  // Apply engine→skin bindings (slots must be resolved before rendering)
-  const resolvedDoc = applySkinBindings(doc, data ?? {});
-  const roleTaggedNodes = siteSkinToRoleTaggedNodes(resolvedDoc);
-  const nodeTree = composeScreen({
-    roleTaggedNodes,
-    layoutState: layoutSnapshot as any,
-    experienceProfile,
-  });
-
-  const { byKey, debug } = collectRegionSections(nodeTree);
-
-  // Step 1: print region structure per experience (visible + console)
-  useEffect(() => {
-    if (!debugRegions) return;
-    // eslint-disable-next-line no-console
-    console.log("[SiteSkin][regions]", {
-      experience,
-      domain,
-      pageId,
-      regions: debug,
-    });
-  }, [debugRegions, experience, domain, pageId, JSON.stringify(debug)]);
 
   const rendered = (() => {
     if (experience === "app") {
@@ -234,10 +253,15 @@ export default function SiteSkin({ domain, pageId, skin, data, defaultState, deb
   })();
 
   return (
-    <>
+    <div
+      data-skin-source="json"
+      data-skin-domain={domain}
+      data-skin-page-id={pageId}
+      style={{ display: "contents" }}
+    >
       <RegionDebugOverlay enabled={!!debugRegions} experience={experience} items={debug} />
       {rendered}
-    </>
+    </div>
   );
 }
 

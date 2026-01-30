@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 
 /* ============================================================
@@ -63,7 +63,7 @@ type ScreensIndex = {
 
 export default function RootLayout({ children }: any) {
   const router = useRouter();
-
+  const searchParams = useSearchParams();
 
   const [index, setIndex] = useState<ScreensIndex[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -78,6 +78,16 @@ export default function RootLayout({ children }: any) {
 
   const [showSections, setShowSections] = useState(false);
 
+  /* ============================================================
+     🔗 DEMO: INITIAL EXPERIENCE FROM URL
+     Deep links can open in a specific experience, e.g. ?experience=app
+  ============================================================ */
+  useEffect(() => {
+    const exp = searchParams.get("experience");
+    if (exp === "website" || exp === "app" || exp === "learning") {
+      setExperience(exp);
+    }
+  }, [searchParams]);
 
   /* ============================================================
      🔁 INSTALL BEHAVIOR ROUTER (ONCE)

@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Section layout dropdown is dev-only; does not persist.
+ * Section layout in production comes from experience profile + skin JSON.
+ * For TSX skin screens, screenJson is { __type: "tsx-screen", path } so findSections returns [] and this dropdown does not render.
+ */
 
 import React, { useMemo } from "react";
 

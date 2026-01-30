@@ -22,7 +22,7 @@ export default function WebsiteShell({
         background: "linear-gradient(180deg, var(--color-bg-secondary) 0%, var(--color-bg-primary) 40%)",
       }}
     >
-      <div
+      <header
         style={{
           position: "sticky",
           top: 0,
@@ -32,11 +32,11 @@ export default function WebsiteShell({
         }}
       >
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "12px 16px" }}>{header}</div>
-      </div>
+      </header>
 
       <main style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 16px" }}>
-        <div style={{ marginBottom: 24 }}>{hero}</div>
-        <div style={{ marginBottom: 24 }}>{content}</div>
+        <div style={{ marginBottom: 32, padding: "32px 0", borderBottom: "1px solid var(--color-border)" }}>{hero}</div>
+        <div style={{ marginBottom: 32 }}>{content}</div>
         <div>{products}</div>
       </main>
 
