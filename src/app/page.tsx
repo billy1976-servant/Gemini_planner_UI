@@ -3,10 +3,15 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
+import { useSyncExternalStore } from "react";
 import JsonRenderer from "@/engine/core/json-renderer";
 import { loadScreen } from "@/engine/core/screen-loader";
 import SectionLayoutDropdown from "@/dev/section-layout-dropdown";
 import { resolveLandingPage } from "@/logic/runtime/landing-page-resolver";
+import { getLayout, subscribeLayout } from "@/engine/core/layout-store";
+import WebsiteShell from "@/lib/site-skin/shells/WebsiteShell";
+import AppShell from "@/lib/site-skin/shells/AppShell";
+import LearningShell from "@/lib/site-skin/shells/LearningShell";
 
 
 /* ============================================================
@@ -110,6 +115,9 @@ export default function Page() {
   const [error, setError] = useState<string | null>(null);
   const [host, setHost] = useState<HTMLElement | null>(null);
 
+  // Experience → shell: must run unconditionally (Rules of Hooks) so same hook count every render
+  const layoutSnapshot = useSyncExternalStore(subscribeLayout, getLayout, getLayout);
+  const experience = (layoutSnapshot as { experience?: string })?.experience ?? "website";
 
   /* --------------------------------------------------
      DEV PANEL HOST (UNCHANGED)
@@ -328,10 +336,30 @@ export default function Page() {
     note: screen ? "✅ Using screen path" : "⚠️ Using JSON hash (screen path missing)",
   });
 
+  const jsonContent = (
+    <JsonRenderer key={screenKey} node={renderNode} defaultState={json?.state} />
+  );
+
+  if (experience === "app") {
+    return (
+      <>
+        {overlay}
+        <AppShell primary={jsonContent} />
+      </>
+    );
+  }
+  if (experience === "learning") {
+    return (
+      <>
+        {overlay}
+        <LearningShell content={jsonContent} />
+      </>
+    );
+  }
   return (
     <>
       {overlay}
-      <JsonRenderer key={screenKey} node={renderNode} defaultState={json?.state} />
+      <WebsiteShell content={jsonContent} />
     </>
   );
 }

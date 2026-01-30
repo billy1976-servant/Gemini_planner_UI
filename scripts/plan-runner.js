@@ -1,7 +1,8 @@
 /**
- * plan-runner.js — HI SYSTEM PLANNER
- * Reads HI_SYSTEM docs as system brain; interactive menu for Next Step, Execute Phase,
- * Reassess System, Update Plan, Add Idea, Show Progress, Exit.
+ * plan-runner.js — HI SYSTEM AUTONOMOUS EXECUTOR
+ * Approval-based auto-builder: load context, show phase overview, ask approval,
+ * execute phase steps (auto where possible, confirm otherwise), sync MASTER_TASK_LIST and CHANGELOG.
+ * Safety: never delete existing systems unless step says migration; JSON work must not break TSX; if uncertain, pause and ask.
  * No npm dependencies; Node built-ins only.
  */
 
@@ -13,170 +14,125 @@ const { spawn } = require("child_process");
 const ROOT = path.resolve(__dirname, "..");
 const HI_SYSTEM = path.join(ROOT, "docs", "HI_SYSTEM");
 
-const BRAIN_FILES = [
-  "START_HERE.md",
+const CONTEXT_FILES = [
   "MAP.md",
   "SYSTEM_MASTER_PLAN.md",
   "MASTER_TASK_LIST.md",
-  "PLAN_ACTIVE.md",
   "WORKFLOW_RULES.md",
 ];
 
-function readBrainFile(name) {
+function readContextFile(name) {
   const filePath = path.join(HI_SYSTEM, name);
   if (!fs.existsSync(filePath)) return null;
   return fs.readFileSync(filePath, "utf8");
 }
 
-function loadBrain() {
-  let ok = 0;
-  for (const name of BRAIN_FILES) {
-    if (readBrainFile(name) !== null) ok++;
+function loadSystemContext() {
+  const loaded = [];
+  for (const name of CONTEXT_FILES) {
+    const content = readContextFile(name);
+    if (content !== null) loaded.push(name);
     else console.warn("[plan-runner] Missing:", path.join("docs", "HI_SYSTEM", name));
   }
-  return ok;
+  return loaded;
 }
 
 function prompt(rl, question) {
   return new Promise((resolve) => rl.question(question, resolve));
 }
 
-function showMenu() {
-  console.log("\nHI SYSTEM PLANNER\n");
-  console.log("1. Next Step");
-  console.log("2. Execute Phase");
-  console.log("3. Reassess System");
-  console.log("4. Update Plan");
-  console.log("5. Add Idea");
-  console.log("6. Show Progress");
-  console.log("7. Exit\n");
-}
-
-// --- Behavior 1: Next Step ---
-function nextStep() {
-  const content = readBrainFile("MASTER_TASK_LIST.md");
-  if (!content) {
-    console.log("MASTER_TASK_LIST.md not found.");
-    return;
-  }
-  const uncheckedRegex = /^\d+\.\s+\[ \]\s+.+$/m;
-  const match = content.match(uncheckedRegex);
-  if (!match) {
-    console.log("No unchecked steps; all done for now.");
-    return;
-  }
-  const phaseHeadingRegex = /## Phase \d+ — [^\n]+/g;
-  let lastPhase = "Unknown phase";
-  let pos = 0;
-  let phaseMatch;
-  const stepIndex = content.indexOf(match[0]);
-  while ((phaseMatch = phaseHeadingRegex.exec(content)) !== null) {
-    if (phaseMatch.index < stepIndex) lastPhase = phaseMatch[0].replace(/^## /, "");
-    else break;
-  }
-  console.log("Recommended next:", match[0].trim());
-  console.log("Phase:", lastPhase);
-}
-
-// --- Behavior 2: Execute Phase ---
 function getPhaseSteps(content, phaseNum) {
   const phaseRegex = new RegExp(
     `## Phase ${phaseNum} — ([^\\n]+)[\\s\\S]*?### Steps\\s*\\n([\\s\\S]*?)(?=### Depends On|## Phase \\d+|---|$)`,
     "i"
   );
   const m = content.match(phaseRegex);
-  if (!m) return { name: "", steps: [] };
+  if (!m) return { name: "", steps: [], stepsRaw: "" };
   const name = m[1].trim();
   const stepsBlock = m[2];
   const stepLines = stepsBlock.match(/^\d+\.\s+\[[ x]\].+$/gm) || [];
-  return { name, steps: stepLines };
+  return { name, steps: stepLines, stepsRaw: stepsBlock };
 }
 
-async function executePhase(rl) {
-  const content = readBrainFile("MASTER_TASK_LIST.md");
+function getPhaseOverview(content) {
+  const phases = [];
+  let totalUnchecked = 0;
+  let totalChecked = 0;
+  let firstIncompletePhase = null;
+  for (let n = 1; n <= 8; n++) {
+    const { name, steps } = getPhaseSteps(content, n);
+    if (!steps.length) continue;
+    let u = 0,
+      c = 0;
+    steps.forEach((line) => {
+      if (/\[x\]/.test(line)) c++;
+      else if (/\[ \]/.test(line)) u++;
+    });
+    const total = c + u;
+    const pct = total ? Math.round((c / total) * 100) : 0;
+    totalUnchecked += u;
+    totalChecked += c;
+    if (firstIncompletePhase === null && u > 0) firstIncompletePhase = n;
+    phases.push({ num: n, name, unchecked: u, checked: c, total, pct });
+  }
+  return { phases, totalUnchecked, totalChecked, firstIncompletePhase };
+}
+
+function showPhaseOverview() {
+  const content = readContextFile("MASTER_TASK_LIST.md");
   if (!content) {
     console.log("MASTER_TASK_LIST.md not found.");
-    return;
+    return null;
   }
-  const phaseInput = await prompt(rl, "Enter phase number (1-8): ");
-  const phaseNum = parseInt(phaseInput, 10);
-  if (phaseNum < 1 || phaseNum > 8) {
-    console.log("Invalid phase. Use 1-8.");
-    return;
-  }
-  const { name, steps } = getPhaseSteps(content, phaseNum);
-  if (!steps.length) {
-    console.log("No steps found for phase", phaseNum);
-    return;
-  }
-  console.log("\nPhase " + phaseNum + " — " + name + "\n");
-  steps.forEach((line) => console.log("  " + line));
-  const stepInput = await prompt(rl, "\nEnter step number to begin (or 0 to cancel): ");
-  const stepNum = parseInt(stepInput, 10);
-  if (stepNum === 0) {
-    console.log("Cancelled.");
-    return;
-  }
-  const stepLine = steps.find((s) => s.startsWith(stepNum + "."));
-  if (stepLine) {
-    console.log("\nSelected:", stepLine.trim());
-    console.log("Reminder: update PLAN_ACTIVE.md before starting; append CHANGELOG.md when done (per WORKFLOW_RULES).");
-  } else {
-    console.log("Step number not in this phase.");
-  }
-}
+  const { phases, totalUnchecked, totalChecked, firstIncompletePhase } = getPhaseOverview(content);
+  const totalSteps = totalUnchecked + totalChecked;
+  const overallPct = totalSteps ? Math.round((totalChecked / totalSteps) * 100) : 0;
 
-// --- Behavior 3: Reassess System ---
-// Heuristics are best-effort; only high-confidence checks auto-mark [x].
-// Heuristics are best-effort; only high-confidence checks auto-mark [x].
-function reassessHeuristics() {
-  const results = [];
-  const buttonPath = path.join(ROOT, "src", "compounds", "ui", "definitions", "button.json");
-  if (fs.existsSync(buttonPath)) {
-    const text = fs.readFileSync(buttonPath, "utf8");
-    if (text.includes('"icon"')) results.push({ phase: 1, step: 2 });
-  }
-  return results;
-}
-
-function reassessSystem() {
-  const taskPath = path.join(HI_SYSTEM, "MASTER_TASK_LIST.md");
-  let content = readBrainFile("MASTER_TASK_LIST.md");
-  if (!content) {
-    console.log("MASTER_TASK_LIST.md not found.");
-    return;
-  }
-  const toCheck = reassessHeuristics();
-  let checkedCount = 0;
-  for (const { phase, step } of toCheck) {
-    const phaseRegex = new RegExp(
-      `(## Phase ${phase} — [^\\n]+[\\s\\S]*?### Steps\\s*\\n)([\\s\\S]*?)(?=### Depends On)`,
-      "i"
+  console.log("\n--- Phase Overview ---\n");
+  phases.forEach((p) => {
+    const highlight = p.num === firstIncompletePhase ? "  << NEXT" : "";
+    console.log(
+      "Phase " + p.num + " — " + p.name + ": " + p.checked + "/" + p.total + " (" + p.pct + "%)" + highlight
     );
-    const phaseMatch = content.match(phaseRegex);
-    if (!phaseMatch) continue;
-    const stepsBlock = phaseMatch[2];
-    const stepLineRegex = new RegExp(`^(\\s*)(\\d+)\\. \\[ \\](\\s+.+)$`, "m");
-    const stepLineMatch = stepsBlock.match(stepLineRegex);
-    if (!stepLineMatch) continue;
-    const stepNumInList = parseInt(stepLineMatch[2], 10);
-    if (stepNumInList !== step) continue;
-    const oldLine = stepLineMatch[0].trimStart();
-    const newLine = stepLineMatch[1] + stepLineMatch[2] + ". [x]" + stepLineMatch[3];
-    const fullOld = phaseMatch[1] + phaseMatch[2];
-    const fullNew = phaseMatch[1] + phaseMatch[2].replace(stepLineMatch[0], newLine);
-    if (content.indexOf(fullOld) !== -1) {
-      content = content.replace(fullOld, fullNew);
-      checkedCount++;
-    }
-  }
-  if (checkedCount > 0) fs.writeFileSync(taskPath, content, "utf8");
+  });
+  console.log("\nTotal remaining steps:", totalUnchecked);
+  console.log("Overall:", totalChecked + "/" + totalSteps, "(" + overallPct + "%)\n");
+  return { firstIncompletePhase, totalUnchecked };
+}
 
+function markStepDone(phaseNum, stepNum) {
+  const taskPath = path.join(HI_SYSTEM, "MASTER_TASK_LIST.md");
+  let content = fs.readFileSync(taskPath, "utf8");
+  const phaseRegex = new RegExp(
+    `(## Phase ${phaseNum} — [^\\n]+[\\s\\S]*?### Steps\\s*\\n)([\\s\\S]*?)(?=### Depends On)`,
+    "i"
+  );
+  const phaseMatch = content.match(phaseRegex);
+  if (!phaseMatch) return false;
+  const stepsBlock = phaseMatch[2];
+  const stepLineRegex = new RegExp(`^(\\s*)(\\d+)\\. \\[ \\](\\s+.+)$`, "gm");
+  let stepIndex = 0;
+  let newStepsBlock = stepsBlock.replace(stepLineRegex, (match, indent, num, rest) => {
+    stepIndex++;
+    if (parseInt(num, 10) === stepNum) {
+      return indent + num + ". [x]" + rest;
+    }
+    return match;
+  });
+  if (newStepsBlock === stepsBlock) return false;
+  content = content.replace(phaseMatch[1] + phaseMatch[2], phaseMatch[1] + newStepsBlock);
+  fs.writeFileSync(taskPath, content, "utf8");
+  return true;
+}
+
+function appendChangelogEntry(text) {
   const changelogPath = path.join(HI_SYSTEM, "CHANGELOG.md");
   const date = new Date().toISOString().slice(0, 10);
-  const entry = `\n### ${date} — Reassess (plan-runner)\n- Auto-checked ${checkedCount} items from MASTER_TASK_LIST; MAP Last reviewed updated.\n`;
+  const entry = `\n### ${date} — ${text}\n`;
   fs.appendFileSync(changelogPath, entry, "utf8");
+}
 
+function updateMapTimestamp() {
   const mapPath = path.join(HI_SYSTEM, "MAP.md");
   let mapContent = fs.readFileSync(mapPath, "utf8");
   const stamp = "Last reviewed: " + new Date().toISOString();
@@ -186,120 +142,207 @@ function reassessSystem() {
     mapContent = stamp + "\n\n" + mapContent;
   }
   fs.writeFileSync(mapPath, mapContent, "utf8");
-
-  console.log("Reassess done. Auto-checked", checkedCount, "items; CHANGELOG and MAP.md updated.");
 }
 
-// --- Behavior 4: Update Plan ---
-async function updatePlanAsync(rl) {
-  const content = readBrainFile("SYSTEM_MASTER_PLAN.md");
-  if (!content) {
-    console.log("SYSTEM_MASTER_PLAN.md not found.");
-    return;
+// --- Step handlers: mechanical actions only. Safety: no delete unless migration; JSON must not break TSX.
+function tryExecuteStep(phaseNum, stepNum, stepLine) {
+  const desc = stepLine.replace(/^\d+\.\s+\[[ x]\]\s*/, "").trim();
+
+  if (phaseNum === 1 && stepNum === 2) {
+    const buttonPath = path.join(ROOT, "src", "compounds", "ui", "definitions", "button.json");
+    if (!fs.existsSync(buttonPath)) return { done: false, reason: "button.json not found" };
+    let json;
+    try {
+      json = JSON.parse(fs.readFileSync(buttonPath, "utf8"));
+    } catch (e) {
+      return { done: false, reason: "button.json invalid JSON" };
+    }
+    if (json.variants && json.variants.icon) return { done: true, reason: "icon variant already present" };
+    if (!json.variants) json.variants = {};
+    json.variants.icon = {
+      surface: { background: "color.surface", padding: "padding.xs" },
+      text: { color: "color.primary", size: "textSize.md", weight: "textWeight.medium" },
+      trigger: { hoverFeedback: "soft", pressFeedback: "light", cursor: "pointer" },
+    };
+    fs.writeFileSync(buttonPath, JSON.stringify(json, null, 2), "utf8");
+    return { done: true, reason: "Added icon variant to button.json" };
   }
-  const headings = content.match(/^## Phase \d+ — [^\n]+|^## Phase Summary[^\n]*/gm) || [];
-  headings.forEach((h, i) => console.log((i + 1) + ". " + h.replace(/^## /, "")));
-  const sel = await prompt(rl, "Select phase (1-" + headings.length + ") to edit manually, or 0 to cancel: ");
-  const n = parseInt(sel, 10);
-  if (n === 0) {
-    console.log("Cancelled.");
-    return;
-  }
-  if (n < 1 || n > headings.length) {
-    console.log("Invalid selection.");
-    return;
-  }
-  const filePath = path.join(HI_SYSTEM, "SYSTEM_MASTER_PLAN.md");
-  const editor = process.env.EDITOR || process.env.VISUAL || (process.platform === "win32" ? "notepad" : "code");
-  spawn(editor, [filePath], { stdio: "inherit", shell: true });
-  console.log("Opening", filePath, "in", editor, "...");
+
+  return { done: false, reason: "requires_manual" };
 }
 
-// --- Behavior 5: Add Idea ---
-async function addIdea(rl) {
-  const backlogPath = path.join(HI_SYSTEM, "BACKLOG.md");
-  if (!fs.existsSync(backlogPath)) {
-    fs.writeFileSync(
-      backlogPath,
-      "# Backlog\n\nAppend ideas below; one per line or block with date.\n\n---\n",
-      "utf8"
-    );
-  }
-  const date = new Date().toISOString().slice(0, 10);
-  const idea = await prompt(rl, "Idea (one line): ");
-  const line = "- " + date + ": " + (idea || "(no text)") + "\n";
-  fs.appendFileSync(backlogPath, line, "utf8");
-  console.log("Appended to BACKLOG.md.");
-}
-
-// --- Behavior 6: Show Progress ---
-function showProgress() {
-  const content = readBrainFile("MASTER_TASK_LIST.md");
+async function executePhaseAutonomous(rl, phaseNum) {
+  const content = readContextFile("MASTER_TASK_LIST.md");
   if (!content) {
     console.log("MASTER_TASK_LIST.md not found.");
     return;
   }
-  const unchecked = (content.match(/^\d+\.\s+\[ \]\s+/gm) || []).length;
-  const checked = (content.match(/^\d+\.\s+\[x\]\s+/gm) || []).length;
-  const total = unchecked + checked;
-  const pct = total ? Math.round((checked / total) * 100) : 0;
-  console.log("Total:", unchecked, "unchecked,", checked, "checked,", pct + "% complete\n");
+  const { name, steps } = getPhaseSteps(content, phaseNum);
+  const unchecked = steps
+    .map((line) => {
+      const m = line.match(/^(\d+)\.\s+\[ \]\s+(.+)$/);
+      return m ? { stepNum: parseInt(m[1], 10), line: m[0], desc: m[2].trim() } : null;
+    })
+    .filter(Boolean);
 
-  for (let phaseNum = 1; phaseNum <= 8; phaseNum++) {
-    const { name, steps } = getPhaseSteps(content, phaseNum);
-    if (!steps.length) continue;
-    let c = 0,
-      u = 0;
-    steps.forEach((line) => {
-      if (/\[x\]/.test(line)) c++;
-      else if (/\[ \]/.test(line)) u++;
-    });
-    const phaseTotal = c + u;
-    const phasePct = phaseTotal ? Math.round((c / phaseTotal) * 100) : 0;
-    console.log("Phase " + phaseNum + " — " + name + ": " + c + "/" + phaseTotal + " (" + phasePct + "%)");
+  if (!unchecked.length) {
+    console.log("Phase", phaseNum, "has no unchecked steps.");
+    return;
+  }
+
+  console.log("\n--- Executing Phase", phaseNum, "—", name, "---\n");
+  console.log("WORKFLOW_RULES: read docs before modifying; no duplicate systems; update PLAN_ACTIVE/CHANGELOG/MAP.\n");
+  console.log("Safety: JSON pipeline work must not break TSX pipeline. If uncertain, we pause and ask.\n");
+
+  for (const { stepNum, line, desc } of unchecked) {
+    console.log("Step", stepNum + ":", desc.slice(0, 80) + (desc.length > 80 ? "..." : ""));
+
+    const result = tryExecuteStep(phaseNum, stepNum, line);
+    if (result.done) {
+      console.log("  [AUTO]", result.reason);
+      markStepDone(phaseNum, stepNum);
+      appendChangelogEntry("Phase " + phaseNum + " step " + stepNum + ": " + result.reason);
+      continue;
+    }
+
+    if (result.reason === "requires_manual") {
+      console.log("  [MANUAL] This step requires implementation (e.g. in Cursor).");
+      const ans = await prompt(rl, "  Mark step as done after you complete it? (y/n): ");
+      if (ans.trim().toLowerCase() === "y" || ans.trim().toLowerCase() === "yes") {
+        markStepDone(phaseNum, stepNum);
+        appendChangelogEntry("Phase " + phaseNum + " step " + stepNum + " completed (manual).");
+        console.log("  Marked done.");
+      } else {
+        console.log("  Skipped. You can run this phase again later.");
+        return;
+      }
+    } else {
+      console.log("  [BLOCKED]", result.reason);
+      const ans = await prompt(rl, "  Mark step as done anyway? (y/n): ");
+      if (ans.trim().toLowerCase() === "y" || ans.trim().toLowerCase() === "yes") {
+        markStepDone(phaseNum, stepNum);
+        appendChangelogEntry("Phase " + phaseNum + " step " + stepNum + " marked done (blocked: " + result.reason + ").");
+      }
+    }
+  }
+
+  updateMapTimestamp();
+  console.log("\nPhase", phaseNum, "run complete. MAP.md timestamp updated.");
+
+  const nextPhase = phaseNum < 8 ? phaseNum + 1 : null;
+  if (nextPhase) {
+    const ans = await prompt(rl, "Phase complete. Execute next phase (Phase " + nextPhase + ")? (y/n): ");
+    if (ans.trim().toLowerCase() === "y" || ans.trim().toLowerCase() === "yes") {
+      await executePhaseAutonomous(rl, nextPhase);
+    }
   }
 }
 
-// --- Behavior 7: Exit ---
-function exit() {
-  console.log("Goodbye.");
-  process.exit(0);
+function reassessAndSync() {
+  const taskPath = path.join(HI_SYSTEM, "MASTER_TASK_LIST.md");
+  let content = readContextFile("MASTER_TASK_LIST.md");
+  if (!content) {
+    console.log("MASTER_TASK_LIST.md not found.");
+    return;
+  }
+  let checkedCount = 0;
+  const buttonPath = path.join(ROOT, "src", "compounds", "ui", "definitions", "button.json");
+  if (fs.existsSync(buttonPath)) {
+    const text = fs.readFileSync(buttonPath, "utf8");
+    if (text.includes('"icon"')) {
+      if (markStepDone(1, 2)) checkedCount++;
+    }
+  }
+  appendChangelogEntry("Reassess & Sync: auto-checked " + checkedCount + " items from MASTER_TASK_LIST.");
+  updateMapTimestamp();
+  console.log("Reassess done. Auto-checked", checkedCount, "items; CHANGELOG and MAP.md updated.");
+}
+
+function showProgress() {
+  const content = readContextFile("MASTER_TASK_LIST.md");
+  if (!content) {
+    console.log("MASTER_TASK_LIST.md not found.");
+    return;
+  }
+  const { phases, totalUnchecked, totalChecked } = getPhaseOverview(content);
+  const totalSteps = totalUnchecked + totalChecked;
+  const pct = totalSteps ? Math.round((totalChecked / totalSteps) * 100) : 0;
+  console.log("\nTotal:", totalUnchecked, "unchecked,", totalChecked, "checked,", pct + "% complete\n");
+  phases.forEach((p) => {
+    console.log("Phase " + p.num + " — " + p.name + ": " + p.checked + "/" + p.total + " (" + p.pct + "%)");
+  });
+}
+
+function showMenu() {
+  console.log("\nHI SYSTEM AUTONOMOUS EXECUTOR\n");
+  console.log("1. Execute Next Phase");
+  console.log("2. Execute Specific Phase");
+  console.log("3. Reassess & Sync Tasks");
+  console.log("4. Show Progress");
+  console.log("5. Exit\n");
 }
 
 async function main() {
-  const loaded = loadBrain();
-  console.log("[plan-runner] Docs loaded:", loaded + "/" + BRAIN_FILES.length);
+  const loaded = loadSystemContext();
+  console.log("[plan-runner] System context loaded:", loaded.length + "/" + CONTEXT_FILES.length);
+  loaded.forEach((f) => console.log("  -", f));
 
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
   while (true) {
     showMenu();
-    const choice = await prompt(rl, "Choice (1-7): ");
-    switch (choice.trim()) {
-      case "1":
-        nextStep();
-        break;
-      case "2":
-        await executePhase(rl);
-        break;
-      case "3":
-        reassessSystem();
-        break;
-      case "4":
-        await updatePlanAsync(rl);
-        break;
-      case "5":
-        await addIdea(rl);
-        break;
-      case "6":
-        showProgress();
-        break;
-      case "7":
-        exit();
-        return;
-      default:
-        console.log("Invalid choice. Use 1-7.");
+    const choice = await prompt(rl, "Choice (1-5): ");
+
+    if (choice.trim() === "1") {
+      const overview = showPhaseOverview();
+      if (!overview) continue;
+      const phaseNum = overview.firstIncompletePhase;
+      if (phaseNum == null) {
+        console.log("No incomplete phase; all phases have at least some steps done.");
+        continue;
+      }
+      const ans = await prompt(rl, "Execute Phase " + phaseNum + " automatically? (y/n): ");
+      if (ans.trim().toLowerCase() === "y" || ans.trim().toLowerCase() === "yes") {
+        await executePhaseAutonomous(rl, phaseNum);
+      } else {
+        console.log("Returning to menu.");
+      }
+      continue;
     }
+
+    if (choice.trim() === "2") {
+      showPhaseOverview();
+      const phaseInput = await prompt(rl, "Enter phase number (1-8): ");
+      const phaseNum = parseInt(phaseInput, 10);
+      if (phaseNum < 1 || phaseNum > 8) {
+        console.log("Invalid phase.");
+        continue;
+      }
+      const ans = await prompt(rl, "Execute Phase " + phaseNum + " automatically? (y/n): ");
+      if (ans.trim().toLowerCase() === "y" || ans.trim().toLowerCase() === "yes") {
+        await executePhaseAutonomous(rl, phaseNum);
+      } else {
+        console.log("Returning to menu.");
+      }
+      continue;
+    }
+
+    if (choice.trim() === "3") {
+      reassessAndSync();
+      continue;
+    }
+
+    if (choice.trim() === "4") {
+      showProgress();
+      continue;
+    }
+
+    if (choice.trim() === "5") {
+      console.log("Goodbye.");
+      process.exit(0);
+    }
+
+    console.log("Invalid choice. Use 1-5.");
   }
 }
 

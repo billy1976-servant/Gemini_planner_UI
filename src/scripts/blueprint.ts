@@ -28,6 +28,64 @@ const APPS_ROOT = path.resolve(process.cwd(), "src/apps-offline");
 const SCREEN_ROOT_ID = "screenRoot";
 const DEFAULT_VIEW = "|home";
 
+/** Contract-derived: allowed content keys per molecule type (empty = no content slots). */
+const ALLOWED_CONTENT_KEYS: Record<string, string[]> = {
+  button: ["label"],
+  avatar: ["media", "text"],
+  chip: ["title", "body", "media"],
+  field: ["label", "input", "error"],
+  list: ["items"],
+  stepper: ["steps"],
+  toast: ["message"],
+  toolbar: ["actions"],
+  modal: ["title", "body", "actions"],
+  section: ["title"],
+  footer: ["left", "right"],
+  card: ["title", "body", "media", "actions"],
+};
+
+
+/* ============================================================
+   CONTENT.MANIFEST GENERATOR + VALIDATION
+============================================================ */
+function generateContentManifest(rawNodes: RawNode[], appPath: string): Record<string, Record<string, string>> {
+  const manifest: Record<string, Record<string, string>> = {};
+  for (const node of rawNodes) {
+    const keys = ALLOWED_CONTENT_KEYS[node.type.toLowerCase()];
+    if (keys?.length) {
+      manifest[node.rawId] = Object.fromEntries(keys.map((k) => [k, ""]));
+    }
+  }
+  const manifestPath = path.join(appPath, "content.manifest.json");
+  fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), "utf8");
+  return manifest;
+}
+
+function validateContentKeys(
+  contentMap: Record<string, any>,
+  manifest: Record<string, Record<string, string>>,
+  rawNodes: RawNode[]
+): void {
+  const idToType: Record<string, string> = Object.fromEntries(rawNodes.map((n) => [n.rawId, n.type]));
+  for (const [nodeId, content] of Object.entries(contentMap)) {
+    if (!content || typeof content !== "object") continue;
+    const allowed = manifest[nodeId];
+    const keys = Object.keys(content);
+    if (allowed) {
+      for (const k of keys) {
+        if (!(k in allowed)) {
+          console.warn(`[content.manifest] Invented key "${k}" on node ${nodeId} (type: ${idToType[nodeId]}); allowed: ${Object.keys(allowed).join(", ")}`);
+        }
+      }
+      for (const k of Object.keys(allowed)) {
+        if (!(k in content)) {
+          console.warn(`[content.manifest] Missing key "${k}" on node ${nodeId} (type: ${idToType[nodeId]})`);
+        }
+      }
+    }
+  }
+}
+
 
 /* ============================================================
    CLI UTILS
@@ -289,30 +347,47 @@ function buildTree(nodes: RawNode[], contentMap: Record<string, any>) {
    MAIN
 ============================================================ */
 async function run() {
-  const categories = listDirs(APPS_ROOT);
-  categories.forEach((c, i) => console.log(`${i + 1}. ${c}`));
+  let appPath: string;
+
+  // Optional non-interactive: node blueprint.ts <category>/<app> (e.g. apps/journal_track)
+  const relativePath = process.argv[2];
+  let cat: string;
+  let app: string;
+  if (relativePath) {
+    const parts = relativePath.replace(/\\/g, "/").split("/");
+    cat = parts[0] ?? "";
+    app = parts[1] ?? "";
+    appPath = path.join(APPS_ROOT, relativePath);
+    if (!fs.existsSync(path.join(appPath, "blueprint.txt"))) {
+      console.error("No blueprint.txt at", appPath);
+      process.exit(1);
+    }
+  } else {
+    const categories = listDirs(APPS_ROOT);
+    categories.forEach((c, i) => console.log(`${i + 1}. ${c}`));
 
 
-  const cat = categories[(+await prompt("Choose folder number: ")) - 1];
-  if (!cat) process.exit(1);
+    cat = categories[(+await prompt("Choose folder number: ")) - 1];
+    if (!cat) process.exit(1);
 
 
-  const catPath = path.join(APPS_ROOT, cat);
+    const catPath = path.join(APPS_ROOT, cat);
 
 
-  const apps = listDirs(catPath).filter(a =>
-    fs.existsSync(path.join(catPath, a, "blueprint.txt"))
-  );
+    const apps = listDirs(catPath).filter(a =>
+      fs.existsSync(path.join(catPath, a, "blueprint.txt"))
+    );
 
 
-  apps.forEach((a, i) => console.log(`${i + 1}. ${a}`));
+    apps.forEach((a, i) => console.log(`${i + 1}. ${a}`));
 
 
-  const app = apps[(+await prompt("Choose app number: ")) - 1];
-  if (!app) process.exit(1);
+    app = apps[(+await prompt("Choose app number: ")) - 1];
+    if (!app) process.exit(1);
 
 
-  const appPath = path.join(catPath, app);
+    appPath = path.join(catPath, app);
+  }
   const blueprintText = fs.readFileSync(path.join(appPath, "blueprint.txt"), "utf8");
 
 
@@ -323,6 +398,11 @@ async function run() {
 
   const rawNodes = parseBlueprint(blueprintText);
   const contentMap = parseContent(contentText);
+
+  // Generate content.manifest and validate content keys (warn-only).
+  const manifest = generateContentManifest(rawNodes, appPath);
+  validateContentKeys(contentMap, manifest, rawNodes);
+
   const children = buildTree(rawNodes, contentMap);
 
 

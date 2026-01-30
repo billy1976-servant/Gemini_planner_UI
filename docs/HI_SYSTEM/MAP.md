@@ -180,6 +180,8 @@ Last refreshed: 2026-01-30T15:14:39.548Z
 
 **Contract (from artifacts):** Node shape: id, type, children, content, params, variant, size, layout, params.moleculeLayout, behavior, state, when. Registry and definitions must stay in sync with JSON types.
 
+**Foundation (Phase 1 locked):** 12 molecules (avatar, button, card, chip, field, footer, list, modal, section, stepper, toast, toolbar) + 9 atoms (text, media, surface, sequence, trigger, collection, condition, shell, field). Contract doc: `docs/HI_SYSTEM/MOLECULE_CONTRACT.md`. Button includes `icon` variant. content.manifest generator in `src/scripts/blueprint.ts`; manifest written per app (`content.manifest.json`); content keys validated (warn on missing/invented).
+
 ---
 
 ### 3. Layout Engine (composeScreen, region-policy)
@@ -195,7 +197,7 @@ Last refreshed: 2026-01-30T15:14:39.548Z
 | **Layout molecules** | `src/layout/molecules/*.tsx` | column, grid, page, row, stack. |
 | **Layout store** | `src/engine/core/layout-store.ts` | setLayout, getLayout, subscribeLayout (experience/profile). |
 
-Used by SiteSkin: role-tagged nodes → composeScreen → regions → shells render regions.
+Used by SiteSkin: role-tagged nodes → composeScreen → regions → shells render regions. **Skin proof path:** skin JSON → loadSiteSkin → applySkinBindings → composeScreen → shells → JsonRenderer (see `src/lib/site-skin/PROOF_PATH.md`).
 
 ---
 
@@ -209,7 +211,7 @@ Used by SiteSkin: role-tagged nodes → composeScreen → regions → shells ren
 | **LearningShell** | `src/lib/site-skin/shells/LearningShell.tsx` | Layout container for experience "learning". |
 | **RegionDebugOverlay** | `src/lib/site-skin/shells/RegionDebugOverlay.tsx` | Debug overlay for region structure. |
 
-Shells receive region key and children (already-composed nodes); they do not implement JSON→DOM; JsonRenderer does. Experience set in app layout; SiteSkin used for site/skin pages (domain, pageId).
+Shells receive region key and children (already-composed nodes); they do not implement JSON→DOM; JsonRenderer does. Experience set in app layout; SiteSkin used for site/skin pages (domain, pageId). **Proof path:** skin JSON → loadSiteSkin → applySkinBindings → composeScreen → shells → JsonRenderer.
 
 ---
 
@@ -262,11 +264,12 @@ Two paths: (1) JSON molecules → CustomEvent → behavior-listener → state-mu
 
 ### 8. What Is Fully Wired
 
+- **Foundation (Phase 1 locked):** 12 molecules + 9 atoms; contract doc `docs/HI_SYSTEM/MOLECULE_CONTRACT.md`; button `icon` variant; content.manifest generator in blueprint (writes `content.manifest.json` per app, validates content keys with warn).
 - **JSON screen load → render:** Navigator → loadScreen(path) → /api/screens → default state applied → JsonRenderer(node) → Registry, definitions, palette, molecule layout → DOM.
 - **Behavior loop (JSON):** Input/button/stepper → CustomEvent → behavior-listener → state-mutate → state-store → deriveState → JsonRenderer re-render; navigate → router.
 - **Pipeline proof:** Diagnostics app + linked screen: load, contract (warn), all 12 molecules, input-change, state/journal, navigation, persistence, rehydrate, no console error.
 - **Layout engine:** composeScreen + region-policy used by SiteSkin; experience profile → shell (Website/App/Learning) → regions → JsonRenderer per region.
-- **Site skin:** loadSiteSkin → applySkinBindings → composeScreen → shells → JsonRenderer; proof path documented in PROOF_PATH.md.
+- **Site skin (proof path):** skin JSON → loadSiteSkin → applySkinBindings → composeScreen → shells → JsonRenderer; documented in `src/lib/site-skin/PROOF_PATH.md`.
 - **Palette + layout store:** layout.tsx sets palette and layout/experience; JsonRenderer and SiteSkin subscribe.
 - **Blueprint compile:** blueprint.txt + content.txt → app.json under apps-offline/apps.
 

@@ -25,3 +25,11 @@ npm run cleanup
 ```
 
 Then open **docs/HI_SYSTEM/** and read **START_HERE.md** (this file), **MAP.md** (system map), and **PLAN_ACTIVE.md** (current plan).
+
+To run the **autonomous executor** (approval-based auto-builder):
+
+```bash
+npm run plan
+```
+
+This loads MAP, SYSTEM_MASTER_PLAN, MASTER_TASK_LIST, and WORKFLOW_RULES; shows phase overview and first incomplete phase; asks "Execute Phase X automatically? (y/n)". If you approve, it executes unchecked steps (auto where possible, manual confirm otherwise), marks steps done in MASTER_TASK_LIST, appends CHANGELOG, and updates MAP. Safety: JSON pipeline work must not break TSX; if uncertain, it pauses and asks.

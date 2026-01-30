@@ -140,10 +140,13 @@ export const Registry = {
 
   // 🔹 STATE-AWARE VIEWERS
   UserInputViewer: userInputViewer,
+  userInputViewer: userInputViewer,
   userinputviewer: userInputViewer,
 
   // 🔹 Journal display (non-molecule, safe)
   JournalHistory: JournalHistory,
+  journalHistory: JournalHistory,
+  journalViewer: JournalHistory,
   journalhistory: JournalHistory,
 
 

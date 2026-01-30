@@ -93,6 +93,7 @@ const MOLECULE_SIZES: Record<Molecule, string[]> = {
 };
 
 // Actionable for Interaction/Navigation tokens (per contract’s “actionable molecules” list)
+// MOLECULE_CONTRACT: Button, Card, Chip, Footer, List, Stepper, Toast, Toolbar may have behavior; Section, Avatar, Field may not.
 const ACTIONABLE_MOLECULES = new Set<Molecule>([
   "button",
   "chip",
@@ -101,13 +102,13 @@ const ACTIONABLE_MOLECULES = new Set<Molecule>([
   "footer",
   "stepper",
   "toast",
-  "avatar",
 ]);
 
-// Structural/non-interactive molecules (per contract)
+// Structural/non-actionable molecules (per contract: no behavior except Field state.bind)
 const NON_INTERACTIVE_MOLECULES = new Set<Molecule>([
   "section",
   "field",
+  "avatar",
 ]);
 
 /**

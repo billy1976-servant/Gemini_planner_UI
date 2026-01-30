@@ -2,6 +2,8 @@
 
 The screen is rendered from JSON molecules, not TSX hardcoding. This document describes the pipeline so you can verify that a content-only edit in skin JSON changes the visible UI without any TSX or molecule/atom edit.
 
+**Canonical path:** skin JSON → loadSiteSkin → applySkinBindings → composeScreen → shells → JsonRenderer.
+
 ## Pipeline
 
 1. **Skin JSON** — Loaded via `loadSiteSkin(domain, pageId)` or passed as `skin` prop; slots resolved by `applySkinBindings(doc, data)`.

@@ -67,14 +67,21 @@ export type NormalizeResult = {
   legacy: boolean;
 };
 
+export type NormalizeOptions = {
+  /** When true (default), legacy state:* and logic.action are accepted and mapped to canonical form. */
+  allowLegacy?: boolean;
+};
+
 /**
  * Normalize legacy behavior objects:
  * - `{ type: "Navigation", params: {...} }`
  * - `{ type: "Interaction", params: {...} }`
  * - `{ type: "Action", params: { name: "state:*" | <verb> } }`
+ * Maps legacy state:* and logic.action to canonical Interaction/Navigation/Action/Mutation intents.
  */
-export function normalizeBehaviorPayload(payload: any): NormalizeResult {
+export function normalizeBehaviorPayload(payload: any, options?: NormalizeOptions): NormalizeResult {
   const warnings: string[] = [];
+  const allowLegacy = options?.allowLegacy !== false;
 
   // Contract-style canonical payloads (already normalized)
   if (isObj(payload) && typeof payload.kind === "string") {
@@ -82,9 +89,11 @@ export function normalizeBehaviorPayload(payload: any): NormalizeResult {
   }
 
   if (!isObj(payload)) {
+    const msg = "Behavior payload is not an object";
+    if (!allowLegacy) warnings.push(msg);
     return {
       intent: { kind: "legacy", description: "Non-object behavior payload", raw: payload },
-      warnings: ["Behavior payload is not an object"],
+      warnings: allowLegacy ? [msg] : [msg],
       legacy: true,
     };
   }

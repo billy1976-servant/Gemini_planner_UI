@@ -5,6 +5,9 @@
  * - Give the runtime a single, contract-shaped representation of "what to do"
  * - Allow translation from legacy `behavior.type` objects (`Action`/`Navigation`/`Interaction`)
  * - Keep behavior execution separate (listener/engine decides how to run)
+ *
+ * Contract: Interaction, Navigation, Action, Mutation.
+ * Tokens: tap, go, back, append, update, remove (and extended sets per kind below).
  */
 
 export type InteractionVerb =

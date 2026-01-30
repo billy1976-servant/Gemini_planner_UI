@@ -124,7 +124,7 @@ export function installBehaviorListener(navigate: (to: string) => void) {
 
     // Phase 2: normalize legacy behavior into contract-shaped intent (warn-only)
     // Phase 5: keep the normalized intent available for the eventual simplified runtime surface.
-    const normalized = normalizeBehaviorPayload(behavior);
+    const normalized = normalizeBehaviorPayload(behavior, { allowLegacy: true });
     normalized.warnings.forEach((w) =>
       console.warn("[action][normalize]", w, { actionName, params, intent: normalized.intent })
     );

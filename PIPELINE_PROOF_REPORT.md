@@ -1,6 +1,6 @@
 # PIPELINE_PROOF_REPORT
 
-Generated: 2026-01-29T20:19:11.807Z
+Generated: 2026-01-30T17:54:16.000Z
 
 Diagnostic app: `src/apps-offline/apps/diagnostics/app.json`
 Linked screen: `src/apps-offline/apps/diagnostics/linked.json`

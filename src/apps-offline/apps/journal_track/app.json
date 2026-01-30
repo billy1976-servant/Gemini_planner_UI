@@ -13,37 +13,9 @@
           "id": "|TrackNav",
           "type": "Stepper",
           "children": [],
-          "state": {
-            "mode": "two-way",
-            "key": "track.step"
-          },
-          "steps": [
-            {
-              "content": {
-                "label": "Think"
-              }
-            },
-            {
-              "content": {
-                "label": "Repent"
-              }
-            },
-            {
-              "content": {
-                "label": "Ask"
-              }
-            },
-            {
-              "content": {
-                "label": "Conform"
-              }
-            },
-            {
-              "content": {
-                "label": "Keep"
-              }
-            }
-          ]
+          "content": {
+            "steps": ""
+          }
         },
         {
           "id": "|ThinkSection",
@@ -81,9 +53,7 @@
               "id": "|ThinkSave",
               "type": "Button",
               "children": [],
-              "content": {
-                "label": "Save think Entry"
-              },
+              "content": {},
               "behavior": {
                 "type": "Action",
                 "params": {
@@ -99,10 +69,7 @@
               "id": "|ThinkViewer",
               "type": "UserInputViewer",
               "children": [],
-              "params": {
-                "track": "think",
-                "stateKey": "journal.think"
-              }
+              "content": {}
             }
           ],
           "content": {
@@ -145,9 +112,7 @@
               "id": "|RepentSave",
               "type": "Button",
               "children": [],
-              "content": {
-                "label": "Save repent Entry"
-              },
+              "content": {},
               "behavior": {
                 "type": "Action",
                 "params": {
@@ -163,10 +128,7 @@
               "id": "|RepentViewer",
               "type": "UserInputViewer",
               "children": [],
-              "params": {
-                "track": "repent",
-                "stateKey": "journal.repent"
-              }
+              "content": {}
             }
           ],
           "content": {
@@ -209,9 +171,7 @@
               "id": "|AskSave",
               "type": "Button",
               "children": [],
-              "content": {
-                "label": "Save ask Entry"
-              },
+              "content": {},
               "behavior": {
                 "type": "Action",
                 "params": {
@@ -227,10 +187,7 @@
               "id": "|AskViewer",
               "type": "UserInputViewer",
               "children": [],
-              "params": {
-                "track": "ask",
-                "stateKey": "journal.ask"
-              }
+              "content": {}
             }
           ],
           "content": {
@@ -273,9 +230,7 @@
               "id": "|ConformSave",
               "type": "Button",
               "children": [],
-              "content": {
-                "label": "Save conform Entry"
-              },
+              "content": {},
               "behavior": {
                 "type": "Action",
                 "params": {
@@ -291,10 +246,7 @@
               "id": "|ConformViewer",
               "type": "UserInputViewer",
               "children": [],
-              "params": {
-                "track": "conform",
-                "stateKey": "journal.conform"
-              }
+              "content": {}
             }
           ],
           "content": {
@@ -337,9 +289,7 @@
               "id": "|KeepSave",
               "type": "Button",
               "children": [],
-              "content": {
-                "label": "Save keep Entry"
-              },
+              "content": {},
               "behavior": {
                 "type": "Action",
                 "params": {
@@ -355,10 +305,7 @@
               "id": "|KeepViewer",
               "type": "UserInputViewer",
               "children": [],
-              "params": {
-                "track": "keep",
-                "stateKey": "journal.keep"
-              }
+              "content": {}
             }
           ],
           "content": {

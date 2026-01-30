@@ -101,6 +101,25 @@ function MaybeDebugWrapper({ node, children }: any) {
 
 
 /* ======================================================
+   BEHAVIOR CONTRACT (Packet 11) — strip invalid at runtime
+====================================================== */
+const NON_ACTIONABLE_TYPES = new Set(["section", "field", "avatar"]);
+
+function isCloseOnlyBehavior(behavior: any): boolean {
+  if (!behavior || typeof behavior !== "object") return false;
+  if (behavior.type === "Navigation" && behavior?.params?.verb === "close") return true;
+  if (behavior.type === "Action" && behavior?.params?.name === "close") return true;
+  return false;
+}
+
+function shouldStripBehavior(nodeType: string, behavior: any): boolean {
+  const t = typeof nodeType === "string" ? nodeType.trim().toLowerCase() : "";
+  if (NON_ACTIONABLE_TYPES.has(t)) return true;
+  if (t === "modal" && behavior && typeof behavior === "object" && !isCloseOnlyBehavior(behavior)) return true;
+  return false;
+}
+
+/* ======================================================
    INTERNAL GUARDS
 ====================================================== */
 function isValidReactComponentType(x: any) {
@@ -306,11 +325,15 @@ export function renderNode(
   }
 
 
+  const rawBehavior = resolvedNode.behavior ?? {};
+  const behavior =
+    shouldStripBehavior(resolvedNode.type, rawBehavior) ? {} : rawBehavior;
+
   const props: any = {
     ...resolvedNode,
     params: resolvedNode.params,
     content: resolvedNode.content ?? {},
-    behavior: resolvedNode.behavior ?? {},
+    behavior,
     onTap: resolvedNode.onTap,
   };
 

@@ -7,6 +7,7 @@
     "apps": "ts-node src/map/engine/map-engine.ts",
     "blueprint": "ts-node src/scripts/blueprint.ts",
     "contract:validate": "ts-node src/scripts/contract-validate.ts",
+    "behavior:validate": "ts-node src/scripts/validate-behavior-normalize.ts",
     "contract:report": "ts-node src/scripts/contract-report.ts",
     "pipeline:proof": "ts-node -r tsconfig-paths/register src/scripts/pipeline-proof.ts",
     "content": "ts-node src/map/engine/content-engine.ts",

@@ -69,6 +69,23 @@
         "pressFeedback": "light",
         "cursor": "pointer"
       }
+    },
+    "icon": {
+      "surface": {
+        "background": "color.surface",
+        "radius": "radius.lg",
+        "padding": "padding.xs"
+      },
+      "text": {
+        "color": "color.primary",
+        "size": "textSize.md",
+        "weight": "textWeight.medium"
+      },
+      "trigger": {
+        "hoverFeedback": "medium",
+        "pressFeedback": "medium",
+        "cursor": "pointer"
+      }
     }
   },
   "sizes": {

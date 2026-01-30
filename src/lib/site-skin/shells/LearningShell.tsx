@@ -14,7 +14,7 @@ export default function LearningShell({
   footer?: React.ReactNode;
 }) {
   return (
-    <div style={{ minHeight: "100vh", background: "var(--color-bg-primary)" }}>
+    <div style={{ minHeight: "100vh", background: "var(--color-surfaceVariant)" }}>
       <header
         style={{
           borderBottom: "1px solid var(--color-border)",

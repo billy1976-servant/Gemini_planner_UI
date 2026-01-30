@@ -160,14 +160,14 @@ function compilePagesToSchema(
         layoutBlocks = [buildProductGridBlock(site)];
       }
       
-      // Convert SiteLayout[] to LayoutBlock[] with IDs matching sectionIds
-      // Use consistent ID format: block-{pageSlugSafe}-{index}
-      const pageSlugSafe = derivedPage.slug === "/" 
-        ? "home" 
+      // Convert SiteLayout[] to LayoutBlock[] with IDs from derivedPages.sectionIds (no regeneration)
+      const pageSlugSafe = derivedPage.slug === "/"
+        ? "home"
         : derivedPage.slug.replace(/^\//, "").replace(/\//g, "-");
-      
+      const sectionIds = derivedPage.sectionIds ?? [];
+
       const sections: LayoutBlock[] = layoutBlocks.map((block, index) => ({
-        id: `block-${pageSlugSafe}-${index}`,
+        id: sectionIds[index] ?? `block-${pageSlugSafe}-${index}`,
         type: block.type,
         content: extractBlockContent(block),
         layout: 'layout' in block ? block.layout : undefined,
