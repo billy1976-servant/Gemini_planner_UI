@@ -8,9 +8,31 @@ export interface NormalizedProduct {
   name: string;
   price: string | null;
   description: string | null;
+  content: string | null;
   images: string[];
   sku: string | null;
+  brand: string | null;
+  availability: string | null;
+  features: string[];
   specs: Record<string, string>;
+}
+
+/**
+ * Product catalog entry — only product-specific data for search/catalog.
+ * No page UI. Specs included only when non-empty (from product tables/dl).
+ */
+export interface ProductCatalogEntry {
+  url: string;
+  name: string;
+  price: string | null;
+  description: string | null;
+  content?: string | null;
+  images: string[];
+  sku: string | null;
+  brand?: string | null;
+  availability?: string | null;
+  features?: string[];
+  specs?: Record<string, string>;
 }
 
 /**
@@ -24,10 +46,14 @@ export interface RawProduct {
   title?: string | null;
   price?: string | null;
   description?: string | null;
+  content?: string | null;
   images?: string[];
   sku?: string | null;
   itemNumber?: string | null;
   productNumber?: string | null;
   modelNumber?: string | null;
+  brand?: string | null;
+  availability?: string | null;
+  features?: string[];
   specs?: Record<string, string> | Array<{ key: string; value: string }> | null;
 }

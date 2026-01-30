@@ -106,7 +106,122 @@ function extractSku(html: string): string | null {
 }
 
 /**
- * Extract specs: <table> th/td, <dl> dt/dd, key: value lines.
+ * Extract product-specific data from JSON-LD Product schema.
+ */
+function extractJsonLdProduct(html: string): Partial<RawProduct> {
+  const out: Partial<RawProduct> = {};
+  const ldJson = html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi);
+  for (const m of ldJson) {
+    try {
+      const raw = m[1].replace(/<!--[\s\S]*?-->/g, "").trim();
+      const data = JSON.parse(raw) as { "@type"?: string; "@graph"?: unknown[]; name?: string; description?: string; sku?: string; brand?: { name?: string }; image?: string | string[]; offers?: { price?: string | number; availability?: string; priceCurrency?: string } | { price?: string | number; availability?: string; priceCurrency?: string }[] };
+      const products: unknown[] = [];
+      if (data["@type"] === "Product") products.push(data);
+      if (Array.isArray(data["@graph"])) {
+        for (const item of data["@graph"] as { "@type"?: string }[]) {
+          if (item && item["@type"] === "Product") products.push(item);
+        }
+      }
+      for (const p of products) {
+        const prod = p as { name?: string; description?: string; sku?: string; brand?: { name?: string }; image?: string | string[]; offers?: { price?: string | number; availability?: string; priceCurrency?: string } | { price?: string | number; availability?: string; priceCurrency?: string }[] };
+        if (prod.name && !out.name) out.name = String(prod.name).trim();
+        if (prod.description && !out.description) out.description = String(prod.description).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+        if (prod.sku && !out.sku) out.sku = String(prod.sku).trim();
+        if (prod.brand && typeof prod.brand === "object" && prod.brand.name) out.brand = String(prod.brand.name).trim();
+        const offers = Array.isArray(prod.offers) ? prod.offers[0] : prod.offers;
+        if (offers && typeof offers === "object") {
+          if (offers.availability && !out.availability) out.availability = String(offers.availability).replace(/^https?:\/\/schema\.org\//i, "").trim();
+          if (offers.price != null && !out.price) {
+            const price = offers.price;
+            const currency = (offers as { priceCurrency?: string }).priceCurrency || "USD";
+            out.price = typeof price === "number" ? `${currency === "USD" ? "$" : ""}${price}` : String(price);
+          }
+        }
+      }
+    } catch {
+      // ignore invalid JSON
+    }
+  }
+  return out;
+}
+
+/**
+ * Extract long-form product content (main body text).
+ */
+function extractContent(html: string): string | null {
+  const patterns = [
+    /<div[^>]+class=["'][^"']*product[^"']*description[^"']*["'][^>]*>([\s\S]{100,5000})<\/div>/i,
+    /<div[^>]+class=["'][^"']*product-single__description[^"']*["'][^>]*>([\s\S]{50,5000})<\/div>/i,
+    /<div[^>]+itemprop=["']description["'][^>]*>([\s\S]{50,5000})<\/div>/i,
+    /<div[^>]+data-product-description[^>]*>([\s\S]{50,5000})<\/div>/i,
+    /<section[^>]+class=["'][^"']*product[^"']*content[^"']*["'][^>]*>([\s\S]{100,5000})<\/section>/i,
+  ];
+  for (const re of patterns) {
+    const m = html.match(re);
+    if (m) {
+      const text = stripTags(m[1]);
+      if (text.length >= 80) return text.slice(0, 8000).trim();
+    }
+  }
+  // Fallback: first block of consecutive paragraphs in main-like area
+  const mainMatch = html.match(/<main[^>]*>([\s\S]*?)<\/main>/i) || html.match(/<article[^>]*>([\s\S]*?)<\/article>/i);
+  const searchHtml = mainMatch ? mainMatch[1] : html;
+  const paras = searchHtml.match(/<p[^>]*>([\s\S]{60,800})<\/p>/gi);
+  if (paras && paras.length >= 1) {
+    const combined = paras.slice(0, 15).map((p) => stripTags(p)).join(" ").trim();
+    if (combined.length >= 80) return combined.slice(0, 8000);
+  }
+  return null;
+}
+
+/**
+ * Extract product feature bullets (ul/li in product area).
+ */
+function extractFeatures(html: string): string[] {
+  const features: string[] = [];
+  const seen = new Set<string>();
+  // Common product feature list patterns
+  const ulPatterns = [
+    /<div[^>]+class=["'][^"']*product[^"']*(?:feature|detail|highlight|bullet)[^"']*["'][^>]*>[\s\S]*?<ul[^>]*>([\s\S]*?)<\/ul>/gi,
+    /<ul[^>]+class=["'][^"']*product[^"']*features[^"']*["'][^>]*>([\s\S]*?)<\/ul>/gi,
+    /<div[^>]+itemprop=["']description["'][^>]*>[\s\S]*?<ul[^>]*>([\s\S]*?)<\/ul>/gi,
+  ];
+  for (const re of ulPatterns) {
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(html)) !== null) {
+      const lis = m[1].matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi);
+      for (const li of lis) {
+        const text = stripTags(li[1]).trim();
+        if (text.length >= 10 && text.length <= 300 && !seen.has(text)) {
+          seen.add(text);
+          features.push(text);
+        }
+      }
+    }
+  }
+  // Single ul with multiple li near "feature" or "detail" text
+  const ulBlock = html.match(/<ul[^>]*>([\s\S]{50,3000})<\/ul>/gi);
+  if (ulBlock && features.length === 0) {
+    for (const block of ulBlock) {
+      const before = html.slice(Math.max(0, html.indexOf(block) - 200), html.indexOf(block));
+      if (!/feature|detail|highlight|include|what's|whats|benefit/i.test(before)) continue;
+      const lis = block.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi);
+      for (const li of lis) {
+        const text = stripTags(li[1]).trim();
+        if (text.length >= 8 && text.length <= 300 && !seen.has(text)) {
+          seen.add(text);
+          features.push(text);
+        }
+      }
+      if (features.length > 0) break;
+    }
+  }
+  return features.slice(0, 30);
+}
+
+/**
+ * Extract product specs only from semantic HTML: <table> th/td and <dl> dt/dd.
+ * Does not scan the whole page for "key: value" (avoids CSS, JS, meta, and other page UI).
  */
 function extractSpecs(html: string): Record<string, string> {
   const specs: Record<string, string> = {};
@@ -134,35 +249,37 @@ function extractSpecs(html: string): Record<string, string> {
     }
   }
 
-  const keyValuePairs = html.matchAll(/\b([a-z][a-z\s]{1,24}):\s*([^\n<]{1,200})/gi);
-  for (const m of keyValuePairs) {
-    const key = m[1].trim().replace(/:$/, "");
-    const value = m[2].replace(/<[^>]+>/g, "").trim();
-    if (key.length >= 2 && value.length >= 1 && !specs[key]) specs[key] = value;
-  }
-
   return specs;
 }
 
 /**
  * Extract one product page; returns raw shape for normalizer.
+ * Fetches the product URL and extracts all product-specific details (no page UI).
  */
 export async function extractProduct(url: string): Promise<RawProduct> {
   const html = await fetchHtml(url);
+
   const name = extractName(html);
   const price = extractPrice(html);
   const description = extractDescription(html);
   const images = extractImages(html, url);
   const sku = extractSku(html);
   const specs = extractSpecs(html);
+  const content = extractContent(html);
+  const features = extractFeatures(html);
+  const jsonLd = extractJsonLdProduct(html);
 
   return {
     url,
-    name: name ?? undefined,
-    price: price ?? undefined,
-    description: description ?? undefined,
+    name: jsonLd.name ?? name ?? undefined,
+    price: jsonLd.price ?? price ?? undefined,
+    description: jsonLd.description ?? description ?? undefined,
+    content: content ?? undefined,
     images,
-    sku: sku ?? undefined,
+    sku: jsonLd.sku ?? sku ?? undefined,
+    brand: jsonLd.brand ?? undefined,
+    availability: jsonLd.availability ?? undefined,
+    features: features.length > 0 ? features : undefined,
     specs: Object.keys(specs).length > 0 ? specs : undefined,
   };
 }

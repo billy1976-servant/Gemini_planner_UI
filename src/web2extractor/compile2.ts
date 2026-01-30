@@ -10,7 +10,7 @@ import * as readline from "readline";
 import { normalizeSiteUrl, discoverProductUrls } from "./crawler";
 import { extractProduct } from "./extractor";
 import { normalizeProduct } from "./normalizer";
-import type { NormalizedProduct } from "./types";
+import type { NormalizedProduct, ProductCatalogEntry } from "./types";
 
 function prompt(question: string): Promise<string> {
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
@@ -64,10 +64,28 @@ async function main(): Promise<void> {
     }
   }
 
+  // Product catalog only: product-specific info from each product page. No page UI.
+  const catalog: ProductCatalogEntry[] = results.map((p) => {
+    const entry: ProductCatalogEntry = {
+      url: p.url,
+      name: p.name,
+      price: p.price,
+      description: p.description,
+      images: p.images,
+      sku: p.sku,
+    };
+    if (p.content) entry.content = p.content;
+    if (p.brand) entry.brand = p.brand;
+    if (p.availability) entry.availability = p.availability;
+    if (p.features.length > 0) entry.features = p.features;
+    if (Object.keys(p.specs).length > 0) entry.specs = p.specs;
+    return entry;
+  });
+
   const outPath = path.join(process.cwd(), "web2-results.json");
-  fs.writeFileSync(outPath, JSON.stringify(results, null, 2), "utf-8");
+  fs.writeFileSync(outPath, JSON.stringify(catalog, null, 2), "utf-8");
   console.log("");
-  console.log("Wrote", results.length, "products to", outPath);
+  console.log("Wrote", catalog.length, "product catalog entries to", outPath);
 }
 
 main().catch((err) => {
