@@ -1,0 +1,18 @@
+{
+  "id": "organ:footer:dense",
+  "type": "Section",
+  "role": "footer",
+  "layout": {
+    "type": "row",
+    "params": {
+      "gap": "1rem",
+      "justify": "space-between",
+      "align": "center",
+      "wrap": "wrap"
+    }
+  },
+  "params": {},
+  "children": [
+    { "type": "slot", "slotKey": "footer.primary" }
+  ]
+}

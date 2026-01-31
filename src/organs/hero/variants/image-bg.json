@@ -1,0 +1,24 @@
+{
+  "id": "organ:hero:image-bg",
+  "type": "Section",
+  "role": "hero",
+  "layout": {
+    "type": "column",
+    "params": {
+      "gap": "1.5rem",
+      "align": "center",
+      "justify": "center"
+    }
+  },
+  "params": {
+    "backgroundImage": "",
+    "overlay": { "color": "rgba(0,0,0,0.4)" },
+    "textAlign": "center",
+    "height": "medium"
+  },
+  "children": [
+    { "type": "slot", "slotKey": "hero.title" },
+    { "type": "slot", "slotKey": "hero.subtitle" },
+    { "type": "slot", "slotKey": "hero.cta" }
+  ]
+}

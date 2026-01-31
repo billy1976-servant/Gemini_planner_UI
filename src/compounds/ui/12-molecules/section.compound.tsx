@@ -44,6 +44,8 @@ export type SectionCompoundProps = {
   params?: {
     surface?: any;
     title?: any;
+    /** Template-driven: contained (max-width), edge-to-edge (full bleed), narrow (reading column) */
+    containerWidth?: "contained" | "edge-to-edge" | "narrow";
     moleculeLayout?: {
       type: string;
       preset?: string;
@@ -117,13 +119,30 @@ export default function SectionCompound({
 
 
   /* ======================================================
-     FINAL RENDER
+     FINAL RENDER — optional container width from template
      ====================================================== */
-  return (
+  const surfaceContent = (
     <SurfaceAtom params={resolveParams(params.surface)}>
       {laidOutSlots}
       {children}
     </SurfaceAtom>
   );
+
+  const containerWidth = params.containerWidth;
+  if (containerWidth === "contained") {
+    return (
+      <div style={{ width: "100%", maxWidth: "var(--container-xl, 1200px)", marginLeft: "auto", marginRight: "auto" }}>
+        {surfaceContent}
+      </div>
+    );
+  }
+  if (containerWidth === "narrow") {
+    return (
+      <div style={{ width: "100%", maxWidth: "var(--container-md, 768px)", marginLeft: "auto", marginRight: "auto" }}>
+        {surfaceContent}
+      </div>
+    );
+  }
+  return surfaceContent;
 }
 

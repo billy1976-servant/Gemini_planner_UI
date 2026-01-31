@@ -28,7 +28,14 @@
     "catalog": "ts-node src/web2extractor/buildProductCatalog.ts",
     "cleanup": "node scripts/cleanup-docs.js",
     "plan": "node scripts/plan-runner.js",
-    "product-screen": "ts-node -r tsconfig-paths/register src/scripts/compile-product-screen.ts"
+    "product-screen": "ts-node -r tsconfig-paths/register src/scripts/compile-product-screen.ts",
+    "test:organs:layer1": "ts-node -r tsconfig-paths/register src/organs/organs.layer1.test.ts",
+    "test:organs:layer2": "ts-node -r tsconfig-paths/register src/organs/organs.layer2.test.ts",
+    "test:organs:layer3": "ts-node -r tsconfig-paths/register src/organs/organs.layer3.test.ts",
+    "test:organs:layer4": "ts-node -r tsconfig-paths/register src/organs/organs.layer4.test.ts",
+    "test:organs:layer5": "ts-node -r tsconfig-paths/register src/organs/organs.layer5.test.ts",
+    "test:organs:layer6": "ts-node -r tsconfig-paths/register src/organs/organs.layer6.test.ts",
+    "test:organs:layer7": "ts-node -r tsconfig-paths/register src/organs/organs.layer7.test.ts"
   },
   "dependencies": {
     "@types/chalk": "^0.4.31",

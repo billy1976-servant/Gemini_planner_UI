@@ -14,31 +14,40 @@ export type LayoutDef = {
     padding?: string;
     wrap?: string;
     width?: string;
+    maxWidth?: string;
   };
 };
+
+/** Section width behavior: contained (max-width), edge-to-edge (full bleed), narrow (reading column) */
+export type ContainerWidth = "contained" | "edge-to-edge" | "narrow";
 
 export type TemplateProfile = {
   id: string;
   label: string;
   visualPreset: "default" | "compact" | "spacious" | "editorial" | "prominent";
+  /** Section role → layout (type + params). Template overrides organ defaults at render time. */
   sections: Record<string, LayoutDef>;
+  /** Optional: section width behavior for all sections in this template. */
+  containerWidth?: ContainerWidth;
 };
 
 const TEMPLATES: TemplateProfile[] = [
+  // Centered hero, contained sections, soft cards (default preset)
   {
     id: "modern-hero-centered",
     label: "Modern Hero Centered",
     visualPreset: "default",
+    containerWidth: "contained",
     sections: {
-      header: { type: "row", params: { gap: "1rem", justify: "space-between", align: "center", wrap: "wrap" } },
-      hero: { type: "column", params: { align: "center", gap: "2rem" } },
-      content: { type: "column", params: { gap: "1.5rem" } },
+      header: { type: "row", params: { gap: "1.25rem", justify: "space-between", align: "center", wrap: "wrap" } },
+      hero: { type: "column", params: { align: "center", gap: "2.5rem", padding: "3rem 0" } },
+      content: { type: "column", params: { gap: "2rem" } },
       features: { type: "grid", params: { columns: 3, gap: "2rem" } },
-      gallery: { type: "grid", params: { columns: 4, gap: "1rem" } },
+      gallery: { type: "grid", params: { columns: 4, gap: "1.5rem" } },
       testimonials: { type: "grid", params: { columns: 3, gap: "2rem" } },
       pricing: { type: "grid", params: { columns: 3, gap: "2rem" } },
       faq: { type: "column", params: { gap: "1.5rem" } },
-      cta: { type: "column", params: { align: "center", gap: "1.5rem" } },
+      cta: { type: "column", params: { align: "center", gap: "2rem" } },
       products: { type: "grid", params: { columns: 3, gap: "2rem" } },
       footer: { type: "grid", params: { columns: 4, gap: "2rem" } },
     },
@@ -47,31 +56,34 @@ const TEMPLATES: TemplateProfile[] = [
     id: "startup-split-hero",
     label: "Startup Split Hero",
     visualPreset: "prominent",
+    containerWidth: "contained",
     sections: {
-      header: { type: "row", params: { gap: "1rem", justify: "space-between", align: "center" } },
+      header: { type: "row", params: { gap: "1.25rem", justify: "space-between", align: "center" } },
       hero: { type: "row", params: { justify: "space-between", gap: "3rem", align: "center" } },
       content: { type: "column", params: { gap: "2rem" } },
-      features: { type: "grid", params: { columns: 2, gap: "2rem" } },
-      gallery: { type: "grid", params: { columns: 3, gap: "1.5rem" } },
+      features: { type: "grid", params: { columns: 2, gap: "2.5rem" } },
+      gallery: { type: "grid", params: { columns: 3, gap: "2rem" } },
       testimonials: { type: "grid", params: { columns: 2, gap: "2rem" } },
       pricing: { type: "grid", params: { columns: 2, gap: "2rem" } },
       faq: { type: "column", params: { gap: "1.5rem" } },
-      cta: { type: "column", params: { align: "center", gap: "1.5rem" } },
+      cta: { type: "column", params: { align: "center", gap: "2rem" } },
       products: { type: "grid", params: { columns: 2, gap: "2rem" } },
       footer: { type: "grid", params: { columns: 3, gap: "2rem" } },
     },
   },
+  // Single column, large typography, spacious layout (editorial preset)
   {
     id: "editorial-story",
     label: "Editorial Story",
     visualPreset: "editorial",
+    containerWidth: "narrow",
     sections: {
       header: { type: "column", params: { gap: "0.5rem", align: "center" } },
       hero: { type: "column", params: { align: "center", gap: "3rem" } },
       content: { type: "column", params: { gap: "2.5rem" } },
-      features: { type: "column", params: { gap: "2rem" } },
+      features: { type: "column", params: { gap: "2.5rem" } },
       gallery: { type: "grid", params: { columns: 2, gap: "2rem" } },
-      testimonials: { type: "column", params: { gap: "2rem" } },
+      testimonials: { type: "column", params: { gap: "2.5rem" } },
       pricing: { type: "column", params: { gap: "2rem" } },
       faq: { type: "column", params: { gap: "2rem" } },
       cta: { type: "column", params: { align: "center", gap: "2rem" } },
@@ -79,46 +91,51 @@ const TEMPLATES: TemplateProfile[] = [
       footer: { type: "column", params: { align: "center", gap: "2rem" } },
     },
   },
+  // Split hero, narrow content column, stacked sections
   {
     id: "course-landing",
     label: "Course Landing",
     visualPreset: "editorial",
+    containerWidth: "narrow",
     sections: {
       header: { type: "row", params: { gap: "1rem", justify: "space-between", align: "center" } },
-      hero: { type: "column", params: { align: "center", gap: "2rem" } },
-      content: { type: "stack", params: {} },
-      features: { type: "grid", params: { columns: 3, gap: "2rem" } },
-      gallery: { type: "grid", params: { columns: 3, gap: "1.5rem" } },
-      testimonials: { type: "grid", params: { columns: 2, gap: "2rem" } },
-      pricing: { type: "grid", params: { columns: 2, gap: "1.5rem" } },
+      hero: { type: "row", params: { justify: "space-between", gap: "2.5rem", align: "center" } },
+      content: { type: "stack", params: { gap: "2rem" } },
+      features: { type: "column", params: { gap: "2rem" } },
+      gallery: { type: "grid", params: { columns: 2, gap: "2rem" } },
+      testimonials: { type: "column", params: { gap: "2rem" } },
+      pricing: { type: "grid", params: { columns: 2, gap: "2rem" } },
       faq: { type: "column", params: { gap: "1.5rem" } },
-      cta: { type: "column", params: { align: "center", gap: "1.5rem" } },
+      cta: { type: "column", params: { align: "center", gap: "2rem" } },
       products: { type: "grid", params: { columns: 2, gap: "1.5rem" } },
-      footer: { type: "grid", params: { columns: 3, gap: "2rem" } },
+      footer: { type: "column", params: { align: "center", gap: "2rem" } },
     },
   },
+  // Wide layout, multi-column grids, dense cards (compact preset)
   {
     id: "product-grid",
     label: "Product Grid",
     visualPreset: "compact",
+    containerWidth: "contained",
     sections: {
       header: { type: "row", params: { gap: "0.75rem", justify: "space-between", align: "center" } },
       hero: { type: "column", params: { gap: "1rem", align: "center" } },
-      content: { type: "grid", params: { columns: 3, gap: "1.5rem" } },
-      features: { type: "grid", params: { columns: 3, gap: "1.5rem" } },
-      gallery: { type: "grid", params: { columns: 4, gap: "1rem" } },
-      testimonials: { type: "grid", params: { columns: 3, gap: "1.5rem" } },
-      pricing: { type: "grid", params: { columns: 3, gap: "1.5rem" } },
-      faq: { type: "column", params: { gap: "1rem" } },
+      content: { type: "grid", params: { columns: 4, gap: "1rem" } },
+      features: { type: "grid", params: { columns: 4, gap: "1rem" } },
+      gallery: { type: "grid", params: { columns: 4, gap: "0.75rem" } },
+      testimonials: { type: "grid", params: { columns: 3, gap: "1rem" } },
+      pricing: { type: "grid", params: { columns: 4, gap: "1rem" } },
+      faq: { type: "column", params: { gap: "0.75rem" } },
       cta: { type: "column", params: { align: "center", gap: "1rem" } },
-      products: { type: "grid", params: { columns: 3, gap: "1.5rem" } },
-      footer: { type: "grid", params: { columns: 4, gap: "1.5rem" } },
+      products: { type: "grid", params: { columns: 4, gap: "1rem" } },
+      footer: { type: "grid", params: { columns: 4, gap: "1rem" } },
     },
   },
   {
     id: "saas-dark",
     label: "SaaS Dark",
     visualPreset: "default",
+    containerWidth: "contained",
     sections: {
       header: { type: "row", params: { gap: "1rem", justify: "space-between", align: "center" } },
       hero: { type: "column", params: { align: "center", gap: "2.5rem" } },
@@ -137,6 +154,7 @@ const TEMPLATES: TemplateProfile[] = [
     id: "agency-bold",
     label: "Agency Bold",
     visualPreset: "prominent",
+    containerWidth: "contained",
     sections: {
       header: { type: "row", params: { gap: "1.5rem", justify: "space-between", align: "center" } },
       hero: { type: "row", params: { justify: "space-between", gap: "3rem", align: "center" } },
@@ -155,6 +173,7 @@ const TEMPLATES: TemplateProfile[] = [
     id: "minimalist",
     label: "Minimalist",
     visualPreset: "compact",
+    containerWidth: "narrow",
     sections: {
       header: { type: "row", params: { gap: "0.5rem", justify: "space-between", align: "center" } },
       hero: { type: "column", params: { align: "center", gap: "1.5rem" } },
@@ -173,6 +192,7 @@ const TEMPLATES: TemplateProfile[] = [
     id: "playful-cards",
     label: "Playful Cards",
     visualPreset: "prominent",
+    containerWidth: "contained",
     sections: {
       header: { type: "row", params: { gap: "1rem", justify: "space-between", align: "center" } },
       hero: { type: "column", params: { align: "center", gap: "2rem" } },
@@ -191,6 +211,7 @@ const TEMPLATES: TemplateProfile[] = [
     id: "luxury-spacious",
     label: "Luxury Spacious",
     visualPreset: "spacious",
+    containerWidth: "contained",
     sections: {
       header: { type: "row", params: { gap: "2rem", justify: "space-between", align: "center" } },
       hero: { type: "column", params: { align: "center", gap: "3rem" } },
@@ -210,6 +231,7 @@ const TEMPLATES: TemplateProfile[] = [
     id: "portfolio-showcase",
     label: "Portfolio Showcase",
     visualPreset: "editorial",
+    containerWidth: "contained",
     sections: {
       header: { type: "row", params: { gap: "1rem", justify: "space-between", align: "center" } },
       hero: { type: "column", params: { align: "center", gap: "2.5rem" } },
@@ -224,28 +246,31 @@ const TEMPLATES: TemplateProfile[] = [
       footer: { type: "grid", params: { columns: 3, gap: "2rem" } },
     },
   },
+  // Full-width hero, 2-column content blocks, compact spacing (edge-to-edge)
   {
     id: "restaurant-menu",
     label: "Restaurant Menu",
-    visualPreset: "default",
+    visualPreset: "compact",
+    containerWidth: "edge-to-edge",
     sections: {
       header: { type: "row", params: { gap: "1rem", justify: "space-between", align: "center" } },
-      hero: { type: "column", params: { align: "center", gap: "2rem" } },
-      content: { type: "column", params: { gap: "2rem" } },
-      features: { type: "grid", params: { columns: 3, gap: "2rem" } },
-      gallery: { type: "grid", params: { columns: 4, gap: "1rem" } },
-      testimonials: { type: "grid", params: { columns: 2, gap: "2rem" } },
-      pricing: { type: "column", params: { gap: "2rem" } },
-      faq: { type: "column", params: { gap: "1.5rem" } },
-      cta: { type: "column", params: { align: "center", gap: "1.5rem" } },
-      products: { type: "grid", params: { columns: 4, gap: "1.5rem" } },
-      footer: { type: "grid", params: { columns: 3, gap: "2rem" } },
+      hero: { type: "column", params: { align: "center", gap: "1.5rem", padding: "2rem 0" } },
+      content: { type: "grid", params: { columns: 2, gap: "1rem" } },
+      features: { type: "grid", params: { columns: 2, gap: "1rem" } },
+      gallery: { type: "grid", params: { columns: 2, gap: "0.75rem" } },
+      testimonials: { type: "grid", params: { columns: 2, gap: "1rem" } },
+      pricing: { type: "column", params: { gap: "1rem" } },
+      faq: { type: "column", params: { gap: "0.75rem" } },
+      cta: { type: "column", params: { align: "center", gap: "1rem" } },
+      products: { type: "grid", params: { columns: 2, gap: "1rem" } },
+      footer: { type: "grid", params: { columns: 2, gap: "1rem" } },
     },
   },
   {
     id: "blog-magazine",
     label: "Blog Magazine",
     visualPreset: "editorial",
+    containerWidth: "contained",
     sections: {
       header: { type: "row", params: { gap: "1rem", justify: "space-between", align: "center" } },
       hero: { type: "column", params: { align: "left", gap: "2rem" } },
@@ -282,6 +307,7 @@ const TEMPLATES: TemplateProfile[] = [
     id: "consulting-professional",
     label: "Consulting Professional",
     visualPreset: "default",
+    containerWidth: "contained",
     sections: {
       header: { type: "row", params: { gap: "1rem", justify: "space-between", align: "center" } },
       hero: { type: "row", params: { justify: "space-between", gap: "2.5rem", align: "center" } },
@@ -314,13 +340,12 @@ const TEMPLATES: TemplateProfile[] = [
       footer: { type: "grid", params: { columns: 3, gap: "1.5rem" } },
     },
   },
-];
-
   // Additional templates (8-15)
   {
     id: "tech-startup",
     label: "Tech Startup",
     visualPreset: "prominent",
+    containerWidth: "contained",
     sections: {
       header: { type: "row", params: { gap: "1rem", justify: "space-between", align: "center" } },
       hero: { type: "column", params: { align: "center", gap: "2.5rem" } },
@@ -357,6 +382,7 @@ const TEMPLATES: TemplateProfile[] = [
     id: "real-estate-luxury",
     label: "Real Estate Luxury",
     visualPreset: "spacious",
+    containerWidth: "contained",
     sections: {
       header: { type: "row", params: { gap: "2rem", justify: "space-between", align: "center" } },
       hero: { type: "column", params: { align: "center", gap: "3.5rem" } },
@@ -375,6 +401,7 @@ const TEMPLATES: TemplateProfile[] = [
     id: "nonprofit-community",
     label: "Nonprofit Community",
     visualPreset: "default",
+    containerWidth: "contained",
     sections: {
       header: { type: "row", params: { gap: "1rem", justify: "space-between", align: "center" } },
       hero: { type: "column", params: { align: "center", gap: "2rem" } },
@@ -411,6 +438,7 @@ const TEMPLATES: TemplateProfile[] = [
     id: "law-firm-corporate",
     label: "Law Firm Corporate",
     visualPreset: "default",
+    containerWidth: "contained",
     sections: {
       header: { type: "row", params: { gap: "1.5rem", justify: "space-between", align: "center" } },
       hero: { type: "row", params: { justify: "space-between", gap: "2.5rem", align: "center" } },
@@ -429,6 +457,7 @@ const TEMPLATES: TemplateProfile[] = [
     id: "wedding-events",
     label: "Wedding & Events",
     visualPreset: "spacious",
+    containerWidth: "contained",
     sections: {
       header: { type: "row", params: { gap: "1.5rem", justify: "space-between", align: "center" } },
       hero: { type: "column", params: { align: "center", gap: "3rem" } },

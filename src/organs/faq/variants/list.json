@@ -1,0 +1,17 @@
+{
+  "id": "organ:faq:list",
+  "type": "Section",
+  "role": "faq",
+  "layout": {
+    "type": "column",
+    "params": {
+      "gap": "1.5rem",
+      "align": "stretch"
+    }
+  },
+  "params": {},
+  "children": [
+    { "type": "slot", "slotKey": "faq.title" },
+    { "type": "slot", "slotKey": "faq.primary" }
+  ]
+}

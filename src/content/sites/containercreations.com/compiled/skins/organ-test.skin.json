@@ -1,0 +1,34 @@
+{
+  "meta": {
+    "domain": "containercreations.com",
+    "pageId": "organ-test",
+    "version": 1,
+    "generatedAt": "2026-01-31"
+  },
+  "nodes": [
+    {
+      "id": "header_organ",
+      "type": "organ",
+      "organId": "header",
+      "variant": "default",
+      "role": "header"
+    },
+    {
+      "id": "hero_organ",
+      "type": "organ",
+      "organId": "hero",
+      "variant": "centered",
+      "role": "hero"
+    },
+    { "id": "footer", "type": "Footer", "role": "footer" }
+  ],
+  "dataSlots": {
+    "header.logo": { "description": "Optional: logo node(s)." },
+    "header.nav": { "description": "Optional: nav node(s)." },
+    "header.cta": { "description": "Optional: CTA node(s)." },
+    "hero.title": { "description": "Hero title content." },
+    "hero.subtitle": { "description": "Hero subtitle content." },
+    "hero.media": { "description": "Optional: hero media node(s)." },
+    "hero.cta": { "description": "Optional: hero CTA node(s)." }
+  }
+}

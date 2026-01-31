@@ -1,0 +1,23 @@
+{
+  "id": "organ:faq:two-column",
+  "type": "Section",
+  "role": "faq",
+  "layout": {
+    "type": "column",
+    "params": {
+      "gap": "1.5rem",
+      "align": "stretch"
+    }
+  },
+  "params": {},
+  "children": [
+    { "type": "slot", "slotKey": "faq.title" },
+    {
+      "type": "Grid",
+      "layout": { "type": "grid", "params": { "columns": 2, "gap": "2rem" } },
+      "children": [
+        { "type": "slot", "slotKey": "faq.primary" }
+      ]
+    }
+  ]
+}

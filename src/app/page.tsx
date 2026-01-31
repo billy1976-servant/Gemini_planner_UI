@@ -12,6 +12,9 @@ import { getLayout, subscribeLayout } from "@/engine/core/layout-store";
 import { getExperienceProfile } from "@/layout/profile-resolver";
 import { getTemplateProfile } from "@/layout/template-profiles";
 import { composeOfflineScreen } from "@/lib/screens/compose-offline-screen";
+import { expandOrgansInDocument } from "@/organs/resolve-organs";
+import { loadOrganVariant } from "@/organs/organ-registry";
+import { applySkinBindings } from "@/logic/bridges/skinBindings.apply";
 import WebsiteShell from "@/lib/site-skin/shells/WebsiteShell";
 import AppShell from "@/lib/site-skin/shells/AppShell";
 import LearningShell from "@/lib/site-skin/shells/LearningShell";
@@ -299,11 +302,20 @@ export default function Page() {
 
 
   // ✅ FIX: render the ACTUAL screen root, not the descriptor
-  const renderNode =
+  let renderNode =
     json?.root ??
     json?.screen ??
     json?.node ??
     json;
+
+  // Expand organ nodes (type: "organ") into compound trees; then resolve slots from json.data
+  const children = Array.isArray(renderNode?.children) ? renderNode.children : [];
+  const docForOrgans = { meta: { domain: "offline", pageId: "screen", version: 1 }, nodes: children };
+  const expandedDoc = expandOrgansInDocument(docForOrgans as any, loadOrganVariant);
+  const data = json?.data ?? {};
+  const boundDoc = applySkinBindings(expandedDoc as any, data);
+  const finalChildren = (boundDoc as any).nodes ?? children;
+  renderNode = { ...renderNode, children: finalChildren };
 
   // Apps-offline: compose with experience profile; template overrides sections + visualPreset
   const experienceProfile = getExperienceProfile(experience);
@@ -313,6 +325,7 @@ export default function Page() {
         ...experienceProfile,
         sections: templateProfile.sections,
         visualPreset: templateProfile.visualPreset,
+        ...(templateProfile.containerWidth != null && { containerWidth: templateProfile.containerWidth }),
       }
     : experienceProfile;
   const composed = composeOfflineScreen({
@@ -339,9 +352,12 @@ export default function Page() {
   };
 
   // ✅ ALWAYS use screen path, fallback to JSON hash (NEVER json.id)
+  // Include templateId in key so template dropdown ALWAYS forces re-render (layout + visualPreset)
+  const currentTemplateId = (layoutSnapshot as { templateId?: string })?.templateId ?? "";
   const screenKey = screen 
     ? screen.replace(/[^a-zA-Z0-9]/g, "-") // Sanitize path for React key
     : `screen-${hashJson(json)}`; // Hash entire JSON, not just id
+  const renderKey = `${screenKey}-t-${currentTemplateId || "default"}`;
   
   // Log once per render to confirm key changes between files
   console.log("[page] 🔑 JsonRenderer KEY RESOLVED", {
@@ -356,12 +372,29 @@ export default function Page() {
 
   const jsonContent = (
     <JsonRenderer
-      key={screenKey}
+      key={renderKey}
       node={composed}
       defaultState={json?.state}
       profileOverride={effectiveProfile}
     />
   );
+
+  // Wix-style: vertical gap between sections (screen root children)
+  const wrappedContent =
+    experience === "website" ? (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "var(--spacing-8)",
+          width: "100%",
+        }}
+      >
+        {jsonContent}
+      </div>
+    ) : (
+      jsonContent
+    );
 
   if (experience === "app") {
     return (
@@ -382,7 +415,7 @@ export default function Page() {
   return (
     <>
       {overlay}
-      <WebsiteShell content={jsonContent} />
+      <WebsiteShell content={wrappedContent} />
     </>
   );
 }

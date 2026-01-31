@@ -18,6 +18,8 @@ import { getExperienceProfile } from "@/layout/profile-resolver";
 import type { SiteSkinDocument, SiteSkinExperience, SiteSkinNode } from "@/lib/site-skin/siteSkin.types";
 import { loadSiteSkin } from "@/lib/site-skin/loadSiteSkin";
 import { applySkinBindings } from "@/logic/bridges/skinBindings.apply";
+import { expandOrgansInDocument } from "@/organs/resolve-organs";
+import { loadOrganVariant } from "@/organs/organ-registry";
 import { composeScreen } from "@/layout/layout-engine/composeScreen";
 import WebsiteShell from "@/lib/site-skin/shells/WebsiteShell";
 import AppShell from "@/lib/site-skin/shells/AppShell";
@@ -157,9 +159,12 @@ export default function SiteSkin({ domain, pageId, skin, data, defaultState, deb
     };
   }, [domain, pageId, skin]);
 
-  // Region structure computed unconditionally so hooks below can depend on it
+  // Region structure: expand organ nodes first, then resolve slots (applySkinBindings)
   const resolvedDoc = useMemo(
-    () => (doc ? applySkinBindings(doc, data ?? {}) : null),
+    () =>
+      doc
+        ? applySkinBindings(expandOrgansInDocument(doc, loadOrganVariant), data ?? {})
+        : null,
     [doc, data]
   );
   const roleTaggedNodes = useMemo(

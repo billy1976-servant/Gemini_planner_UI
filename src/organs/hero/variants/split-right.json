@@ -1,0 +1,27 @@
+{
+  "id": "organ:hero:split-right",
+  "type": "Section",
+  "role": "hero",
+  "layout": {
+    "type": "row",
+    "params": {
+      "gap": "2rem",
+      "justify": "space-between",
+      "align": "center",
+      "wrap": "wrap"
+    }
+  },
+  "params": {},
+  "children": [
+    { "type": "slot", "slotKey": "hero.media" },
+    {
+      "type": "Column",
+      "layout": { "type": "column", "params": { "gap": "1rem", "align": "flex-end" } },
+      "children": [
+        { "type": "slot", "slotKey": "hero.title" },
+        { "type": "slot", "slotKey": "hero.subtitle" },
+        { "type": "slot", "slotKey": "hero.cta" }
+      ]
+    }
+  ]
+}

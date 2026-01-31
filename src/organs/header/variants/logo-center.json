@@ -1,0 +1,26 @@
+{
+  "id": "organ:header:logo-center",
+  "type": "Section",
+  "role": "header",
+  "layout": {
+    "type": "column",
+    "params": {
+      "gap": "1rem",
+      "align": "center"
+    }
+  },
+  "params": {
+    "sticky": true
+  },
+  "children": [
+    { "type": "slot", "slotKey": "header.logo" },
+    {
+      "type": "Row",
+      "layout": { "type": "row", "params": { "gap": "2rem", "justify": "center", "align": "center", "wrap": "wrap" } },
+      "children": [
+        { "type": "slot", "slotKey": "header.nav" },
+        { "type": "slot", "slotKey": "header.cta" }
+      ]
+    }
+  ]
+}

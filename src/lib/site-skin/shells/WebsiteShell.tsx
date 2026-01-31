@@ -15,34 +15,34 @@ export default function WebsiteShell({
   products?: React.ReactNode;
   footer?: React.ReactNode;
 }) {
+  // Page passes full JSON tree as content; header/hero/footer are inside that tree
+  const mainContent = content ?? (
+    <>
+      {header}
+      {hero}
+      {content}
+      {products}
+      {footer}
+    </>
+  );
+
   return (
     <div
+      className="site-container"
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(180deg, var(--color-bg-secondary) 0%, var(--color-bg-primary) 40%)",
+        background: "var(--color-bg-primary)",
       }}
     >
-      <header
+      <main
+        className="site-container-inner"
         style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 20,
-          background: "var(--color-bg-primary)",
-          borderBottom: "1px solid var(--color-border)",
+          paddingTop: "var(--spacing-6)",
+          paddingBottom: "var(--spacing-16)",
         }}
       >
-        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "12px 16px" }}>{header}</div>
-      </header>
-
-      <main style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 16px" }}>
-        <div style={{ marginBottom: 32, padding: "32px 0", borderBottom: "1px solid var(--color-border)" }}>{hero}</div>
-        <div style={{ marginBottom: 32 }}>{content}</div>
-        <div>{products}</div>
+        {mainContent}
       </main>
-
-      <footer style={{ borderTop: "1px solid var(--color-border)", background: "var(--color-bg-primary)" }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 16px" }}>{footer}</div>
-      </footer>
     </div>
   );
 }

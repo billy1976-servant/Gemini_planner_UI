@@ -1,0 +1,23 @@
+{
+  "id": "organ:gallery:grid-4",
+  "type": "Section",
+  "role": "gallery",
+  "layout": {
+    "type": "column",
+    "params": {
+      "gap": "1.5rem",
+      "align": "stretch"
+    }
+  },
+  "params": {},
+  "children": [
+    { "type": "slot", "slotKey": "gallery.title" },
+    {
+      "type": "Grid",
+      "layout": { "type": "grid", "params": { "columns": 4, "gap": "0.75rem" } },
+      "children": [
+        { "type": "slot", "slotKey": "gallery.items" }
+      ]
+    }
+  ]
+}

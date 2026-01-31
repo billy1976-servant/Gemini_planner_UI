@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSyncExternalStore } from "react";
 
+import "@/styles/site-theme.css";
 
 /* ============================================================
    🎨 PALETTE ENGINE
@@ -268,12 +269,13 @@ export default function RootLayout({ children }: any) {
           <select
             value={templateId}
             onChange={e => setLayout({ templateId: e.target.value })}
-            style={{ marginLeft: "auto" }}
-            title="Template layout + preset (sections, density)"
+            style={{ marginLeft: "auto", minWidth: 180 }}
+            title="Template: section layout (row/column/grid) + density. Change to see gaps and structure update."
           >
+            <option value="">Template: (experience only)</option>
             {templateList.map((t) => (
               <option key={t.id} value={t.id}>
-                Template: {t.label}
+                {t.label}
               </option>
             ))}
           </select>

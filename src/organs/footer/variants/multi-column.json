@@ -1,0 +1,16 @@
+{
+  "id": "organ:footer:multi-column",
+  "type": "Section",
+  "role": "footer",
+  "layout": {
+    "type": "grid",
+    "params": {
+      "columns": 4,
+      "gap": "2rem"
+    }
+  },
+  "params": {},
+  "children": [
+    { "type": "slot", "slotKey": "footer.primary" }
+  ]
+}

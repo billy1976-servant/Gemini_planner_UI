@@ -1,0 +1,23 @@
+{
+  "id": "organ:features-grid:4-col",
+  "type": "Section",
+  "role": "features",
+  "layout": {
+    "type": "column",
+    "params": {
+      "gap": "1.5rem",
+      "align": "stretch"
+    }
+  },
+  "params": {},
+  "children": [
+    { "type": "slot", "slotKey": "features.title" },
+    {
+      "type": "Grid",
+      "layout": { "type": "grid", "params": { "columns": 4, "gap": "1.5rem" } },
+      "children": [
+        { "type": "slot", "slotKey": "features.items" }
+      ]
+    }
+  ]
+}

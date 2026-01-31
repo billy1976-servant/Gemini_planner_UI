@@ -196,18 +196,21 @@ function applyProfileToNode(node: any, profile: any): any {
   const isSection = node.type?.toLowerCase?.() === "section";
 
   if (isSection && node.role && profile.sections?.[node.role]) {
+    const sectionDef = profile.sections[node.role];
     next.layout = {
-      ...profile.sections[node.role],
       ...(node.layout ?? {}),
+      ...sectionDef,
     };
-    
-    // 🔍 PHASE 1 VERIFICATION: Log when template layout is applied
-    console.log("[applyProfileToNode] ✅ Template layout applied", {
-      nodeId: node.id,
-      role: node.role,
-      layoutType: next.layout.type,
-      layoutParams: next.layout.params,
-    });
+    // Section compound uses params.moleculeLayout for internal layout; template overrides it.
+    const layoutType = sectionDef.type === "stack" ? "stacked" : sectionDef.type;
+    next.params = {
+      ...(next.params ?? {}),
+      moleculeLayout: {
+        type: layoutType,
+        params: sectionDef.params ?? {},
+      },
+      ...(profile.containerWidth != null ? { containerWidth: profile.containerWidth } : {}),
+    };
   }
 
 

@@ -1,0 +1,23 @@
+{
+  "id": "organ:testimonials:grid-3",
+  "type": "Section",
+  "role": "testimonials",
+  "layout": {
+    "type": "column",
+    "params": {
+      "gap": "1.5rem",
+      "align": "stretch"
+    }
+  },
+  "params": {},
+  "children": [
+    { "type": "slot", "slotKey": "testimonials.title" },
+    {
+      "type": "Grid",
+      "layout": { "type": "grid", "params": { "columns": 3, "gap": "2rem" } },
+      "children": [
+        { "type": "slot", "slotKey": "testimonials.items" }
+      ]
+    }
+  ]
+}

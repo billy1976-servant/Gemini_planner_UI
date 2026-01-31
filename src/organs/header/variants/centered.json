@@ -1,0 +1,22 @@
+{
+  "id": "organ:header:centered",
+  "type": "Section",
+  "role": "header",
+  "layout": {
+    "type": "row",
+    "params": {
+      "gap": "2rem",
+      "justify": "center",
+      "align": "center",
+      "wrap": "wrap"
+    }
+  },
+  "params": {
+    "sticky": true
+  },
+  "children": [
+    { "type": "slot", "slotKey": "header.logo" },
+    { "type": "slot", "slotKey": "header.nav" },
+    { "type": "slot", "slotKey": "header.cta" }
+  ]
+}

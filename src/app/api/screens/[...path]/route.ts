@@ -49,9 +49,14 @@ export async function GET(
 
     /* ===============================
        1️⃣ JSON PATH (UNCHANGED)
+       Try exact path, then path + .json if no extension
     =============================== */
-    const jsonPath = path.join(SCREENS_ROOT, ...params.path);
-    
+    let jsonPath = path.join(SCREENS_ROOT, ...params.path);
+    if (!jsonPath.endsWith(".json") && !fs.existsSync(jsonPath)) {
+      const withJson = jsonPath + ".json";
+      if (fs.existsSync(withJson)) jsonPath = withJson;
+    }
+
     // 🔑 DEBUG: Log file resolution
     console.log("[api/screens] File resolution", {
       requestedPath: requestedPath,
@@ -60,7 +65,7 @@ export async function GET(
       exists: fs.existsSync(jsonPath),
       isJson: jsonPath.endsWith(".json"),
     });
-    
+
     if (jsonPath.endsWith(".json") && fs.existsSync(jsonPath)) {
       const fileContent = fs.readFileSync(jsonPath, "utf8");
       

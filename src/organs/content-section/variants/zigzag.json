@@ -1,0 +1,23 @@
+{
+  "id": "organ:content-section:zigzag",
+  "type": "Section",
+  "role": "content",
+  "layout": {
+    "type": "column",
+    "params": {
+      "gap": "2rem",
+      "align": "stretch"
+    }
+  },
+  "params": {},
+  "children": [
+    {
+      "type": "Row",
+      "layout": { "type": "row", "params": { "gap": "2rem", "align": "center", "wrap": "wrap" } },
+      "children": [
+        { "type": "slot", "slotKey": "content.block1" },
+        { "type": "slot", "slotKey": "content.block2" }
+      ]
+    }
+  ]
+}
