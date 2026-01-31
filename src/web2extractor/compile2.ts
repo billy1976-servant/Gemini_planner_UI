@@ -146,7 +146,7 @@ async function main(): Promise<void> {
   const products = deduplicateVariants(results);
   const catalog: ProductCatalog = { products };
 
-  if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
+  const outPath = path.join(process.cwd(), "web2-results.json");
   fs.writeFileSync(outPath, JSON.stringify(catalog, null, 2), "utf-8");
   console.log("");
   console.log("Wrote", catalog.products.length, "product entries to", outPath);

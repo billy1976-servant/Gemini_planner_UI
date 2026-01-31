@@ -1,254 +1,60 @@
 {
-  "id": "screenRoot",
-  "type": "screen",
+  "type": "Screen",
+  "state": {},
   "children": [
-  
     {
-      "id": "|tracklesson",
-      "type": "section",
-      "content": { "title": "TRACK Journal" },
+      "type": "Section",
+      "role": "header",
       "children": [
         {
-          "id": "|thinkpanel",
-          "type": "section",
-          "content": { "title": "Think About the Scriptures" },
-          "children": [
-            {
-              "id": "|thinkprompt",
-              "type": "card",
-              "content": {
-                "body": "Read the Scripture carefully and consider what God is revealing about Himself, His will, and His truth."
-              }
-            },
-            {
-              "id": "|thinkjournal",
-              "type": "field",
-              "state": {
-                "mode": "two-way",
-                "key": "journal.|thinkjournal"
-              },
-              "content": { "label": "What stands out to you from this passage?" },
-              "params": {
-                "field": {
-                  "multiline": true,
-                  "rows": 4
-                }
-              }
-            },
-            {
-              "id": "|thinksave",
-              "type": "button",
-              "content": { "label": "Save Think Entry" },
-              "behavior": {
-                "type": "Action",
-                "params": {
-                  "name": "state:journal.add",
-                  "section": "think",
-                  "text": "{{journal.|thinkjournal}}"
-                }
-              }
-            }
-          ]
-        },
-
-
+          "type": "Card",
+          "content": {
+            "title": "HIclarify Layout Test",
+            "body": "This section should look like a HEADER once layout rules apply."
+          }
+        }
+      ]
+    },
+    {
+      "type": "Section",
+      "role": "content",
+      "children": [
         {
-          "id": "|repentpanel",
-          "type": "section",
-          "content": { "title": "Repent to God" },
-          "children": [
-            {
-              "id": "|repentprompt",
-              "type": "card",
-              "content": {
-                "body": "Ask the Lord to reveal any sin, disobedience, or wrong thinking exposed by this Scripture."
-              }
-            },
-            {
-              "id": "|repentjournal",
-              "type": "field",
-              "state": {
-                "mode": "two-way",
-                "key": "journal.|repentjournal"
-              },
-              "content": { "label": "What do you need to confess or turn away from?" },
-              "params": {
-                "field": {
-                  "multiline": true,
-                  "rows": 4
-                }
-              }
-            },
-            {
-              "id": "|repentsave",
-              "type": "button",
-              "content": { "label": "Save Repent Entry" },
-              "behavior": {
-                "type": "Action",
-                "params": {
-                  "name": "state:journal.add",
-                  "section": "repent",
-                  "text": "{{journal.|repentjournal}}"
-                }
-              }
-            }
-          ]
+          "type": "Card",
+          "content": {
+            "title": "Content Area",
+            "body": "This should be spaced differently from the header."
+          }
         },
-
-
         {
-          "id": "|askpanel",
-          "type": "section",
-          "content": { "title": "Ask God for Wisdom" },
-          "children": [
-            {
-              "id": "|askprompt",
-              "type": "card",
-              "content": {
-                "body": "Pray for wisdom, understanding, and strength to walk in obedience."
-              }
-            },
-            {
-              "id": "|askjournal",
-              "type": "field",
-              "state": {
-                "mode": "two-way",
-                "key": "journal.|askjournal"
-              },
-              "content": { "label": "What are you asking God to help you understand or do?" },
-              "params": {
-                "field": {
-                  "multiline": true,
-                  "rows": 4
-                }
-              }
-            },
-            {
-              "id": "|asksave",
-              "type": "button",
-              "content": { "label": "Save Ask Entry" },
-              "behavior": {
-                "type": "Action",
-                "params": {
-                  "name": "state:journal.add",
-                  "section": "ask",
-                  "text": "{{journal.|askjournal}}"
-                }
-              }
-            }
-          ]
+          "type": "Card",
+          "content": {
+            "title": "Another Content Card",
+            "body": "If layout roles work, these cards will sit in a content container style."
+          }
+        }
+      ]
+    },
+    {
+      "type": "Section",
+      "role": "content",
+      "children": [
+        {
+          "type": "Field",
+          "content": {
+            "label": "Test Input",
+            "input": ""
+          },
+          "state": {
+            "mode": "two-way",
+            "key": "test.input"
+          }
         },
-
-
         {
-          "id": "|conformpanel",
-          "type": "section",
-          "content": { "title": "Conform to Christ" },
-          "children": [
-            {
-              "id": "|conformprompt",
-              "type": "card",
-              "content": {
-                "body": "Consider how your life needs to change to align with Christ."
-              }
-            },
-            {
-              "id": "|conformjournal",
-              "type": "field",
-              "state": {
-                "mode": "two-way",
-                "key": "journal.|conformjournal"
-              },
-              "content": { "label": "How will you live differently?" },
-              "params": {
-                "field": {
-                  "multiline": true,
-                  "rows": 4
-                }
-              }
-            },
-            {
-              "id": "|conformsave",
-              "type": "button",
-              "content": { "label": "Save Conform Entry" },
-              "behavior": {
-                "type": "Action",
-                "params": {
-                  "name": "state:journal.add",
-                  "section": "conform",
-                  "text": "{{journal.|conformjournal}}"
-                }
-              }
-            }
-          ]
-        },
-
-
-        {
-          "id": "|keeppanel",
-          "type": "section",
-          "content": { "title": "Keep Your Heart" },
-          "children": [
-            {
-              "id": "|keepprompt",
-              "type": "card",
-              "content": {
-                "body": "Identify dangers that could pull you away from obedience."
-              }
-            },
-            {
-              "id": "|keepjournal",
-              "type": "field",
-              "state": {
-                "mode": "two-way",
-                "key": "journal.|keepjournal"
-              },
-              "content": { "label": "What will you guard against?" },
-              "params": {
-                "field": {
-                  "multiline": true,
-                  "rows": 4
-                }
-              }
-            },
-            {
-              "id": "|keepsave",
-              "type": "button",
-              "content": { "label": "Save Keep Entry" },
-              "behavior": {
-                "type": "Action",
-                "params": {
-                  "name": "state:journal.add",
-                  "section": "keep",
-                  "text": "{{journal.|keepjournal}}"
-                }
-              }
-            }
-          ]
-        },
-
-        {
-          "id": "|journaloutput",
-          "type": "section",
-          "content": { "title": "Saved Journal Entries" },
-          "children": [
-            {
-              "id": "|journalitems",
-              "type": "list",
-              "state": {
-                "mode": "read",
-                "key": "journal"
-              },
-              "params": {
-                "item": {
-                  "type": "card",
-                  "content": {
-                    "body": "{{item}}"
-                  }
-                }
-              }
-            }
-          ]
+          "type": "Button",
+          "content": {
+            "label": "Submit Test"
+          }
         }
       ]
     }

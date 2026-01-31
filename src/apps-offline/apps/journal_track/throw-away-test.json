@@ -1,0 +1,65 @@
+{
+    "type": "Screen",
+    "state": {},
+    "children": [
+      {
+        "type": "Section",
+        "role": "header",
+        "children": [
+          {
+            "type": "Card",
+            "content": {
+              "title": "HIclarify Layout Test",
+              "body": "This section should look like a HEADER once layout rules apply."
+            }
+          }
+        ]
+      },
+      {
+        "type": "Section",
+        "role": "content",
+        "children": [
+          {
+            "type": "Card",
+            "content": {
+              "title": "Content Area",
+              "body": "This should be spaced differently from the header."
+            }
+          },
+          {
+            "type": "Card",
+            "content": {
+              "title": "Another Content Card",
+              "body": "If layout roles work, these cards will sit in a content container style."
+            }
+          }
+        ]
+      },
+      {
+        "type": "Section",
+        "role": "content",
+        "children": [
+          {
+            "type": "Field",
+            "content": {
+              "label": "Test Input",
+              "input": ""
+            },
+            "state": {
+              "mode": "two-way",
+              "key": "test.input"
+            }
+          },
+          {
+            "type": "Button",
+            "content": {
+              "label": "Submit Test"
+            }
+          }
+        ]
+      }
+    ]
+  }
+  
+  
+  

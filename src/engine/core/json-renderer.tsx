@@ -2,6 +2,7 @@
 import React from "react";
 import Registry from "./registry";
 import { resolveParams } from "./palette-resolver";
+import { getVisualPresetForMolecule } from "@/layout/visual-preset-resolver";
 import { resolveMoleculeLayout } from "@/layout/molecule-layout-resolver";
 import definitions from "@/compounds/ui/index";
 import {
@@ -239,7 +240,11 @@ export function renderNode(
     : node;
 
 
-  const def = (definitions as any)[profiledNode.type] ?? {};
+  const typeKey = profiledNode.type?.toLowerCase?.() ?? "";
+  const def =
+    (definitions as any)[profiledNode.type] ??
+    (definitions as any)[typeKey] ??
+    {};
   // Variant selection (definition-driven, deterministic):
   // 1) Use node.variant if present
   // 2) Else use "default" if present in def.variants
@@ -266,8 +271,14 @@ export function renderNode(
 
   const moleculeSpec = profiledNode.params?.moleculeLayout;
 
+  const visualPresetOverlay = getVisualPresetForMolecule(
+    profiledNode.type,
+    profile?.visualPreset,
+    profile?.id
+  );
 
   const resolvedParams = resolveParams(
+    visualPresetOverlay,
     variantPreset,
     sizePreset,
     profiledNode.params ?? {}

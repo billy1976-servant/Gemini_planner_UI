@@ -1,5 +1,6 @@
 {
     "id": "website",
+    "visualPreset": "default",
     "description": "Marketing / content-first website experience",
     "defaults": {
       "container": "page",

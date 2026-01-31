@@ -1,5 +1,6 @@
 {
     "id": "app",
+    "visualPreset": "compact",
     "description": "Task-focused application experience",
     "defaults": {
       "container": "page",

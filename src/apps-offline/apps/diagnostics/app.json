@@ -6,6 +6,7 @@
     {
       "id": "|PipelineProofHome",
       "type": "section",
+      "role": "header",
       "content": { "title": "FULL_PIPELINE_PROOF — Home" },
       "when": { "state": "currentView", "equals": "|home" },
       "children": [
@@ -174,6 +175,7 @@
     {
       "id": "|PipelineProofAlt",
       "type": "section",
+      "role": "content",
       "content": { "title": "FULL_PIPELINE_PROOF — Alt View" },
       "when": { "state": "currentView", "equals": "|alt" },
       "children": [

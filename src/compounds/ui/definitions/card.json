@@ -24,7 +24,8 @@
         "borderColor": "color.secondary",
         "borderWidth": "borderWidth.sm",
         "radius": "radius.lg",
-        "padding": "padding.md"
+        "padding": "padding.md",
+        "shadow": "shadow.sm"
       },
       "text": {
         "size": "textSize.md",

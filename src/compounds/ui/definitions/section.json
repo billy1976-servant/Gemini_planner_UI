@@ -5,6 +5,7 @@
         "background": "color.surface",
         "radius": "radius.md",
         "padding": "padding.md",
+        "shadow": "shadow.sm",
         "borderColor": "color.outline",
         "borderWidth": "borderWidth.sm"
       },
@@ -23,7 +24,8 @@
       "surface": {
         "background": "color.surfaceVariant",
         "radius": "radius.md",
-        "padding": "padding.md"
+        "padding": "padding.md",
+        "shadow": "shadow.sm"
       },
       "layout": {
         "gap": "gap.sm"

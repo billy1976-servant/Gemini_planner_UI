@@ -3,7 +3,7 @@
     "layout": {
       "flow": "grid",
       "params": {
-        "gap": "0.5rem",
+        "gap": "1rem",
         "columns": 2
       },
       "responsive": {

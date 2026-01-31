@@ -1,5 +1,6 @@
 {
     "id": "learning",
+    "visualPreset": "spacious",
     "description": "Reading / teaching / progression experience",
     "defaults": {
       "container": "page",

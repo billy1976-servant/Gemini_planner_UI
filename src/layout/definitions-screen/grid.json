@@ -8,7 +8,8 @@
     "presets": {
       "twoColumn": { "columns": 2 },
       "threeColumn": { "columns": 3, "gap": "1.5rem" },
-      "wideGap": { "gap": "2rem" }
+      "wideGap": { "gap": "2rem" },
+      "responsive": { "columns": 2, "gap": "clamp(0.5rem, 2vw, 1.5rem)" }
     }
   }
   

@@ -9,6 +9,8 @@ import { loadScreen } from "@/engine/core/screen-loader";
 import SectionLayoutDropdown from "@/dev/section-layout-dropdown";
 import { resolveLandingPage } from "@/logic/runtime/landing-page-resolver";
 import { getLayout, subscribeLayout } from "@/engine/core/layout-store";
+import { getExperienceProfile } from "@/layout/profile-resolver";
+import { composeOfflineScreen } from "@/lib/screens/compose-offline-screen";
 import WebsiteShell from "@/lib/site-skin/shells/WebsiteShell";
 import AppShell from "@/lib/site-skin/shells/AppShell";
 import LearningShell from "@/lib/site-skin/shells/LearningShell";
@@ -302,6 +304,13 @@ export default function Page() {
     json?.node ??
     json;
 
+  // Apps-offline: compose with experience profile and pass profile to JsonRenderer
+  const experienceProfile = getExperienceProfile(experience);
+  const composed = composeOfflineScreen({
+    rootNode: renderNode as any,
+    experienceProfile,
+    layoutState: layoutSnapshot,
+  });
 
   // 🔑 CRITICAL: React key MUST be derived from screen path, NEVER from json.id
   // Many screens share "screenRoot" id, causing React to reuse component instances
@@ -337,7 +346,12 @@ export default function Page() {
   });
 
   const jsonContent = (
-    <JsonRenderer key={screenKey} node={renderNode} defaultState={json?.state} />
+    <JsonRenderer
+      key={screenKey}
+      node={composed}
+      defaultState={json?.state}
+      profileOverride={experienceProfile}
+    />
   );
 
   if (experience === "app") {

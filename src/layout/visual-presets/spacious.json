@@ -1,0 +1,12 @@
+{
+  "section": {
+    "surface": {
+      "padding": "padding.lg"
+    }
+  },
+  "card": {
+    "surface": {
+      "padding": "padding.lg"
+    }
+  }
+}

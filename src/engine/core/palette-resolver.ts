@@ -3,11 +3,16 @@ import { resolveToken } from "@/engine/core/palette-resolve-token";
 
 
 export function resolveParams(
-  variantPreset: any = {},
-  sizePreset: any = {},
-  inlineParams: any = {}
+  a: any = {},
+  b: any = {},
+  c: any = {},
+  d?: any
 ) {
-  const merged = deepMerge(variantPreset, sizePreset, inlineParams);
+  const visualPreset = arguments.length >= 4 ? a : {};
+  const variantPreset = arguments.length >= 4 ? b : a;
+  const sizePreset = arguments.length >= 4 ? c : b;
+  const inlineParams = (arguments.length >= 4 ? d : c) ?? {};
+  const merged = deepMerge(visualPreset, variantPreset, sizePreset, inlineParams);
 
 
   // ✅ re-enable token resolution
