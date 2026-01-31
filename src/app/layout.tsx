@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useSyncExternalStore } from "react";
 
 
 /* ============================================================
@@ -12,7 +13,13 @@ import { setPalette, getPaletteName } from "@/engine/core/palette-store";
 /* ============================================================
    🧱 LAYOUT ENGINE
 ============================================================ */
-import { setLayout } from "@/engine/core/layout-store";
+import { setLayout, getLayout, subscribeLayout } from "@/engine/core/layout-store";
+
+
+/* ============================================================
+   📐 TEMPLATE PROFILES (layout + preset override)
+============================================================ */
+import { getTemplateList } from "@/layout/template-profiles";
 
 /* ============================================================
    🧠 STATE (PHASE B: INTERNAL VIEW NAV)
@@ -76,6 +83,9 @@ export default function RootLayout({ children }: any) {
   const [experience, setExperience] =
     useState<"website" | "app" | "learning">("website");
 
+  const layoutSnapshot = useSyncExternalStore(subscribeLayout, getLayout, getLayout);
+  const templateId = (layoutSnapshot as { templateId?: string })?.templateId ?? "modern-hero-centered";
+  const templateList = getTemplateList();
 
   const [showSections, setShowSections] = useState(false);
 
@@ -252,6 +262,20 @@ export default function RootLayout({ children }: any) {
             <option value="website">Experience: Website</option>
             <option value="app">Experience: App</option>
             <option value="learning">Experience: Learning</option>
+          </select>
+
+
+          <select
+            value={templateId}
+            onChange={e => setLayout({ templateId: e.target.value })}
+            style={{ marginLeft: "auto" }}
+            title="Template layout + preset (sections, density)"
+          >
+            {templateList.map((t) => (
+              <option key={t.id} value={t.id}>
+                Template: {t.label}
+              </option>
+            ))}
           </select>
 
 

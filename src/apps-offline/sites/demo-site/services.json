@@ -1,0 +1,62 @@
+{
+  "id": "screenRoot",
+  "type": "screen",
+  "state": {
+    "currentView": "|services"
+  },
+  "children": [
+    {
+      "id": "|header",
+      "type": "Section",
+      "role": "header",
+      "content": {
+        "title": ""
+      }
+    },
+    {
+      "id": "|hero",
+      "type": "Section",
+      "role": "hero",
+      "content": {
+        "title": "Our Services",
+        "body": "Comprehensive solutions for your website needs"
+      }
+    },
+    {
+      "id": "|services",
+      "type": "Section",
+      "role": "content",
+      "content": {
+        "title": "What We Offer"
+      },
+      "items": [
+        {
+          "id": "s1",
+          "icon": "💼",
+          "title": "Consulting",
+          "body": "Expert guidance for your website architecture"
+        },
+        {
+          "id": "s2",
+          "icon": "🎓",
+          "title": "Training",
+          "body": "Learn to build with our JSON-driven system"
+        },
+        {
+          "id": "s3",
+          "icon": "🛠️",
+          "title": "Development",
+          "body": "Custom website development services"
+        }
+      ]
+    },
+    {
+      "id": "|footer",
+      "type": "Section",
+      "role": "footer",
+      "content": {
+        "title": ""
+      }
+    }
+  ]
+}

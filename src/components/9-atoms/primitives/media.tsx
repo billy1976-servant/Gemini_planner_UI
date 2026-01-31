@@ -1,89 +1,150 @@
 "use client";
+/**
+ * Media Atom
+ * Phase 9 - Media System
+ * 
+ * Image/video with aspect ratio, object-fit, placeholders
+ */
 
+import { useState } from "react";
 
-import { resolveToken } from "@/engine/core/palette-resolve-token";
-
-
-type MediaAtomProps = {
-  params?: any;
+export type MediaAtomProps = {
+  params?: {
+    aspectRatio?: string;
+    objectFit?: "cover" | "contain" | "fill" | "none";
+    radius?: string;
+    placeholder?: string;
+    placeholderColor?: string;
+  };
+  children?: React.ReactNode;
   src?: string;
   alt?: string;
-  type?: string;
-  children?: any;
+  caption?: string;
 };
-
 
 export default function MediaAtom({
   params = {},
-  src,
-  alt = "",
-  type,
   children,
+  src,
+  alt,
+  caption,
 }: MediaAtomProps) {
-  const size = resolveToken(params.size) || resolveToken("size.md");
+  const {
+    aspectRatio,
+    objectFit = "cover",
+    radius = "0",
+    placeholder,
+    placeholderColor = "#e0e0e0",
+  } = params;
 
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
 
-  const baseStyle: React.CSSProperties = {
-    width: size,
-    height: params.autoHeight ? "auto" : size,
-    objectFit: params.objectFit || "cover",
-    borderRadius: resolveToken(params.radius),
-    opacity: resolveToken(params.opacity) ?? 1,
-    display: "block",
-  };
-
-
-  if (!src) return <div style={baseStyle}>{children}</div>;
-
-
-  // IMAGE (default)
-  if (!type && /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(src)) {
-    return <img src={src} alt={alt} style={baseStyle} />;
-  }
-
-
-  // VIDEO
-  if (type === "video" || /\.(mp4|webm|ogg)$/i.test(src)) {
+  // If children provided, render them directly
+  if (children) {
     return (
-      <video style={baseStyle} controls>
-        <source src={src} />
-      </video>
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          aspectRatio: aspectRatio || "auto",
+          borderRadius: radius,
+          overflow: "hidden",
+        }}
+      >
+        {children}
+      </div>
     );
   }
 
-
-  // AUDIO
-  if (type === "audio" || /\.(mp3|wav|ogg)$/i.test(src)) {
-    return <audio controls src={src} style={{ width: size }} />;
-  }
-
-
-  // PDF
-  if (type === "pdf" || /\.pdf$/i.test(src)) {
-    return <iframe src={src} style={{ ...baseStyle, height: "600px" }} />;
-  }
-
-
-  // DOC / XLS
-  if (type === "doc" || type === "xls" || /\.(doc|docx|xls|xlsx)$/i.test(src)) {
+  // Show placeholder if no src or error
+  if (!src || error) {
     return (
-      <a href={src} target="_blank" rel="noopener noreferrer" style={baseStyle}>
-        Download File
-      </a>
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          aspectRatio: aspectRatio || "16/9",
+          background: placeholderColor,
+          borderRadius: radius,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "#999",
+          fontSize: "2rem",
+        }}
+      >
+        {placeholder || "📷"}
+      </div>
     );
   }
 
-
-  // TEXT / JSON
-  if (type === "text" || /\.(txt|json)$/i.test(src)) {
-    return <iframe src={src} style={{ ...baseStyle, height: "400px" }} />;
-  }
-
-
-  // FALLBACK
   return (
-    <a href={src} target="_blank" rel="noopener noreferrer" style={baseStyle}>
-      Open File
-    </a>
+    <div
+      style={{
+        position: "relative",
+        width: "100%",
+      }}
+    >
+      {/* Aspect ratio wrapper */}
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          aspectRatio: aspectRatio || "auto",
+          borderRadius: radius,
+          overflow: "hidden",
+          background: loaded ? "transparent" : placeholderColor,
+        }}
+      >
+        {/* Loading placeholder */}
+        {!loaded && (
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#999",
+              fontSize: "2rem",
+            }}
+          >
+            {placeholder || "📷"}
+          </div>
+        )}
+
+        {/* Image */}
+        <img
+          src={src}
+          alt={alt || ""}
+          onLoad={() => setLoaded(true)}
+          onError={() => setError(true)}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit,
+            display: loaded ? "block" : "none",
+          }}
+        />
+      </div>
+
+      {/* Caption */}
+      {caption && (
+        <div
+          style={{
+            marginTop: "0.5rem",
+            fontSize: "0.875rem",
+            color: "#666",
+            textAlign: "center",
+          }}
+        >
+          {caption}
+        </div>
+      )}
+    </div>
   );
 }

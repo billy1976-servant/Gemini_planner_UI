@@ -1,0 +1,56 @@
+{
+  "id": "screenRoot",
+  "type": "screen",
+  "state": {
+    "currentView": "|about"
+  },
+  "children": [
+    {
+      "id": "|header",
+      "type": "Section",
+      "role": "header",
+      "content": {
+        "title": ""
+      }
+    },
+    {
+      "id": "|content",
+      "type": "Section",
+      "role": "content",
+      "content": {
+        "title": "About Us"
+      },
+      "children": [
+        {
+          "type": "Card",
+          "content": {
+            "title": "Our Story",
+            "body": "We started with a simple idea: make website building accessible to everyone through JSON-driven architecture."
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "Our Mission",
+            "body": "Empower developers and designers to create beautiful, functional websites without compromise."
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "Our Vision",
+            "body": "A world where anyone can build professional-grade websites with ease and flexibility."
+          }
+        }
+      ]
+    },
+    {
+      "id": "|footer",
+      "type": "Section",
+      "role": "footer",
+      "content": {
+        "title": ""
+      }
+    }
+  ]
+}

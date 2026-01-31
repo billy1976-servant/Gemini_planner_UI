@@ -17,6 +17,11 @@ let activeLayout: {
   type: string;
   preset: string | null;
   /**
+   * Template-driven layout override (sections + visualPreset).
+   * Used by JSON screens only; does not touch palette or behavior.
+   */
+  templateId: string;
+  /**
    * Region policy (layout engine input).
    * Keep as plain JSON.
    */
@@ -28,6 +33,7 @@ let activeLayout: {
   experience: "website",
   type: "column",
   preset: null,
+  templateId: "modern-hero-centered",
   regionPolicy: {
     nav: {
       enabled: true,
@@ -75,6 +81,7 @@ export function setLayout(next: {
   experience?: LayoutExperience;
   type?: string;
   preset?: string | null;
+  templateId?: string;
   regionPolicy?: Partial<{
     nav: Partial<{ enabled: boolean; placement: NavPlacement }>;
     regions: Record<string, Partial<{ enabled: boolean }>>;
@@ -91,6 +98,10 @@ export function setLayout(next: {
       next.preset !== undefined
         ? next.preset
         : activeLayout.preset,
+    templateId:
+      next.templateId !== undefined
+        ? next.templateId
+        : activeLayout.templateId,
     regionPolicy: next.regionPolicy
       ? {
           nav: {

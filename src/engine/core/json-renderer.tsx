@@ -192,12 +192,22 @@ function applyProfileToNode(node: any, profile: any): any {
 
   const next = { ...node };
 
+  // 🔑 PHASE 1 FIX: Case-insensitive type check (blueprint outputs "Section", profile checks "section")
+  const isSection = node.type?.toLowerCase?.() === "section";
 
-  if (node.type === "section" && node.role && profile.sections?.[node.role]) {
+  if (isSection && node.role && profile.sections?.[node.role]) {
     next.layout = {
       ...profile.sections[node.role],
       ...(node.layout ?? {}),
     };
+    
+    // 🔍 PHASE 1 VERIFICATION: Log when template layout is applied
+    console.log("[applyProfileToNode] ✅ Template layout applied", {
+      nodeId: node.id,
+      role: node.role,
+      layoutType: next.layout.type,
+      layoutParams: next.layout.params,
+    });
   }
 
 
@@ -311,8 +321,33 @@ export function renderNode(
   }
 
 
+  /* ======================================================
+     PHASE 6: REPEATERS / COLLECTIONS
+     If node has items array, render each item as a Card or custom block
+     ====================================================== */
   let renderedChildren = null;
-  if (Array.isArray(resolvedNode.children)) {
+  
+  if (Array.isArray(resolvedNode.items) && resolvedNode.items.length > 0) {
+    // Repeater mode: render items array
+    const itemType = resolvedNode.params?.repeater?.itemType || "card";
+    
+    renderedChildren = resolvedNode.items.map((item: any, i: number) => {
+      const itemNode = {
+        type: itemType === "feature-card" ? "Card" : "Card",
+        id: item.id || `item-${i}`,
+        content: {
+          title: item.title,
+          body: item.body,
+          media: item.icon || item.image,
+        },
+        params: item.params || {},
+      };
+      
+      const uniqueKey = item.id || `item-${i}`;
+      return renderNode({ ...itemNode, key: uniqueKey }, profile, stateSnapshot, defaultState);
+    });
+  } else if (Array.isArray(resolvedNode.children)) {
+    // Normal mode: render children
     renderedChildren = resolvedNode.children.map((child: any, i: number) => {
       // 🔑 Use child.id if available, otherwise use index + type for unique key
       const uniqueKey = child.id || `${child.type}-${i}`;
@@ -484,6 +519,18 @@ export default function JsonRenderer({
     getLayout
   );
   const profile = profileOverride ?? layoutSnapshot;
+
+  // 🔍 PHASE 1 VERIFICATION: Log profile sections and visualPreset
+  React.useEffect(() => {
+    if (profile?.sections) {
+      console.log("[JsonRenderer] 🎨 Profile active", {
+        hasSections: !!profile.sections,
+        sectionRoles: Object.keys(profile.sections),
+        visualPreset: profile.visualPreset,
+        templateId: (layoutSnapshot as any)?.templateId,
+      });
+    }
+  }, [profile?.sections, profile?.visualPreset, (layoutSnapshot as any)?.templateId]);
 
 
   // 🔑 Single authoritative reactive snapshot

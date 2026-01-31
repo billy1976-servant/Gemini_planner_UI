@@ -1,74 +1,54 @@
 {
-  "variants": {
-    "standard": {
-      "surface": {
-        "background": "color.surfaceVariant",
-        "radius": "radius.none",
-        "padding": "padding.md",
-        "borderColor": "color.outline",
-        "borderWidth": "borderWidth.sm"
-      },
-      "sequence": {
-        "direction": "row",
-        "justify": "space-between",
-        "align": "center",
-        "gap": "gap.md"
-      },
-      "text": {
-        "size": "textSize.sm",
-        "weight": "textWeight.regular",
-        "color": "color.secondary",
-        "lineHeight": "lineHeight.normal"
-      }
+  "id": "footer",
+  "type": "molecule",
+  "category": "layout",
+  "description": "Multi-column footer with link groups, social icons, newsletter, and copyright",
+  "slots": {
+    "columns": {
+      "type": "array",
+      "description": "Footer columns with links and social icons"
     },
-
-    "dense": {
-      "surface": {
-        "background": "color.surfaceVariant",
-        "radius": "radius.none",
-        "padding": "padding.sm",
-        "borderColor": "color.outline",
-        "borderWidth": "borderWidth.sm"
-      },
-      "sequence": {
-        "direction": "row",
-        "justify": "space-between",
-        "align": "center",
-        "gap": "gap.sm"
-      },
-      "text": {
-        "size": "textSize.xs",
-        "weight": "textWeight.regular",
-        "color": "color.secondary",
-        "lineHeight": "lineHeight.normal"
-      }
+    "newsletter": {
+      "type": "object",
+      "description": "Newsletter subscription area"
+    },
+    "copyright": {
+      "type": "string",
+      "description": "Copyright text"
     }
   },
-
-  "sizes": {
-    "sm": {
+  "variants": {
+    "default": {
       "surface": {
-        "padding": "padding.sm"
+        "background": "color.surfaceVariant",
+        "padding": "4rem 2rem 2rem"
       },
-      "sequence": {
-        "gap": "gap.sm"
+      "columnTitle": {
+        "size": "textRole.title.size",
+        "weight": "textRole.title.weight",
+        "color": "color.onSurface",
+        "marginBottom": "1rem"
       },
-      "text": {
-        "size": "textSize.xs"
-      }
-    },
-
-    "md": {
-      "surface": {
-        "padding": "padding.md"
+      "link": {
+        "size": "textRole.body.size",
+        "weight": "400",
+        "color": "color.onSurfaceVariant"
       },
-      "sequence": {
-        "gap": "gap.md"
+      "social": {
+        "size": "1.5rem",
+        "color": "color.onSurface"
       },
-      "text": {
-        "size": "textSize.sm"
+      "newsletter": {
+        "background": "color.primary",
+        "color": "color.onPrimary",
+        "padding": "0.75rem 1.5rem",
+        "radius": "radius.md"
+      },
+      "copyright": {
+        "size": "0.875rem",
+        "color": "color.onSurfaceVariant",
+        "textAlign": "center"
       }
     }
   }
 }
-

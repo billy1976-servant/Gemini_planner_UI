@@ -1,0 +1,83 @@
+{
+  "id": "screenRoot",
+  "type": "screen",
+  "state": {
+    "currentView": "|contact"
+  },
+  "children": [
+    {
+      "id": "|header",
+      "type": "Section",
+      "role": "header",
+      "content": {
+        "title": ""
+      }
+    },
+    {
+      "id": "|content",
+      "type": "Section",
+      "role": "content",
+      "content": {
+        "title": "Contact Us"
+      },
+      "children": [
+        {
+          "type": "Card",
+          "content": {
+            "title": "Get in Touch",
+            "body": "We'd love to hear from you. Send us a message and we'll respond as soon as possible."
+          }
+        },
+        {
+          "type": "Field",
+          "content": {
+            "label": "Your Name"
+          },
+          "params": {
+            "field": {
+              "fieldKey": "contact.name"
+            }
+          }
+        },
+        {
+          "type": "Field",
+          "content": {
+            "label": "Your Email"
+          },
+          "params": {
+            "field": {
+              "fieldKey": "contact.email"
+            }
+          }
+        },
+        {
+          "type": "Field",
+          "content": {
+            "label": "Message"
+          },
+          "params": {
+            "field": {
+              "multiline": true,
+              "rows": 6,
+              "fieldKey": "contact.message"
+            }
+          }
+        },
+        {
+          "type": "Button",
+          "content": {
+            "label": "Send Message"
+          }
+        }
+      ]
+    },
+    {
+      "id": "|footer",
+      "type": "Section",
+      "role": "footer",
+      "content": {
+        "title": ""
+      }
+    }
+  ]
+}

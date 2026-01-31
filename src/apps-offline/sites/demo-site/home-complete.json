@@ -1,0 +1,369 @@
+{
+  "id": "screenRoot",
+  "type": "screen",
+  "state": {
+    "currentView": "|home"
+  },
+  "children": [
+    {
+      "id": "|header",
+      "type": "Section",
+      "role": "header",
+      "params": {
+        "sticky": true,
+        "transparent": false
+      },
+      "children": [
+        {
+          "type": "Navigation",
+          "content": {
+            "logo": {
+              "image": "/assets/logo.png",
+              "alt": "Demo Site",
+              "href": "/"
+            },
+            "links": [
+              { "id": "home", "label": "Home", "href": "/" },
+              { "id": "about", "label": "About", "href": "/about" },
+              {
+                "id": "services",
+                "label": "Services",
+                "href": "/services",
+                "dropdown": [
+                  { "id": "consulting", "label": "Consulting", "href": "/services#consulting" },
+                  { "id": "training", "label": "Training", "href": "/services#training" }
+                ]
+              },
+              { "id": "contact", "label": "Contact", "href": "/contact" }
+            ],
+            "cta": {
+              "label": "Get Started",
+              "href": "/contact",
+              "variant": "primary"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "|hero",
+      "type": "Section",
+      "role": "hero",
+      "content": {
+        "title": "Build Beautiful Websites with JSON"
+      },
+      "params": {
+        "backgroundImage": "/assets/hero-bg.jpg",
+        "overlay": { "color": "rgba(0,0,0,0.5)" },
+        "textAlign": "center",
+        "height": "full-screen",
+        "containerWidth": "1200px"
+      },
+      "children": [
+        {
+          "type": "Card",
+          "content": {
+            "body": "Create stunning, professional websites using our JSON-driven template system. No coding required."
+          }
+        },
+        {
+          "type": "Button",
+          "content": {
+            "label": "Start Building"
+          },
+          "variant": "primary",
+          "size": "lg"
+        }
+      ]
+    },
+    {
+      "id": "|features",
+      "type": "Section",
+      "role": "features",
+      "content": {
+        "title": "Why Choose Our Platform"
+      },
+      "params": {
+        "containerWidth": "1200px",
+        "padding": "spacious",
+        "background": {
+          "color": "#f8f9fa"
+        }
+      },
+      "items": [
+        {
+          "id": "f1",
+          "icon": "⚡",
+          "title": "Lightning Fast",
+          "body": "Optimized performance with instant page loads and smooth interactions"
+        },
+        {
+          "id": "f2",
+          "icon": "🎨",
+          "title": "Beautiful Templates",
+          "body": "15+ professionally designed templates to choose from"
+        },
+        {
+          "id": "f3",
+          "icon": "📱",
+          "title": "Mobile Responsive",
+          "body": "Perfect on every device - desktop, tablet, and mobile"
+        },
+        {
+          "id": "f4",
+          "icon": "🔧",
+          "title": "Easy Customization",
+          "body": "Change colors, fonts, and layouts with simple JSON configuration"
+        },
+        {
+          "id": "f5",
+          "icon": "🚀",
+          "title": "Production Ready",
+          "body": "Built with Next.js and React for enterprise-grade reliability"
+        },
+        {
+          "id": "f6",
+          "icon": "💎",
+          "title": "Premium Quality",
+          "body": "Wix-quality design and user experience out of the box"
+        }
+      ]
+    },
+    {
+      "id": "|gallery",
+      "type": "Section",
+      "role": "gallery",
+      "content": {
+        "title": "Our Work"
+      },
+      "params": {
+        "containerWidth": "1200px",
+        "padding": "normal"
+      },
+      "children": [
+        {
+          "type": "ImageGallery",
+          "content": {
+            "images": [
+              { "src": "/assets/gallery-1.jpg", "alt": "Project 1" },
+              { "src": "/assets/gallery-2.jpg", "alt": "Project 2" },
+              { "src": "/assets/gallery-3.jpg", "alt": "Project 3" },
+              { "src": "/assets/gallery-4.jpg", "alt": "Project 4" }
+            ]
+          },
+          "params": {
+            "columns": 4,
+            "gap": "1rem"
+          }
+        }
+      ]
+    },
+    {
+      "id": "|testimonials",
+      "type": "Section",
+      "role": "testimonials",
+      "content": {
+        "title": "What Our Customers Say"
+      },
+      "params": {
+        "containerWidth": "1200px",
+        "padding": "spacious"
+      },
+      "items": [
+        {
+          "id": "t1",
+          "title": "John Smith",
+          "body": "This platform transformed how we build websites. Absolutely incredible!",
+          "icon": "⭐⭐⭐⭐⭐"
+        },
+        {
+          "id": "t2",
+          "title": "Sarah Johnson",
+          "body": "The template system is genius. We launched our site in days, not weeks.",
+          "icon": "⭐⭐⭐⭐⭐"
+        },
+        {
+          "id": "t3",
+          "title": "Mike Chen",
+          "body": "Beautiful designs and so easy to customize. Highly recommended!",
+          "icon": "⭐⭐⭐⭐⭐"
+        }
+      ]
+    },
+    {
+      "id": "|pricing",
+      "type": "Section",
+      "role": "pricing",
+      "content": {
+        "title": "Simple, Transparent Pricing"
+      },
+      "params": {
+        "containerWidth": "1200px",
+        "padding": "spacious",
+        "background": {
+          "color": "#f8f9fa"
+        }
+      },
+      "children": [
+        {
+          "type": "PricingTable",
+          "content": {
+            "tiers": [
+              {
+                "name": "Starter",
+                "price": "$29/mo",
+                "features": [
+                  "5 Pages",
+                  "Basic Templates",
+                  "Email Support",
+                  "SSL Certificate"
+                ],
+                "cta": { "label": "Start Free Trial", "href": "/signup?plan=starter" }
+              },
+              {
+                "name": "Professional",
+                "price": "$79/mo",
+                "features": [
+                  "Unlimited Pages",
+                  "All Templates",
+                  "Priority Support",
+                  "Custom Domain",
+                  "Advanced Analytics"
+                ],
+                "cta": { "label": "Get Started", "href": "/signup?plan=pro" },
+                "featured": true
+              },
+              {
+                "name": "Enterprise",
+                "price": "$199/mo",
+                "features": [
+                  "Everything in Pro",
+                  "White Label",
+                  "API Access",
+                  "Dedicated Support",
+                  "Custom Development"
+                ],
+                "cta": { "label": "Contact Sales", "href": "/contact?plan=enterprise" }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "|faq",
+      "type": "Section",
+      "role": "faq",
+      "content": {
+        "title": "Frequently Asked Questions"
+      },
+      "params": {
+        "containerWidth": "800px",
+        "padding": "normal"
+      },
+      "children": [
+        {
+          "type": "FAQ",
+          "content": {
+            "items": [
+              {
+                "question": "How does the JSON-driven system work?",
+                "answer": "You define your website structure in JSON files, and our rendering engine transforms them into beautiful React components automatically."
+              },
+              {
+                "question": "Can I customize the templates?",
+                "answer": "Absolutely! You can customize colors, fonts, spacing, and layouts. We have 15+ templates to start from."
+              },
+              {
+                "question": "Is it mobile responsive?",
+                "answer": "Yes! All templates are fully responsive and work perfectly on desktop, tablet, and mobile devices."
+              },
+              {
+                "question": "Do I need to know React?",
+                "answer": "No! You only need to edit JSON files. The system handles all the React rendering for you."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "|cta",
+      "type": "Section",
+      "role": "cta",
+      "params": {
+        "padding": "spacious",
+        "background": {
+          "gradient": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+        }
+      },
+      "children": [
+        {
+          "type": "CTABanner",
+          "content": {
+            "title": "Ready to Build Your Website?",
+            "body": "Join thousands of developers and designers using our platform",
+            "cta": {
+              "label": "Get Started Free",
+              "href": "/signup"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "|footer",
+      "type": "Section",
+      "role": "footer",
+      "children": [
+        {
+          "type": "Footer",
+          "content": {
+            "columns": [
+              {
+                "title": "Company",
+                "links": [
+                  { "label": "About", "href": "/about" },
+                  { "label": "Services", "href": "/services" },
+                  { "label": "Contact", "href": "/contact" },
+                  { "label": "Careers", "href": "/careers" }
+                ]
+              },
+              {
+                "title": "Resources",
+                "links": [
+                  { "label": "Documentation", "href": "/docs" },
+                  { "label": "Blog", "href": "/blog" },
+                  { "label": "Templates", "href": "/templates" },
+                  { "label": "Support", "href": "/support" }
+                ]
+              },
+              {
+                "title": "Legal",
+                "links": [
+                  { "label": "Privacy Policy", "href": "/privacy" },
+                  { "label": "Terms of Service", "href": "/terms" },
+                  { "label": "Cookie Policy", "href": "/cookies" }
+                ]
+              },
+              {
+                "title": "Connect",
+                "social": [
+                  { "platform": "twitter", "href": "https://twitter.com/demo" },
+                  { "platform": "linkedin", "href": "https://linkedin.com/company/demo" },
+                  { "platform": "github", "href": "https://github.com/demo" }
+                ]
+              }
+            ],
+            "newsletter": {
+              "title": "Subscribe to our newsletter",
+              "placeholder": "Enter your email",
+              "buttonLabel": "Subscribe"
+            },
+            "copyright": "© 2026 Demo Site. All rights reserved."
+          }
+        }
+      ]
+    }
+  ]
+}

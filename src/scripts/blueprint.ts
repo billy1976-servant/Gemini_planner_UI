@@ -126,6 +126,7 @@ type RawNode = {
   target?: string;
   state?: { type: string; key: string }[];
   logic?: { type: string; expr: string }[];
+  role?: string;
 };
 
 
@@ -259,6 +260,11 @@ function buildTree(nodes: RawNode[], contentMap: Record<string, any>) {
       children: [],
       content: contentMap[node.rawId] ?? {},
     };
+
+    /* ---------- ROLE (Phase 5) ---------- */
+    if (node.role) {
+      entry.role = node.role;
+    }
 
 
     /* ---------- STATE BIND ---------- */

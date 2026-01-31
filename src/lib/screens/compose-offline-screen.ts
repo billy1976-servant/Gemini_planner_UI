@@ -29,10 +29,13 @@ export function composeOfflineScreen({
 
 /**
  * Infer roles for top-level children of the offline tree:
- * - First Section (or first child) => role: "header"
- * - Remaining top-level nodes => role: "content"
+ * - First Section => role: "header"
+ * - Second Section (if exists) => role: "hero"
+ * - Remaining Sections => role: "content"
  * - Preserve existing role if already present.
- * Does not mutate; returns a new tree.
+ * 
+ * Phase 5: Expanded to support Wix-grade section roles.
+ * Roles: header, hero, content, features, gallery, testimonials, pricing, faq, cta, footer
  */
 export function inferRolesFromOfflineTree(
   rootNode: OfflineScreenNode
@@ -50,19 +53,41 @@ export function inferRolesFromOfflineTree(
     return { ...rootNode };
   }
 
-  const isSection = (n: OfflineScreenNode) =>
-    n.type === "Section" || n.type === "section";
+  const isSection = (n: OfflineScreenNode) => {
+    const type = typeof n.type === "string" ? n.type.toLowerCase() : "";
+    return type === "section";
+  };
 
-  const firstSectionIndex = children.findIndex(isSection);
-  const headerIndex =
-    firstSectionIndex >= 0 ? firstSectionIndex : 0;
+  // Find section indices
+  const sectionIndices = children
+    .map((child, i) => (isSection(child) ? i : -1))
+    .filter((i) => i >= 0);
 
   const newChildren = children.map((child, i) => {
     const existingRole = child.role;
     if (existingRole != null && existingRole !== "") {
       return child;
     }
-    const role = i === headerIndex ? "header" : "content";
+
+    // Only assign roles to sections
+    if (!isSection(child)) {
+      return child;
+    }
+
+    // Determine role based on position among sections
+    const sectionPosition = sectionIndices.indexOf(i);
+    let role = "content"; // default
+
+    if (sectionPosition === 0) {
+      role = "header";
+    } else if (sectionPosition === 1) {
+      role = "hero";
+    } else if (sectionPosition === sectionIndices.length - 1) {
+      role = "footer";
+    } else {
+      role = "content";
+    }
+
     return { ...child, role };
   });
 

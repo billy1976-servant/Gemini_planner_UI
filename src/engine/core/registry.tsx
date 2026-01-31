@@ -26,6 +26,13 @@ import Modal from "@/compounds/ui/12-molecules/modal.compound";
 import Stepper from "@/compounds/ui/12-molecules/stepper.compound";
 import Toast from "@/compounds/ui/12-molecules/toast.compound";
 import Toolbar from "@/compounds/ui/12-molecules/toolbar.compound";
+import Navigation from "@/compounds/ui/12-molecules/navigation.compound";
+// Phase 8: Content Block Library
+import PricingTable from "@/compounds/ui/12-molecules/pricing-table.compound";
+import FAQ from "@/compounds/ui/12-molecules/faq.compound";
+import CTABanner from "@/compounds/ui/12-molecules/cta-banner.compound";
+import ImageGallery from "@/compounds/ui/12-molecules/image-gallery.compound";
+import IconTextRow from "@/compounds/ui/12-molecules/icon-text-row.compound";
 // =====================================================
 // STATE-AWARE VIEWERS (NON-MOLECULE, SAFE)
 // =====================================================
@@ -137,6 +144,25 @@ export const Registry = {
 
   toolbar: Toolbar,
   Toolbar: Toolbar,
+
+  navigation: Navigation,
+  Navigation: Navigation,
+
+  // 🔹 CONTENT BLOCKS (Phase 8)
+  pricingtable: PricingTable,
+  PricingTable: PricingTable,
+
+  faq: FAQ,
+  FAQ: FAQ,
+
+  ctabanner: CTABanner,
+  CTABanner: CTABanner,
+
+  imagegallery: ImageGallery,
+  ImageGallery: ImageGallery,
+
+  icontextrow: IconTextRow,
+  IconTextRow: IconTextRow,
 
 
   // 🔹 STATE-AWARE VIEWERS

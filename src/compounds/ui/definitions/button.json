@@ -25,7 +25,8 @@
       "surface": {
         "background": "color.surfaceVariant",
         "radius": "radius.lg",
-        "padding": "padding.md"
+        "padding": "padding.md",
+        "transition": "transition.base"
       },
       "text": {
         "color": "color.onSurface",
@@ -35,7 +36,9 @@
       "trigger": {
         "hoverFeedback": "soft",
         "pressFeedback": "light",
-        "cursor": "pointer"
+        "cursor": "pointer",
+        "hoverLift": true,
+        "transition": "transition.base"
       }
     },
     "outlined": {
@@ -44,7 +47,8 @@
         "borderColor": "color.primary",
         "borderWidth": "borderWidth.sm",
         "radius": "radius.lg",
-        "padding": "padding.md"
+        "padding": "padding.md",
+        "transition": "transition.base"
       },
       "text": {
         "color": "color.primary",
@@ -54,7 +58,9 @@
       "trigger": {
         "hoverFeedback": "soft",
         "pressFeedback": "light",
-        "cursor": "pointer"
+        "cursor": "pointer",
+        "hoverLift": true,
+        "transition": "transition.base"
       }
     },
     "text": {

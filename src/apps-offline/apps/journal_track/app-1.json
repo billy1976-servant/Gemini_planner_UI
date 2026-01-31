@@ -1,64 +1,154 @@
 {
   "type": "Screen",
-  "state": {},
+  "state": { "currentView": "main" },
   "children": [
     {
+      "id": "headerSection",
       "type": "Section",
       "role": "header",
+      "content": { "title": "HIclarify Layout Test" },
       "children": [
         {
+          "id": "headerCard",
           "type": "Card",
+          "variant": "outlined",
+          "size": "sm",
           "content": {
-            "title": "HIclarify Layout Test",
-            "body": "This section should look like a HEADER once layout rules apply."
+            "title": "Header",
+            "body": "This section uses profile layout for role=header (row, gap, align)."
           }
         }
       ]
     },
     {
+      "id": "heroSection",
       "type": "Section",
-      "role": "content",
+      "role": "hero",
+      "content": { "title": "Hero" },
       "children": [
         {
+          "id": "heroCard",
+          "type": "Card",
+          "variant": "elevated",
+          "size": "lg",
+          "content": {
+            "title": "Hero Area",
+            "body": "Wix-style hero: profile gives column, center align, generous gap.",
+            "media": "https://via.placeholder.com/600x240"
+          },
+          "children": [
+            {
+              "id": "ctaBtn",
+              "type": "Button",
+              "variant": "filled",
+              "content": { "label": "Go to Alt View" },
+              "behavior": {
+                "type": "Navigation",
+                "params": { "verb": "go", "variant": "screen", "to": "|alt" }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "contentSection",
+      "type": "Section",
+      "role": "content",
+      "content": { "title": "Content" },
+      "children": [
+        {
+          "id": "card1",
           "type": "Card",
           "content": {
             "title": "Content Area",
-            "body": "This should be spaced differently from the header."
+            "body": "Profile drives content column layout; palette + preset control typography and elevation."
           }
         },
         {
+          "id": "card2",
           "type": "Card",
           "content": {
-            "title": "Another Content Card",
-            "body": "If layout roles work, these cards will sit in a content container style."
+            "title": "Another Card",
+            "body": "Cards use definitions (elevated/outlined) and visual preset overrides."
+          }
+        },
+        {
+          "id": "inputBlock",
+          "type": "Field",
+          "content": { "label": "Test Input", "input": "" },
+          "state": { "mode": "two-way", "key": "test.input" },
+          "params": { "field": { "fieldKey": "test.input" } }
+        },
+        {
+          "id": "submitBtn",
+          "type": "Button",
+          "variant": "tonal",
+          "content": { "label": "Submit Test" },
+          "behavior": {
+            "type": "Action",
+            "params": {
+              "name": "state:journal.add",
+              "track": "pipeline",
+              "key": "entry",
+              "valueFrom": "input",
+              "fieldKey": "test.input"
+            }
           }
         }
       ]
     },
     {
+      "id": "featuresSection",
       "type": "Section",
-      "role": "content",
+      "role": "features",
+      "content": { "title": "Features" },
       "children": [
         {
-          "type": "Field",
+          "id": "f1",
+          "type": "Card",
+          "size": "sm",
+          "content": { "title": "Feature 1", "body": "Grid from profile (features: 3 columns)." }
+        },
+        {
+          "id": "f2",
+          "type": "Card",
+          "size": "sm",
+          "content": { "title": "Feature 2", "body": "Palette and preset apply to all molecules." }
+        },
+        {
+          "id": "f3",
+          "type": "Card",
+          "size": "sm",
+          "content": { "title": "Feature 3", "body": "Ready for Wix-style sites and apps." }
+        }
+      ]
+    },
+    {
+      "id": "altSection",
+      "type": "Section",
+      "role": "content",
+      "when": { "state": "currentView", "equals": "|alt" },
+      "content": { "title": "Alt View" },
+      "children": [
+        {
+          "id": "altCard",
+          "type": "Card",
           "content": {
-            "label": "Test Input",
-            "input": ""
-          },
-          "state": {
-            "mode": "two-way",
-            "key": "test.input"
+            "title": "Alt View",
+            "body": "Conditional view via when + state.currentView."
           }
         },
         {
+          "id": "backBtn",
           "type": "Button",
-          "content": {
-            "label": "Submit Test"
+          "content": { "label": "Back to Main" },
+          "behavior": {
+            "type": "Navigation",
+            "params": { "verb": "go", "variant": "screen", "to": "main" }
           }
         }
       ]
     }
   ]
 }
-
-

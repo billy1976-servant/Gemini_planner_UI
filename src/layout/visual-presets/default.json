@@ -44,7 +44,8 @@
   "button": {
     "surface": {
       "padding": "padding.md",
-      "radius": "radius.md"
+      "radius": "radius.md",
+      "transition": "transition.base"
     }
   },
   "list": {

@@ -4,7 +4,8 @@
       "padding": "padding.lg",
       "background": "color.surface",
       "shadow": "elevation.1",
-      "radius": "radius.lg"
+      "radius": "radius.lg",
+      "transition": "transition.base"
     },
     "layout": {
       "gap": "gap.lg"
@@ -21,25 +22,29 @@
       "padding": "padding.lg",
       "background": "color.surface",
       "shadow": "elevation.2",
-      "radius": "radius.lg"
+      "radius": "radius.lg",
+      "transition": "transition.base"
     },
     "title": {
       "size": "textRole.title.size",
       "weight": "textRole.title.weight",
       "lineHeight": "textRole.title.lineHeight",
-      "color": "color.onSurface"
+      "color": "color.onSurface",
+      "fontFamily": "fontFamily.heading"
     },
     "body": {
       "size": "textRole.body.size",
       "weight": "textRole.body.weight",
       "lineHeight": "textRole.body.lineHeight",
-      "color": "color.onSurface"
+      "color": "color.onSurface",
+      "fontFamily": "fontFamily.sans"
     }
   },
   "button": {
     "surface": {
       "padding": "padding.lg",
-      "radius": "radius.lg"
+      "radius": "radius.lg",
+      "transition": "transition.base"
     }
   },
   "list": {
