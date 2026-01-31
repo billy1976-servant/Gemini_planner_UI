@@ -9,6 +9,7 @@ type SurfaceAtomProps = {
 
 
 export default function SurfaceAtom({ params = {}, children }: SurfaceAtomProps) {
+  const transitionVal = resolveToken(params.transition ?? "transition.base");
   const style: React.CSSProperties = {
     /* ✅ PURE VISUAL ONLY — NO LAYOUT RESPONSIBILITY */
     backgroundColor: resolveToken(params.background),
@@ -22,6 +23,7 @@ export default function SurfaceAtom({ params = {}, children }: SurfaceAtomProps)
     boxShadow: resolveToken(params.shadow),
     opacity: params.opacity ?? 1,
     padding: resolveToken(params.padding),
+    transition: typeof transitionVal === "string" ? transitionVal : undefined,
 
 
     /* 🚫 INTENTIONALLY NO:

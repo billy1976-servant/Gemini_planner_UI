@@ -12,7 +12,7 @@ type TextAtomProps = {
 
 export default function TextAtom({ params = {}, children }: TextAtomProps) {
   const style: React.CSSProperties = {
-    fontFamily: params.fontFamily || "Roboto",
+    fontFamily: resolveToken(params.fontFamily ?? "fontFamily.base"),
     fontSize: resolveToken(params.size),
     fontWeight: resolveToken(params.weight),
     color: resolveToken(params.color),

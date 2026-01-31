@@ -1,0 +1,31 @@
+{
+  "button": {
+    "surface": {
+      "background": "color.primary",
+      "shadow": "elevation.2"
+    },
+    "text": {
+      "color": "color.onPrimary"
+    }
+  },
+  "card": {
+    "surface": {
+      "background": "color.primary",
+      "shadow": "elevation.2"
+    },
+    "title": {
+      "color": "color.onPrimary"
+    },
+    "body": {
+      "color": "color.onPrimary"
+    }
+  },
+  "chip": {
+    "surface": {
+      "background": "color.primary"
+    },
+    "text": {
+      "color": "color.onPrimary"
+    }
+  }
+}

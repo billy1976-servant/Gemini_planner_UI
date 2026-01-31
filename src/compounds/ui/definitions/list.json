@@ -18,10 +18,10 @@
         "gap": "gap.sm"
       },
       "text": {
-        "size": "textSize.sm",
-        "weight": "textWeight.regular",
+        "size": "textRole.body.size",
+        "weight": "textRole.body.weight",
         "color": "color.onSurface",
-        "lineHeight": "lineHeight.normal"
+        "lineHeight": "textRole.body.lineHeight"
       }
     },
 
@@ -43,10 +43,10 @@
         "gap": "gap.md"
       },
       "text": {
-        "size": "textSize.sm",
-        "weight": "textWeight.regular",
+        "size": "textRole.body.size",
+        "weight": "textRole.body.weight",
         "color": "color.onSurface",
-        "lineHeight": "lineHeight.normal"
+        "lineHeight": "textRole.body.lineHeight"
       }
     },
 
@@ -69,10 +69,10 @@
         "gap": "gap.xs"
       },
       "text": {
-        "size": "textSize.sm",
-        "weight": "textWeight.regular",
+        "size": "textRole.body.size",
+        "weight": "textRole.body.weight",
         "color": "color.onSurface",
-        "lineHeight": "lineHeight.normal"
+        "lineHeight": "textRole.body.lineHeight"
       }
     }
   },
@@ -86,7 +86,7 @@
         "gap": "gap.xs"
       },
       "text": {
-        "size": "textSize.sm"
+        "size": "textRole.label.size"
       }
     },
 
@@ -98,7 +98,7 @@
         "gap": "gap.sm"
       },
       "text": {
-        "size": "textSize.md"
+        "size": "textRole.body.size"
       }
     }
   }

@@ -1,12 +1,50 @@
 {
   "section": {
     "surface": {
-      "padding": "padding.lg"
+      "padding": "padding.lg",
+      "background": "color.surface",
+      "shadow": "elevation.1",
+      "radius": "radius.lg"
+    },
+    "layout": {
+      "gap": "gap.lg"
+    },
+    "title": {
+      "size": "textRole.headline.size",
+      "weight": "textRole.headline.weight",
+      "lineHeight": "textRole.headline.lineHeight",
+      "color": "color.onSurface"
     }
   },
   "card": {
     "surface": {
-      "padding": "padding.lg"
+      "padding": "padding.lg",
+      "background": "color.surface",
+      "shadow": "elevation.2",
+      "radius": "radius.lg"
+    },
+    "title": {
+      "size": "textRole.title.size",
+      "weight": "textRole.title.weight",
+      "lineHeight": "textRole.title.lineHeight",
+      "color": "color.onSurface"
+    },
+    "body": {
+      "size": "textRole.body.size",
+      "weight": "textRole.body.weight",
+      "lineHeight": "textRole.body.lineHeight",
+      "color": "color.onSurface"
     }
+  },
+  "button": {
+    "surface": {
+      "padding": "padding.lg",
+      "radius": "radius.lg"
+    }
+  },
+  "list": {
+    "collection": { "gap": "gap.lg" },
+    "layout": { "gap": "gap.lg" },
+    "surface": { "padding": "padding.lg" }
   }
 }

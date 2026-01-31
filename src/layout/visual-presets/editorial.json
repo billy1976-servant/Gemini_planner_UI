@@ -1,35 +1,35 @@
 {
   "section": {
     "surface": {
+      "padding": "padding.xl",
       "background": "color.surface",
       "shadow": "elevation.1",
-      "padding": "padding.md",
-      "radius": "radius.md",
+      "radius": "radius.lg",
       "transition": "transition.base"
     },
     "layout": {
-      "gap": "gap.md"
+      "gap": "gap.lg"
     },
     "title": {
-      "size": "textRole.title.size",
-      "weight": "textRole.title.weight",
-      "lineHeight": "textRole.title.lineHeight",
+      "size": "textRole.display.size",
+      "weight": "textRole.display.weight",
+      "lineHeight": "textRole.display.lineHeight",
       "color": "color.onSurface",
       "fontFamily": "fontFamily.heading"
     }
   },
   "card": {
     "surface": {
+      "padding": "padding.lg",
       "background": "color.surface",
       "shadow": "elevation.2",
-      "padding": "padding.md",
-      "radius": "radius.md",
+      "radius": "radius.lg",
       "transition": "transition.base"
     },
     "title": {
-      "size": "textRole.title.size",
-      "weight": "textRole.title.weight",
-      "lineHeight": "textRole.title.lineHeight",
+      "size": "textRole.headline.size",
+      "weight": "textRole.headline.weight",
+      "lineHeight": "textRole.headline.lineHeight",
       "color": "color.onSurface",
       "fontFamily": "fontFamily.heading"
     },
@@ -40,16 +40,5 @@
       "color": "color.onSurface",
       "fontFamily": "fontFamily.sans"
     }
-  },
-  "button": {
-    "surface": {
-      "padding": "padding.md",
-      "radius": "radius.md"
-    }
-  },
-  "list": {
-    "collection": { "gap": "gap.md" },
-    "layout": { "gap": "gap.md" },
-    "surface": { "padding": "padding.md" }
   }
 }

@@ -39,6 +39,7 @@ import learningProfile from "@/layout/presentation/learning.profile.json";
 ============================================================ */
 const PALETTES = [
   "default",
+  "premium",
   "dark",
   "kids",
   "playful",
@@ -164,6 +165,14 @@ export default function RootLayout({ children }: any) {
 
   return (
     <html>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Poppins:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body style={{ margin: 0 }}>
         <div
           style={{

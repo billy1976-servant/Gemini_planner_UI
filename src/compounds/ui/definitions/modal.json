@@ -5,7 +5,7 @@
         "background": "color.surface",
         "radius": "radius.lg",
         "padding": "padding.lg",
-        "shadow": "shadow.lg"
+        "shadow": "elevation.3"
       },
       "title": {
         "size": "textSize.lg",
@@ -25,7 +25,7 @@
         "background": "color.surface",
         "radius": "radius.lg",
         "padding": "padding.md",
-        "shadow": "shadow.md"
+        "shadow": "elevation.4"
       },
       "title": {
         "size": "textSize.lg",

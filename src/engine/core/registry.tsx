@@ -45,6 +45,7 @@ import PageLayout from "@/layout/molecules/page-layout";
 export const Registry = {
   // 🔹 ROOT
   screen: ({ children }: any) => <>{children}</>,
+  Screen: ({ children }: any) => <>{children}</>,
 
 
   // 🔹 Atoms

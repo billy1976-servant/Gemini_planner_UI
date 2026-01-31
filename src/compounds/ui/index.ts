@@ -1,5 +1,6 @@
 // src/compounds/ui/index.ts
 import button from "./definitions/button.json";
+import text from "./definitions/text.json";
 import card from "./definitions/card.json";
 import chip from "./definitions/chip.json";
 import field from "./definitions/field.json";
@@ -15,6 +16,7 @@ import avatar from "./definitions/avatar.json";
 
 export default {
   button,
+  text,
   card,
   chip,
   field,

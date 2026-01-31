@@ -8,6 +8,7 @@ import playfulPalette from "./playful.json";
 import elderlyPalette from "./elderly.json";
 import frenchPalette from "./french.json";
 import spanishPalette from "./spanish.json";
+import premiumPalette from "./premium.json";
 
 
 /**
@@ -22,6 +23,7 @@ export const palettes = {
   elderly: elderlyPalette,
   french: frenchPalette,
   spanish: spanishPalette,
+  premium: premiumPalette,
 } as const;
 
 

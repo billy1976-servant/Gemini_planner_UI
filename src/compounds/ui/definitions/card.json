@@ -7,9 +7,16 @@
         "shadow": "shadow.md",
         "padding": "padding.md"
       },
-      "text": {
-        "size": "textSize.md",
-        "weight": "textWeight.medium",
+      "title": {
+        "size": "textRole.title.size",
+        "weight": "textRole.title.weight",
+        "lineHeight": "textRole.title.lineHeight",
+        "color": "color.onSurface"
+      },
+      "body": {
+        "size": "textRole.body.size",
+        "weight": "textRole.body.weight",
+        "lineHeight": "textRole.body.lineHeight",
         "color": "color.onSurface"
       },
       "media": {
@@ -27,9 +34,16 @@
         "padding": "padding.md",
         "shadow": "shadow.sm"
       },
-      "text": {
-        "size": "textSize.md",
-        "weight": "textWeight.medium",
+      "title": {
+        "size": "textRole.title.size",
+        "weight": "textRole.title.weight",
+        "lineHeight": "textRole.title.lineHeight",
+        "color": "color.onSurface"
+      },
+      "body": {
+        "size": "textRole.body.size",
+        "weight": "textRole.body.weight",
+        "lineHeight": "textRole.body.lineHeight",
         "color": "color.onSurface"
       },
       "media": {

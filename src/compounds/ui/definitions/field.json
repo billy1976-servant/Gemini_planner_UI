@@ -2,8 +2,8 @@
   "variants": {
     "outlined": {
       "label": {
-        "size": "textSize.sm",
-        "weight": "textWeight.medium",
+        "size": "textRole.label.size",
+        "weight": "textRole.label.weight",
         "color": "color.secondary"
       },
       "field": {
@@ -12,19 +12,19 @@
         "borderWidth": "borderWidth.sm",
         "radius": "radius.md",
         "padding": "padding.md",
-        "labelSize": "textSize.md",
+        "labelSize": "textRole.body.size",
         "labelColor": "color.onSurface"
       },
       "errorStyle": {
-        "size": "textSize.sm",
-        "weight": "textWeight.regular",
+        "size": "textRole.caption.size",
+        "weight": "textRole.caption.weight",
         "color": "color.error"
       }
     },
     "filled": {
       "label": {
-        "size": "textSize.sm",
-        "weight": "textWeight.medium",
+        "size": "textRole.label.size",
+        "weight": "textRole.label.weight",
         "color": "color.secondary"
       },
       "field": {
@@ -33,12 +33,12 @@
         "borderWidth": "borderWidth.none",
         "radius": "radius.md",
         "padding": "padding.md",
-        "labelSize": "textSize.md",
+        "labelSize": "textRole.body.size",
         "labelColor": "color.onSurface"
       },
       "errorStyle": {
-        "size": "textSize.sm",
-        "weight": "textWeight.regular",
+        "size": "textRole.caption.size",
+        "weight": "textRole.caption.weight",
         "color": "color.error"
       }
     }
@@ -47,13 +47,13 @@
     "sm": {
       "field": {
         "padding": "padding.sm",
-        "labelSize": "textSize.sm"
+        "labelSize": "textRole.label.size"
       }
     },
     "md": {
       "field": {
         "padding": "padding.md",
-        "labelSize": "textSize.md"
+        "labelSize": "textRole.body.size"
       }
     }
   }

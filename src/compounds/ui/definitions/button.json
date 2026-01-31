@@ -5,17 +5,20 @@
         "background": "color.primary",
         "radius": "radius.lg",
         "padding": "padding.md",
-        "shadow": "shadow.sm"
+        "shadow": "shadow.sm",
+        "transition": "transition.base"
       },
       "text": {
         "color": "color.onPrimary",
-        "size": "textSize.md",
-        "weight": "textWeight.medium"
+        "size": "textRole.label.size",
+        "weight": "textRole.label.weight"
       },
       "trigger": {
         "hoverFeedback": "medium",
         "pressFeedback": "medium",
-        "cursor": "pointer"
+        "cursor": "pointer",
+        "hoverLift": true,
+        "transition": "transition.base"
       }
     },
     "tonal": {
@@ -26,8 +29,8 @@
       },
       "text": {
         "color": "color.onSurface",
-        "size": "textSize.md",
-        "weight": "textWeight.medium"
+        "size": "textRole.label.size",
+        "weight": "textRole.label.weight"
       },
       "trigger": {
         "hoverFeedback": "soft",
@@ -45,8 +48,8 @@
       },
       "text": {
         "color": "color.primary",
-        "size": "textSize.md",
-        "weight": "textWeight.medium"
+        "size": "textRole.label.size",
+        "weight": "textRole.label.weight"
       },
       "trigger": {
         "hoverFeedback": "soft",
@@ -61,8 +64,8 @@
       },
       "text": {
         "color": "color.primary",
-        "size": "textSize.md",
-        "weight": "textWeight.medium"
+        "size": "textRole.label.size",
+        "weight": "textRole.label.weight"
       },
       "trigger": {
         "hoverFeedback": "soft",
@@ -78,8 +81,8 @@
       },
       "text": {
         "color": "color.primary",
-        "size": "textSize.md",
-        "weight": "textWeight.medium"
+        "size": "textRole.label.size",
+        "weight": "textRole.label.weight"
       },
       "trigger": {
         "hoverFeedback": "medium",
@@ -91,15 +94,15 @@
   "sizes": {
     "sm": {
       "surface": { "padding": "padding.sm" },
-      "text": { "size": "textSize.sm" }
+      "text": { "size": "textRole.label.size" }
     },
     "md": {
       "surface": { "padding": "padding.md" },
-      "text": { "size": "textSize.md" }
+      "text": { "size": "textRole.body.size" }
     },
     "lg": {
       "surface": { "padding": "padding.lg" },
-      "text": { "size": "textSize.lg" }
+      "text": { "size": "textRole.title.size" }
     }
   }
 }
