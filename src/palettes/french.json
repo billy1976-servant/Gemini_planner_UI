@@ -28,45 +28,49 @@
       "xs": 6,
       "sm": 10,
       "md": 16,
-      "lg": 24
+      "lg": 24,
+      "xl": 32,
+      "2xl": 40
     },
-  
-  
+
+
     "gap": {
       "xs": 6,
       "sm": 10,
       "md": 16,
-      "lg": 24
+      "lg": 24,
+      "xl": 32,
+      "2xl": 40
     },
-  
-  
+
+
     "textSize": {
       "xs": 13,
       "sm": 15,
-      "md": 17,
-      "lg": 21,
-      "xl": 26
+      "md": 18,
+      "lg": 24,
+      "xl": 32
     },
-  
-  
+
+
     "textWeight": {
       "regular": 400,
       "medium": 500,
       "bold": 700
     },
-  
-  
+
+
     "lineHeight": {
-      "tight": 1.25,
-      "normal": 1.45,
-      "relaxed": 1.6
+      "tight": 1.2,
+      "normal": 1.55,
+      "relaxed": 1.75
     },
-  
-  
+
+
     "letterSpacing": {
-      "tight": -0.15,
-      "normal": 0,
-      "loose": 0.3
+      "tight": -0.2,
+      "normal": 0.05,
+      "loose": 0.4
     },
   
   
@@ -130,10 +134,10 @@
     },
 
     "fontFamily": {
-      "base": "system-ui, -apple-system, sans-serif",
-      "sans": "system-ui, -apple-system, sans-serif",
-      "heading": "system-ui, -apple-system, sans-serif",
-      "mono": "ui-monospace, monospace"
+      "base": "'Source Sans 3', 'Helvetica Neue', system-ui, sans-serif",
+      "sans": "'Source Sans 3', 'Helvetica Neue', system-ui, sans-serif",
+      "heading": "'Playfair Display', Georgia, 'Times New Roman', serif",
+      "mono": "'IBM Plex Mono', ui-monospace, monospace"
     },
 
     "transition": {

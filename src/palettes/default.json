@@ -43,11 +43,11 @@
   
   
     "textSize": {
-      "xs": 12,
-      "sm": 14,
-      "md": 16,
-      "lg": 20,
-      "xl": 24
+      "xs": 13,
+      "sm": 15,
+      "md": 17,
+      "lg": 22,
+      "xl": 28
     },
   
   
@@ -59,16 +59,16 @@
   
   
     "lineHeight": {
-      "tight": 1.2,
-      "normal": 1.4,
-      "relaxed": 1.6
+      "tight": 1.25,
+      "normal": 1.5,
+      "relaxed": 1.65
     },
   
   
     "letterSpacing": {
-      "tight": -0.25,
+      "tight": -0.2,
       "normal": 0,
-      "loose": 0.5
+      "loose": 0.4
     },
   
   
@@ -132,10 +132,10 @@
     },
 
     "fontFamily": {
-      "base": "system-ui, -apple-system, sans-serif",
-      "sans": "system-ui, -apple-system, sans-serif",
-      "heading": "system-ui, -apple-system, sans-serif",
-      "mono": "ui-monospace, monospace"
+      "base": "Inter, 'Segoe UI', system-ui, -apple-system, sans-serif",
+      "sans": "Inter, 'Segoe UI', system-ui, -apple-system, sans-serif",
+      "heading": "Inter, 'Segoe UI', system-ui, -apple-system, sans-serif",
+      "mono": "'JetBrains Mono', 'Fira Code', ui-monospace, monospace"
     },
 
     "transition": {

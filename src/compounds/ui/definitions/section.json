@@ -13,6 +13,7 @@
         "gap": "gap.md"
       },
       "title": {
+        "fontFamily": "fontFamily.sans",
         "size": "textRole.title.size",
         "weight": "textRole.title.weight",
         "lineHeight": "textRole.title.lineHeight",
@@ -31,6 +32,7 @@
         "gap": "gap.sm"
       },
       "title": {
+        "fontFamily": "fontFamily.sans",
         "size": "textRole.label.size",
         "weight": "textRole.label.weight",
         "lineHeight": "textRole.label.lineHeight",

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSyncExternalStore } from "react";
 
@@ -51,6 +51,7 @@ import learningProfile from "@/layout/presentation/learning.profile.json";
 const PALETTES = [
   "default",
   "premium",
+  "crazy",
   "dark",
   "kids",
   "playful",
@@ -93,8 +94,9 @@ export default function RootLayout({ children }: any) {
   const templateList = getTemplateList();
 
   const [showSections, setShowSections] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
 
-  usePaletteCSS();
+  usePaletteCSS(contentRef);
 
   /* ============================================================
      🔗 DEMO: INITIAL EXPERIENCE FROM URL
@@ -328,7 +330,7 @@ export default function RootLayout({ children }: any) {
           <div id="section-layout-panel" className="app-section-layout-panel" />
         )}
 
-        <div className="app-content">{children}</div>
+        <div ref={contentRef} className="app-content">{children}</div>
       </body>
     </html>
   );

@@ -9,6 +9,7 @@ import { loadScreen } from "@/engine/core/screen-loader";
 import SectionLayoutDropdown from "@/dev/section-layout-dropdown";
 import { resolveLandingPage } from "@/logic/runtime/landing-page-resolver";
 import { getLayout, subscribeLayout } from "@/engine/core/layout-store";
+import { getPaletteName, subscribePalette } from "@/engine/core/palette-store";
 import { setCurrentScreenTree } from "@/engine/core/current-screen-tree-store";
 import { getExperienceProfile } from "@/layout/profile-resolver";
 import { getTemplateProfile } from "@/layout/template-profiles";
@@ -126,6 +127,7 @@ export default function Page() {
 
   // Experience → shell: must run unconditionally (Rules of Hooks) so same hook count every render
   const layoutSnapshot = useSyncExternalStore(subscribeLayout, getLayout, getLayout);
+  const paletteName = useSyncExternalStore(subscribePalette, getPaletteName, () => "default");
   const experience = (layoutSnapshot as { experience?: string })?.experience ?? "website";
 
   /* --------------------------------------------------
@@ -371,7 +373,7 @@ export default function Page() {
   const screenKey = screen 
     ? screen.replace(/[^a-zA-Z0-9]/g, "-") // Sanitize path for React key
     : `screen-${hashJson(json)}`; // Hash entire JSON, not just id
-  const renderKey = `${screenKey}-t-${currentTemplateId || "default"}`;
+  const renderKey = `${screenKey}-t-${currentTemplateId || "default"}-p-${paletteName}`;
   
   // Log once per render to confirm key changes between files
   console.log("[page] 🔑 JsonRenderer KEY RESOLVED", {

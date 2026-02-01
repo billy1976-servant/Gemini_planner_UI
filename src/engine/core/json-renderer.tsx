@@ -643,6 +643,13 @@ export default function JsonRenderer({
     }
   }, [profile?.sections, profile?.visualPreset, (layoutSnapshot as any)?.templateId]);
 
+  // 🔍 UI PIPELINE TRACE: Add ?trace=ui to URL to log params per molecule + TextAtom breakdown
+  React.useEffect(() => {
+    if (isTraceUI()) {
+      console.log("[JsonRenderer] 📋 UI pipeline trace ACTIVE — params per molecule + TextAtom empty-params warnings");
+    }
+  }, []);
+
 
   // 🔑 Single authoritative reactive snapshot
   const rawState = useSyncExternalStore(

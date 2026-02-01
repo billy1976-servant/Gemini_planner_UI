@@ -34,7 +34,9 @@
     "test:organs:layer4": "ts-node -r tsconfig-paths/register src/organs/organs.layer4.test.ts",
     "test:organs:layer5": "ts-node -r tsconfig-paths/register src/organs/organs.layer5.test.ts",
     "test:organs:layer6": "ts-node -r tsconfig-paths/register src/organs/organs.layer6.test.ts",
-    "test:organs:layer7": "ts-node -r tsconfig-paths/register src/organs/organs.layer7.test.ts"
+    "test:organs:layer7": "ts-node -r tsconfig-paths/register src/organs/organs.layer7.test.ts",
+    "test:param-keys": "ts-node -r tsconfig-paths/register src/contracts/param-key-mapping.test.ts",
+    "test:showcase-visual": "ts-node -r tsconfig-paths/register src/contracts/showcase-visual-quality.test.ts"
   },
   "dependencies": {
     "@types/chalk": "^0.4.31",

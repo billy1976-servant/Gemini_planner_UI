@@ -14,7 +14,6 @@ import { useSearchParams } from "next/navigation";
 import { SitePage } from "@/types/siteSchema";
 import { NormalizedSite } from "@/lib/site-compiler/normalizeSiteData";
 import { renderLayoutBlocks } from "@/lib/site-renderer/renderFromSchema";
-import { usePaletteCSS } from "@/lib/site-renderer/palette-bridge";
 import { useContainerLayout } from "@/lib/site-renderer/layout-bridge";
 import { getLayout, subscribeLayout } from "@/engine/core/layout-store";
 import PageContainer from "@/components/site/PageContainer";
@@ -36,9 +35,6 @@ interface GeneratedSiteViewerProps {
 }
 
 export default function GeneratedSiteViewer({ domain: domainProp }: GeneratedSiteViewerProps = {}) {
-  // Apply palette to CSS variables (reacts to palette dropdown changes)
-  usePaletteCSS();
-  
   // Get experience from layout store reactively (reacts to layout dropdown changes)
   const layout = useSyncExternalStore(
     subscribeLayout,

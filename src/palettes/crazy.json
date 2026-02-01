@@ -1,82 +1,82 @@
 {
   "color": {
-    "surface": "#FAFAFA",
-    "surfaceVariant": "#F5F5F5",
-    "primary": "#2563eb",
-    "primaryVariant": "#1d4ed8",
-    "onPrimary": "#FFFFFF",
-    "onSurface": "#1f2937",
-    "outline": "#e5e7eb",
-    "secondary": "#6b7280",
-    "error": "#dc2626"
+    "surface": "#fff0f5",
+    "surfaceVariant": "#ffe4ec",
+    "primary": "#c71585",
+    "primaryVariant": "#a01268",
+    "onPrimary": "#ffffff",
+    "onSurface": "#2d1b4e",
+    "outline": "#8b008b",
+    "secondary": "#4b0082",
+    "error": "#ff1493"
   },
   "radius": {
     "none": 0,
-    "sm": 6,
-    "md": 12,
-    "lg": 16,
-    "xl": 24
+    "sm": 24,
+    "md": 48,
+    "lg": 64,
+    "xl": 96
   },
   "padding": {
     "none": 0,
-    "xs": 6,
-    "sm": 10,
-    "md": 16,
-    "lg": 24,
-    "xl": 24,
-    "2xl": 32
+    "xs": 24,
+    "sm": 40,
+    "md": 64,
+    "lg": 96,
+    "xl": 128,
+    "2xl": 160
   },
   "gap": {
-    "xs": 6,
-    "sm": 10,
-    "md": 16,
-    "lg": 24,
-    "xl": 24,
-    "2xl": 32
+    "xs": 24,
+    "sm": 40,
+    "md": 64,
+    "lg": 96,
+    "xl": 128,
+    "2xl": 160
   },
   "textSize": {
-    "xs": 13,
-    "sm": 15,
-    "md": 19,
-    "lg": 26,
-    "xl": 34
+    "xs": 28,
+    "sm": 36,
+    "md": 48,
+    "lg": 64,
+    "xl": 80
   },
   "textWeight": {
     "regular": 400,
-    "medium": 500,
-    "bold": 700
+    "medium": 600,
+    "bold": 900
   },
   "lineHeight": {
-    "tight": 1.2,
-    "normal": 1.55,
-    "relaxed": 1.75
+    "tight": 1.0,
+    "normal": 1.8,
+    "relaxed": 2.4
   },
   "letterSpacing": {
-    "tight": -0.3,
-    "normal": 0.02,
-    "loose": 0.5
+    "tight": -0.5,
+    "normal": 0.3,
+    "loose": 1.2
   },
   "shadow": {
     "none": "none",
-    "sm": "0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)",
-    "md": "0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.05)",
-    "lg": "0 10px 15px rgba(0,0,0,0.08), 0 4px 6px rgba(0,0,0,0.05)"
+    "sm": "0 8px 24px rgba(199, 21, 133, 0.4), 0 4px 12px rgba(75, 0, 130, 0.3)",
+    "md": "0 16px 48px rgba(199, 21, 133, 0.5), 0 8px 24px rgba(75, 0, 130, 0.4)",
+    "lg": "0 24px 72px rgba(199, 21, 133, 0.6), 0 12px 36px rgba(75, 0, 130, 0.5)"
   },
   "opacity": {
     "full": 1.0,
-    "dim": 0.9,
-    "low": 0.8
+    "dim": 0.85,
+    "low": 0.7
   },
   "borderWidth": {
     "none": 0,
-    "sm": 1,
-    "md": 2
+    "sm": 4,
+    "md": 8
   },
   "size": {
-    "xs": 20,
-    "sm": 32,
-    "md": 48,
-    "lg": 64
+    "xs": 64,
+    "sm": 96,
+    "md": 128,
+    "lg": 192
   },
   "textRole": {
     "display": { "size": "textSize.xl", "weight": "textWeight.bold", "lineHeight": "lineHeight.tight" },
@@ -94,10 +94,10 @@
   },
   "elevation": {
     "0": "none",
-    "1": "0 1px 3px rgba(0,0,0,0.06)",
-    "2": "0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.04)",
-    "3": "0 10px 25px rgba(0,0,0,0.1), 0 4px 6px rgba(0,0,0,0.05)",
-    "4": "0 20px 40px rgba(0,0,0,0.12)"
+    "1": "0 8px 24px rgba(199, 21, 133, 0.35)",
+    "2": "0 16px 48px rgba(199, 21, 133, 0.4), 0 8px 24px rgba(75, 0, 130, 0.3)",
+    "3": "0 24px 72px rgba(199, 21, 133, 0.5), 0 12px 36px rgba(75, 0, 130, 0.4)",
+    "4": "0 32px 96px rgba(199, 21, 133, 0.6)"
   },
   "prominence": {
     "primary": { "background": "color.primary", "color": "color.onPrimary" },
@@ -105,18 +105,18 @@
     "tertiary": { "background": "color.surface", "color": "color.onSurface" }
   },
   "fontFamily": {
-    "base": "'DM Sans', 'Helvetica Neue', system-ui, sans-serif",
-    "sans": "'DM Sans', 'Helvetica Neue', system-ui, sans-serif",
-    "heading": "Poppins, 'DM Sans', system-ui, sans-serif",
-    "mono": "'JetBrains Mono', 'Fira Code', ui-monospace, monospace"
+    "base": "Georgia, 'Times New Roman', serif",
+    "sans": "Comic Sans MS, cursive",
+    "heading": "Impact, Charcoal, sans-serif",
+    "mono": "'Courier New', Courier, monospace"
   },
   "transition": {
-    "fast": "150ms ease",
-    "base": "200ms ease",
-    "slow": "300ms ease",
+    "fast": "50ms linear",
+    "base": "400ms ease-in-out",
+    "slow": "800ms ease-in-out",
     "none": "none"
   },
   "transform": {
-    "hoverLift": "translateY(-1px)"
+    "hoverLift": "translateY(-8px)"
   }
 }

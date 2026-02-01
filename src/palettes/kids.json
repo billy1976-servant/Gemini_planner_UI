@@ -25,48 +25,52 @@
   
     "padding": {
       "none": 0,
-      "xs": 6,
+      "xs": 8,
       "sm": 12,
       "md": 18,
-      "lg": 28
+      "lg": 28,
+      "xl": 36,
+      "2xl": 48
     },
-  
-  
+
+
     "gap": {
-      "xs": 6,
+      "xs": 8,
       "sm": 12,
       "md": 18,
-      "lg": 28
+      "lg": 28,
+      "xl": 36,
+      "2xl": 48
     },
-  
-  
+
+
     "textSize": {
-      "xs": 14,
-      "sm": 16,
-      "md": 18,
-      "lg": 22,
-      "xl": 28
+      "xs": 15,
+      "sm": 18,
+      "md": 21,
+      "lg": 26,
+      "xl": 34
     },
-  
-  
+
+
     "textWeight": {
       "regular": 500,
       "medium": 600,
       "bold": 800
     },
-  
-  
+
+
     "lineHeight": {
-      "tight": 1.3,
-      "normal": 1.5,
-      "relaxed": 1.7
+      "tight": 1.25,
+      "normal": 1.55,
+      "relaxed": 1.75
     },
-  
-  
+
+
     "letterSpacing": {
-      "tight": 0,
-      "normal": 0.25,
-      "loose": 0.75
+      "tight": -0.1,
+      "normal": 0.2,
+      "loose": 0.6
     },
   
   
@@ -130,10 +134,10 @@
     },
 
     "fontFamily": {
-      "base": "system-ui, -apple-system, sans-serif",
-      "sans": "system-ui, -apple-system, sans-serif",
-      "heading": "system-ui, -apple-system, sans-serif",
-      "mono": "ui-monospace, monospace"
+      "base": "Nunito, 'Comic Sans MS', system-ui, sans-serif",
+      "sans": "Nunito, 'Comic Sans MS', system-ui, sans-serif",
+      "heading": "Fredoka One, Nunito, system-ui, sans-serif",
+      "mono": "'Comic Sans MS', ui-monospace, monospace"
     },
 
     "transition": {

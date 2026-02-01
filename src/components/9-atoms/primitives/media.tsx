@@ -36,7 +36,7 @@ export default function MediaAtom({
     placeholder,
     placeholderColor,
   } = params;
-  const placeholderBg = placeholderColor ?? "var(--color-bg-muted, #f3f4f6)";
+  const placeholderBg = placeholderColor ?? "var(--color-bg-muted)";
   const placeholderText = "var(--color-text-muted)";
   const emojiSize = "var(--font-size-2xl)";
   const captionSize = "var(--font-size-sm)";

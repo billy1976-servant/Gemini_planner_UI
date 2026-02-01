@@ -12,7 +12,6 @@
 
 import React, { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import JsonRenderer from "@/engine/core/json-renderer";
-import { usePaletteCSS } from "@/lib/site-renderer/palette-bridge";
 import { getLayout, subscribeLayout } from "@/engine/core/layout-store";
 import { getExperienceProfile } from "@/layout/profile-resolver";
 import type { SiteSkinDocument, SiteSkinExperience, SiteSkinNode } from "@/lib/site-skin/siteSkin.types";
@@ -121,8 +120,6 @@ function renderRegion(
 }
 
 export default function SiteSkin({ domain, pageId, skin, data, defaultState, debugRegions = false }: SiteSkinProps) {
-  usePaletteCSS();
-
   // Subscribe to layout store so experience dropdown changes re-render SiteSkin
   const layoutSnapshot = useSyncExternalStore(
     subscribeLayout,

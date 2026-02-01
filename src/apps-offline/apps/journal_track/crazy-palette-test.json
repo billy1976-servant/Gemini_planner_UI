@@ -1,0 +1,62 @@
+{
+  "id": "crazyPaletteTest",
+  "type": "screen",
+  "children": [
+    {
+      "id": "palette_test_section",
+      "type": "Section",
+      "params": {
+        "surface": {
+          "background": "color.surface",
+          "borderColor": "color.outline",
+          "borderWidth": "borderWidth.md",
+          "radius": "radius.lg",
+          "shadow": "shadow.lg",
+          "padding": "padding.lg"
+        },
+        "moleculeLayout": {
+          "type": "column",
+          "params": { "gap": "gap.md", "align": "stretch", "justify": "flex-start" }
+        }
+      },
+      "content": {
+        "title": "Crazy palette test — verify all tokens (surface, radius, padding, shadow, gap, text)"
+      },
+      "children": [
+        {
+          "type": "Section",
+          "params": {
+            "surface": {
+              "background": "color.surfaceVariant",
+              "radius": "radius.md",
+              "padding": "padding.md",
+              "shadow": "shadow.sm"
+            }
+          },
+          "content": { "title": "Surface: background, radius, padding, shadow (surfaceVariant, radius.md, padding.md, shadow.sm)" }
+        },
+        {
+          "type": "Button",
+          "content": { "label": "Button: surface + label (prominence.primary)" },
+          "params": { "surface": { "background": "color.primary", "color": "color.onPrimary", "radius": "radius.md", "padding": "padding.sm" } },
+          "behavior": { "type": "Navigation", "params": { "verb": "go", "to": "apps/journal_track/app-1.json" } }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "media": "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=400",
+            "title": "Card: surface, title, body",
+            "body": "Card uses surface (background, radius, shadow), title (textRole.title), body (textRole.body). Media uses radius from params."
+          },
+          "params": {
+            "surface": { "background": "color.surface", "radius": "radius.md", "shadow": "shadow.md", "borderColor": "color.outline", "borderWidth": "borderWidth.sm" }
+          }
+        },
+        {
+          "type": "Section",
+          "content": { "title": "Text roles: display/headline/title/body/label/caption come from palette textRole + textSize, textWeight, lineHeight, color, fontFamily" }
+        }
+      ]
+    }
+  ]
+}

@@ -22,9 +22,10 @@ export default function TextAtom({ params = {}, children }: TextAtomProps) {
   if (isTraceUI() && Object.keys(params ?? {}).length === 0 && children) {
     console.warn("[TextAtom] EMPTY PARAMS — unstyled text (children length:", String(children).length, ")");
   }
+  const sizeVal = resolveToken(params.size);
   const style: React.CSSProperties = {
     fontFamily: resolveToken(params.fontFamily ?? "fontFamily.sans"),
-    fontSize: resolveToken(params.size),
+    fontSize: typeof sizeVal === "number" ? `${sizeVal}px` : sizeVal,
     fontWeight: resolveToken(params.weight),
     color: resolveToken(params.color),
     lineHeight: resolveToken(params.lineHeight),

@@ -180,7 +180,7 @@ export default function SectionCompound({
   const containerWidth = params.containerWidth;
   if (containerWidth === "contained") {
     return (
-      <div style={{ width: "100%", maxWidth: "var(--container-xl, 1200px)", marginLeft: "auto", marginRight: "auto" }}>
+      <div style={{ width: "100%", maxWidth: "var(--container-xl)", marginLeft: "auto", marginRight: "auto" }}>
         {maybeHeroWrapped}
       </div>
     );
@@ -194,7 +194,7 @@ export default function SectionCompound({
   }
   if (containerWidth === "split") {
     return (
-      <div style={{ width: "100%", maxWidth: "var(--container-xl, 1200px)", marginLeft: "auto", marginRight: "auto" }}>
+      <div style={{ width: "100%", maxWidth: "var(--container-xl)", marginLeft: "auto", marginRight: "auto" }}>
         {maybeHeroWrapped}
       </div>
     );

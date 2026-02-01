@@ -28,45 +28,49 @@
       "xs": 10,
       "sm": 16,
       "md": 24,
-      "lg": 36
+      "lg": 36,
+      "xl": 44,
+      "2xl": 56
     },
-  
-  
+
+
     "gap": {
       "xs": 10,
       "sm": 16,
       "md": 24,
-      "lg": 36
+      "lg": 36,
+      "xl": 44,
+      "2xl": 56
     },
-  
-  
+
+
     "textSize": {
-      "xs": 16,
-      "sm": 18,
-      "md": 20,
-      "lg": 26,
-      "xl": 32
+      "xs": 17,
+      "sm": 19,
+      "md": 22,
+      "lg": 28,
+      "xl": 36
     },
-  
-  
+
+
     "textWeight": {
-      "regular": 500,
+      "regular": 400,
       "medium": 600,
       "bold": 700
     },
-  
-  
+
+
     "lineHeight": {
-      "tight": 1.4,
-      "normal": 1.6,
-      "relaxed": 1.8
+      "tight": 1.35,
+      "normal": 1.65,
+      "relaxed": 1.9
     },
-  
-  
+
+
     "letterSpacing": {
       "tight": 0,
-      "normal": 0.4,
-      "loose": 1.0
+      "normal": 0.35,
+      "loose": 0.8
     },
   
   
@@ -130,10 +134,10 @@
     },
 
     "fontFamily": {
-      "base": "system-ui, -apple-system, sans-serif",
-      "sans": "system-ui, -apple-system, sans-serif",
-      "heading": "system-ui, -apple-system, sans-serif",
-      "mono": "ui-monospace, monospace"
+      "base": "Lato, 'Open Sans', system-ui, sans-serif",
+      "sans": "Lato, 'Open Sans', system-ui, sans-serif",
+      "heading": "Lato, 'Open Sans', system-ui, sans-serif",
+      "mono": "'Source Code Pro', ui-monospace, monospace"
     },
 
     "transition": {

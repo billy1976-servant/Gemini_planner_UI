@@ -7,20 +7,21 @@
 
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, type RefObject } from "react";
 import { getPalette, subscribePalette } from "@/engine/core/palette-store";
 import defaultPalette from "@/palettes/default.json";
 
 /**
- * Hook that applies active palette to CSS variables
- * Call this once at the root of the site renderer
+ * Hook that applies active palette to CSS variables.
+ * When containerRef is provided and has a current element, variables are set on that element only (e.g. app content).
+ * Otherwise they are set on document.documentElement (backward compatibility).
  * Fallbacks use default palette JSON (no hardcoded values).
  */
-export function usePaletteCSS() {
+export function usePaletteCSS(containerRef?: RefObject<HTMLElement | null>) {
   useEffect(() => {
     const updateCSS = () => {
       const palette = getPalette();
-      const root = document.documentElement;
+      const root = containerRef?.current ?? document.documentElement;
       const d = defaultPalette as Record<string, any>;
 
       if (!palette) return;
@@ -34,6 +35,8 @@ export function usePaletteCSS() {
         root.style.setProperty("--color-text-primary", c.onSurface ?? d?.color?.onSurface);
         root.style.setProperty("--color-text-secondary", c.secondary ?? d?.color?.secondary);
         root.style.setProperty("--color-border", c.outline ?? d?.color?.outline);
+        root.style.setProperty("--color-bg-muted", c.surfaceVariant ?? d?.color?.surfaceVariant);
+        root.style.setProperty("--color-text-muted", c.secondary ?? d?.color?.secondary);
         if (c.error != null) root.style.setProperty("--color-accent", c.error);
       }
 
@@ -113,6 +116,14 @@ export function usePaletteCSS() {
           root.style.setProperty("--shadow-xl", String(lg));
         }
       }
+
+      const f = palette.fontFamily ?? d?.fontFamily;
+      if (f) {
+        const base = f.base ?? d?.fontFamily?.base; if (base != null) root.style.setProperty("--font-family-base", String(base));
+        const sans = f.sans ?? d?.fontFamily?.sans; if (sans != null) root.style.setProperty("--font-family-sans", String(sans));
+        const heading = f.heading ?? d?.fontFamily?.heading; if (heading != null) root.style.setProperty("--font-family-heading", String(heading));
+        const mono = f.mono ?? d?.fontFamily?.mono; if (mono != null) root.style.setProperty("--font-family-mono", String(mono));
+      }
     };
     
     // Initial update
@@ -124,5 +135,5 @@ export function usePaletteCSS() {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [containerRef]);
 }
