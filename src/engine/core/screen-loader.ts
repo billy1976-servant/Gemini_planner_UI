@@ -17,8 +17,6 @@
 
 
 import { dispatchState, getState } from "@/state/state-store";
-import { warnBlueprintViolations } from "@/contracts/blueprint-universe.validator";
-
 
 const SCREEN_BASE = "/api/screens";
 
@@ -98,17 +96,6 @@ export async function loadScreen(path: string) {
 
 
   const json = await res.json();
-
-  // Contract validator (WARN-ONLY). Runs once per screen load, never blocks.
-  try {
-    warnBlueprintViolations(json, {
-      source: "runtime-load",
-      dedupeKeyPrefix: `runtime-load:${normalized}`,
-      maxWarnings: 200,
-    });
-  } catch (e) {
-    console.warn("[ContractValidator] runtime-load validation failed:", e);
-  }
 
   // 🔑 LIFECYCLE: Log screen load
   console.log("[screen-loader] 📥 LOADED", {

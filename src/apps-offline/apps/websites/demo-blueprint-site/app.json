@@ -3,9 +3,8 @@
   "type": "screen",
   "state": { "currentView": "|home" },
   "data": {
-    "header": {
-      "logo": [],
-      "nav": [
+    "nav": {
+      "primary": [
         {
           "type": "Toolbar",
           "content": {
@@ -18,7 +17,10 @@
             ]
           }
         }
-      ],
+      ]
+    },
+    "header": {
+      "logo": [],
       "cta": [{ "type": "Button", "content": { "label": "Get Started" } }]
     },
     "hero": {
@@ -91,6 +93,7 @@
     }
   },
   "children": [
+    { "id": "nav_organ", "type": "organ", "organId": "nav", "variant": "default", "role": "nav" },
     { "id": "header_organ", "type": "organ", "organId": "header", "variant": "default", "role": "header" },
     { "id": "hero_organ", "type": "organ", "organId": "hero", "variant": "centered", "role": "hero" },
     { "id": "features_organ", "type": "organ", "organId": "features-grid", "variant": "3-col", "role": "features" },

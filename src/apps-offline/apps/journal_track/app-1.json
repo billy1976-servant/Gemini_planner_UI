@@ -1,154 +1,178 @@
 {
-  "type": "Screen",
-  "state": { "currentView": "main" },
+  "id": "screenRoot",
+  "type": "screen",
   "children": [
     {
-      "id": "headerSection",
+      "id": "nav_section",
       "type": "Section",
-      "role": "header",
-      "content": { "title": "HIclarify Layout Test" },
+      "layout": { "type": "row", "params": { "gap": "1rem", "justify": "space-between", "align": "center" } },
+      "content": {},
       "children": [
         {
-          "id": "headerCard",
-          "type": "Card",
-          "variant": "outlined",
-          "size": "sm",
+          "type": "Toolbar",
           "content": {
-            "title": "Header",
-            "body": "This section uses profile layout for role=header (row, gap, align)."
+            "actions": [
+              { "label": "Home", "behavior": { "type": "Navigation", "params": { "verb": "go", "to": "apps/journal_track/app-1.json" } } },
+              { "label": "Features", "behavior": { "type": "Navigation", "params": { "verb": "go", "to": "apps/journal_track/app-1.json" } } },
+              { "label": "Testimonials", "behavior": { "type": "Navigation", "params": { "verb": "go", "to": "apps/journal_track/app-1.json" } } },
+              { "label": "Pricing", "behavior": { "type": "Navigation", "params": { "verb": "go", "to": "apps/journal_track/app-1.json" } } },
+              { "label": "Contact", "behavior": { "type": "Navigation", "params": { "verb": "go", "to": "template/contact.json" } } }
+            ]
           }
         }
       ]
     },
     {
-      "id": "heroSection",
+      "id": "header_section",
+      "type": "Section",
+      "role": "header",
+      "layout": { "type": "row", "params": { "gap": "1rem", "justify": "space-between", "align": "center" } },
+      "content": {},
+      "children": [
+        { "type": "Section", "content": { "title": "Journal" } },
+        {
+          "type": "Button",
+          "content": { "label": "Get Started" },
+          "behavior": { "type": "Navigation", "params": { "verb": "go", "to": "template/contact.json" } }
+        }
+      ]
+    },
+    {
+      "id": "hero_section",
       "type": "Section",
       "role": "hero",
-      "content": { "title": "Hero" },
+      "layout": { "type": "column", "params": { "gap": "1.5rem", "align": "center", "justify": "center" } },
+      "content": {},
       "children": [
+        { "type": "Section", "content": { "title": "Capture your ideas, beautifully." } },
+        { "type": "Section", "content": { "title": "A calm place to write, reflect, and ship. Built with organ components—header, hero, features, gallery, testimonials, pricing, and CTA—all from one JSON screen." } },
         {
-          "id": "heroCard",
           "type": "Card",
-          "variant": "elevated",
-          "size": "lg",
-          "content": {
-            "title": "Hero Area",
-            "body": "Wix-style hero: profile gives column, center align, generous gap.",
-            "media": "https://via.placeholder.com/600x240"
-          },
+          "content": { "media": "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=800" }
+        },
+        {
+          "type": "Button",
+          "content": { "label": "Start writing" },
+          "behavior": { "type": "Navigation", "params": { "verb": "go", "to": "apps/journal_track/app-1.json" } }
+        }
+      ]
+    },
+    {
+      "id": "features_section",
+      "type": "Section",
+      "role": "features",
+      "layout": { "type": "column", "params": { "gap": "1.5rem", "align": "stretch" } },
+      "content": {},
+      "children": [
+        { "type": "Section", "content": { "title": "Why this works" } },
+        {
+          "type": "Grid",
+          "layout": { "type": "grid", "params": { "columns": 3, "gap": "2rem" } },
           "children": [
-            {
-              "id": "ctaBtn",
-              "type": "Button",
-              "variant": "filled",
-              "content": { "label": "Go to Alt View" },
-              "behavior": {
-                "type": "Navigation",
-                "params": { "verb": "go", "variant": "screen", "to": "|alt" }
-              }
-            }
+            { "type": "Card", "content": { "media": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=400", "title": "Clean layout", "body": "Sections and cards driven by one screen. No extra primitives—just JSON and organs." } },
+            { "type": "Card", "content": { "media": "https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=400", "title": "Real images", "body": "Use image URLs in Card media. Hero and gallery use the same pattern for a consistent look." } },
+            { "type": "Card", "content": { "media": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400", "title": "Palette & presets", "body": "Switch palette and template in the bar. Section preset layout and card presets apply from this file." } }
           ]
         }
       ]
     },
     {
-      "id": "contentSection",
+      "id": "gallery_section",
       "type": "Section",
-      "role": "content",
-      "content": { "title": "Content" },
+      "role": "gallery",
+      "layout": { "type": "column", "params": { "gap": "1.5rem" } },
+      "content": {},
       "children": [
+        { "type": "Section", "content": { "title": "In focus" } },
         {
-          "id": "card1",
-          "type": "Card",
+          "type": "Grid",
+          "layout": { "type": "grid", "params": { "columns": 3, "gap": "2rem" } },
+          "children": [
+            { "type": "Card", "content": { "media": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400", "title": "Read", "body": "Quiet space for long-form." } },
+            { "type": "Card", "content": { "media": "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400", "title": "Write", "body": "One place for drafts and posts." } },
+            { "type": "Card", "content": { "media": "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400", "title": "Ship", "body": "Publish without the noise." } }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "testimonials_section",
+      "type": "Section",
+      "role": "testimonials",
+      "layout": { "type": "column", "params": { "gap": "1.5rem" } },
+      "content": {},
+      "children": [
+        { "type": "Section", "content": { "title": "What people say" } },
+        {
+          "type": "Grid",
+          "layout": { "type": "grid", "params": { "columns": 3, "gap": "2rem" } },
+          "children": [
+            { "type": "Card", "content": { "title": "Alex", "body": "Finally a layout that stays out of the way. The organ + JSON setup is exactly what I wanted." } },
+            { "type": "Card", "content": { "title": "Sam", "body": "Hero with a real image and cards with photos—all from one app JSON. Huge win." } },
+            { "type": "Card", "content": { "title": "Jordan", "body": "Palette and template dropdowns actually change the look. Section gaps and card style update as expected." } }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pricing_section",
+      "type": "Section",
+      "role": "pricing",
+      "layout": { "type": "column", "params": { "gap": "1.5rem" } },
+      "content": {},
+      "children": [
+        { "type": "Section", "content": { "title": "Simple pricing" } },
+        {
+          "type": "Grid",
+          "layout": { "type": "grid", "params": { "columns": 3, "gap": "2rem" } },
+          "children": [
+            { "type": "Card", "content": { "title": "Solo", "body": "Free — 1 journal, 3 themes." } },
+            { "type": "Card", "content": { "title": "Pro", "body": "€9/mo — Unlimited journals, all themes, priority support." } },
+            { "type": "Card", "content": { "title": "Team", "body": "€29/mo — Shared spaces, roles, and API access." } }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "faq_section",
+      "type": "Section",
+      "role": "faq",
+      "layout": { "type": "column", "params": { "gap": "1rem" } },
+      "content": {},
+      "children": [
+        { "type": "Section", "content": { "title": "Questions" } },
+        {
+          "type": "List",
           "content": {
-            "title": "Content Area",
-            "body": "Profile drives content column layout; palette + preset control typography and elevation."
-          }
-        },
-        {
-          "id": "card2",
-          "type": "Card",
-          "content": {
-            "title": "Another Card",
-            "body": "Cards use definitions (elevated/outlined) and visual preset overrides."
-          }
-        },
-        {
-          "id": "inputBlock",
-          "type": "Field",
-          "content": { "label": "Test Input", "input": "" },
-          "state": { "mode": "two-way", "key": "test.input" },
-          "params": { "field": { "fieldKey": "test.input" } }
-        },
-        {
-          "id": "submitBtn",
-          "type": "Button",
-          "variant": "tonal",
-          "content": { "label": "Submit Test" },
-          "behavior": {
-            "type": "Action",
-            "params": {
-              "name": "state:journal.add",
-              "track": "pipeline",
-              "key": "entry",
-              "valueFrom": "input",
-              "fieldKey": "test.input"
-            }
+            "items": [
+              { "label": "Is this one JSON file? — Yes. This screen is a single app JSON. Organs (header, hero, features, gallery, etc.) are referenced in children; data fills their slots." },
+              { "label": "Where do images come from? — Card and hero media use full image URLs. Use your own CDN or services like Unsplash. MediaAtom renders them with your palette and spacing." }
+            ]
           }
         }
       ]
     },
     {
-      "id": "featuresSection",
+      "id": "cta_section",
       "type": "Section",
-      "role": "features",
-      "content": { "title": "Features" },
+      "role": "cta",
+      "layout": { "type": "column", "params": { "gap": "1rem", "align": "center" } },
+      "content": { "title": "Ready to try it?" },
       "children": [
         {
-          "id": "f1",
-          "type": "Card",
-          "size": "sm",
-          "content": { "title": "Feature 1", "body": "Grid from profile (features: 3 columns)." }
-        },
-        {
-          "id": "f2",
-          "type": "Card",
-          "size": "sm",
-          "content": { "title": "Feature 2", "body": "Palette and preset apply to all molecules." }
-        },
-        {
-          "id": "f3",
-          "type": "Card",
-          "size": "sm",
-          "content": { "title": "Feature 3", "body": "Ready for Wix-style sites and apps." }
+          "type": "Button",
+          "content": { "label": "Open Journal" },
+          "behavior": { "type": "Navigation", "params": { "verb": "go", "to": "apps/journal_track/app-1.json" } }
         }
       ]
     },
     {
-      "id": "altSection",
-      "type": "Section",
-      "role": "content",
-      "when": { "state": "currentView", "equals": "|alt" },
-      "content": { "title": "Alt View" },
-      "children": [
-        {
-          "id": "altCard",
-          "type": "Card",
-          "content": {
-            "title": "Alt View",
-            "body": "Conditional view via when + state.currentView."
-          }
-        },
-        {
-          "id": "backBtn",
-          "type": "Button",
-          "content": { "label": "Back to Main" },
-          "behavior": {
-            "type": "Navigation",
-            "params": { "verb": "go", "variant": "screen", "to": "main" }
-          }
-        }
-      ]
+      "id": "footer_section",
+      "type": "Footer",
+      "content": {
+        "left": { "label": "Product · Features · Pricing · Company · About · Contact" },
+        "right": { "label": "© 2026 Journal. Built with organ components." }
+      }
     }
   ]
 }

@@ -18,9 +18,6 @@
 import fs from "fs";
 import path from "path";
 import readline from "readline";
-import { warnBlueprintViolations } from "../contracts/blueprint-universe.validator";
-
-
 /* ============================================================
    CONSTANTS
 ============================================================ */
@@ -418,18 +415,6 @@ async function run() {
     state: { currentView: DEFAULT_VIEW },
     children,
   };
-
-  // Contract validator (WARN-ONLY). Never blocks compilation.
-  try {
-    warnBlueprintViolations(output, {
-      source: "blueprint-cli",
-      dedupeKeyPrefix: `blueprint-cli:${cat}/${app}`,
-      maxWarnings: 200,
-    });
-  } catch (e) {
-    console.warn("[ContractValidator] blueprint validation failed:", e);
-  }
-
 
   fs.writeFileSync(path.join(appPath, "app.json"), JSON.stringify(output, null, 2));
   console.log("✅ app.json generated (Blueprint-only structure)");

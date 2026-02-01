@@ -113,7 +113,13 @@ function JsonNode({ node, state }: { node: any; state: any }) {
     case "section":
       if (Array.isArray(node.children)) {
         return (
-          <div style={{ marginBottom: "24px", padding: "16px", background: "#0f172a", borderRadius: "8px", border: "1px solid #334155" }}>
+          <div style={{
+            marginBottom: "var(--spacing-6, 24px)",
+            padding: "var(--spacing-4, 16px)",
+            background: "var(--color-bg-secondary)",
+            borderRadius: "var(--radius-md)",
+            border: "1px solid var(--color-border)",
+          }}>
             {node.children.map((child: any, i: number) => (
               <JsonNode key={i} node={child} state={state} />
             ))}
@@ -124,11 +130,11 @@ function JsonNode({ node, state }: { node: any; state: any }) {
 
     case "text":
       return (
-        <p style={{ 
-          marginBottom: "12px", 
-          lineHeight: "1.6", 
-          color: "#e5e7eb",
-          fontSize: "16px"
+        <p style={{
+          marginBottom: "var(--spacing-3, 12px)",
+          lineHeight: "var(--line-height-normal, 1.6)",
+          color: "var(--color-text-primary)",
+          fontSize: "var(--font-size-base)",
         }}>
           {node.content?.text}
         </p>
@@ -149,9 +155,14 @@ function JsonNode({ node, state }: { node: any; state: any }) {
       }
 
       return (
-        <div style={{ marginBottom: "12px" }}>
+        <div style={{ marginBottom: "var(--spacing-3, 12px)" }}>
           {node.params?.label && (
-            <label style={{ display: "block", marginBottom: "4px", fontWeight: "bold", color: "#e5e7eb" }}>
+            <label style={{
+              display: "block",
+              marginBottom: "var(--spacing-1, 4px)",
+              fontWeight: "var(--font-weight-bold)",
+              color: "var(--color-text-primary)",
+            }}>
               {node.params.label}
             </label>
           )}
@@ -203,13 +214,13 @@ function JsonNode({ node, state }: { node: any; state: any }) {
               }
             }}
             style={{
-              padding: "8px",
-              border: "1px solid #334155",
-              borderRadius: "4px",
+              padding: "var(--spacing-2, 8px)",
+              border: "1px solid var(--color-border)",
+              borderRadius: "var(--radius-sm)",
               width: "100%",
               maxWidth: "300px",
-              background: "#1e293b",
-              color: "#e5e7eb",
+              background: "var(--color-bg-primary)",
+              color: "var(--color-text-primary)",
             }}
           />
         </div>
@@ -227,15 +238,15 @@ function JsonNode({ node, state }: { node: any; state: any }) {
             })
           }
           style={{
-            padding: "12px 24px",
-            marginTop: "12px",
-            marginBottom: "12px",
-            borderRadius: "6px",
-            border: "1px solid #334155",
-            background: "#1e293b",
-            color: "#e5e7eb",
+            padding: "var(--spacing-3, 12px) var(--spacing-6, 24px)",
+            marginTop: "var(--spacing-3, 12px)",
+            marginBottom: "var(--spacing-3, 12px)",
+            borderRadius: "var(--radius-md)",
+            border: "1px solid var(--color-primary)",
+            background: "var(--color-primary)",
+            color: "var(--color-bg-primary)",
             cursor: "pointer",
-            fontWeight: "500",
+            fontWeight: "var(--font-weight-medium)",
           }}
         >
           {node.content?.label ?? node.content?.text}
@@ -247,15 +258,15 @@ function JsonNode({ node, state }: { node: any; state: any }) {
       const value = state?.[node.params?.stateKey];
       return (
         <pre style={{
-          background: "#1e293b",
-          padding: "12px",
-          borderRadius: "6px",
-          marginTop: "12px",
-          marginBottom: "12px",
+          background: "var(--color-bg-secondary)",
+          padding: "var(--spacing-3, 12px)",
+          borderRadius: "var(--radius-md)",
+          marginTop: "var(--spacing-3, 12px)",
+          marginBottom: "var(--spacing-3, 12px)",
           overflow: "auto",
-          fontSize: "12px",
-          color: "#e5e7eb",
-          border: "1px solid #334155",
+          fontSize: "var(--font-size-xs)",
+          color: "var(--color-text-primary)",
+          border: "1px solid var(--color-border)",
         }}>
           {JSON.stringify(value ?? null, null, 2)}
         </pre>

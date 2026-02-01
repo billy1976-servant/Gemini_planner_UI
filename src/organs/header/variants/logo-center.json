@@ -18,7 +18,6 @@
       "type": "Row",
       "layout": { "type": "row", "params": { "gap": "2rem", "justify": "center", "align": "center", "wrap": "wrap" } },
       "children": [
-        { "type": "slot", "slotKey": "header.nav" },
         { "type": "slot", "slotKey": "header.cta" }
       ]
     }

@@ -103,7 +103,7 @@ export default function ToolbarCompound({
         params={params.item?.trigger}
         onTap={handleTap}
       >
-        <TextAtom params={params.item?.text}>
+        <TextAtom params={resolveParams(params.item?.text ?? params.text)}>
           {action.label}
         </TextAtom>
       </TriggerAtom>

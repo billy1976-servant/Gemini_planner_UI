@@ -61,6 +61,10 @@
   /* Surface Colors */
   --color-surface: var(--color-bg-primary);
   --color-surface-variant: var(--color-bg-secondary);
+  --color-surface-hero-accent: #eef2ff;
+  --color-surface-alt: #f9fafb;
+  --color-surface-dark: #1f2937;
+  --color-on-surface-dark: #f9fafb;
   
   /* Colors */
   --color-text-primary: #1a1a1a;
@@ -91,6 +95,31 @@
   --transition-fast: 150ms ease-in-out;
   --transition-base: 200ms ease-in-out;
   --transition-slow: 300ms ease-in-out;
+
+  /* App chrome — palette-driven (dark bar uses surface-dark; accent uses primary) */
+  --chrome-bg: var(--color-surface-dark, #1f2937);
+  --chrome-text: var(--color-on-surface-dark, #f9fafb);
+  --chrome-input-bg: rgba(255, 255, 255, 0.1);
+  --chrome-input-border: rgba(255, 255, 255, 0.2);
+  --chrome-input-hover-bg: rgba(255, 255, 255, 0.15);
+  --chrome-button-bg: rgba(255, 255, 255, 0.1);
+  --chrome-button-hover-bg: rgba(255, 255, 255, 0.18);
+  --chrome-button-hover-border: rgba(255, 255, 255, 0.3);
+  --chrome-option-bg: var(--color-surface-dark, #1a1a1a);
+  --chrome-accent: var(--color-primary);
+  --chrome-accent-hover: var(--color-primary-hover);
+
+  /* Media atom (placeholder, caption) */
+  --media-placeholder-bg: var(--color-bg-muted);
+  --media-placeholder-text: var(--color-text-muted);
+  --media-emoji-size: var(--font-size-3xl);
+  --media-caption-size: var(--font-size-sm);
+
+  /* Debug / panels */
+  --debug-outline: var(--color-border);
+  --panel-sticky-bg: var(--color-surface-dark);
+  --panel-sticky-border: var(--color-border);
+  --organ-panel-width: 17.5rem;
 }
 
 /* ============================================================================
@@ -109,6 +138,23 @@
 
 .site-container * {
   box-sizing: border-box;
+}
+
+/* ============================================================================
+   TEMPLATE SECTION BACKGROUND PATTERNS
+   ============================================================================ */
+
+.template-section-alternate > *:nth-child(even) {
+  background: var(--color-surface-alt) !important;
+}
+
+.template-section-dark-bands > *:nth-child(odd) {
+  background: var(--color-surface-dark) !important;
+  color: var(--color-on-surface-dark);
+}
+
+.template-section-dark-bands > *:nth-child(odd) * {
+  color: inherit;
 }
 
 /* ============================================================================
@@ -423,3 +469,108 @@
 .site-mb-4 { margin-bottom: var(--spacing-4); }
 .site-mb-6 { margin-bottom: var(--spacing-6); }
 .site-mb-8 { margin-bottom: var(--spacing-8); }
+
+/* ============================================================================
+   APP CHROME (Navigator bar — black style)
+   ============================================================================ */
+
+.app-chrome {
+  display: flex;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3);
+  background: var(--chrome-bg);
+  color: var(--chrome-text);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: var(--font-size-sm);
+}
+
+.app-chrome select {
+  background: var(--chrome-input-bg);
+  color: var(--chrome-text);
+  border: 1px solid var(--chrome-input-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-2) var(--spacing-3);
+  cursor: pointer;
+  font-size: inherit;
+  min-height: var(--spacing-8);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23fff' d='M2.5 4.5L6 8l3.5-3.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--spacing-2) center;
+  padding-right: var(--spacing-12);
+}
+
+.app-chrome select:hover {
+  background-color: var(--chrome-input-hover-bg);
+}
+
+.app-chrome select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.app-chrome select option {
+  background: var(--chrome-option-bg);
+  color: var(--chrome-text);
+}
+
+.app-chrome button {
+  background: var(--chrome-button-bg);
+  color: var(--chrome-text);
+  border: 1px solid var(--chrome-input-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-2) var(--spacing-3);
+  cursor: pointer;
+  font-size: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.app-chrome button:hover {
+  background: var(--chrome-button-hover-bg);
+  border-color: var(--chrome-button-hover-border);
+}
+
+.app-chrome .app-chrome-save {
+  background: var(--chrome-accent);
+  border-color: var(--chrome-accent);
+  color: var(--chrome-text);
+}
+
+.app-chrome .app-chrome-save:hover {
+  background: var(--chrome-accent-hover);
+  border-color: var(--chrome-accent-hover);
+}
+
+.app-chrome .app-chrome-spacer {
+  margin-left: auto;
+}
+
+.app-chrome .app-chrome-hint {
+  opacity: 0.85;
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+}
+
+.app-section-layout-panel {
+  position: sticky;
+  top: var(--spacing-12);
+  z-index: 9;
+  background: var(--panel-sticky-bg);
+  padding: var(--spacing-3);
+  border-bottom: 1px solid var(--panel-sticky-border);
+}
+
+.app-body {
+  margin: 0;
+}
+
+.app-content {
+  padding: var(--spacing-5);
+}

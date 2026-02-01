@@ -15,7 +15,7 @@
         "labelSize": "textRole.body.size",
         "labelColor": "color.onSurface"
       },
-      "errorStyle": {
+      "error": {
         "size": "textRole.caption.size",
         "weight": "textRole.caption.weight",
         "color": "color.error"
@@ -36,7 +36,7 @@
         "labelSize": "textRole.body.size",
         "labelColor": "color.onSurface"
       },
-      "errorStyle": {
+      "error": {
         "size": "textRole.caption.size",
         "weight": "textRole.caption.weight",
         "color": "color.error"

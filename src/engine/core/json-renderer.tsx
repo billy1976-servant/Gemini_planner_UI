@@ -3,6 +3,8 @@ import React from "react";
 import Registry from "./registry";
 import { resolveParams } from "./palette-resolver";
 import { getVisualPresetForMolecule } from "@/layout/visual-preset-resolver";
+import { getSpacingForScale } from "@/layout/spacing-scale-resolver";
+import { getCardPreset } from "@/layout/card-preset-resolver";
 import { resolveMoleculeLayout } from "@/layout/molecule-layout-resolver";
 import definitions from "@/compounds/ui/index";
 import {
@@ -56,15 +58,15 @@ export function DebugWrapper({ node, children }: any) {
     <div
       data-node-id={node?.id}
       style={{
-        outline: "1px dashed #ccc",
-        margin: 4,
-        padding: 4,
+        outline: "1px dashed var(--debug-outline)",
+        margin: "var(--spacing-1)",
+        padding: "var(--spacing-1)",
         position: "relative",
       }}
     >
       <div
         style={{
-          fontSize: 10,
+          fontSize: "var(--font-size-xs)",
           opacity: 0.5,
           pointerEvents: "none",
         }}
@@ -84,6 +86,37 @@ function isDebugMode(): boolean {
   } catch {
     return false;
   }
+}
+
+function isTraceUI(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return new URLSearchParams(window.location.search).get("trace") === "ui";
+  } catch {
+    return false;
+  }
+}
+
+const EXPECTED_PARAMS: Record<string, string[]> = {
+  button: ["surface", "label", "trigger"],
+  section: ["surface", "title"],
+  card: ["surface", "title", "body", "media"],
+  toolbar: ["surface", "item"],
+  list: ["surface", "item"],
+  footer: ["surface", "item"],
+};
+
+function logParamsDiagnostic(typeKey: string, id: string | undefined, params: any) {
+  if (!isTraceUI()) return;
+  const expected = EXPECTED_PARAMS[typeKey];
+  if (!expected) return;
+  const keys = Object.keys(params ?? {});
+  const missing = expected.filter((k) => !(k in (params ?? {})));
+  const status = missing.length === 0 ? "OK" : "MISSING";
+  const msg = missing.length === 0
+    ? `[JsonRenderer] ${typeKey}${id ? `#${id}` : ""}: params OK (${keys.join(", ")})`
+    : `[JsonRenderer] ${typeKey}${id ? `#${id}` : ""}: params MISSING (expected ${missing.join(", ")}) — received (${keys.join(", ") || "none"})`;
+  console.log(msg);
 }
 
 function MaybeDebugWrapper({ node, children }: any) {
@@ -184,6 +217,33 @@ function shouldRenderNode(node: any, state: any, defaultState?: any): boolean {
 
 
 /* ======================================================
+   TEMPLATE VISUAL: merge spacing overlay into section params (surface + moleculeLayout.params)
+====================================================== */
+function deepMergeParams(
+  params: Record<string, any>,
+  overlay: Record<string, any>
+): Record<string, any> {
+  const result = { ...params };
+  for (const k of Object.keys(overlay)) {
+    if (k === "layout" && result.moleculeLayout?.params != null) {
+      result.moleculeLayout = {
+        ...result.moleculeLayout,
+        params: { ...result.moleculeLayout.params, ...(overlay.layout ?? {}) },
+      };
+    } else {
+      const ov = overlay[k];
+      result[k] =
+        ov != null && typeof ov === "object" && !Array.isArray(ov)
+          ? { ...(result[k] ?? {}), ...ov }
+          : ov !== undefined
+          ? ov
+          : result[k];
+    }
+  }
+  return result;
+}
+
+/* ======================================================
    PROFILE → SECTION RESOLVER
 ====================================================== */
 function applyProfileToNode(node: any, profile: any): any {
@@ -192,24 +252,45 @@ function applyProfileToNode(node: any, profile: any): any {
 
   const next = { ...node };
 
-  // 🔑 PHASE 1 FIX: Case-insensitive type check (blueprint outputs "Section", profile checks "section")
+  // 🔑 Template = defaults, organ = overrides. When mode === "custom", skip template section logic.
   const isSection = node.type?.toLowerCase?.() === "section";
+  const layoutMode = profile?.mode ?? "template";
 
-  if (isSection && node.role && profile.sections?.[node.role]) {
+  if (layoutMode === "template" && isSection && node.role && profile.sections?.[node.role]) {
     const sectionDef = profile.sections[node.role];
+    // Template provides defaults; organ layout overrides.
     next.layout = {
-      ...(node.layout ?? {}),
       ...sectionDef,
+      ...(node.layout ?? {}),
     };
-    // Section compound uses params.moleculeLayout for internal layout; template overrides it.
+    // moleculeLayout: template supplies gap/padding/type; organ layout wins for justify/align.
     const layoutType = sectionDef.type === "stack" ? "stacked" : sectionDef.type;
+    const templateParams = sectionDef.params ?? {};
+    const organLayoutParams = node.layout?.params ?? {};
+    const mergedLayoutParams = {
+      ...templateParams,
+      ...(node.params?.moleculeLayout?.params ?? {}),
+    };
+    if (organLayoutParams.justify !== undefined) mergedLayoutParams.justify = organLayoutParams.justify;
+    if (organLayoutParams.align !== undefined) mergedLayoutParams.align = organLayoutParams.align;
+
+    const containerWidth =
+      profile.widthByRole?.[node.role] ?? profile.containerWidth;
     next.params = {
       ...(next.params ?? {}),
       moleculeLayout: {
         type: layoutType,
-        params: sectionDef.params ?? {},
+        params: mergedLayoutParams,
+        ...(node.params?.moleculeLayout ? { type: node.params.moleculeLayout.type, preset: node.params.moleculeLayout.preset } : {}),
       },
-      ...(profile.containerWidth != null ? { containerWidth: profile.containerWidth } : {}),
+      ...(containerWidth != null ? { containerWidth } : {}),
+      ...(node.role === "hero" && profile.heroMode != null
+        ? { heroMode: profile.heroMode }
+        : {}),
+      ...(node.role === "hero" &&
+      profile.sectionBackgroundPattern === "hero-accent"
+        ? { backgroundVariant: "hero-accent" }
+        : {}),
     };
   }
 
@@ -290,19 +371,46 @@ export function renderNode(
     profile?.id
   );
 
+  // Template visual architecture: card preset overlay for Card
+  const cardPresetOverlay =
+    typeKey === "card" && profile?.cardPreset
+      ? getCardPreset(profile.cardPreset)
+      : {};
+
   const resolvedParams = resolveParams(
-    visualPresetOverlay,
+    { ...visualPresetOverlay, ...cardPresetOverlay },
     variantPreset,
     sizePreset,
     profiledNode.params ?? {}
   );
 
+  // Template visual architecture: section preset layout (gap/padding) merged into moleculeLayout.params
+  const sectionPresetLayoutOverlay =
+    typeKey === "section" && visualPresetOverlay?.layout
+      ? { layout: visualPresetOverlay.layout }
+      : {};
+  const paramsAfterSectionLayout =
+    Object.keys(sectionPresetLayoutOverlay).length > 0
+      ? deepMergeParams(resolvedParams, sectionPresetLayoutOverlay)
+      : resolvedParams;
+
+  // Template visual architecture: spacing scale overlay for Section
+  const spacingOverlay =
+    typeKey === "section" && profile?.spacingScale
+      ? getSpacingForScale(profile.spacingScale, "section")
+      : {};
+  const finalParams =
+    Object.keys(spacingOverlay).length > 0
+      ? deepMergeParams(paramsAfterSectionLayout, spacingOverlay)
+      : paramsAfterSectionLayout;
+
 
   const resolvedNode = {
     ...profiledNode,
-    params: resolvedParams,
+    params: finalParams,
   };
 
+  logParamsDiagnostic(typeKey, resolvedNode.id, finalParams);
 
   const Component = (Registry as any)[resolvedNode.type];
 

@@ -17,7 +17,7 @@
       "layout": {
         "gap": "gap.sm"
       },
-      "text": {
+      "item": {
         "size": "textRole.body.size",
         "weight": "textRole.body.weight",
         "color": "color.onSurface",
@@ -42,7 +42,7 @@
       "layout": {
         "gap": "gap.md"
       },
-      "text": {
+      "item": {
         "size": "textRole.body.size",
         "weight": "textRole.body.weight",
         "color": "color.onSurface",
@@ -68,7 +68,7 @@
       "layout": {
         "gap": "gap.xs"
       },
-      "text": {
+      "item": {
         "size": "textRole.body.size",
         "weight": "textRole.body.weight",
         "color": "color.onSurface",
@@ -85,7 +85,7 @@
       "layout": {
         "gap": "gap.xs"
       },
-      "text": {
+      "item": {
         "size": "textRole.label.size"
       }
     },
@@ -97,7 +97,7 @@
       "layout": {
         "gap": "gap.sm"
       },
-      "text": {
+      "item": {
         "size": "textRole.body.size"
       }
     }

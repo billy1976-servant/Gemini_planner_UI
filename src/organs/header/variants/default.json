@@ -15,17 +15,7 @@
     "sticky": true
   },
   "children": [
-    {
-      "type": "slot",
-      "slotKey": "header.logo"
-    },
-    {
-      "type": "slot",
-      "slotKey": "header.nav"
-    },
-    {
-      "type": "slot",
-      "slotKey": "header.cta"
-    }
+    { "type": "slot", "slotKey": "header.logo" },
+    { "type": "slot", "slotKey": "header.cta" }
   ]
 }

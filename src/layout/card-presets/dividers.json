@@ -1,0 +1,10 @@
+{
+  "card": {
+    "surface": {
+      "shadow": "none",
+      "radius": "0",
+      "border": "1px solid var(--color-border)",
+      "borderBottom": "1px solid var(--color-border)"
+    }
+  }
+}

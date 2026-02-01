@@ -9,11 +9,13 @@ import { loadScreen } from "@/engine/core/screen-loader";
 import SectionLayoutDropdown from "@/dev/section-layout-dropdown";
 import { resolveLandingPage } from "@/logic/runtime/landing-page-resolver";
 import { getLayout, subscribeLayout } from "@/engine/core/layout-store";
+import { setCurrentScreenTree } from "@/engine/core/current-screen-tree-store";
 import { getExperienceProfile } from "@/layout/profile-resolver";
 import { getTemplateProfile } from "@/layout/template-profiles";
 import { composeOfflineScreen } from "@/lib/screens/compose-offline-screen";
-import { expandOrgansInDocument } from "@/organs/resolve-organs";
+import { expandOrgansInDocument, collectOrganIds, collectOrganVariantsFromTree } from "@/organs/resolve-organs";
 import { loadOrganVariant } from "@/organs/organ-registry";
+import OrganPanel from "@/organs/OrganPanel";
 import { applySkinBindings } from "@/logic/bridges/skinBindings.apply";
 import WebsiteShell from "@/lib/site-skin/shells/WebsiteShell";
 import AppShell from "@/lib/site-skin/shells/AppShell";
@@ -120,6 +122,7 @@ export default function Page() {
     useState<React.ComponentType<any> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [host, setHost] = useState<HTMLElement | null>(null);
+  const [organVariantOverrides, setOrganVariantOverrides] = useState<Record<string, string>>({});
 
   // Experience → shell: must run unconditionally (Rules of Hooks) so same hook count every render
   const layoutSnapshot = useSyncExternalStore(subscribeLayout, getLayout, getLayout);
@@ -311,28 +314,39 @@ export default function Page() {
   // Expand organ nodes (type: "organ") into compound trees; then resolve slots from json.data
   const children = Array.isArray(renderNode?.children) ? renderNode.children : [];
   const docForOrgans = { meta: { domain: "offline", pageId: "screen", version: 1 }, nodes: children };
-  const expandedDoc = expandOrgansInDocument(docForOrgans as any, loadOrganVariant);
+  const organIds = collectOrganIds(children);
+  const initialOrganVariants = collectOrganVariantsFromTree(children);
+  const expandedDoc = expandOrgansInDocument(docForOrgans as any, loadOrganVariant, organVariantOverrides);
   const data = json?.data ?? {};
   const boundDoc = applySkinBindings(expandedDoc as any, data);
   const finalChildren = (boundDoc as any).nodes ?? children;
   renderNode = { ...renderNode, children: finalChildren };
 
-  // Apps-offline: compose with experience profile; template overrides sections + visualPreset
+  // Apps-offline: compose with experience profile; template overrides sections + full visual architecture
   const experienceProfile = getExperienceProfile(experience);
   const templateProfile = getTemplateProfile((layoutSnapshot as { templateId?: string })?.templateId ?? "");
+  const layoutSnapshotTyped = layoutSnapshot as { templateId?: string; mode?: "template" | "custom" };
   const effectiveProfile = templateProfile
     ? {
         ...experienceProfile,
+        id: templateProfile.id,
         sections: templateProfile.sections,
         visualPreset: templateProfile.visualPreset,
-        ...(templateProfile.containerWidth != null && { containerWidth: templateProfile.containerWidth }),
+        containerWidth: templateProfile.containerWidth,
+        widthByRole: templateProfile.widthByRole,
+        spacingScale: templateProfile.spacingScale,
+        cardPreset: templateProfile.cardPreset,
+        heroMode: templateProfile.heroMode,
+        sectionBackgroundPattern: templateProfile.sectionBackgroundPattern,
+        mode: layoutSnapshotTyped.mode ?? "template",
       }
-    : experienceProfile;
+    : { ...experienceProfile, mode: layoutSnapshotTyped.mode ?? "template" };
   const composed = composeOfflineScreen({
     rootNode: renderNode as any,
     experienceProfile,
     layoutState: layoutSnapshot,
   });
+  setCurrentScreenTree(composed);
 
   // 🔑 CRITICAL: React key MUST be derived from screen path, NEVER from json.id
   // Many screens share "screenRoot" id, causing React to reuse component instances
@@ -379,10 +393,13 @@ export default function Page() {
     />
   );
 
-  // Wix-style: vertical gap between sections (screen root children)
+  // Wix-style: vertical gap between sections; template-driven section background pattern
+  const sectionBackgroundPattern = (effectiveProfile as { sectionBackgroundPattern?: string } | null)?.sectionBackgroundPattern;
   const wrappedContent =
     experience === "website" ? (
       <div
+        data-section-background-pattern={sectionBackgroundPattern ?? "none"}
+        className={sectionBackgroundPattern === "alternate" ? "template-section-alternate" : sectionBackgroundPattern === "dark-bands" ? "template-section-dark-bands" : undefined}
         style={{
           display: "flex",
           flexDirection: "column",
@@ -400,7 +417,22 @@ export default function Page() {
     return (
       <>
         {overlay}
-        <AppShell primary={jsonContent} />
+        <AppShell
+          primary={
+            <div style={{ display: "flex", width: "100%", minHeight: "100%" }}>
+              <div style={{ flex: 1, minWidth: 0 }}>{jsonContent}</div>
+              <OrganPanel
+                organIds={organIds}
+                initialVariants={initialOrganVariants}
+                overrides={organVariantOverrides}
+                onOverride={(organId, variantId) =>
+                  setOrganVariantOverrides((prev) => ({ ...prev, [organId]: variantId }))
+                }
+                showAllOrgans
+              />
+            </div>
+          }
+        />
       </>
     );
   }
@@ -415,7 +447,22 @@ export default function Page() {
   return (
     <>
       {overlay}
-      <WebsiteShell content={wrappedContent} />
+      <WebsiteShell
+        content={
+          <div style={{ display: "flex", width: "100%", minHeight: "100vh" }}>
+            <div style={{ flex: 1, minWidth: 0 }}>{wrappedContent}</div>
+            <OrganPanel
+              organIds={organIds}
+              initialVariants={initialOrganVariants}
+              overrides={organVariantOverrides}
+              onOverride={(organId, variantId) =>
+                setOrganVariantOverrides((prev) => ({ ...prev, [organId]: variantId }))
+              }
+              showAllOrgans
+            />
+          </div>
+        }
+      />
     </>
   );
 }

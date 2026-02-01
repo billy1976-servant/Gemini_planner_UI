@@ -8,6 +8,8 @@ import type { LayoutExperience, NavPlacement } from "@/layout/layout-engine/regi
  * ACTIVE LAYOUT STATE (PLAIN DATA ONLY)
  * ======================================================
  */
+export type LayoutMode = "template" | "custom";
+
 let activeLayout: {
   /**
    * Experience selector (Website/App/Learning).
@@ -22,6 +24,11 @@ let activeLayout: {
    */
   templateId: string;
   /**
+   * When "template": apply profile.sections as defaults (organs can override).
+   * When "custom": skip applying profile.sections in applyProfileToNode.
+   */
+  mode: LayoutMode;
+  /**
    * Region policy (layout engine input).
    * Keep as plain JSON.
    */
@@ -34,6 +41,7 @@ let activeLayout: {
   type: "column",
   preset: null,
   templateId: "modern-hero-centered",
+  mode: "template",
   regionPolicy: {
     nav: {
       enabled: true,
@@ -82,6 +90,7 @@ export function setLayout(next: {
   type?: string;
   preset?: string | null;
   templateId?: string;
+  mode?: LayoutMode;
   regionPolicy?: Partial<{
     nav: Partial<{ enabled: boolean; placement: NavPlacement }>;
     regions: Record<string, Partial<{ enabled: boolean }>>;
@@ -102,6 +111,7 @@ export function setLayout(next: {
       next.templateId !== undefined
         ? next.templateId
         : activeLayout.templateId,
+    mode: next.mode !== undefined ? next.mode : activeLayout.mode,
     regionPolicy: next.regionPolicy
       ? {
           nav: {

@@ -8,7 +8,7 @@
         "shadow": "shadow.sm",
         "transition": "transition.base"
       },
-      "text": {
+      "label": {
         "color": "color.onPrimary",
         "size": "textRole.label.size",
         "weight": "textRole.label.weight"
@@ -28,7 +28,7 @@
         "padding": "padding.md",
         "transition": "transition.base"
       },
-      "text": {
+      "label": {
         "color": "color.onSurface",
         "size": "textRole.label.size",
         "weight": "textRole.label.weight"
@@ -50,7 +50,7 @@
         "padding": "padding.md",
         "transition": "transition.base"
       },
-      "text": {
+      "label": {
         "color": "color.primary",
         "size": "textRole.label.size",
         "weight": "textRole.label.weight"
@@ -68,7 +68,7 @@
         "background": "color.surface",
         "padding": "padding.xs"
       },
-      "text": {
+      "label": {
         "color": "color.primary",
         "size": "textRole.label.size",
         "weight": "textRole.label.weight"
@@ -85,7 +85,7 @@
         "radius": "radius.lg",
         "padding": "padding.xs"
       },
-      "text": {
+      "label": {
         "color": "color.primary",
         "size": "textRole.label.size",
         "weight": "textRole.label.weight"
@@ -100,15 +100,15 @@
   "sizes": {
     "sm": {
       "surface": { "padding": "padding.sm" },
-      "text": { "size": "textRole.label.size" }
+      "label": { "size": "textRole.label.size" }
     },
     "md": {
       "surface": { "padding": "padding.md" },
-      "text": { "size": "textRole.body.size" }
+      "label": { "size": "textRole.body.size" }
     },
     "lg": {
       "surface": { "padding": "padding.lg" },
-      "text": { "size": "textRole.title.size" }
+      "label": { "size": "textRole.title.size" }
     }
   }
 }

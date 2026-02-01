@@ -105,7 +105,7 @@ export default function ButtonCompound({
     <>
       <TriggerAtom params={params.trigger} onTap={handleTap}>
         <SurfaceAtom params={resolveParams(params.surface)}>
-          <TextAtom params={resolveParams(params.label)}>
+          <TextAtom params={resolveParams(params.label ?? params.text)}>
             {content.label}
           </TextAtom>
         </SurfaceAtom>

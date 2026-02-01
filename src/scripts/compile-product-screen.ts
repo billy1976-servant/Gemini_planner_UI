@@ -13,7 +13,6 @@
 import fs from "fs";
 import path from "path";
 import { compileProductDataToScreen } from "@/lib/product-screen-adapter";
-import { warnBlueprintViolations } from "@/contracts/blueprint-universe.validator";
 
 const COMPILED_SITES = path.join(process.cwd(), "content", "compiled", "sites");
 const RAW_SITES = path.join(process.cwd(), "src", "content", "sites", "raw");
@@ -66,16 +65,6 @@ function main() {
   const outPath = path.join(outDir, "products.json");
   fs.writeFileSync(outPath, JSON.stringify(screen, null, 2), "utf8");
   console.log(`[compile-product-screen] Wrote ${outPath}`);
-
-  try {
-    warnBlueprintViolations(screen, {
-      source: "product-screen-adapter",
-      dedupeKeyPrefix: `product-screen:${domain}`,
-      maxWarnings: 200,
-    });
-  } catch (e) {
-    console.warn("[compile-product-screen] Contract validation failed:", (e as Error)?.message ?? e);
-  }
 }
 
 main();

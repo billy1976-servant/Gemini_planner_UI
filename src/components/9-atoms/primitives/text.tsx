@@ -9,8 +9,19 @@ type TextAtomProps = {
   children?: any;
 };
 
+function isTraceUI(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return new URLSearchParams(window.location.search).get("trace") === "ui";
+  } catch {
+    return false;
+  }
+}
 
 export default function TextAtom({ params = {}, children }: TextAtomProps) {
+  if (isTraceUI() && Object.keys(params ?? {}).length === 0 && children) {
+    console.warn("[TextAtom] EMPTY PARAMS — unstyled text (children length:", String(children).length, ")");
+  }
   const style: React.CSSProperties = {
     fontFamily: resolveToken(params.fontFamily ?? "fontFamily.sans"),
     fontSize: resolveToken(params.size),

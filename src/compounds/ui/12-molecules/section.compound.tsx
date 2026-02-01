@@ -44,8 +44,12 @@ export type SectionCompoundProps = {
   params?: {
     surface?: any;
     title?: any;
-    /** Template-driven: contained (max-width), edge-to-edge (full bleed), narrow (reading column) */
-    containerWidth?: "contained" | "edge-to-edge" | "narrow";
+    /** Template-driven: contained, edge-to-edge, narrow, split (50/50) */
+    containerWidth?: "contained" | "edge-to-edge" | "narrow" | "split";
+    /** Template-driven: hero section mode (full-screen, overlay, strip) */
+    heroMode?: "centered" | "split" | "full-screen" | "overlay" | "strip";
+    /** Template-driven: section background variant (hero-accent, alt, dark) */
+    backgroundVariant?: "default" | "hero-accent" | "alt" | "dark";
     moleculeLayout?: {
       type: string;
       preset?: string;
@@ -119,30 +123,82 @@ export default function SectionCompound({
 
 
   /* ======================================================
-     FINAL RENDER — optional container width from template
+     Surface params: merge backgroundVariant for template-driven section backgrounds
      ====================================================== */
+  const surfaceParams = resolveParams(params.surface);
+  const variant = params.backgroundVariant;
+  const surfaceWithVariant =
+    variant === "hero-accent"
+      ? { ...surfaceParams, background: "var(--color-surface-hero-accent)" }
+      : variant === "alt"
+      ? { ...surfaceParams, background: "var(--color-surface-alt)" }
+      : variant === "dark"
+      ? { ...surfaceParams, background: "var(--color-surface-dark)", color: "var(--color-on-surface-dark)" }
+      : surfaceParams;
+
+  const innerContent =
+    params.containerWidth === "split" ? (
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--spacing-8)", alignItems: "start" }}>
+        <div>{laidOutSlots}</div>
+        <div>{children}</div>
+      </div>
+    ) : (
+      <>
+        {laidOutSlots}
+        {children}
+      </>
+    );
+
   const surfaceContent = (
-    <SurfaceAtom params={resolveParams(params.surface)}>
-      {laidOutSlots}
-      {children}
+    <SurfaceAtom params={surfaceWithVariant}>
+      {innerContent}
     </SurfaceAtom>
   );
 
+  /* ======================================================
+     Hero mode wrapper (full-screen, overlay, strip)
+     ====================================================== */
+  const heroMode = params.heroMode;
+  const heroWrapperStyle: React.CSSProperties =
+    heroMode === "full-screen"
+      ? { minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }
+      : heroMode === "strip"
+      ? { paddingTop: "var(--spacing-4)", paddingBottom: "var(--spacing-4)" }
+      : heroMode === "overlay"
+      ? { position: "relative", minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }
+      : undefined;
+
+  const maybeHeroWrapped = heroWrapperStyle ? (
+    <div style={heroWrapperStyle}>{surfaceContent}</div>
+  ) : (
+    surfaceContent
+  );
+
+  /* ======================================================
+     Container width from template (contained, narrow, split, edge-to-edge)
+     ====================================================== */
   const containerWidth = params.containerWidth;
   if (containerWidth === "contained") {
     return (
       <div style={{ width: "100%", maxWidth: "var(--container-xl, 1200px)", marginLeft: "auto", marginRight: "auto" }}>
-        {surfaceContent}
+        {maybeHeroWrapped}
       </div>
     );
   }
   if (containerWidth === "narrow") {
     return (
       <div style={{ width: "100%", maxWidth: "var(--container-md, 768px)", marginLeft: "auto", marginRight: "auto" }}>
-        {surfaceContent}
+        {maybeHeroWrapped}
       </div>
     );
   }
-  return surfaceContent;
+  if (containerWidth === "split") {
+    return (
+      <div style={{ width: "100%", maxWidth: "var(--container-xl, 1200px)", marginLeft: "auto", marginRight: "auto" }}>
+        {maybeHeroWrapped}
+      </div>
+    );
+  }
+  return maybeHeroWrapped;
 }
 

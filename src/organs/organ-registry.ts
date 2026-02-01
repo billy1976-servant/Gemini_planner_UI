@@ -177,3 +177,34 @@ export function loadOrganVariant(organId: string, variantId: string): unknown {
   const variant = organVariants[normalizedVariant] ?? organVariants["default"];
   return variant ?? null;
 }
+
+/** Organ IDs that have registered variants (for right-panel dropdowns). */
+export function getOrganIds(): string[] {
+  return Object.keys(VARIANTS);
+}
+
+/** Variant IDs for a given organ (for right-panel dropdown options). */
+export function getVariantIds(organId: string): string[] {
+  const normalized = (organId ?? "").toLowerCase().trim();
+  const organVariants = VARIANTS[normalized];
+  if (!organVariants) return [];
+  return Object.keys(organVariants);
+}
+
+/** Human-readable label for organ id (e.g. "header" -> "Header"). */
+export function getOrganLabel(organId: string): string {
+  const labels: Record<string, string> = {
+    header: "Header",
+    hero: "Hero",
+    nav: "Nav",
+    footer: "Footer",
+    "content-section": "Content section",
+    "features-grid": "Features grid",
+    gallery: "Gallery",
+    testimonials: "Testimonials",
+    pricing: "Pricing",
+    faq: "FAQ",
+    cta: "CTA",
+  };
+  return labels[organId] ?? organId;
+}

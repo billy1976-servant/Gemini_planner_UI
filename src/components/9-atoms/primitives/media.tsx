@@ -34,8 +34,12 @@ export default function MediaAtom({
     objectFit = "cover",
     radius = "0",
     placeholder,
-    placeholderColor = "#e0e0e0",
+    placeholderColor,
   } = params;
+  const placeholderBg = placeholderColor ?? "var(--color-bg-muted, #f3f4f6)";
+  const placeholderText = "var(--color-text-muted)";
+  const emojiSize = "var(--font-size-2xl)";
+  const captionSize = "var(--font-size-sm)";
 
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
@@ -65,16 +69,40 @@ export default function MediaAtom({
           position: "relative",
           width: "100%",
           aspectRatio: aspectRatio || "16/9",
-          background: placeholderColor,
+          background: placeholderBg,
           borderRadius: radius,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          color: "#999",
-          fontSize: "2rem",
+          color: placeholderText,
+          fontSize: emojiSize,
         }}
       >
         {placeholder || "📷"}
+      </div>
+    );
+  }
+
+  // Non-URL src (emoji, symbol): render as text in a styled box instead of <img>
+  const isUrl = typeof src === "string" && (src.startsWith("http") || src.startsWith("/"));
+  if (!isUrl) {
+    return (
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          aspectRatio: aspectRatio || "16/9",
+          background: placeholderBg,
+          borderRadius: radius,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: emojiSize,
+          color: placeholderText,
+          lineHeight: 1,
+        }}
+      >
+        {src}
       </div>
     );
   }
@@ -94,7 +122,7 @@ export default function MediaAtom({
           aspectRatio: aspectRatio || "auto",
           borderRadius: radius,
           overflow: "hidden",
-          background: loaded ? "transparent" : placeholderColor,
+          background: loaded ? "transparent" : placeholderBg,
         }}
       >
         {/* Loading placeholder */}
@@ -109,8 +137,8 @@ export default function MediaAtom({
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: "#999",
-              fontSize: "2rem",
+              color: placeholderText,
+              fontSize: emojiSize,
             }}
           >
             {placeholder || "📷"}
@@ -136,9 +164,9 @@ export default function MediaAtom({
       {caption && (
         <div
           style={{
-            marginTop: "0.5rem",
-            fontSize: "0.875rem",
-            color: "#666",
+            marginTop: "var(--spacing-2)",
+            fontSize: captionSize,
+            color: placeholderText,
             textAlign: "center",
           }}
         >

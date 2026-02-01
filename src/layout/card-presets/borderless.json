@@ -1,0 +1,10 @@
+{
+  "card": {
+    "surface": {
+      "shadow": "none",
+      "radius": "0",
+      "border": "none",
+      "background": "transparent"
+    }
+  }
+}

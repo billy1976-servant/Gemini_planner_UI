@@ -102,7 +102,7 @@ export default function ListCompound({
           key={i}
           onTap={() => fire(item.behavior, item.onTap)}
         >
-          <TextAtom params={resolveParams(params.item)}>
+          <TextAtom params={resolveParams(params.item ?? params.text)}>
             {item.label}
           </TextAtom>
         </TriggerAtom>

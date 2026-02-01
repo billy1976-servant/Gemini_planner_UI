@@ -48,6 +48,11 @@
         "size": "0.875rem",
         "color": "color.onSurfaceVariant",
         "textAlign": "center"
+      },
+      "item": {
+        "size": "textRole.body.size",
+        "weight": "400",
+        "color": "color.onSurfaceVariant"
       }
     }
   }

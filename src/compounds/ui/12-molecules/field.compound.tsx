@@ -115,7 +115,7 @@ export default function FieldCompound(props: FieldCompoundProps) {
       )}
       <FieldAtom params={params.field}>{children ?? null}</FieldAtom>
       {content.error && (
-        <TextAtom params={resolveParams(params.error)}>
+        <TextAtom params={resolveParams(params.error ?? params.errorStyle)}>
           {content.error}
         </TextAtom>
       )}

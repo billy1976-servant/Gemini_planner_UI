@@ -106,7 +106,7 @@ export default function FooterCompound({
         <TriggerAtom
           onTap={() => fire(content.left?.behavior, content.left?.onTap)}
         >
-          <TextAtom params={resolveParams(params.item)}>
+          <TextAtom params={resolveParams(params.item ?? params.link ?? params.copyright)}>
             {content.left.label}
           </TextAtom>
         </TriggerAtom>
@@ -115,7 +115,7 @@ export default function FooterCompound({
         <TriggerAtom
           onTap={() => fire(content.right?.behavior, content.right?.onTap)}
         >
-          <TextAtom params={resolveParams(params.item)}>
+          <TextAtom params={resolveParams(params.item ?? params.link ?? params.copyright)}>
             {content.right.label}
           </TextAtom>
         </TriggerAtom>

@@ -8,11 +8,7 @@
  * ✔ PURE event routing
  * ✔ HARD DIAGNOSTICS for valueFrom:"input"
  */
-import { dispatchState, getState } from "@/state/state-store"; // ADD
-import {
-  normalizeBehaviorPayload,
-  normalizeNavigateDetail,
-} from "@/contracts/behavior-normalize";
+import { dispatchState, getState } from "@/state/state-store";
 import runBehavior from "@/behavior/behavior-runner";
 
 
@@ -76,31 +72,19 @@ export function installBehaviorListener(navigate: (to: string) => void) {
      NAVIGATION
   ========================= */
   window.addEventListener("navigate", (e: any) => {
-    const { intent, warnings } = normalizeNavigateDetail(e?.detail);
-    warnings.forEach((w) => console.warn("[navigate][normalize]", w, e?.detail));
+    const detail = e?.detail ?? {};
+    const args = typeof detail === "object" && detail !== null ? detail : {};
+    const destination =
+      (args.to as string | undefined) ??
+      (args.screenId as string | undefined) ??
+      (args.target as string | undefined);
 
-    if (intent.kind === "navigation") {
-      const args = intent.args ?? {};
-      const destination =
-        (args.to as string | undefined) ??
-        (args.screenId as string | undefined) ??
-        (args.target as string | undefined);
-
-      if (!destination) {
-        console.warn("[navigate] Missing destination after normalization", {
-          detail: e?.detail,
-          intent,
-        });
-        return;
-      }
+    if (destination) {
       navigate(destination);
       return;
     }
 
-    console.warn("[navigate] Unhandled navigation payload", {
-      detail: e?.detail,
-      intent,
-    });
+    console.warn("[navigate] Missing destination", { detail: e?.detail });
   });
 
 
@@ -121,14 +105,6 @@ export function installBehaviorListener(navigate: (to: string) => void) {
       console.warn("[action] Missing action name");
       return;
     }
-
-    // Phase 2: normalize legacy behavior into contract-shaped intent (warn-only)
-    // Phase 5: keep the normalized intent available for the eventual simplified runtime surface.
-    const normalized = normalizeBehaviorPayload(behavior, { allowLegacy: true });
-    normalized.warnings.forEach((w) =>
-      console.warn("[action][normalize]", w, { actionName, params, intent: normalized.intent })
-    );
-
 
     /* =========================
        STATE MUTATION BRIDGE

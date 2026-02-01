@@ -1,0 +1,278 @@
+{
+  "atoms": {
+    "text": {
+      "requiredProps": [],
+      "optionalProps": ["params", "children"],
+      "contentKeys": [],
+      "paramKeys": ["fontFamily", "size", "weight", "color", "lineHeight", "letterSpacing", "align", "wrap", "truncate"]
+    },
+    "media": {
+      "requiredProps": [],
+      "optionalProps": ["params", "children", "src", "alt", "caption"],
+      "contentKeys": [],
+      "paramKeys": ["aspectRatio", "objectFit", "radius", "placeholder", "placeholderColor"]
+    },
+    "surface": {
+      "requiredProps": [],
+      "optionalProps": ["params", "children"],
+      "contentKeys": [],
+      "paramKeys": ["background", "borderColor", "borderWidth", "radius", "shadow", "opacity", "padding", "transition"]
+    },
+    "sequence": {
+      "requiredProps": [],
+      "optionalProps": ["params", "children"],
+      "contentKeys": [],
+      "paramKeys": ["flow", "direction", "gap", "padding", "columns", "align", "justify", "wrap", "scrollable", "params"]
+    },
+    "trigger": {
+      "requiredProps": [],
+      "optionalProps": ["params", "onTap", "children"],
+      "contentKeys": [],
+      "paramKeys": ["disabled", "disabledOpacity", "transition", "hoverLift", "hoverLiftTransform", "cursor"]
+    },
+    "collection": {
+      "requiredProps": [],
+      "optionalProps": ["params", "children"],
+      "contentKeys": [],
+      "paramKeys": ["direction", "gap", "padding", "scrollable"]
+    },
+    "condition": {
+      "requiredProps": [],
+      "optionalProps": ["params", "children"],
+      "contentKeys": [],
+      "paramKeys": ["if"]
+    },
+    "shell": {
+      "requiredProps": [],
+      "optionalProps": ["params", "children"],
+      "contentKeys": [],
+      "paramKeys": ["background", "padding", "scrollable"]
+    },
+    "field": {
+      "requiredProps": [],
+      "optionalProps": ["params", "children"],
+      "contentKeys": [],
+      "paramKeys": ["value", "fieldKey", "multiline", "rows", "onChange", "background", "borderColor", "borderWidth", "radius", "padding"]
+    }
+  },
+  "molecules": {
+    "section": {
+      "allowedContentKeys": ["title"],
+      "allowedChildren": ["any"],
+      "allowedParams": ["surface", "title", "containerWidth", "heroMode", "backgroundVariant", "moleculeLayout", "role", "layout"],
+      "allowedBehaviors": []
+    },
+    "button": {
+      "allowedContentKeys": ["label", "supportingText"],
+      "allowedChildren": ["any"],
+      "allowedParams": ["trigger", "surface", "label", "supportingText", "moleculeLayout"],
+      "allowedBehaviors": ["Navigation", "Action", "Interaction"]
+    },
+    "card": {
+      "allowedContentKeys": ["media", "title", "body"],
+      "allowedChildren": ["any"],
+      "allowedParams": ["trigger", "surface", "media", "title", "body", "moleculeLayout"],
+      "allowedBehaviors": ["Navigation", "Action", "Interaction"]
+    },
+    "avatar": {
+      "allowedContentKeys": ["media", "text"],
+      "allowedChildren": ["any"],
+      "allowedParams": ["trigger", "surface", "media", "text", "moleculeLayout"],
+      "allowedBehaviors": ["Navigation", "Action", "Interaction"]
+    },
+    "chip": {
+      "allowedContentKeys": ["title", "body", "media"],
+      "allowedChildren": ["any"],
+      "allowedParams": ["trigger", "surface", "text", "body", "media", "moleculeLayout"],
+      "allowedBehaviors": ["Navigation", "Action", "Interaction"]
+    },
+    "field": {
+      "allowedContentKeys": ["label", "error"],
+      "allowedChildren": ["any"],
+      "allowedParams": ["surface", "label", "field", "error", "moleculeLayout", "state"],
+      "allowedBehaviors": []
+    },
+    "footer": {
+      "allowedContentKeys": ["left", "right"],
+      "allowedChildren": [],
+      "allowedParams": ["surface", "item", "moleculeLayout"],
+      "allowedBehaviors": []
+    },
+    "list": {
+      "allowedContentKeys": ["items"],
+      "allowedChildren": [],
+      "allowedParams": ["surface", "item", "moleculeLayout"],
+      "allowedBehaviors": []
+    },
+    "modal": {
+      "allowedContentKeys": ["title", "body"],
+      "allowedChildren": ["any"],
+      "allowedParams": ["surface", "title", "body", "moleculeLayout"],
+      "allowedBehaviors": []
+    },
+    "stepper": {
+      "allowedContentKeys": [],
+      "allowedChildren": [],
+      "allowedParams": ["moleculeLayout"],
+      "allowedBehaviors": [],
+      "note": "Uses steps[] array (steps[].content.label, steps[].params, steps[].behavior), not content"
+    },
+    "toast": {
+      "allowedContentKeys": ["message"],
+      "allowedChildren": [],
+      "allowedParams": ["trigger", "surface", "text", "moleculeLayout"],
+      "allowedBehaviors": ["Navigation", "Action", "Interaction"]
+    },
+    "toolbar": {
+      "allowedContentKeys": ["actions"],
+      "allowedChildren": [],
+      "allowedParams": ["surface", "item", "moleculeLayout"],
+      "allowedBehaviors": []
+    },
+    "JournalHistory": {
+      "allowedContentKeys": [],
+      "allowedChildren": [],
+      "allowedParams": ["track", "entries"],
+      "allowedBehaviors": []
+    },
+    "UserInputViewer": {
+      "allowedContentKeys": [],
+      "allowedChildren": [],
+      "allowedParams": [],
+      "allowedBehaviors": []
+    }
+  },
+  "organs": {
+    "header": {
+      "slots": ["header.logo", "header.cta"],
+      "emittedMolecules": ["Section"],
+      "requiredLayoutParams": []
+    },
+    "hero": {
+      "slots": ["hero.title", "hero.subtitle", "hero.cta"],
+      "emittedMolecules": ["Section"],
+      "requiredLayoutParams": []
+    },
+    "nav": {
+      "slots": [],
+      "emittedMolecules": ["Section"],
+      "requiredLayoutParams": []
+    },
+    "footer": {
+      "slots": [],
+      "emittedMolecules": ["Section", "Footer"],
+      "requiredLayoutParams": []
+    },
+    "content-section": {
+      "slots": [],
+      "emittedMolecules": ["Section"],
+      "requiredLayoutParams": []
+    },
+    "features-grid": {
+      "slots": ["features.title", "features.items"],
+      "emittedMolecules": ["Section", "Grid"],
+      "requiredLayoutParams": []
+    },
+    "gallery": {
+      "slots": [],
+      "emittedMolecules": ["Section"],
+      "requiredLayoutParams": []
+    },
+    "testimonials": {
+      "slots": [],
+      "emittedMolecules": ["Section"],
+      "requiredLayoutParams": []
+    },
+    "pricing": {
+      "slots": [],
+      "emittedMolecules": ["Section"],
+      "requiredLayoutParams": []
+    },
+    "faq": {
+      "slots": [],
+      "emittedMolecules": ["Section"],
+      "requiredLayoutParams": []
+    },
+    "cta": {
+      "slots": [],
+      "emittedMolecules": ["Section"],
+      "requiredLayoutParams": []
+    }
+  },
+  "layoutPrimitives": {
+    "row": {
+      "params": ["gap", "align", "justify", "wrap"],
+      "defaults": { "gap": "1rem", "align": "center", "justify": "flex-start", "wrap": "wrap" }
+    },
+    "column": {
+      "params": ["gap", "align", "justify"],
+      "defaults": { "gap": "1rem", "align": "stretch", "justify": "flex-start" }
+    },
+    "grid": {
+      "params": ["columns", "gap", "align", "justify"],
+      "defaults": { "columns": 2, "gap": "1rem", "align": "stretch", "justify": "stretch" }
+    },
+    "stack": {
+      "params": ["align", "justify"],
+      "defaults": { "align": "center", "justify": "center" }
+    },
+    "page": {
+      "params": ["align", "justify", "padding", "background"],
+      "defaults": { "align": "flex-start", "justify": "flex-start", "padding": 0, "background": "transparent" }
+    }
+  },
+  "behaviorVerbs": {
+    "interaction": {
+      "verbs": ["tap", "double", "long", "dragX", "dragY", "dragXY", "scrollUp", "scrollDown", "swipeLeft", "swipeRight", "swipeUp", "swipeDown"],
+      "handlerFormat": "interact.<verb>",
+      "moleculeCategories": ["button", "card", "chip", "avatar", "toast", "list", "footer", "toolbar", "stepper"]
+    },
+    "navigation": {
+      "verbs": ["go", "back", "open", "close", "route"],
+      "variants": { "go": ["screen", "modal", "flow"], "back": ["one", "all", "root"], "open": ["panel", "sheet"], "close": ["panel", "sheet"], "route": ["internal", "external"] },
+      "handlerFormat": "nav.<verb><Variant>",
+      "moleculeCategories": ["button", "card", "chip", "avatar", "toast", "list", "footer", "toolbar", "stepper"]
+    },
+    "action": {
+      "verbs": ["crop", "filter", "frame", "layout", "motion", "overlay"],
+      "domains": ["image", "video", "audio", "document", "canvas", "map", "camera"],
+      "moleculeCategories": ["button", "card", "chip", "avatar", "toast"]
+    },
+    "strippedTypes": ["section", "field", "avatar", "modal"],
+    "behaviorObjectShape": {
+      "Navigation": { "type": "Navigation", "params": ["verb", "screenId", "modalId", "flowId", "panelId", "sheetId", "path", "url", "to"] },
+      "Action": { "type": "Action", "params": ["name", "target", "domain", "valueFrom", "value", "key", "track"] },
+      "Interaction": { "type": "Interaction", "params": [] }
+    }
+  },
+  "stateModel": {
+    "stateLocation": "state-store (deriveState from log), keys: currentView, values, journal, scans, interactions",
+    "conditionalVisibility": {
+      "when": { "state": "string (state key)", "equals": "any (value for equality)" },
+      "usedIn": "json-renderer.shouldRenderNode, json-skin.engine selectActiveChildren"
+    },
+    "fieldBinding": {
+      "params.field.fieldKey": "string key into state.values",
+      "intent": "state.update",
+      "usedBy": "Field compound + FieldAtom; input-change → dispatchState('state.update', { key, value })"
+    },
+    "mutationIntents": ["state:currentView", "state.update", "journal.set", "journal.add", "scan.result", "scan.interpreted", "interaction.record"],
+    "stateTargetingFromJSON": ["node.when.state", "node.when.equals", "params.field.fieldKey", "params.track (JournalHistory)"]
+  },
+  "paramKeyMapping": "See src/contracts/PARAM_KEY_MAPPING.md — definition variant keys and compound props must align with allowedParams",
+  "rendererExpectations": {
+    "requiredKeysPerNode": ["type"],
+    "optionalKeysPerNode": ["id", "variant", "size", "params", "content", "behavior", "onTap", "children", "items", "layout", "when", "role"],
+    "typeResolution": "definitions[type] ?? definitions[type.toLowerCase()]; Registry[type] (case-sensitive key); fallback: Missing registry entry div",
+    "conditionalRender": "If node.when present, render only when state[node.when.state] === node.when.equals; else do not render",
+    "repeaterMode": "If node.items is non-empty array: render each item as Card (params.repeater.itemType ignored in practice—always Card), content from item.title, item.body, item.icon|item.image",
+    "specialTypes": {
+      "json-skin": "Rendered by JsonSkinEngine; expects screen.children, uses when.state/equals for gating",
+      "JournalHistory": "params.entries injected from state.journal[params.track].entry if params.track string",
+      "stepper": "Expects steps[] not content; each step: content.label, params, behavior"
+    },
+    "layoutWrapping": "If node.layout.type is set and Registry[node.layout.type] exists, children are wrapped in LayoutComponent(node.layout.params)",
+    "behaviorStripping": "Behavior stripped for types: section, field, avatar; for modal stripped unless close-only (Navigation verb close or Action name close)",
+    "noFallbackBehavior": "Missing type renders red div 'Missing registry entry: <type>'"
+  }
+}

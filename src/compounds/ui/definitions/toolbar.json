@@ -14,11 +14,14 @@
         "justify": "space-between",
         "gap": "gap.md"
       },
-      "text": {
-        "size": "textSize.sm",
-        "weight": "textWeight.medium",
-        "color": "color.onSurface",
-        "lineHeight": "lineHeight.normal"
+      "item": {
+        "text": {
+          "size": "textSize.sm",
+          "weight": "textWeight.medium",
+          "color": "color.onSurface",
+          "lineHeight": "lineHeight.normal"
+        },
+        "trigger": { "cursor": "pointer" }
       }
     },
     "info": {
@@ -33,10 +36,13 @@
         "justify": "space-between",
         "gap": "gap.md"
       },
-      "text": {
-        "size": "textSize.sm",
-        "weight": "textWeight.regular",
-        "color": "color.onSurface"
+      "item": {
+        "text": {
+          "size": "textSize.sm",
+          "weight": "textWeight.regular",
+          "color": "color.onSurface"
+        },
+        "trigger": { "cursor": "pointer" }
       }
     },
     "error": {
@@ -51,10 +57,13 @@
         "justify": "space-between",
         "gap": "gap.md"
       },
-      "text": {
-        "size": "textSize.sm",
-        "weight": "textWeight.medium",
-        "color": "color.onPrimary"
+      "item": {
+        "text": {
+          "size": "textSize.sm",
+          "weight": "textWeight.medium",
+          "color": "color.onPrimary"
+        },
+        "trigger": { "cursor": "pointer" }
       }
     }
   },
@@ -66,8 +75,8 @@
       "sequence": {
         "gap": "gap.sm"
       },
-      "text": {
-        "size": "textSize.xs"
+      "item": {
+        "text": { "size": "textSize.xs" }
       }
     },
     "md": {
@@ -77,8 +86,8 @@
       "sequence": {
         "gap": "gap.md"
       },
-      "text": {
-        "size": "textSize.sm"
+      "item": {
+        "text": { "size": "textSize.sm" }
       }
     },
     "lg": {
@@ -88,8 +97,8 @@
       "sequence": {
         "gap": "gap.lg"
       },
-      "text": {
-        "size": "textSize.md"
+      "item": {
+        "text": { "size": "textSize.md" }
       }
     }
   }

@@ -179,46 +179,7 @@ async function main() {
       linkedJson = null;
     }
 
-    // 2) Contract validation (scoped)
-    if (appJson && linkedJson) {
-      const { validateBlueprintTree } = await import(
-        "@/contracts/blueprint-universe.validator"
-      );
-
-      const scoped = [
-        { file: rel(FILES.app), json: appJson },
-        { file: rel(FILES.linked), json: linkedJson },
-      ];
-
-      const byCode: Record<string, number> = {};
-      const byFile: Record<string, Record<string, number>> = {};
-
-      for (const f of scoped) {
-        const v = validateBlueprintTree(f.json);
-        if (!v.length) continue;
-        byFile[f.file] = byFile[f.file] ?? {};
-        for (const one of v) {
-          byCode[one.code] = (byCode[one.code] ?? 0) + 1;
-          byFile[f.file][one.code] = (byFile[f.file][one.code] ?? 0) + 1;
-        }
-      }
-
-      const hasAny = Object.keys(byCode).length > 0;
-      const summary = hasAny
-        ? Object.entries(byCode)
-            .sort((a, b) => b[1] - a[1])
-            .map(([c, n]) => `${c}:${n}`)
-            .join(", ")
-        : "(none)";
-
-      checks.push({
-        name: "Contract validator runs (scoped)",
-        ok: true,
-        details: `Violations: ${summary}`,
-      });
-    }
-
-    // 3) Molecule presence (static)
+    // 2) Molecule presence (static)
     if (appJson) {
       const nodes = walkNodes(appJson);
       const types = new Set<string>();

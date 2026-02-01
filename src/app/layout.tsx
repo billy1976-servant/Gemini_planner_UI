@@ -9,12 +9,15 @@ import "@/styles/site-theme.css";
    🎨 PALETTE ENGINE
 ============================================================ */
 import { setPalette, getPaletteName } from "@/engine/core/palette-store";
+import { usePaletteCSS } from "@/lib/site-renderer/palette-bridge";
 
 
 /* ============================================================
    🧱 LAYOUT ENGINE
 ============================================================ */
-import { setLayout, getLayout, subscribeLayout } from "@/engine/core/layout-store";
+import { setLayout, getLayout, subscribeLayout, type LayoutMode } from "@/engine/core/layout-store";
+import { getCurrentScreenTree } from "@/engine/core/current-screen-tree-store";
+import { buildTemplateFromTree, serializeTemplateProfile } from "@/layout/save-current-as-template";
 
 
 /* ============================================================
@@ -86,9 +89,12 @@ export default function RootLayout({ children }: any) {
 
   const layoutSnapshot = useSyncExternalStore(subscribeLayout, getLayout, getLayout);
   const templateId = (layoutSnapshot as { templateId?: string })?.templateId ?? "modern-hero-centered";
+  const layoutMode = (layoutSnapshot as { mode?: LayoutMode })?.mode ?? "template";
   const templateList = getTemplateList();
 
   const [showSections, setShowSections] = useState(false);
+
+  usePaletteCSS();
 
   /* ============================================================
      🔗 DEMO: INITIAL EXPERIENCE FROM URL
@@ -184,22 +190,9 @@ export default function RootLayout({ children }: any) {
           rel="stylesheet"
         />
       </head>
-      <body style={{ margin: 0 }}>
-        <div
-          style={{
-            display: "flex",
-            gap: 12,
-            padding: 12,
-            background: "#111",
-            color: "white",
-            position: "sticky",
-            top: 0,
-            zIndex: 10,
-            alignItems: "center",
-          }}
-        >
+      <body className="app-body">
+        <div className="app-chrome">
           <b>HIclarify Navigator</b>
-
 
           <select
             value={selectedCategory}
@@ -255,10 +248,11 @@ export default function RootLayout({ children }: any) {
           </select>
 
 
+          <span className="app-chrome-spacer" aria-hidden="true" />
+
           <select
             value={experience}
             onChange={e => setExperience(e.target.value as any)}
-            style={{ marginLeft: "auto" }}
           >
             <option value="website">Experience: Website</option>
             <option value="app">Experience: App</option>
@@ -267,9 +261,18 @@ export default function RootLayout({ children }: any) {
 
 
           <select
+            value={layoutMode}
+            onChange={e => setLayout({ mode: e.target.value as LayoutMode })}
+            title="Template = defaults (organs override). Custom = no template section layout."
+          >
+            <option value="template">Mode: Template</option>
+            <option value="custom">Mode: Custom</option>
+          </select>
+
+          <select
             value={templateId}
             onChange={e => setLayout({ templateId: e.target.value })}
-            style={{ marginLeft: "auto", minWidth: 180 }}
+            style={{ minWidth: 180 }}
             title="Template: section layout (row/column/grid) + density. Change to see gaps and structure update."
           >
             <option value="">Template: (experience only)</option>
@@ -281,6 +284,31 @@ export default function RootLayout({ children }: any) {
           </select>
 
 
+          <button
+            type="button"
+            className="app-chrome-save"
+            onClick={() => {
+              const tree = getCurrentScreenTree();
+              if (!tree) return;
+              const profile = buildTemplateFromTree(tree);
+              const json = serializeTemplateProfile(profile);
+              const blob = new Blob([json], { type: "application/json" });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = `${profile.id}.json`;
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+            title="Download current section layouts as a template JSON file."
+          >
+            Save Layout
+          </button>
+
+          <span className="app-chrome-hint" title="Header & Nav: change in right panel." aria-hidden="true">
+            Header &amp; Nav: right panel
+          </span>
+
           <select value={paletteName} onChange={e => onPaletteChange(e.target.value)}>
             {PALETTES.map(p => (
               <option key={p} value={p}>
@@ -290,37 +318,17 @@ export default function RootLayout({ children }: any) {
           </select>
 
 
-          <button
-            onClick={() => setShowSections(v => !v)}
-            style={{
-              background: "#222",
-              color: "white",
-              border: "1px solid #444",
-              padding: "4px 8px",
-              cursor: "pointer",
-            }}
-          >
+          <button type="button" onClick={() => setShowSections(v => !v)}>
             Sections ▾
           </button>
         </div>
 
 
         {showSections && (
-          <div
-            id="section-layout-panel"
-            style={{
-              position: "sticky",
-              top: 48,
-              zIndex: 9,
-              background: "#1a1a1a",
-              padding: 12,
-              borderBottom: "1px solid #333",
-            }}
-          />
+          <div id="section-layout-panel" className="app-section-layout-panel" />
         )}
 
-
-        <div style={{ padding: 20 }}>{children}</div>
+        <div className="app-content">{children}</div>
       </body>
     </html>
   );

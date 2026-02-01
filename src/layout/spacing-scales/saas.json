@@ -1,0 +1,9 @@
+{
+  "section": {
+    "surface": { "padding": "var(--spacing-4)" },
+    "layout": { "gap": "var(--spacing-4)" }
+  },
+  "card": {
+    "surface": { "padding": "var(--spacing-3)" }
+  }
+}

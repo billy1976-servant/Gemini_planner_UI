@@ -18,8 +18,20 @@ export type LayoutDef = {
   };
 };
 
-/** Section width behavior: contained (max-width), edge-to-edge (full bleed), narrow (reading column) */
-export type ContainerWidth = "contained" | "edge-to-edge" | "narrow";
+/** Section width behavior: contained (max-width), edge-to-edge (full bleed), narrow (reading column), split (50/50) */
+export type ContainerWidth = "contained" | "edge-to-edge" | "narrow" | "split";
+
+/** Spacing scale id: drives vertical rhythm and density per template */
+export type SpacingScaleId = "default" | "luxury" | "saas" | "magazine" | "course";
+
+/** Card style preset: soft shadow, borderless, elevated, dividers, luxury */
+export type CardPresetId = "default" | "soft" | "borderless" | "elevated" | "luxury" | "dividers";
+
+/** Hero layout mode: centered block, split, full-screen, overlay, strip */
+export type HeroMode = "centered" | "split" | "full-screen" | "overlay" | "strip";
+
+/** Section background pattern: none, alternating, hero accent, dark bands */
+export type SectionBackgroundPattern = "none" | "alternate" | "hero-accent" | "dark-bands";
 
 export type TemplateProfile = {
   id: string;
@@ -27,8 +39,18 @@ export type TemplateProfile = {
   visualPreset: "default" | "compact" | "spacious" | "editorial" | "prominent";
   /** Section role → layout (type + params). Template overrides organ defaults at render time. */
   sections: Record<string, LayoutDef>;
-  /** Optional: section width behavior for all sections in this template. */
+  /** Default section width; overridden per role by widthByRole when set. */
   containerWidth?: ContainerWidth;
+  /** Per-section-role width overrides (e.g. hero edge-to-edge, content contained). */
+  widthByRole?: Partial<Record<string, ContainerWidth>>;
+  /** Spacing scale: luxury / saas / magazine / course — drives gap and padding rhythm. */
+  spacingScale?: SpacingScaleId;
+  /** Card style: soft / borderless / elevated / luxury / dividers. */
+  cardPreset?: CardPresetId;
+  /** Hero section mode: centered / split / full-screen / overlay / strip. */
+  heroMode?: HeroMode;
+  /** Section background pattern: alternate / hero-accent / dark-bands. */
+  sectionBackgroundPattern?: SectionBackgroundPattern;
 };
 
 const TEMPLATES: TemplateProfile[] = [
@@ -38,7 +60,11 @@ const TEMPLATES: TemplateProfile[] = [
     label: "Modern Hero Centered",
     visualPreset: "default",
     containerWidth: "contained",
+    spacingScale: "default",
+    cardPreset: "soft",
+    heroMode: "centered",
     sections: {
+      nav: { type: "row", params: { gap: "1rem", justify: "space-between", align: "center", wrap: "wrap" } },
       header: { type: "row", params: { gap: "1.25rem", justify: "space-between", align: "center", wrap: "wrap" } },
       hero: { type: "column", params: { align: "center", gap: "2.5rem", padding: "3rem 0" } },
       content: { type: "column", params: { gap: "2rem" } },
@@ -57,6 +83,10 @@ const TEMPLATES: TemplateProfile[] = [
     label: "Startup Split Hero",
     visualPreset: "prominent",
     containerWidth: "contained",
+    spacingScale: "saas",
+    cardPreset: "elevated",
+    heroMode: "split",
+    sectionBackgroundPattern: "alternate",
     sections: {
       header: { type: "row", params: { gap: "1.25rem", justify: "space-between", align: "center" } },
       hero: { type: "row", params: { justify: "space-between", gap: "3rem", align: "center" } },
@@ -77,6 +107,9 @@ const TEMPLATES: TemplateProfile[] = [
     label: "Editorial Story",
     visualPreset: "editorial",
     containerWidth: "narrow",
+    spacingScale: "magazine",
+    cardPreset: "borderless",
+    heroMode: "centered",
     sections: {
       header: { type: "column", params: { gap: "0.5rem", align: "center" } },
       hero: { type: "column", params: { align: "center", gap: "3rem" } },
@@ -117,6 +150,9 @@ const TEMPLATES: TemplateProfile[] = [
     label: "Product Grid",
     visualPreset: "compact",
     containerWidth: "contained",
+    spacingScale: "saas",
+    cardPreset: "elevated",
+    heroMode: "strip",
     sections: {
       header: { type: "row", params: { gap: "0.75rem", justify: "space-between", align: "center" } },
       hero: { type: "column", params: { gap: "1rem", align: "center" } },
@@ -155,6 +191,11 @@ const TEMPLATES: TemplateProfile[] = [
     label: "Agency Bold",
     visualPreset: "prominent",
     containerWidth: "contained",
+    widthByRole: { hero: "edge-to-edge" },
+    spacingScale: "default",
+    cardPreset: "elevated",
+    heroMode: "overlay",
+    sectionBackgroundPattern: "dark-bands",
     sections: {
       header: { type: "row", params: { gap: "1.5rem", justify: "space-between", align: "center" } },
       hero: { type: "row", params: { justify: "space-between", gap: "3rem", align: "center" } },
@@ -252,6 +293,9 @@ const TEMPLATES: TemplateProfile[] = [
     label: "Restaurant Menu",
     visualPreset: "compact",
     containerWidth: "edge-to-edge",
+    spacingScale: "saas",
+    cardPreset: "dividers",
+    heroMode: "centered",
     sections: {
       header: { type: "row", params: { gap: "1rem", justify: "space-between", align: "center" } },
       hero: { type: "column", params: { align: "center", gap: "1.5rem", padding: "2rem 0" } },
