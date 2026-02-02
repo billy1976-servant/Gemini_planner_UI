@@ -1,0 +1,18 @@
+{
+  "centered": {
+    "imageSide": null,
+    "textAlign": "center"
+  },
+  "split-left": {
+    "imageSide": "left",
+    "textAlign": "start"
+  },
+  "split-right": {
+    "imageSide": "right",
+    "textAlign": "start"
+  },
+  "full-screen": {
+    "imageSide": null,
+    "textAlign": "center"
+  }
+}
