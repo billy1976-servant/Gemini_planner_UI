@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
@@ -14,9 +14,20 @@ import { setCurrentScreenTree } from "@/engine/core/current-screen-tree-store";
 import { getExperienceProfile } from "@/layout/profile-resolver";
 import { getTemplateProfile } from "@/layout/template-profiles";
 import { composeOfflineScreen } from "@/lib/screens/compose-offline-screen";
-import { expandOrgansInDocument, collectOrganIds, collectOrganVariantsFromTree } from "@/organs/resolve-organs";
+import { expandOrgansInDocument, assignSectionInstanceKeys, collectOrganVariantsByInstanceKey } from "@/organs/resolve-organs";
 import { loadOrganVariant } from "@/organs/organ-registry";
 import OrganPanel from "@/organs/OrganPanel";
+import {
+  getSectionLayoutPresetOverrides,
+  getOverridesForScreen,
+  setSectionLayoutPresetOverride,
+  subscribeSectionLayoutPresetOverrides,
+} from "@/state/section-layout-preset-store";
+import {
+  collectSectionKeysAndNodes,
+  collectSectionLabels,
+  getEligiblePresetIds,
+} from "@/layout/section-layout-presets";
 import { applySkinBindings } from "@/logic/bridges/skinBindings.apply";
 import WebsiteShell from "@/lib/site-skin/shells/WebsiteShell";
 import AppShell from "@/lib/site-skin/shells/AppShell";
@@ -124,10 +135,34 @@ export default function Page() {
   const [error, setError] = useState<string | null>(null);
   const [host, setHost] = useState<HTMLElement | null>(null);
   const [organVariantOverrides, setOrganVariantOverrides] = useState<Record<string, string>>({});
+  const [sectionHeights, setSectionHeights] = useState<Record<string, number>>({});
+  const contentRef = useRef<HTMLDivElement>(null);
+  const sectionKeysRef = useRef<string[]>([]);
+
+  // Measure section heights so panel rows align with each section (must run before any early return)
+  useLayoutEffect(() => {
+    const el = contentRef.current;
+    const keys = sectionKeysRef.current;
+    if (!el || keys.length === 0) return;
+    const sectionEls = el.querySelectorAll("[data-section-id]");
+    const heights: Record<string, number> = {};
+    sectionEls.forEach((node) => {
+      const id = node.getAttribute("data-section-id");
+      if (id) heights[id] = (node as HTMLElement).offsetHeight;
+    });
+    setSectionHeights((prev) => {
+      if (Object.keys(heights).length === 0) return prev;
+      const same =
+        Object.keys(heights).every((k) => prev[k] === heights[k]) &&
+        Object.keys(prev).length === Object.keys(heights).length;
+      return same ? prev : heights;
+    });
+  });
 
   // Experience → shell: must run unconditionally (Rules of Hooks) so same hook count every render
   const layoutSnapshot = useSyncExternalStore(subscribeLayout, getLayout, getLayout);
   const paletteName = useSyncExternalStore(subscribePalette, getPaletteName, () => "default");
+  useSyncExternalStore(subscribeSectionLayoutPresetOverrides, getSectionLayoutPresetOverrides, getSectionLayoutPresetOverrides);
   const experience = (layoutSnapshot as { experience?: string })?.experience ?? "website";
 
   /* --------------------------------------------------
@@ -313,11 +348,11 @@ export default function Page() {
     json?.node ??
     json;
 
-  // Expand organ nodes (type: "organ") into compound trees; then resolve slots from json.data
-  const children = Array.isArray(renderNode?.children) ? renderNode.children : [];
+  // Assign stable instance keys to top-level children, then expand organs (overrides keyed by instance key)
+  const rawChildren = Array.isArray(renderNode?.children) ? renderNode.children : [];
+  const children = assignSectionInstanceKeys(rawChildren);
   const docForOrgans = { meta: { domain: "offline", pageId: "screen", version: 1 }, nodes: children };
-  const organIds = collectOrganIds(children);
-  const initialOrganVariants = collectOrganVariantsFromTree(children);
+  const initialOrganVariants = collectOrganVariantsByInstanceKey(children);
   const expandedDoc = expandOrgansInDocument(docForOrgans as any, loadOrganVariant, organVariantOverrides);
   const data = json?.data ?? {};
   const boundDoc = applySkinBindings(expandedDoc as any, data);
@@ -350,10 +385,6 @@ export default function Page() {
   });
   setCurrentScreenTree(composed);
 
-  // 🔑 CRITICAL: React key MUST be derived from screen path, NEVER from json.id
-  // Many screens share "screenRoot" id, causing React to reuse component instances
-  // This prevents proper mounting/unmounting when switching between files
-  
   // Simple hash function for JSON content (fallback only)
   const hashJson = (obj: any): string => {
     if (!obj) return "empty";
@@ -368,13 +399,34 @@ export default function Page() {
   };
 
   // ✅ ALWAYS use screen path, fallback to JSON hash (NEVER json.id)
-  // Include templateId in key so template dropdown ALWAYS forces re-render (layout + visualPreset)
   const currentTemplateId = (layoutSnapshot as { templateId?: string })?.templateId ?? "";
   const screenKey = screen 
     ? screen.replace(/[^a-zA-Z0-9]/g, "-") // Sanitize path for React key
     : `screen-${hashJson(json)}`; // Hash entire JSON, not just id
   const renderKey = `${screenKey}-t-${currentTemplateId || "default"}-p-${paletteName}`;
-  
+
+  // Section layout preset: one row per section instance (no dedupe); labels and role for variant lookup
+  const sectionLayoutPresetOverrides = getOverridesForScreen(screenKey);
+  const { sectionKeys: sectionKeysFromTree, sectionByKey } = collectSectionKeysAndNodes(composed?.children ?? []);
+  const sectionKeysForPreset = sectionKeysFromTree;
+  sectionKeysRef.current = sectionKeysForPreset;
+  const sectionLabels = collectSectionLabels(sectionKeysForPreset, sectionByKey);
+  const sectionRoleByKey: Record<string, string> = {};
+  sectionKeysForPreset.forEach((k) => {
+    const node = sectionByKey[k];
+    const role = (node?.role ?? "").toString().trim();
+    sectionRoleByKey[k] = role === "features" ? "features-grid" : role === "content" ? "content-section" : role || k;
+  });
+  const sectionPresetOptions: Record<string, string[]> = {};
+  sectionKeysForPreset.forEach((k) => {
+    sectionPresetOptions[k] = getEligiblePresetIds(sectionByKey[k]);
+  });
+  if (Object.keys(sectionPresetOptions).length === 0 && sectionKeysForPreset.length > 0) {
+    sectionKeysForPreset.forEach((k) => {
+      sectionPresetOptions[k] = getEligiblePresetIds(null);
+    });
+  }
+
   // Log once per render to confirm key changes between files
   console.log("[page] 🔑 JsonRenderer KEY RESOLVED", {
     currentURL: typeof window !== "undefined" ? window.location.href : "SSR",
@@ -386,12 +438,15 @@ export default function Page() {
     note: screen ? "✅ Using screen path" : "⚠️ Using JSON hash (screen path missing)",
   });
 
+  const sectionLayoutPresetOverridesProp = { ...sectionLayoutPresetOverrides };
   const jsonContent = (
     <JsonRenderer
       key={renderKey}
       node={composed}
       defaultState={json?.state}
       profileOverride={effectiveProfile}
+      sectionLayoutPresetOverrides={sectionLayoutPresetOverridesProp}
+      screenId={screenKey}
     />
   );
 
@@ -422,22 +477,30 @@ export default function Page() {
         <AppShell
           primary={
             <div style={{ display: "flex", width: "100%", minHeight: "100%" }}>
-              <div style={{ flex: 1, minWidth: 0 }}>{jsonContent}</div>
-              <OrganPanel
-                organIds={organIds}
-                initialVariants={initialOrganVariants}
-                overrides={organVariantOverrides}
-                onOverride={(organId, variantId) =>
-                  setOrganVariantOverrides((prev) => ({ ...prev, [organId]: variantId }))
-                }
-                showAllOrgans
-              />
-            </div>
-          }
-        />
-      </>
-    );
-  }
+              <div ref={contentRef} style={{ flex: 1, minWidth: 0 }}>{jsonContent}</div>
+            <OrganPanel
+              organIds={sectionKeysForPreset}
+              initialVariants={initialOrganVariants}
+              overrides={organVariantOverrides}
+              onOverrideVariant={(sectionKey, variantId) =>
+                setOrganVariantOverrides((prev) => ({ ...prev, [sectionKey]: variantId }))
+              }
+              sectionKeysForPreset={sectionKeysForPreset}
+              sectionLabels={sectionLabels}
+              sectionRoleByKey={sectionRoleByKey}
+              sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
+              onSectionLayoutPresetOverride={(sectionKey, presetId) =>
+                setSectionLayoutPresetOverride(screenKey, sectionKey, presetId)
+              }
+              sectionPresetOptions={sectionPresetOptions}
+              sectionHeights={sectionHeights}
+            />
+          </div>
+        }
+      />
+    </>
+  );
+}
   if (experience === "learning") {
     return (
       <>
@@ -452,15 +515,23 @@ export default function Page() {
       <WebsiteShell
         content={
           <div style={{ display: "flex", width: "100%", minHeight: "100vh" }}>
-            <div style={{ flex: 1, minWidth: 0 }}>{wrappedContent}</div>
+            <div ref={contentRef} style={{ flex: 1, minWidth: 0 }}>{wrappedContent}</div>
             <OrganPanel
-              organIds={organIds}
+              organIds={sectionKeysForPreset}
               initialVariants={initialOrganVariants}
               overrides={organVariantOverrides}
-              onOverride={(organId, variantId) =>
-                setOrganVariantOverrides((prev) => ({ ...prev, [organId]: variantId }))
+              onOverrideVariant={(sectionKey, variantId) =>
+                setOrganVariantOverrides((prev) => ({ ...prev, [sectionKey]: variantId }))
               }
-              showAllOrgans
+              sectionKeysForPreset={sectionKeysForPreset}
+              sectionLabels={sectionLabels}
+              sectionRoleByKey={sectionRoleByKey}
+              sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
+              onSectionLayoutPresetOverride={(sectionKey, presetId) =>
+                setSectionLayoutPresetOverride(screenKey, sectionKey, presetId)
+              }
+              sectionPresetOptions={sectionPresetOptions}
+              sectionHeights={sectionHeights}
             />
           </div>
         }

@@ -41,6 +41,7 @@
       "id": "hero_section",
       "type": "Section",
       "role": "hero",
+      "layoutPreset": "hero-centered",
       "layout": { "type": "column", "params": { "gap": "1.5rem", "align": "center", "justify": "center" } },
       "content": {},
       "children": [

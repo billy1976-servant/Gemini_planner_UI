@@ -21,6 +21,7 @@ import {
 } from "@/state/state-store";
 import { useSyncExternalStore } from "react";
 import { JsonSkinEngine } from "@/logic/engines/json-skin.engine";
+import { getSectionLayoutPreset } from "@/layout/section-layout-presets";
 
 
 /* ======================================================
@@ -95,6 +96,53 @@ function isTraceUI(): boolean {
   } catch {
     return false;
   }
+}
+
+function isLayoutDebug(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return new URLSearchParams(window.location.search).get("layoutDebug") === "1";
+  } catch {
+    return false;
+  }
+}
+
+function SectionLayoutDebugOverlay({ node, children }: { node: any; children: React.ReactNode }) {
+  const sectionKey = node?.id ?? "—";
+  const role = node?.role ?? "—";
+  const variant = node?.variant ?? "—";
+  const layoutPreset = (node as any)?._effectiveLayoutPreset ?? node?.layoutPreset ?? "—";
+  const containerWidth = node?.params?.containerWidth ?? "—";
+  const layoutType = node?.params?.moleculeLayout?.type ?? "—";
+  return (
+    <div style={{ position: "relative", outline: "2px solid var(--color-outline, #888)" }}>
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          fontSize: "var(--font-size-xs)",
+          background: "rgba(0,0,0,0.85)",
+          color: "#eee",
+          padding: "var(--spacing-1) var(--spacing-2)",
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "var(--spacing-2)",
+          zIndex: 1,
+        }}
+        data-section-debug
+      >
+        <span>sectionKey: {sectionKey}</span>
+        <span>role: {role}</span>
+        <span>variant: {String(variant)}</span>
+        <span>layoutPreset: {String(layoutPreset)}</span>
+        <span>containerWidth: {String(containerWidth)}</span>
+        <span>layoutType: {String(layoutType)}</span>
+      </div>
+      <div style={{ paddingTop: "var(--spacing-6)" }}>{children}</div>
+    </div>
+  );
 }
 
 const EXPECTED_PARAMS: Record<string, string[]> = {
@@ -244,11 +292,14 @@ function deepMergeParams(
 }
 
 /* ======================================================
-   PROFILE → SECTION RESOLVER
+   PROFILE → SECTION RESOLVER (+ LAYOUT PRESET OVERRIDES)
 ====================================================== */
-function applyProfileToNode(node: any, profile: any): any {
+function applyProfileToNode(
+  node: any,
+  profile: any,
+  sectionLayoutPresetOverrides?: Record<string, string>
+): any {
   if (!node || !profile) return node;
-
 
   const next = { ...node };
 
@@ -305,13 +356,36 @@ function applyProfileToNode(node: any, profile: any): any {
     };
   }
 
+  // Per-section: resolve effective layout preset (override → node.layoutPreset → null). Merge preset into next.params here so preset wins.
+  if (isSection) {
+    const sectionKey = (node.id ?? node.role) ?? "";
+    const overrideForKey = sectionLayoutPresetOverrides?.[sectionKey];
+    const effectivePreset =
+      (sectionLayoutPresetOverrides?.[sectionKey] ?? node.layoutPreset) ?? null;
+    (next as any)._effectiveLayoutPreset =
+      effectivePreset && typeof effectivePreset === "string" ? effectivePreset : null;
+    const effectiveLayoutPresetId = (next as any)._effectiveLayoutPreset;
+    if (effectiveLayoutPresetId) {
+      const preset = getSectionLayoutPreset(effectiveLayoutPresetId);
+      if (preset) {
+        next.params = {
+          ...(next.params ?? {}),
+          ...preset,
+          moleculeLayout: {
+            ...(next.params?.moleculeLayout ?? {}),
+            ...(preset.moleculeLayout ?? {}),
+          },
+        };
+        (next as any)._sectionPresetApplied = true;
+      }
+    }
+  }
 
   if (Array.isArray(node.children)) {
     next.children = node.children.map((child) =>
-      applyProfileToNode(child, profile)
+      applyProfileToNode(child, profile, sectionLayoutPresetOverrides)
     );
   }
-
 
   return next;
 }
@@ -324,7 +398,8 @@ export function renderNode(
   node: any,
   profile: any,
   stateSnapshot: any,
-  defaultState?: any
+  defaultState?: any,
+  sectionLayoutPresetOverrides?: Record<string, string>
 ): any {
   if (!node) return null;
 
@@ -339,9 +414,8 @@ export function renderNode(
 
   if (!shouldRenderNode(node, stateSnapshot, defaultState)) return null;
 
-
   const profiledNode = profile
-    ? applyProfileToNode(node, profile)
+    ? applyProfileToNode(node, profile, sectionLayoutPresetOverrides)
     : node;
 
 
@@ -410,11 +484,10 @@ export function renderNode(
     typeKey === "section" && profile?.spacingScale
       ? getSpacingForScale(profile.spacingScale, "section")
       : {};
-  const finalParams =
+  let finalParams =
     Object.keys(spacingOverlay).length > 0
       ? deepMergeParams(paramsAfterSectionLayout, spacingOverlay)
       : paramsAfterSectionLayout;
-
 
   const resolvedNode = {
     ...profiledNode,
@@ -466,19 +539,21 @@ export function renderNode(
       };
       
       const uniqueKey = item.id || `item-${i}`;
-      return renderNode({ ...itemNode, key: uniqueKey }, profile, stateSnapshot, defaultState);
+      return renderNode({ ...itemNode, key: uniqueKey }, profile, stateSnapshot, defaultState, sectionLayoutPresetOverrides);
     });
   } else if (Array.isArray(resolvedNode.children)) {
     // Normal mode: render children
     renderedChildren = resolvedNode.children.map((child: any, i: number) => {
       // 🔑 Use child.id if available, otherwise use index + type for unique key
       const uniqueKey = child.id || `${child.type}-${i}`;
-      return renderNode({ ...child, key: uniqueKey }, profile, stateSnapshot, defaultState);
+      return renderNode({ ...child, key: uniqueKey }, profile, stateSnapshot, defaultState, sectionLayoutPresetOverrides);
     });
   }
 
 
-  if (moleculeSpec?.type) {
+  // When a section layout preset was applied in applyProfileToNode, do not overwrite moleculeLayout.
+  const sectionPresetApplied = !!(profiledNode as any)._sectionPresetApplied;
+  if (moleculeSpec?.type && !sectionPresetApplied) {
     const layoutParams = resolveMoleculeLayout(
       moleculeSpec.type,
       moleculeSpec.preset,
@@ -569,12 +644,16 @@ export function renderNode(
     renderedChildren
   );
 
-
-  return (
+  const content = (
     <MaybeDebugWrapper node={resolvedNode}>
       <Component {...props}>{wrappedChildren}</Component>
     </MaybeDebugWrapper>
   );
+
+  if (typeKey === "section" && isLayoutDebug()) {
+    return <SectionLayoutDebugOverlay node={resolvedNode}>{content}</SectionLayoutDebugOverlay>;
+  }
+  return content;
 }
 
 
@@ -585,6 +664,8 @@ export default function JsonRenderer({
   node,
   defaultState,
   profileOverride,
+  sectionLayoutPresetOverrides,
+  screenId,
 }: {
   node: any;
   defaultState?: any;
@@ -593,6 +674,10 @@ export default function JsonRenderer({
    * If omitted, JsonRenderer falls back to the layout-store snapshot (legacy behavior).
    */
   profileOverride?: any;
+  /** Per-section layout preset overrides (sectionKey -> presetId) for this screen. */
+  sectionLayoutPresetOverrides?: Record<string, string>;
+  /** Screen key for this render (e.g. for override lookup). */
+  screenId?: string;
 }) {
   // 🔑 Track if user has interacted (state changed from default) - use reactive state after interaction
   const hasInteracted = React.useRef(false);
@@ -709,8 +794,7 @@ export default function JsonRenderer({
 
   traceOnce("root", "Root render");
 
-
-  return renderNode(node, profile, stateSnapshot, effectiveDefaultState);
+  return renderNode(node, profile, stateSnapshot, effectiveDefaultState, sectionLayoutPresetOverrides);
 }
 
 

@@ -41,6 +41,7 @@ function resolveWithDefaultLayout(
    3) PROPS CONTRACT
    ====================================================== */
 export type SectionCompoundProps = {
+  id?: string;
   params?: {
     surface?: any;
     title?: any;
@@ -77,10 +78,48 @@ export type SectionCompoundProps = {
    4) MOLECULE IMPLEMENTATION
    ====================================================== */
 export default function SectionCompound({
+  id,
   params = {},
   content = {},
   children,
 }: SectionCompoundProps) {
+  // Trace: log final params received when layoutPreset changes (for layout-preset audit).
+  if (typeof window !== "undefined") {
+    const key = `section-params:${id ?? "anon"}`;
+    (globalThis as any).__SECTION_PARAMS_LAST__ = (globalThis as any).__SECTION_PARAMS_LAST__ ?? {};
+    const last = (globalThis as any).__SECTION_PARAMS_LAST__[key];
+    const snapshot = {
+      containerWidth: params?.containerWidth,
+      heroMode: params?.heroMode,
+      moleculeLayout: params?.moleculeLayout,
+      layout: params?.layout,
+      backgroundVariant: params?.backgroundVariant,
+      alignment: (params?.moleculeLayout?.params as any)?.align,
+      spacing: (params?.moleculeLayout?.params as any)?.gap ?? (params?.layout as any)?.gap,
+    };
+    if (!last || JSON.stringify(last) !== JSON.stringify(snapshot)) {
+      console.log("[SectionCompound] final params", { id, params: snapshot, fullParams: params });
+      (globalThis as any).__SECTION_PARAMS_LAST__[key] = snapshot;
+    }
+  }
+
+  const {
+    containerWidth,
+    heroMode,
+    moleculeLayout,
+  } = params || {};
+  const effectiveContainerWidth = containerWidth ?? "contained";
+
+  const isSplitLayout =
+    containerWidth === "split" ||
+    moleculeLayout?.type === "row";
+
+  const isGridLayout =
+    moleculeLayout?.type === "grid";
+
+  const isFullBleedHero =
+    heroMode === "full-screen";
+
   /* ======================================================
      INTERNAL SLOT CONTENT (PURE)
      ====================================================== */
@@ -96,16 +135,16 @@ export default function SectionCompound({
 
 
   /* ======================================================
-     APPLY MOLECULE LAYOUT *ONLY TO SLOT CONTENT*
-     Definition/preset layout (gap, padding) merged so spacing tokens apply.
+     APPLY MOLECULE LAYOUT — reads ONLY params.moleculeLayout.
+     When moleculeLayout exists we never re-derive layout from role.
      ====================================================== */
   const layoutParams = {
     ...(params.layout ?? {}),
-    ...(params.moleculeLayout?.params ?? {}),
+    ...(moleculeLayout?.params ?? {}),
   };
   const layout = resolveWithDefaultLayout(
-    params.moleculeLayout?.type,
-    params.moleculeLayout?.preset ?? null,
+    moleculeLayout?.type,
+    moleculeLayout?.preset ?? null,
     layoutParams,
     "column" // ← default for Section
   );
@@ -133,7 +172,7 @@ export default function SectionCompound({
      Surface params: merge backgroundVariant for template-driven section backgrounds
      ====================================================== */
   const surfaceParams = resolveParams(params.surface);
-  const variant = params.backgroundVariant;
+  const variant = params?.backgroundVariant;
   const surfaceWithVariant =
     variant === "hero-accent"
       ? { ...surfaceParams, background: "var(--color-surface-hero-accent)" }
@@ -143,18 +182,44 @@ export default function SectionCompound({
       ? { ...surfaceParams, background: "var(--color-surface-dark)", color: "var(--color-on-surface-dark)" }
       : surfaceParams;
 
-  const innerContent =
-    params.containerWidth === "split" ? (
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--spacing-lg)", alignItems: "start" }}>
-        <div>{laidOutSlots}</div>
-        <div>{children}</div>
-      </div>
-    ) : (
-      <>
-        {laidOutSlots}
-        {children}
-      </>
-    );
+  const innerContent = (
+    <div
+      style={{
+        display: isSplitLayout ? "grid" : "block",
+        gridTemplateColumns: isSplitLayout ? "1fr 1fr" : undefined,
+        gap: "var(--spacing-6)",
+        alignItems: "center",
+      }}
+    >
+      {isSplitLayout ? (
+        <>
+          <div>{slotContent}</div>
+          <div
+            style={{
+              display: isGridLayout ? "grid" : "block",
+              gridTemplateColumns: isGridLayout ? "repeat(3, 1fr)" : undefined,
+              gap: isGridLayout ? "var(--spacing-4)" : undefined,
+            }}
+          >
+            {children}
+          </div>
+        </>
+      ) : (
+        <>
+          {slotContent}
+          <div
+            style={{
+              display: isGridLayout ? "grid" : "block",
+              gridTemplateColumns: isGridLayout ? "repeat(3, 1fr)" : undefined,
+              gap: isGridLayout ? "var(--spacing-4)" : undefined,
+            }}
+          >
+            {children}
+          </div>
+        </>
+      )}
+    </div>
+  );
 
   const surfaceContent = (
     <SurfaceAtom params={surfaceWithVariant}>
@@ -165,7 +230,6 @@ export default function SectionCompound({
   /* ======================================================
      Hero mode wrapper (full-screen, overlay, strip)
      ====================================================== */
-  const heroMode = params.heroMode;
   const heroWrapperStyle: React.CSSProperties =
     heroMode === "full-screen"
       ? { minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }
@@ -182,21 +246,37 @@ export default function SectionCompound({
   );
 
   /* ======================================================
-     Container width from template (contained, narrow, wide, full, split, edge-to-edge)
-     Default contained so sections have readable line length unless overridden.
+     Container width — reads ONLY params.containerWidth (no role fallback).
+     Supports enum, CSS var() (e.g. "var(--container-narrow)"), or length (e.g. "100vw", "600px").
      ====================================================== */
-  const containerWidth = params.containerWidth ?? "contained";
-  if (containerWidth === "edge-to-edge") {
-    return maybeHeroWrapped;
-  }
+  const knownWidth =
+    effectiveContainerWidth === "contained" ? "var(--container-content)" :
+    effectiveContainerWidth === "narrow" ? "var(--container-narrow)" :
+    effectiveContainerWidth === "wide" ? "var(--container-wide)" :
+    effectiveContainerWidth === "full" ? "var(--container-full)" :
+    effectiveContainerWidth === "split" ? "var(--container-wide)" :
+    effectiveContainerWidth === "edge-to-edge" ? null : null;
+  const isCssVar = typeof effectiveContainerWidth === "string" && /^var\s*\([^)]+\)$/.test(effectiveContainerWidth.trim());
+  const isLength = typeof effectiveContainerWidth === "string" && /^\d+(\.\d+)?(px|rem|vw|%)$/.test(effectiveContainerWidth.trim());
   const containerVar =
-    containerWidth === "contained" ? "var(--container-content)" :
-    containerWidth === "narrow" ? "var(--container-narrow)" :
-    containerWidth === "wide" ? "var(--container-wide)" :
-    containerWidth === "full" ? "var(--container-full)" :
-    containerWidth === "split" ? "var(--container-wide)" : "var(--container-content)";
+    knownWidth ??
+    (isCssVar || isLength ? (effectiveContainerWidth as string).trim() : "var(--container-content)");
+  const outerSectionStyle: React.CSSProperties = {
+    ...(effectiveContainerWidth !== "edge-to-edge"
+      ? { width: "100%", maxWidth: containerVar, marginLeft: "auto", marginRight: "auto" }
+      : {}),
+    ...(isFullBleedHero ? { backgroundSize: "cover", backgroundPosition: "center" } : {}),
+  };
+
+  if (effectiveContainerWidth === "edge-to-edge") {
+    return (
+      <div data-section-id={id} style={Object.keys(outerSectionStyle).length > 0 ? outerSectionStyle : undefined}>
+        {maybeHeroWrapped}
+      </div>
+    );
+  }
   return (
-    <div style={{ width: "100%", maxWidth: containerVar, marginLeft: "auto", marginRight: "auto" }}>
+    <div data-section-id={id} style={outerSectionStyle}>
       {maybeHeroWrapped}
     </div>
   );

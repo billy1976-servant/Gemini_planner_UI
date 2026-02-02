@@ -6,6 +6,7 @@ import {
   getVariantIds,
   getOrganLabel,
 } from "@/organs/organ-registry";
+import { getAllSectionPresetIds } from "@/layout/section-layout-presets";
 
 export type OrganPanelProps = {
   /** Organ IDs present on the current screen (from collectOrganIds). */
@@ -14,10 +15,24 @@ export type OrganPanelProps = {
   initialVariants: Record<string, string>;
   /** Runtime overrides: organId -> variantId (from panel dropdowns). */
   overrides: Record<string, string>;
-  /** Called when user changes a variant in the panel. */
-  onOverride: (organId: string, variantId: string) => void;
+  /** Called when user changes a variant in the panel. Variant dropdown uses ONLY this. */
+  onOverrideVariant: (organId: string, variantId: string) => void;
   /** Optional: show all organs (not just those on screen) for discovery. */
   showAllOrgans?: boolean;
+  /** Section keys to show layout preset for (e.g. organIds or Section roles from tree). Defaults to same as row ids. */
+  sectionKeysForPreset?: string[];
+  /** Human-readable label per section key (e.g. "Gallery 1", "Hero"). */
+  sectionLabels?: Record<string, string>;
+  /** Role per section key for variant lookup (e.g. "gallery", "hero"). */
+  sectionRoleByKey?: Record<string, string>;
+  /** Per-section layout preset overrides (sectionKey -> presetId). */
+  sectionLayoutPresetOverrides?: Record<string, string>;
+  /** Called when user changes layout preset for a section. */
+  onSectionLayoutPresetOverride?: (sectionKey: string, presetId: string) => void;
+  /** Preset options per section key (sectionKey -> preset ids). If missing, all presets shown. */
+  sectionPresetOptions?: Record<string, string[]>;
+  /** Measured height per section key so each row aligns with its section in the main content. */
+  sectionHeights?: Record<string, number>;
 };
 
 const PANEL_STYLE: React.CSSProperties = {
@@ -56,15 +71,27 @@ const SELECT_STYLE: React.CSSProperties = {
   fontSize: "inherit",
 };
 
+const MIN_ROW_HEIGHT = 80;
+
 export default function OrganPanel({
   organIds,
   initialVariants,
   overrides,
-  onOverride,
+  onOverrideVariant,
   showAllOrgans = false,
+  sectionKeysForPreset,
+  sectionLabels,
+  sectionRoleByKey,
+  sectionLayoutPresetOverrides = {},
+  onSectionLayoutPresetOverride,
+  sectionPresetOptions,
+  sectionHeights = {},
 }: OrganPanelProps) {
   const ids = showAllOrgans ? getOrganIds() : organIds;
-  if (ids.length === 0) {
+  const rowIds = (sectionKeysForPreset?.length ? sectionKeysForPreset : ids) as string[];
+  const allPresetIds = getAllSectionPresetIds();
+
+  if (rowIds.length === 0) {
     return (
       <aside style={PANEL_STYLE} data-organ-panel>
         <div style={TITLE_STYLE}>Organs</div>
@@ -81,27 +108,65 @@ export default function OrganPanel({
       <p style={{ color: "var(--color-text-muted)", marginBottom: "var(--spacing-3)", marginTop: 0, fontSize: "var(--font-size-xs)" }}>
         Change header and nav layout here. Applies to this screen only.
       </p>
-      {ids.map((organId) => {
-        const variantIds = getVariantIds(organId);
-        const currentVariant = overrides[organId] ?? initialVariants[organId] ?? "default";
-        const label = getOrganLabel(organId);
+      {rowIds.map((sectionKey) => {
+        const roleForVariant = sectionRoleByKey?.[sectionKey] ?? sectionKey;
+        const variantIds = getVariantIds(roleForVariant);
+        const hasVariant = variantIds.length > 0;
+        const currentVariant = overrides[sectionKey] ?? initialVariants[sectionKey] ?? "default";
+        const label = sectionLabels?.[sectionKey] ?? getOrganLabel(sectionKey);
+        const presetOptions = sectionPresetOptions?.[sectionKey] ?? allPresetIds;
+        const currentPreset = sectionLayoutPresetOverrides[sectionKey] ?? "";
+        const rowHeight = sectionHeights[sectionKey];
+        const rowBlockStyle: React.CSSProperties = {
+          ...ROW_STYLE,
+          minHeight: rowHeight != null && rowHeight > 0 ? rowHeight : MIN_ROW_HEIGHT,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-start",
+          paddingTop: "var(--spacing-2)",
+          paddingBottom: "var(--spacing-2)",
+          borderBottom: "1px solid var(--color-border)",
+        };
+
         return (
-          <div key={organId} style={ROW_STYLE}>
-            <label style={LABEL_STYLE} htmlFor={`organ-${organId}`}>
+          <div key={sectionKey} style={rowBlockStyle}>
+            <label style={LABEL_STYLE} htmlFor={`organ-${sectionKey}`}>
               {label}
             </label>
-            <select
-              id={`organ-${organId}`}
-              value={currentVariant}
-              onChange={(e) => onOverride(organId, e.target.value)}
-              style={SELECT_STYLE}
-            >
-              {variantIds.map((vid) => (
-                <option key={vid} value={vid}>
-                  {vid}
-                </option>
-              ))}
-            </select>
+            {hasVariant && (
+              <select
+                id={`organ-${sectionKey}`}
+                value={currentVariant}
+                onChange={(e) => onOverrideVariant(sectionKey, e.target.value)}
+                style={SELECT_STYLE}
+              >
+                {variantIds.map((vid) => (
+                  <option key={vid} value={vid}>
+                    {vid}
+                  </option>
+                ))}
+              </select>
+            )}
+            {onSectionLayoutPresetOverride && (
+              <>
+                <label style={{ ...LABEL_STYLE, marginTop: hasVariant ? "var(--spacing-2)" : 0 }} htmlFor={`layout-preset-${sectionKey}`}>
+                  Layout Preset
+                </label>
+                <select
+                  id={`layout-preset-${sectionKey}`}
+                  value={currentPreset}
+                  onChange={(e) => onSectionLayoutPresetOverride(sectionKey, e.target.value)}
+                  style={SELECT_STYLE}
+                >
+                  <option value="">(default)</option>
+                  {presetOptions.map((pid) => (
+                    <option key={pid} value={pid}>
+                      {pid}
+                    </option>
+                  ))}
+                </select>
+              </>
+            )}
           </div>
         );
       })}

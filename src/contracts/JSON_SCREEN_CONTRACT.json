@@ -59,7 +59,7 @@
     "section": {
       "allowedContentKeys": ["title"],
       "allowedChildren": ["any"],
-      "allowedParams": ["surface", "title", "containerWidth", "heroMode", "backgroundVariant", "moleculeLayout", "role", "layout"],
+      "allowedParams": ["surface", "title", "containerWidth", "heroMode", "backgroundVariant", "moleculeLayout", "role", "layout", "layoutPreset", "media"],
       "allowedBehaviors": []
     },
     "button": {
@@ -262,7 +262,7 @@
   "paramKeyMapping": "See src/contracts/PARAM_KEY_MAPPING.md — definition variant keys and compound props must align with allowedParams",
   "rendererExpectations": {
     "requiredKeysPerNode": ["type"],
-    "optionalKeysPerNode": ["id", "variant", "size", "params", "content", "behavior", "onTap", "children", "items", "layout", "when", "role"],
+    "optionalKeysPerNode": ["id", "variant", "size", "params", "content", "behavior", "onTap", "children", "items", "layout", "when", "role", "layoutPreset", "media"],
     "typeResolution": "definitions[type] ?? definitions[type.toLowerCase()]; Registry[type] (case-sensitive key); fallback: Missing registry entry div",
     "conditionalRender": "If node.when present, render only when state[node.when.state] === node.when.equals; else do not render",
     "repeaterMode": "If node.items is non-empty array: render each item as Card (params.repeater.itemType ignored in practice—always Card), content from item.title, item.body, item.icon|item.image",

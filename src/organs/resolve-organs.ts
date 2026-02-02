@@ -43,9 +43,42 @@ function isOrganNode(node: unknown): node is { type: string; organId?: string; v
 }
 
 /**
+ * Assign stable instance keys to top-level nodes (id = node.id ?? `section-${index}`).
+ * Returns new array; does not mutate input. Use before expand so variant/layout overrides are keyed by instance.
+ */
+export function assignSectionInstanceKeys(nodes: unknown[]): unknown[] {
+  if (!Array.isArray(nodes)) return nodes;
+  return nodes.map((node, i) => {
+    if (!node || typeof node !== "object") return node;
+    const n = node as Record<string, unknown>;
+    const id = (n.id ?? `section-${i}`) as string;
+    return { ...n, id };
+  });
+}
+
+/**
+ * Collect instance key -> variant ID from top-level nodes (for panel initial values).
+ * Organ nodes use node.id as key; Section nodes are skipped for variant.
+ */
+export function collectOrganVariantsByInstanceKey(nodes: unknown[]): Record<string, string> {
+  const out: Record<string, string> = {};
+  if (!Array.isArray(nodes)) return out;
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
+    if (!node || typeof node !== "object") continue;
+    const n = node as Record<string, unknown>;
+    const key = (n.id ?? `section-${i}`) as string;
+    if (isOrganNode(n)) {
+      out[key] = (n.variant ?? "default") as string;
+    }
+  }
+  return out;
+}
+
+/**
  * Expand a single array of nodes: replace any node with type "organ" by its variant tree.
- * Recurses into children so nested structures and expanded subtrees are also expanded.
- * Optional overrides: organId -> variantId (e.g. from right-panel controls).
+ * Overrides: instance key (node.id) -> variantId, or legacy organId -> variantId.
+ * Preserves instance key on expanded root (merged.id = n.id).
  */
 export function expandOrgans(
   nodes: unknown[],
@@ -68,10 +101,12 @@ export function expandOrgans(
       continue;
     }
     const organId = (n.organId ?? "") as string;
-    const variantId =
-      (overrides != null && organId && overrides[organId] != null
-        ? overrides[organId]
-        : (n.variant ?? "default")) as string;
+    const instanceKey = (n.id ?? "") as string;
+    const variantId = (overrides != null && instanceKey && overrides[instanceKey] != null
+      ? overrides[instanceKey]
+      : overrides != null && organId && overrides[organId] != null
+      ? overrides[organId]
+      : (n.variant ?? "default")) as string;
     const variantRoot = loadOrganVariant(organId, variantId);
     if (!variantRoot || typeof variantRoot !== "object") {
       out.push(node);
@@ -87,6 +122,7 @@ export function expandOrgans(
       n.params != null ? { params: n.params as Record<string, unknown> } : {},
       n.content != null ? { content: n.content as Record<string, unknown> } : {}
     );
+    merged.id = (n.id ?? merged.id) as string;
     if (Array.isArray(merged.children)) {
       merged.children = expandOrgans(merged.children as unknown[], loadOrganVariant, overrides);
     }
