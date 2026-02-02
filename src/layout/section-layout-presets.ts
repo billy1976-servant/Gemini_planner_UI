@@ -1,14 +1,17 @@
 /**
  * Section layout preset registry.
- * Maps preset IDs to composition-level params (containerWidth, moleculeLayout, heroMode).
+ * Maps preset IDs to composition-level params (containerWidth, moleculeLayout, split).
  * Uses existing tokens (var(--container-*), var(--spacing-*)); no new molecules.
+ * Phase 1: Loads from section-presets.json when available; TS object as fallback.
  */
 
 import { getOrganLabel } from "@/organs/organ-registry";
+import sectionPresetsJson from "./section-presets.json";
 
 export type SectionPresetDef = {
   containerWidth?: "contained" | "edge-to-edge" | "narrow" | "wide" | "full" | "split" | string;
-  heroMode?: "centered" | "split" | "full-screen" | "overlay" | "strip";
+  /** Split layout: partition children into media slot + content; column order from mediaSlot. */
+  split?: { type: "split"; mediaSlot?: "left" | "right" };
   backgroundVariant?: "default" | "hero-accent" | "alt" | "dark";
   moleculeLayout?: {
     type: "column" | "row" | "grid" | "stacked";
@@ -23,7 +26,6 @@ const VISUAL_TEST_EXTREME = true;
 const SECTION_LAYOUT_PRESETS: Record<string, SectionPresetDef> = {
   "hero-centered": {
     containerWidth: VISUAL_TEST_EXTREME ? "var(--container-narrow)" : "wide",
-    heroMode: "centered",
     moleculeLayout: {
       type: "column",
       preset: null,
@@ -37,7 +39,21 @@ const SECTION_LAYOUT_PRESETS: Record<string, SectionPresetDef> = {
   },
   "hero-split-image-right": {
     containerWidth: "split",
-    heroMode: "split",
+    split: { type: "split", mediaSlot: "right" },
+    moleculeLayout: {
+      type: "row",
+      preset: null,
+      params: {
+        gap: "var(--spacing-8)",
+        align: "center",
+        justify: "space-between",
+        padding: "var(--spacing-8) var(--spacing-6)",
+      },
+    },
+  },
+  "hero-split-image-left": {
+    containerWidth: "split",
+    split: { type: "split", mediaSlot: "left" },
     moleculeLayout: {
       type: "row",
       preset: null,
@@ -51,7 +67,6 @@ const SECTION_LAYOUT_PRESETS: Record<string, SectionPresetDef> = {
   },
   "hero-full-bleed-image": {
     containerWidth: VISUAL_TEST_EXTREME ? "100vw" : "full",
-    heroMode: "full-screen",
     backgroundVariant: "default",
     moleculeLayout: {
       type: "column",
@@ -61,6 +76,10 @@ const SECTION_LAYOUT_PRESETS: Record<string, SectionPresetDef> = {
         align: "center",
         justify: "center",
         padding: "var(--spacing-16) var(--spacing-6)",
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       },
     },
   },
@@ -130,16 +149,19 @@ const SECTION_LAYOUT_PRESETS: Record<string, SectionPresetDef> = {
   },
 };
 
-const HERO_PRESET_IDS = ["hero-centered", "hero-split-image-right", "hero-full-bleed-image"];
+const HERO_PRESET_IDS = ["hero-centered", "hero-split-image-right", "hero-split-image-left", "hero-full-bleed-image"];
 const CONTENT_PRESET_IDS = ["content-narrow", "image-left-text-right", "testimonial-band", "cta-centered"];
 const GRID_PRESET_IDS = ["feature-grid-3"];
 
 /**
  * Returns the preset definition for a given preset ID, or null.
+ * JSON presets (section-presets.json) take precedence; TS fallback for missing or legacy.
  */
 export function getSectionLayoutPreset(presetId: string): SectionPresetDef | null {
   if (!presetId || typeof presetId !== "string") return null;
   const id = presetId.trim().toLowerCase();
+  const fromJson = (sectionPresetsJson as Record<string, SectionPresetDef>)[id];
+  if (fromJson && typeof fromJson === "object") return fromJson;
   return SECTION_LAYOUT_PRESETS[id] ?? null;
 }
 

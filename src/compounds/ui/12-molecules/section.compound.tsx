@@ -37,31 +37,29 @@ function resolveWithDefaultLayout(
   );
 }
 
-/** True when child is a Card (or similar) with content.media — used for hero-split "image right" column. */
+/** True when child is a Card (or similar) with content.media — used for split layout media slot. Supports wrapped children (e.g. MaybeDebugWrapper) via child.props.node?.content?.media. */
 function isMediaChild(child: React.ReactNode): child is React.ReactElement {
-  return (
-    React.isValidElement(child) &&
-    typeof (child.props as { content?: { media?: unknown } })?.content?.media !== "undefined" &&
-    (child.props as { content?: { media?: unknown } }).content?.media != null
-  );
+  if (!React.isValidElement(child)) return false;
+  const p: any = child.props;
+  return p.content?.media != null || p.node?.content?.media != null;
 }
 
-/** Partition children into text group and single media child for hero-split layout. */
-function partitionChildrenForHeroSplit(children: React.ReactNode): {
-  textChildren: React.ReactNode[];
+/** Partition children into content group and single media child for split layout (params.split). */
+function partitionChildrenForSplit(children: React.ReactNode): {
+  contentChildren: React.ReactNode[];
   mediaChild: React.ReactElement | null;
 } {
   const arr = React.Children.toArray(children);
-  const textChildren: React.ReactNode[] = [];
+  const contentChildren: React.ReactNode[] = [];
   let mediaChild: React.ReactElement | null = null;
   for (const child of arr) {
     if (mediaChild === null && isMediaChild(child)) {
       mediaChild = child as React.ReactElement;
     } else {
-      textChildren.push(child);
+      contentChildren.push(child);
     }
   }
-  return { textChildren, mediaChild };
+  return { contentChildren, mediaChild };
 }
 
 
@@ -77,8 +75,8 @@ export type SectionCompoundProps = {
     layout?: { gap?: any; padding?: any; [k: string]: any };
     /** Template-driven: contained, edge-to-edge, narrow, wide, full, split (50/50) */
     containerWidth?: "contained" | "edge-to-edge" | "narrow" | "wide" | "full" | "split";
-    /** Template-driven: hero section mode (full-screen, overlay, strip) */
-    heroMode?: "centered" | "split" | "full-screen" | "overlay" | "strip";
+    /** Split layout: partition children into media slot + content; column order from mediaSlot. Driven by layout presets. */
+    split?: { type: "split"; mediaSlot?: "left" | "right" };
     /** Template-driven: section background variant (hero-accent, alt, dark) */
     backgroundVariant?: "default" | "hero-accent" | "alt" | "dark";
     moleculeLayout?: {
@@ -118,7 +116,7 @@ export default function SectionCompound({
     const last = (globalThis as any).__SECTION_PARAMS_LAST__[key];
     const snapshot = {
       containerWidth: params?.containerWidth,
-      heroMode: params?.heroMode,
+      split: params?.split,
       moleculeLayout: params?.moleculeLayout,
       layout: params?.layout,
       backgroundVariant: params?.backgroundVariant,
@@ -129,11 +127,23 @@ export default function SectionCompound({
       console.log("[SectionCompound] final params", { id, params: snapshot, fullParams: params });
       (globalThis as any).__SECTION_PARAMS_LAST__[key] = snapshot;
     }
+    // Hero section: console tracking for preset → layout (hasSplit / isRow = split layout active).
+    if (typeof id === "string" && id.toLowerCase().includes("hero")) {
+      const hasSplit = params?.split != null && params?.split?.type === "split";
+      const isRow = params?.moleculeLayout?.type === "row";
+      console.log("[SectionCompound] HERO section params (preset → layout)", {
+        id,
+        hasSplit,
+        isRow,
+        split: params?.split,
+        moleculeLayoutType: params?.moleculeLayout?.type,
+      });
+    }
   }
 
   const {
     containerWidth,
-    heroMode,
+    split: splitConfig,
     moleculeLayout,
   } = params || {};
   const effectiveContainerWidth = containerWidth ?? "contained";
@@ -147,8 +157,28 @@ export default function SectionCompound({
   const gridColumns = (moleculeLayout?.params as { columns?: number } | undefined)?.columns ?? 3;
   const gridGap = (moleculeLayout?.params as { gap?: string } | undefined)?.gap ?? "var(--spacing-4)";
 
-  const isFullBleedHero =
-    heroMode === "full-screen";
+  /** When split config is present, partition children into media slot + content and order by mediaSlot. */
+  const useSplitPartition = splitConfig?.type === "split" && isSplitLayout;
+  const mediaSlot = splitConfig?.mediaSlot ?? "right";
+  const { contentChildren, mediaChild } = useSplitPartition
+    ? partitionChildrenForSplit(children)
+    : { contentChildren: [] as React.ReactNode[], mediaChild: null as React.ReactElement | null };
+
+  if (useSplitPartition && typeof window !== "undefined") {
+    const arr = React.Children.toArray(children);
+    const childTypes = arr.map((child) => ({
+      type: React.isValidElement(child)
+        ? (child.type as any)?.displayName ?? (child.type as any)?.name ?? String(child.type)
+        : "unknown",
+      hasContentMedia: isMediaChild(child),
+    }));
+    console.log("[SectionCompound SPLIT DEBUG]", {
+      id,
+      childTypes,
+      mediaChildFound: mediaChild != null,
+      textCount: contentChildren.length,
+    });
+  }
 
   /* ======================================================
      INTERNAL SLOT CONTENT (PURE)
@@ -212,11 +242,20 @@ export default function SectionCompound({
       ? { ...surfaceParams, background: "var(--color-surface-dark)", color: "var(--color-on-surface-dark)" }
       : surfaceParams;
 
-  /* Hero-split: partition children into text (left) and single Card with media (right). */
-  const isHeroSplit = heroMode === "split" && isSplitLayout;
-  const { textChildren, mediaChild } = isHeroSplit
-    ? partitionChildrenForHeroSplit(children)
-    : { textChildren: [] as React.ReactNode[], mediaChild: null as React.ReactElement | null };
+  const contentColumn = (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "var(--spacing-4)",
+        alignItems: "flex-start",
+      }}
+    >
+      {slotContent}
+      {contentChildren}
+    </div>
+  );
+  const mediaColumn = mediaChild != null ? <div>{mediaChild}</div> : null;
 
   const innerContent = (
     <div
@@ -228,21 +267,18 @@ export default function SectionCompound({
       }}
     >
       {isSplitLayout ? (
-        isHeroSplit && mediaChild != null ? (
-          <>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "var(--spacing-4)",
-                alignItems: "flex-start",
-              }}
-            >
-              {slotContent}
-              {textChildren}
-            </div>
-            <div>{mediaChild}</div>
-          </>
+        useSplitPartition && mediaChild != null ? (
+          mediaSlot === "left" ? (
+            <>
+              {mediaColumn}
+              {contentColumn}
+            </>
+          ) : (
+            <>
+              {contentColumn}
+              {mediaColumn}
+            </>
+          )
         ) : (
           <>
             <div>{slotContent}</div>
@@ -274,28 +310,28 @@ export default function SectionCompound({
     </div>
   );
 
-  const surfaceContent = (
-    <SurfaceAtom params={surfaceWithVariant}>
-      {innerContent}
-    </SurfaceAtom>
-  );
-
-  /* ======================================================
-     Hero mode wrapper (full-screen, overlay, strip)
-     ====================================================== */
-  const heroWrapperStyle: React.CSSProperties =
-    heroMode === "full-screen"
-      ? { minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }
-      : heroMode === "strip"
-      ? { paddingTop: "var(--spacing-4)", paddingBottom: "var(--spacing-4)" }
-      : heroMode === "overlay"
-      ? { position: "relative", minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }
+  /* Layout wrapper: optional minHeight/display/align from moleculeLayout.params (e.g. full-bleed presets). */
+  const mlParams = moleculeLayout?.params as Record<string, unknown> | undefined;
+  const layoutWrapperStyle: React.CSSProperties | undefined =
+    mlParams?.minHeight != null || mlParams?.display != null
+      ? {
+          ...(mlParams?.minHeight != null ? { minHeight: mlParams.minHeight as string } : {}),
+          ...(mlParams?.display != null ? { display: mlParams.display as React.CSSProperties["display"] } : {}),
+          ...(mlParams?.alignItems != null ? { alignItems: mlParams.alignItems as React.CSSProperties["alignItems"] } : {}),
+          ...(mlParams?.justifyContent != null ? { justifyContent: mlParams.justifyContent as React.CSSProperties["justifyContent"] } : {}),
+        }
       : undefined;
 
-  const maybeHeroWrapped = heroWrapperStyle ? (
-    <div style={heroWrapperStyle}>{surfaceContent}</div>
+  const wrappedInner = layoutWrapperStyle ? (
+    <div style={layoutWrapperStyle}>{innerContent}</div>
   ) : (
-    surfaceContent
+    innerContent
+  );
+
+  const surfaceContent = (
+    <SurfaceAtom params={surfaceWithVariant}>
+      {wrappedInner}
+    </SurfaceAtom>
   );
 
   /* ======================================================
@@ -318,19 +354,18 @@ export default function SectionCompound({
     ...(effectiveContainerWidth !== "edge-to-edge"
       ? { width: "100%", maxWidth: containerVar, marginLeft: "auto", marginRight: "auto" }
       : {}),
-    ...(isFullBleedHero ? { backgroundSize: "cover", backgroundPosition: "center" } : {}),
   };
 
   if (effectiveContainerWidth === "edge-to-edge") {
     return (
       <div data-section-id={id} style={Object.keys(outerSectionStyle).length > 0 ? outerSectionStyle : undefined}>
-        {maybeHeroWrapped}
+        {surfaceContent}
       </div>
     );
   }
   return (
     <div data-section-id={id} style={outerSectionStyle}>
-      {maybeHeroWrapped}
+      {surfaceContent}
     </div>
   );
 }

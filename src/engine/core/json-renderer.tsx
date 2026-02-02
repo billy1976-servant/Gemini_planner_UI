@@ -293,7 +293,7 @@ function deepMergeParams(
 }
 
 /** Section preset keys only — never merge card params into section. */
-const SECTION_PRESET_KEYS = ["containerWidth", "heroMode", "backgroundVariant", "moleculeLayout"] as const;
+const SECTION_PRESET_KEYS = ["containerWidth", "split", "backgroundVariant", "moleculeLayout"] as const;
 
 /* ======================================================
    PROFILE → SECTION RESOLVER (+ LAYOUT PRESET OVERRIDES)
@@ -323,8 +323,8 @@ function applyProfileToNode(
     delete p.layoutPreset;
     delete p.layout;
     delete p.containerWidth;
-    delete p.heroMode;
     delete p.backgroundVariant;
+    delete p.split;
   }
   if (layoutMode === "template" && isSection && node.role && profile.sections?.[node.role]) {
     const sectionDef = profile.sections[node.role];
@@ -340,9 +340,6 @@ function applyProfileToNode(
         params: { ...templateParams },
       },
       ...(containerWidth != null ? { containerWidth } : {}),
-      ...(node.role === "hero" && profile.heroMode != null
-        ? { heroMode: profile.heroMode }
-        : {}),
       ...(node.role === "hero" &&
       profile.sectionBackgroundPattern === "hero-accent"
         ? { backgroundVariant: "hero-accent" }
@@ -369,8 +366,14 @@ function applyProfileToNode(
     (next as any)._effectiveLayoutPreset =
       effectivePreset && typeof effectivePreset === "string" ? effectivePreset : null;
     const effectiveLayoutPresetId = (next as any)._effectiveLayoutPreset;
-    if (effectiveLayoutPresetId) {
-      const preset = getSectionLayoutPreset(effectiveLayoutPresetId);
+    // When no override: default hero sections to split preset so SectionCompound receives params.split + row.
+    const defaultHeroPresetId = (profile as { defaultHeroPreset?: string } | null)?.defaultHeroPreset ?? "hero-split-image-right";
+    const presetToApply =
+      effectiveLayoutPresetId != null && effectiveLayoutPresetId !== ""
+        ? effectiveLayoutPresetId
+        : (node.role === "hero" ? defaultHeroPresetId : null);
+    if (presetToApply) {
+      const preset = getSectionLayoutPreset(presetToApply);
       if (preset) {
         const sectionOnly: Record<string, any> = {};
         for (const k of SECTION_PRESET_KEYS) {
@@ -385,6 +388,10 @@ function applyProfileToNode(
           },
         };
         (next as any)._sectionPresetApplied = true;
+        // Verification: when default hero preset is applied, hero section receives params.split + moleculeLayout.row (see [SectionCompound] final params log).
+        if (typeof process !== "undefined" && process.env.NODE_ENV === "development" && !effectiveLayoutPresetId && node.role === "hero") {
+          traceOnce("hero-default-preset", "Hero section default preset applied", { presetId: presetToApply, split: preset.split, moleculeLayoutType: preset.moleculeLayout?.type });
+        }
       }
     } else if (!next.params?.moleculeLayout) {
       // No override and no profile layout: apply default so section layout always comes from engine, not JSON.
@@ -530,12 +537,37 @@ export function renderNode(
       ? deepMergeParams(paramsAfterSectionLayout, spacingOverlay)
       : paramsAfterSectionLayout;
 
+  // Section layout presets must always merge into section params; ensure preset keys are not dropped by template/visual merges.
+  const sectionLayoutPresetWasApplied = !!(profiledNode as any)._sectionPresetApplied;
+  if (typeKey === "section" && sectionLayoutPresetWasApplied && profiledNode.params) {
+    const p = profiledNode.params as Record<string, unknown>;
+    if (p.split != null) finalParams = { ...finalParams, split: p.split };
+    if (p.moleculeLayout != null) finalParams = { ...finalParams, moleculeLayout: p.moleculeLayout };
+    if (p.containerWidth != null) finalParams = { ...finalParams, containerWidth: p.containerWidth };
+    if (p.backgroundVariant != null) finalParams = { ...finalParams, backgroundVariant: p.backgroundVariant };
+  }
+
   const resolvedNode = {
     ...profiledNode,
     params: finalParams,
   };
 
   logParamsDiagnostic(typeKey, resolvedNode.id, finalParams);
+
+  // Hero section only: log final params after all preset + template merges (diagnose preset → layout).
+  if (typeKey === "section" && (profiledNode.role ?? resolvedNode.role) === "hero") {
+    const hasSplit = finalParams?.split != null && finalParams?.split?.type === "split";
+    const isRow = finalParams?.moleculeLayout?.type === "row";
+    console.log("[JsonRenderer] HERO SECTION FINAL PARAMS (after all merges)", {
+      id: resolvedNode.id,
+      hasSplit,
+      isRow,
+      split: finalParams?.split,
+      moleculeLayoutType: finalParams?.moleculeLayout?.type,
+      _sectionPresetApplied: (profiledNode as any)._sectionPresetApplied,
+      _effectiveLayoutPreset: (profiledNode as any)._effectiveLayoutPreset,
+    });
+  }
 
   const Component = (Registry as any)[resolvedNode.type];
 

@@ -21,6 +21,7 @@ export const SECTION_TO_CARD_CAPABILITIES: Record<string, string[]> = {
   "": [...ALL_CARD_PRESETS],
   "hero-centered": ["centered-card"],
   "hero-split-image-right": ["image-right", "centered-image-right"],
+  "hero-split-image-left": ["image-left", "centered-image-left"],
   "hero-full-bleed-image": [],
   "content-narrow": [...ALL_CARD_PRESETS],
   "image-left-text-right": [
