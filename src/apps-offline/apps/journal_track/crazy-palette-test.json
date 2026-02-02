@@ -49,7 +49,9 @@
             "body": "Card uses surface (background, radius, shadow), title (textRole.title), body (textRole.body). Media uses radius from params."
           },
           "params": {
-            "surface": { "background": "color.surface", "radius": "radius.md", "shadow": "shadow.md", "borderColor": "color.outline", "borderWidth": "borderWidth.sm" }
+            "surface": { "background": "color.surface", "radius": "radius.md", "shadow": "shadow.md", "borderColor": "color.outline", "borderWidth": "borderWidth.sm" },
+            "mediaPosition": "left",
+            "contentAlign": "center"
           }
         },
         {

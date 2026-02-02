@@ -116,6 +116,8 @@ export default function SectionCompound({
 
   const isGridLayout =
     moleculeLayout?.type === "grid";
+  const gridColumns = (moleculeLayout?.params as { columns?: number } | undefined)?.columns ?? 3;
+  const gridGap = (moleculeLayout?.params as { gap?: string } | undefined)?.gap ?? "var(--spacing-4)";
 
   const isFullBleedHero =
     heroMode === "full-screen";
@@ -197,8 +199,8 @@ export default function SectionCompound({
           <div
             style={{
               display: isGridLayout ? "grid" : "block",
-              gridTemplateColumns: isGridLayout ? "repeat(3, 1fr)" : undefined,
-              gap: isGridLayout ? "var(--spacing-4)" : undefined,
+              gridTemplateColumns: isGridLayout ? `repeat(${gridColumns}, 1fr)` : undefined,
+              gap: isGridLayout ? gridGap : undefined,
             }}
           >
             {children}
@@ -210,8 +212,8 @@ export default function SectionCompound({
           <div
             style={{
               display: isGridLayout ? "grid" : "block",
-              gridTemplateColumns: isGridLayout ? "repeat(3, 1fr)" : undefined,
-              gap: isGridLayout ? "var(--spacing-4)" : undefined,
+              gridTemplateColumns: isGridLayout ? `repeat(${gridColumns}, 1fr)` : undefined,
+              gap: isGridLayout ? gridGap : undefined,
             }}
           >
             {children}

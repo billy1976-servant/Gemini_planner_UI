@@ -4,7 +4,7 @@
  */
 import type { TemplateProfile, LayoutDef } from "./template-profiles";
 
-function isSectionNode(node: unknown): node is { type?: string; role?: string; layout?: any; params?: any; children?: unknown[] } {
+function isSectionNode(node: unknown): node is { type?: string; role?: string; params?: unknown; children?: unknown[] } {
   if (!node || typeof node !== "object") return false;
   const t = (node as { type?: string }).type;
   return typeof t === "string" && t.toLowerCase() === "section";
@@ -19,13 +19,10 @@ function collectSectionsFromTree(
     const n = node as Record<string, unknown>;
     if (isSectionNode(n) && n.role && typeof n.role === "string") {
       const role = n.role as string;
-      const layout = n.layout as { type?: string; params?: Record<string, unknown> } | undefined;
-      const moleculeLayout = (n.params as { moleculeLayout?: { type?: string; params?: Record<string, unknown> } })?.moleculeLayout;
-      const type = layout?.type ?? moleculeLayout?.type ?? "column";
-      const params = layout?.params ?? moleculeLayout?.params ?? {};
-      const normalizedType = type === "stacked" ? "stack" : type;
+      // Layout must not be read from screen JSON. Use role-based defaults for template profile.
+      // Actual layout at runtime comes from Layout Engine / Preset (e.g. section layout dropdown).
       if (!acc[role]) {
-        acc[role] = { type: normalizedType as "row" | "column" | "grid" | "stack", params: { ...params } };
+        acc[role] = { type: "column", params: {} };
       }
     }
     if (Array.isArray(n.children)) {

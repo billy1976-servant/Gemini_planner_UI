@@ -307,32 +307,28 @@ function applyProfileToNode(
   const isSection = node.type?.toLowerCase?.() === "section";
   const layoutMode = profile?.mode ?? "template";
 
+  // Layout from Layout Engine / Preset only — never from node. Strip layout keys from section params so JSON cannot supply layout.
+  if (isSection && next.params && typeof next.params === "object") {
+    const p = next.params as Record<string, unknown>;
+    delete p.moleculeLayout;
+    delete p.layoutPreset;
+    delete p.layout;
+    delete p.containerWidth;
+    delete p.heroMode;
+    delete p.backgroundVariant;
+  }
   if (layoutMode === "template" && isSection && node.role && profile.sections?.[node.role]) {
     const sectionDef = profile.sections[node.role];
-    // Template provides defaults; organ layout overrides.
-    next.layout = {
-      ...sectionDef,
-      ...(node.layout ?? {}),
-    };
-    // moleculeLayout: template supplies gap/padding/type; organ layout wins for justify/align.
+    next.layout = { ...sectionDef };
     const layoutType = sectionDef.type === "stack" ? "stacked" : sectionDef.type;
     const templateParams = sectionDef.params ?? {};
-    const organLayoutParams = node.layout?.params ?? {};
-    const mergedLayoutParams = {
-      ...templateParams,
-      ...(node.params?.moleculeLayout?.params ?? {}),
-    };
-    if (organLayoutParams.justify !== undefined) mergedLayoutParams.justify = organLayoutParams.justify;
-    if (organLayoutParams.align !== undefined) mergedLayoutParams.align = organLayoutParams.align;
-
     const containerWidth =
       profile.widthByRole?.[node.role] ?? profile.containerWidth;
     next.params = {
       ...(next.params ?? {}),
       moleculeLayout: {
         type: layoutType,
-        params: mergedLayoutParams,
-        ...(node.params?.moleculeLayout ? { type: node.params.moleculeLayout.type, preset: node.params.moleculeLayout.preset } : {}),
+        params: { ...templateParams },
       },
       ...(containerWidth != null ? { containerWidth } : {}),
       ...(node.role === "hero" && profile.heroMode != null
@@ -356,12 +352,11 @@ function applyProfileToNode(
     };
   }
 
-  // Per-section: resolve effective layout preset (override → node.layoutPreset → null). Merge preset into next.params here so preset wins.
+  // Per-section: effective layout preset from overrides only (UI/dropdown). Screen JSON must not set layoutPreset.
   if (isSection) {
     const sectionKey = (node.id ?? node.role) ?? "";
-    const overrideForKey = sectionLayoutPresetOverrides?.[sectionKey];
     const effectivePreset =
-      (sectionLayoutPresetOverrides?.[sectionKey] ?? node.layoutPreset) ?? null;
+      (sectionLayoutPresetOverrides?.[sectionKey] ?? null) as string | null;
     (next as any)._effectiveLayoutPreset =
       effectivePreset && typeof effectivePreset === "string" ? effectivePreset : null;
     const effectiveLayoutPresetId = (next as any)._effectiveLayoutPreset;
@@ -377,6 +372,16 @@ function applyProfileToNode(
           },
         };
         (next as any)._sectionPresetApplied = true;
+      }
+    } else if (!next.params?.moleculeLayout) {
+      // No override and no profile layout: apply default so section layout always comes from engine, not JSON.
+      const defaultPreset = getSectionLayoutPreset("content-narrow");
+      if (defaultPreset?.moleculeLayout) {
+        next.params = {
+          ...(next.params ?? {}),
+          ...defaultPreset,
+          moleculeLayout: { ...defaultPreset.moleculeLayout },
+        };
       }
     }
   }
@@ -629,24 +634,13 @@ export function renderNode(
 
   delete props.type;
   delete props.key;
-
-
-  const LayoutComponent =
-    resolvedNode.layout?.type &&
-    (Registry as any)[resolvedNode.layout.type];
-
-
-  const wrappedChildren = LayoutComponent ? (
-    <LayoutComponent params={resolvedNode.layout?.params}>
-      {renderedChildren}
-    </LayoutComponent>
-  ) : (
-    renderedChildren
-  );
+  // Layout wrapping: not from node.layout. Layout comes from Layout Engine / Preset (section params.moleculeLayout injected above).
+  delete (props as any).layout;
+  delete (props as any).layoutPreset;
 
   const content = (
     <MaybeDebugWrapper node={resolvedNode}>
-      <Component {...props}>{wrappedChildren}</Component>
+      <Component {...props}>{renderedChildren}</Component>
     </MaybeDebugWrapper>
   );
 

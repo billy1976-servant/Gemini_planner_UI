@@ -4,37 +4,43 @@
       "requiredProps": [],
       "optionalProps": ["params", "children"],
       "contentKeys": [],
-      "paramKeys": ["fontFamily", "size", "weight", "color", "lineHeight", "letterSpacing", "align", "wrap", "truncate"]
+      "paramKeys": [],
+      "note": "Visual params (fontFamily, size, weight, color, align, etc.) come from Style System / definitions, not screen JSON."
     },
     "media": {
       "requiredProps": [],
       "optionalProps": ["params", "children", "src", "alt", "caption"],
       "contentKeys": [],
-      "paramKeys": ["aspectRatio", "objectFit", "radius", "placeholder", "placeholderColor"]
+      "paramKeys": [],
+      "note": "Visual params (aspectRatio, objectFit, radius, etc.) come from Style System, not screen JSON."
     },
     "surface": {
       "requiredProps": [],
       "optionalProps": ["params", "children"],
       "contentKeys": [],
-      "paramKeys": ["background", "borderColor", "borderWidth", "radius", "shadow", "opacity", "padding", "transition"]
+      "paramKeys": [],
+      "note": "Visual params (background, border, radius, etc.) come from Style System / palette, not screen JSON."
     },
     "sequence": {
       "requiredProps": [],
       "optionalProps": ["params", "children"],
       "contentKeys": [],
-      "paramKeys": ["flow", "direction", "gap", "padding", "columns", "align", "justify", "wrap", "scrollable", "params"]
+      "paramKeys": [],
+      "note": "Layout (flow, direction, gap, etc.) comes from Layout Engine, not screen JSON."
     },
     "trigger": {
       "requiredProps": [],
       "optionalProps": ["params", "onTap", "children"],
       "contentKeys": [],
-      "paramKeys": ["disabled", "disabledOpacity", "transition", "hoverLift", "hoverLiftTransform", "cursor"]
+      "paramKeys": ["disabled"],
+      "note": "Visual/UX params (transition, hoverLift, etc.) come from Style System, not screen JSON."
     },
     "collection": {
       "requiredProps": [],
       "optionalProps": ["params", "children"],
       "contentKeys": [],
-      "paramKeys": ["direction", "gap", "padding", "scrollable"]
+      "paramKeys": [],
+      "note": "Layout (direction, gap, padding) comes from Layout Engine, not screen JSON."
     },
     "condition": {
       "requiredProps": [],
@@ -46,87 +52,91 @@
       "requiredProps": [],
       "optionalProps": ["params", "children"],
       "contentKeys": [],
-      "paramKeys": ["background", "padding", "scrollable"]
+      "paramKeys": [],
+      "note": "Visual/layout params come from Style System / Layout Engine, not screen JSON."
     },
     "field": {
       "requiredProps": [],
       "optionalProps": ["params", "children"],
       "contentKeys": [],
-      "paramKeys": ["value", "fieldKey", "multiline", "rows", "onChange", "background", "borderColor", "borderWidth", "radius", "padding"]
+      "paramKeys": ["value", "fieldKey", "multiline", "rows", "onChange"],
+      "note": "Visual params (background, border, radius, padding) come from Style System, not screen JSON."
     }
   },
   "molecules": {
     "section": {
       "allowedContentKeys": ["title"],
       "allowedChildren": ["any"],
-      "allowedParams": ["surface", "title", "containerWidth", "heroMode", "backgroundVariant", "moleculeLayout", "role", "layout", "layoutPreset", "media"],
-      "allowedBehaviors": []
+      "allowedParams": ["title", "role"],
+      "allowedBehaviors": [],
+      "note": "Layout (containerWidth, heroMode, moleculeLayout, layoutPreset) comes from Layout Engine / Preset System at runtime, not screen JSON."
     },
     "button": {
       "allowedContentKeys": ["label", "supportingText"],
       "allowedChildren": ["any"],
-      "allowedParams": ["trigger", "surface", "label", "supportingText", "moleculeLayout"],
+      "allowedParams": ["label", "supportingText"],
       "allowedBehaviors": ["Navigation", "Action", "Interaction"]
     },
     "card": {
       "allowedContentKeys": ["media", "title", "body"],
       "allowedChildren": ["any"],
-      "allowedParams": ["trigger", "surface", "media", "title", "body", "moleculeLayout"],
-      "allowedBehaviors": ["Navigation", "Action", "Interaction"]
+      "allowedParams": ["media", "title", "body", "mediaPosition"],
+      "allowedBehaviors": ["Navigation", "Action", "Interaction"],
+      "note": "mediaPosition is semantic intent only (e.g. left/right). Layout/spacing from Layout Engine or molecule defaults."
     },
     "avatar": {
       "allowedContentKeys": ["media", "text"],
       "allowedChildren": ["any"],
-      "allowedParams": ["trigger", "surface", "media", "text", "moleculeLayout"],
+      "allowedParams": ["media", "text"],
       "allowedBehaviors": ["Navigation", "Action", "Interaction"]
     },
     "chip": {
       "allowedContentKeys": ["title", "body", "media"],
       "allowedChildren": ["any"],
-      "allowedParams": ["trigger", "surface", "text", "body", "media", "moleculeLayout"],
+      "allowedParams": ["text", "body", "media"],
       "allowedBehaviors": ["Navigation", "Action", "Interaction"]
     },
     "field": {
       "allowedContentKeys": ["label", "error"],
       "allowedChildren": ["any"],
-      "allowedParams": ["surface", "label", "field", "error", "moleculeLayout", "state"],
+      "allowedParams": ["label", "field", "error", "state"],
       "allowedBehaviors": []
     },
     "footer": {
       "allowedContentKeys": ["left", "right"],
       "allowedChildren": [],
-      "allowedParams": ["surface", "item", "moleculeLayout"],
+      "allowedParams": ["item"],
       "allowedBehaviors": []
     },
     "list": {
       "allowedContentKeys": ["items"],
       "allowedChildren": [],
-      "allowedParams": ["surface", "item", "moleculeLayout"],
+      "allowedParams": ["item"],
       "allowedBehaviors": []
     },
     "modal": {
       "allowedContentKeys": ["title", "body"],
       "allowedChildren": ["any"],
-      "allowedParams": ["surface", "title", "body", "moleculeLayout"],
+      "allowedParams": ["title", "body"],
       "allowedBehaviors": []
     },
     "stepper": {
       "allowedContentKeys": [],
       "allowedChildren": [],
-      "allowedParams": ["moleculeLayout"],
+      "allowedParams": [],
       "allowedBehaviors": [],
-      "note": "Uses steps[] array (steps[].content.label, steps[].params, steps[].behavior), not content"
+      "note": "Uses steps[] array (steps[].content.label, steps[].params, steps[].behavior), not content. Layout from molecule defaults."
     },
     "toast": {
       "allowedContentKeys": ["message"],
       "allowedChildren": [],
-      "allowedParams": ["trigger", "surface", "text", "moleculeLayout"],
+      "allowedParams": ["text"],
       "allowedBehaviors": ["Navigation", "Action", "Interaction"]
     },
     "toolbar": {
       "allowedContentKeys": ["actions"],
       "allowedChildren": [],
-      "allowedParams": ["surface", "item", "moleculeLayout"],
+      "allowedParams": ["item"],
       "allowedBehaviors": []
     },
     "JournalHistory": {
@@ -171,7 +181,8 @@
     "features-grid": {
       "slots": ["features.title", "features.items"],
       "emittedMolecules": ["Section", "Grid"],
-      "requiredLayoutParams": []
+      "requiredLayoutParams": [],
+      "note": "Layout is supplied by Layout Engine / Preset at runtime, not from screen JSON."
     },
     "gallery": {
       "slots": [],
@@ -199,28 +210,7 @@
       "requiredLayoutParams": []
     }
   },
-  "layoutPrimitives": {
-    "row": {
-      "params": ["gap", "align", "justify", "wrap"],
-      "defaults": { "gap": "1rem", "align": "center", "justify": "flex-start", "wrap": "wrap" }
-    },
-    "column": {
-      "params": ["gap", "align", "justify"],
-      "defaults": { "gap": "1rem", "align": "stretch", "justify": "flex-start" }
-    },
-    "grid": {
-      "params": ["columns", "gap", "align", "justify"],
-      "defaults": { "columns": 2, "gap": "1rem", "align": "stretch", "justify": "stretch" }
-    },
-    "stack": {
-      "params": ["align", "justify"],
-      "defaults": { "align": "center", "justify": "center" }
-    },
-    "page": {
-      "params": ["align", "justify", "padding", "background"],
-      "defaults": { "align": "flex-start", "justify": "flex-start", "padding": 0, "background": "transparent" }
-    }
-  },
+  "layoutPrimitives": "REMOVED — Layout (row/column/grid/stack/page) is owned by Layout Engine and Preset System at runtime. Screen JSON must not define or reference layout primitives.",
   "behaviorVerbs": {
     "interaction": {
       "verbs": ["tap", "double", "long", "dragX", "dragY", "dragXY", "scrollUp", "scrollDown", "swipeLeft", "swipeRight", "swipeUp", "swipeDown"],
@@ -262,7 +252,7 @@
   "paramKeyMapping": "See src/contracts/PARAM_KEY_MAPPING.md — definition variant keys and compound props must align with allowedParams",
   "rendererExpectations": {
     "requiredKeysPerNode": ["type"],
-    "optionalKeysPerNode": ["id", "variant", "size", "params", "content", "behavior", "onTap", "children", "items", "layout", "when", "role", "layoutPreset", "media"],
+    "optionalKeysPerNode": ["id", "params", "content", "behavior", "onTap", "children", "items", "when", "role"],
     "typeResolution": "definitions[type] ?? definitions[type.toLowerCase()]; Registry[type] (case-sensitive key); fallback: Missing registry entry div",
     "conditionalRender": "If node.when present, render only when state[node.when.state] === node.when.equals; else do not render",
     "repeaterMode": "If node.items is non-empty array: render each item as Card (params.repeater.itemType ignored in practice—always Card), content from item.title, item.body, item.icon|item.image",
@@ -271,7 +261,7 @@
       "JournalHistory": "params.entries injected from state.journal[params.track].entry if params.track string",
       "stepper": "Expects steps[] not content; each step: content.label, params, behavior"
     },
-    "layoutWrapping": "If node.layout.type is set and Registry[node.layout.type] exists, children are wrapped in LayoutComponent(node.layout.params)",
+    "layoutSource": "Layout and wrapping come from Layout Engine / Preset System (section key + role + overrides), not from node.layout or node.layoutPreset.",
     "behaviorStripping": "Behavior stripped for types: section, field, avatar; for modal stripped unless close-only (Navigation verb close or Action name close)",
     "noFallbackBehavior": "Missing type renders red div 'Missing registry entry: <type>'"
   }

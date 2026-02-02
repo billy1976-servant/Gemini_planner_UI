@@ -7,6 +7,8 @@ This document defines the canonical mapping between:
 
 All three must align. Definitions and compounds must use the **exact** param keys listed here.
 
+**Layout and visual params:** Surface, trigger styling, layout (moleculeLayout, gap, padding, etc.) are **not** screen JSON params. They come from **definitions**, **palette**, **Layout Engine**, and **Preset System** at runtime. Compounds receive resolved layout/style from the renderer.
+
 ---
 
 ## Molecule Param Key Mapping
@@ -21,9 +23,8 @@ All three must align. Definitions and compounds must use the **exact** param key
 | | media | ✓ | media | params.media | MediaAtom |
 | | title | ✓ | title | params.title | TextAtom |
 | | body | ✓ | body | params.body | TextAtom |
-| **section** | surface | ✓ | surface | params.surface | SurfaceAtom |
-| | title | ✓ | title | params.title | TextAtom |
-| | layout | ✓ | layout | — | moleculeLayout merge |
+| **section** | title | ✓ | title | params.title | TextAtom |
+| | role | ✓ | role | — | Layout Engine uses role for preset selection |
 | **chip** | surface | ✓ | surface | params.surface | SurfaceAtom |
 | | text | ✓ | text | params.text | TextAtom (title slot) |
 | | body | ✓ | body | params.body | TextAtom |
@@ -72,3 +73,4 @@ All three must align. Definitions and compounds must use the **exact** param key
 2. **Compound props** MUST read `params.<key>` using the "Compound Prop" column.
 3. When adding a new molecule, update this file and ensure definition + compound align.
 4. Compounds MAY implement fallbacks (e.g. `params.label ?? params.text`) for backward compatibility.
+5. **Screen JSON** must not contain layout or visual param keys (layout, layoutPreset, moleculeLayout, surface, containerWidth, heroMode, etc.); those are supplied at runtime by Layout Engine, Preset System, and Style System.

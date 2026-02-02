@@ -50,7 +50,7 @@ function ensureChildren(node: ScreenTreeNode): ScreenTreeNode {
 
 /**
  * Compile product data into a full screen JSON document for the offline Molecule renderer.
- * Uses only Registry types (Section, Grid/Column/Row, Card); no new UI types.
+ * Content-only: Section has structure + role only. Layout is supplied by Layout Engine / Preset at runtime (e.g. section layout dropdown).
  */
 export function compileProductDataToScreen(
   input: ProductScreenInput,
@@ -67,33 +67,14 @@ export function compileProductDataToScreen(
     (n) => ensureChildren({ ...n, children: [] })
   );
 
-  const layoutType =
-    options.layout === "column"
-      ? "Column"
-      : options.layout === "row"
-        ? "Row"
-        : "Grid";
-
-  const layoutParams: Record<string, unknown> =
-    layoutType === "Grid"
-      ? { columns: 3, gap: "1rem" }
-      : layoutType === "Row"
-        ? { gap: "1rem", wrap: true }
-        : { gap: "1rem" };
-
-  const layoutNode: ScreenTreeNode = ensureChildren({
-    id: "products_layout",
-    type: layoutType,
-    params: layoutParams,
-    children: cardNodes,
-  });
-
   const sectionTitle = options.sectionTitle ?? "Products";
   const sectionNode: ScreenTreeNode = ensureChildren({
     id: "products_section",
     type: "Section",
+    role: "gallery",
     content: { title: sectionTitle },
-    children: [layoutNode],
+    params: {},
+    children: cardNodes,
   });
 
   const currentView = options.currentView ?? "|products";

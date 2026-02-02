@@ -52,6 +52,10 @@ export type CardCompoundProps = {
       preset?: string;
       params?: Record<string, any>;
     };
+    /** Where media appears: top (default), left, right, bottom */
+    mediaPosition?: "top" | "left" | "right" | "bottom";
+    /** Alignment of slot content: start (default), center, end */
+    contentAlign?: "start" | "center" | "end";
   };
   content?: {
     media?: string;   // ← FIXED (was image)
@@ -84,6 +88,9 @@ export default function CardCompound({
   onTap,
   children,
 }: CardCompoundProps) {
+  const mediaPosition = params?.mediaPosition ?? "top";
+  const contentAlign = params?.contentAlign ?? "start";
+
   const handleTap = () => {
     if (onTap) return onTap();
     if (!behavior) return;
@@ -107,14 +114,40 @@ export default function CardCompound({
 
   /* ======================================================
      INTERNAL SLOT CONTENT (PURE, STATE-SAFE)
+     mediaPosition and contentAlign drive layout; moleculeLayout supplies gap/padding.
      ====================================================== */
-  const slotContent = (
-    <>
-      {content.media && (
-        <MediaAtom
-          params={resolveParams(params.media)}
-          src={content.media}
-        />
+  const layoutParams = {
+    ...(params.layout ?? {}),
+    ...(params.moleculeLayout?.params ?? {}),
+  };
+  const gap = layoutParams.gap ?? "var(--spacing-4)";
+  const alignItems =
+    contentAlign === "center" ? "center" : contentAlign === "end" ? "flex-end" : "flex-start";
+  const textAlign =
+    contentAlign === "center" ? "center" : contentAlign === "end" ? "right" : "left";
+
+  const media = content?.media;
+  const isPrimaryMedia =
+    typeof media === "string" &&
+    !media.includes("avatar") &&
+    !media.includes("profile") &&
+    !media.includes("icon") &&
+    !media.includes("thumb");
+  const hasLayoutMedia = isPrimaryMedia && mediaPosition;
+
+  const mediaChunk = isPrimaryMedia && media ? (
+    <MediaAtom
+      params={resolveParams(params.media)}
+      src={media}
+    />
+  ) : null;
+
+  const textChunk = (
+    <div style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-2)", textAlign, minWidth: 0 }}>
+      {!isPrimaryMedia && media && (
+        <div style={{ width: 32, height: 32, borderRadius: "50%", overflow: "hidden", flexShrink: 0 }}>
+          <MediaAtom src={media} params={{ aspectRatio: "1", radius: "999px" }} />
+        </div>
       )}
       {content.title && (
         <TextAtom params={resolveParams(params.title)}>
@@ -126,38 +159,51 @@ export default function CardCompound({
           {content.body}
         </TextAtom>
       )}
-    </>
+    </div>
   );
 
+  const isRow = hasLayoutMedia && (mediaPosition === "left" || mediaPosition === "right");
+  const firstChunk = hasLayoutMedia && (mediaPosition === "bottom" || mediaPosition === "right") ? textChunk : mediaChunk;
+  const secondChunk = hasLayoutMedia && (mediaPosition === "bottom" || mediaPosition === "right") ? mediaChunk : textChunk;
 
-  /* ======================================================
-     APPLY MOLECULE LAYOUT *ONLY TO SLOT CONTENT*
-     Definition/preset layout (gap, padding) merged so spacing tokens apply.
-     ====================================================== */
-  const layoutParams = {
-    ...(params.layout ?? {}),
-    ...(params.moleculeLayout?.params ?? {}),
-  };
+  const slotContent =
+    !mediaChunk ? (
+      textChunk
+    ) : (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: isRow ? "row" : "column",
+          gap,
+          alignItems: isRow ? "center" : alignItems,
+          width: "100%",
+        }}
+      >
+        {firstChunk}
+        {secondChunk}
+      </div>
+    );
+
   const layout = resolveWithDefaultLayout(
     params.moleculeLayout?.type,
     params.moleculeLayout?.preset ?? null,
     layoutParams,
-    "column" // default for Card
+    "column"
   );
-
 
   let laidOutSlots: React.ReactNode = slotContent;
 
-
-  if (layout.flow === "grid") {
+  if (mediaChunk) {
+    laidOutSlots = slotContent;
+  } else if (layout.flow === "grid") {
     laidOutSlots = (
-      <CollectionAtom params={layout}>
+      <CollectionAtom params={{ ...layout, gap }}>
         {slotContent}
       </CollectionAtom>
     );
   } else if (layout.direction) {
     laidOutSlots = (
-      <SequenceAtom params={layout}>
+      <SequenceAtom params={{ ...layout, gap }}>
         {slotContent}
       </SequenceAtom>
     );

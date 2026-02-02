@@ -9,15 +9,24 @@
       "align": "stretch"
     }
   },
-  "params": {},
+  "params": {
+    "moleculeLayout": {
+      "type": "grid",
+      "preset": null,
+      "params": {
+        "columns": 2,
+        "gap": "2rem"
+      }
+    }
+  },
   "children": [
-    { "type": "slot", "slotKey": "faq.title" },
     {
-      "type": "Grid",
-      "layout": { "type": "grid", "params": { "columns": 2, "gap": "2rem" } },
-      "children": [
-        { "type": "slot", "slotKey": "faq.primary" }
-      ]
+      "type": "slot",
+      "slotKey": "faq.title"
+    },
+    {
+      "type": "slot",
+      "slotKey": "faq.primary"
     }
   ]
 }

@@ -6,18 +6,71 @@
       "id": "nav_section",
       "type": "Section",
       "role": "nav",
-      "layout": { "type": "row", "params": { "gap": "1.25rem", "justify": "space-between", "align": "center", "wrap": "wrap" } },
+      "layout": {
+        "type": "row",
+        "params": {
+          "gap": "1.25rem",
+          "justify": "space-between",
+          "align": "center",
+          "wrap": "wrap"
+        }
+      },
       "content": {},
       "children": [
         {
           "type": "Toolbar",
           "content": {
             "actions": [
-              { "label": "Home", "behavior": { "type": "Navigation", "params": { "verb": "go", "to": "websites/showcase/showcase-home.json" } } },
-              { "label": "Features", "behavior": { "type": "Navigation", "params": { "verb": "go", "to": "template/about.json" } } },
-              { "label": "Pricing", "behavior": { "type": "Navigation", "params": { "verb": "go", "to": "template/about.json" } } },
-              { "label": "About", "behavior": { "type": "Navigation", "params": { "verb": "go", "to": "template/about.json" } } },
-              { "label": "Contact", "behavior": { "type": "Navigation", "params": { "verb": "go", "to": "template/contact.json" } } }
+              {
+                "label": "Home",
+                "behavior": {
+                  "type": "Navigation",
+                  "params": {
+                    "verb": "go",
+                    "to": "websites/showcase/showcase-home.json"
+                  }
+                }
+              },
+              {
+                "label": "Features",
+                "behavior": {
+                  "type": "Navigation",
+                  "params": {
+                    "verb": "go",
+                    "to": "template/about.json"
+                  }
+                }
+              },
+              {
+                "label": "Pricing",
+                "behavior": {
+                  "type": "Navigation",
+                  "params": {
+                    "verb": "go",
+                    "to": "template/about.json"
+                  }
+                }
+              },
+              {
+                "label": "About",
+                "behavior": {
+                  "type": "Navigation",
+                  "params": {
+                    "verb": "go",
+                    "to": "template/about.json"
+                  }
+                }
+              },
+              {
+                "label": "Contact",
+                "behavior": {
+                  "type": "Navigation",
+                  "params": {
+                    "verb": "go",
+                    "to": "template/contact.json"
+                  }
+                }
+              }
             ]
           }
         }
@@ -27,15 +80,37 @@
       "id": "header_section",
       "type": "Section",
       "role": "header",
-      "layout": { "type": "row", "params": { "gap": "1.25rem", "justify": "space-between", "align": "center", "wrap": "wrap" } },
+      "layout": {
+        "type": "row",
+        "params": {
+          "gap": "1.25rem",
+          "justify": "space-between",
+          "align": "center",
+          "wrap": "wrap"
+        }
+      },
       "content": {},
       "children": [
-        { "type": "Section", "content": { "title": "Acme" }, "variant": "subtle" },
+        {
+          "type": "Section",
+          "content": {
+            "title": "Acme"
+          },
+          "variant": "subtle"
+        },
         {
           "type": "Button",
-          "content": { "label": "Get Started" },
+          "content": {
+            "label": "Get Started"
+          },
           "variant": "filled",
-          "behavior": { "type": "Navigation", "params": { "verb": "go", "to": "template/contact.json" } }
+          "behavior": {
+            "type": "Navigation",
+            "params": {
+              "verb": "go",
+              "to": "template/contact.json"
+            }
+          }
         }
       ]
     },
@@ -43,31 +118,55 @@
       "id": "hero_section",
       "type": "Section",
       "role": "hero",
-      "layout": { "type": "column", "params": { "gap": "2.5rem", "align": "center", "justify": "center", "padding": "3rem 0" } },
+      "layout": {
+        "type": "column",
+        "params": {
+          "gap": "2.5rem",
+          "align": "center",
+          "justify": "center",
+          "padding": "3rem 0"
+        }
+      },
       "content": {},
       "children": [
         {
           "type": "Section",
           "size": "lg",
-          "content": { "title": "Build something people love." }
+          "content": {
+            "title": "Build something people love."
+          }
         },
         {
           "type": "Section",
           "variant": "subtle",
-          "content": { "title": "A complete design system driven by JSON. Typography, layout, and components that scale from landing pages to applications—without rewriting content." }
+          "content": {
+            "title": "A complete design system driven by JSON. Typography, layout, and components that scale from landing pages to applications—without rewriting content."
+          }
         },
         {
           "type": "Card",
           "content": {
             "media": "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=1200&fit=crop"
+          },
+          "params": {
+            "mediaPosition": "left",
+            "contentAlign": "center"
           }
         },
         {
           "type": "Button",
-          "content": { "label": "Start building" },
+          "content": {
+            "label": "Start building"
+          },
           "variant": "filled",
           "size": "lg",
-          "behavior": { "type": "Navigation", "params": { "verb": "go", "to": "template/contact.json" } }
+          "behavior": {
+            "type": "Navigation",
+            "params": {
+              "verb": "go",
+              "to": "template/contact.json"
+            }
+          }
         }
       ]
     },
@@ -75,81 +174,150 @@
       "id": "features_section",
       "type": "Section",
       "role": "features",
-      "layout": { "type": "column", "params": { "gap": "2.5rem", "align": "stretch" } },
+      "layout": {
+        "type": "column",
+        "params": {
+          "gap": "2.5rem",
+          "align": "stretch"
+        }
+      },
       "content": {},
       "children": [
         {
           "type": "Section",
-          "content": { "title": "Why this works" },
+          "content": {
+            "title": "Why this works"
+          },
           "variant": "standard"
         },
         {
-          "type": "Grid",
-          "layout": { "type": "grid", "params": { "columns": 3, "gap": "2rem" } },
-          "children": [
-            {
-              "type": "Card",
-              "content": {
-                "media": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&fit=crop",
-                "title": "Typography hierarchy",
-                "body": "Headline, lead, and body roles. Display size for heroes, title for sections, body for content. One palette, consistent rhythm."
-              }
-            },
-            {
-              "type": "Card",
-              "content": {
-                "media": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&fit=crop",
-                "title": "JSON-driven structure",
-                "body": "Sections, grids, and cards from a single file. Organs expand to compound trees. No new primitives—only composition."
-              }
-            },
-            {
-              "type": "Card",
-              "content": {
-                "media": "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=400&fit=crop",
-                "title": "Design tokens",
-                "body": "Palette, spacing scale, and templates. Switch experience, template, or palette—layout and style update without touching content."
-              }
-            }
-          ]
+          "type": "Card",
+          "content": {
+            "media": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&fit=crop",
+            "title": "Typography hierarchy",
+            "body": "Headline, lead, and body roles. Display size for heroes, title for sections, body for content. One palette, consistent rhythm."
+          },
+          "params": {
+            "mediaPosition": "left",
+            "contentAlign": "center"
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "media": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&fit=crop",
+            "title": "JSON-driven structure",
+            "body": "Sections, grids, and cards from a single file. Organs expand to compound trees. No new primitives—only composition."
+          },
+          "params": {
+            "mediaPosition": "left",
+            "contentAlign": "center"
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "media": "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=400&fit=crop",
+            "title": "Design tokens",
+            "body": "Palette, spacing scale, and templates. Switch experience, template, or palette—layout and style update without touching content."
+          },
+          "params": {
+            "mediaPosition": "left",
+            "contentAlign": "center"
+          }
         }
-      ]
+      ],
+      "params": {
+        "moleculeLayout": {
+          "type": "grid",
+          "preset": null,
+          "params": {
+            "columns": 3,
+            "gap": "2rem"
+          }
+        }
+      }
     },
     {
       "id": "testimonials_section",
       "type": "Section",
       "role": "testimonials",
-      "layout": { "type": "column", "params": { "gap": "2rem" } },
+      "layout": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
       "content": {},
       "children": [
         {
           "type": "Section",
-          "content": { "title": "What builders say" },
+          "content": {
+            "title": "What builders say"
+          },
           "variant": "standard"
         },
         {
-          "type": "Grid",
-          "layout": { "type": "grid", "params": { "columns": 3, "gap": "2rem" } },
-          "children": [
-            { "type": "Card", "content": { "title": "Sarah Chen", "body": "Finally a system where JSON actually drives beautiful UI. The headline variant alone changed how we structure landing pages." } },
-            { "type": "Card", "content": { "title": "Mike Rodriguez", "body": "Hero, features, testimonials, CTA—all from one file. Typography hierarchy that actually shows up in the render." } },
-            { "type": "Card", "content": { "title": "Emily Watson", "body": "Param key alignment was the missing piece. Now we have tests that prove the pipeline works end to end." } }
-          ]
+          "type": "Card",
+          "content": {
+            "title": "Sarah Chen",
+            "body": "Finally a system where JSON actually drives beautiful UI. The headline variant alone changed how we structure landing pages."
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "Mike Rodriguez",
+            "body": "Hero, features, testimonials, CTA—all from one file. Typography hierarchy that actually shows up in the render."
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "Emily Watson",
+            "body": "Param key alignment was the missing piece. Now we have tests that prove the pipeline works end to end."
+          }
         }
-      ]
+      ],
+      "params": {
+        "moleculeLayout": {
+          "type": "grid",
+          "preset": null,
+          "params": {
+            "columns": 3,
+            "gap": "2rem"
+          }
+        }
+      }
     },
     {
       "id": "cta_section",
       "type": "Section",
       "role": "cta",
-      "layout": { "type": "column", "params": { "gap": "2rem", "align": "center" } },
-      "content": { "title": "Ready to ship?" },
+      "layout": {
+        "type": "column",
+        "params": {
+          "gap": "2rem",
+          "align": "center"
+        }
+      },
+      "content": {
+        "title": "Ready to ship?"
+      },
       "children": [
         {
           "type": "Button",
-          "content": { "label": "View template" },
+          "content": {
+            "label": "View template"
+          },
           "variant": "outlined",
-          "behavior": { "type": "Navigation", "params": { "verb": "go", "to": "template/home.json" } }
+          "behavior": {
+            "type": "Navigation",
+            "params": {
+              "verb": "go",
+              "to": "template/home.json"
+            }
+          }
         }
       ]
     },
@@ -157,8 +325,12 @@
       "id": "footer_section",
       "type": "Footer",
       "content": {
-        "left": { "label": "Product · Features · Pricing · About · Contact" },
-        "right": { "label": "© 2026 Showcase. JSON to UI." }
+        "left": {
+          "label": "Product · Features · Pricing · About · Contact"
+        },
+        "right": {
+          "label": "© 2026 Showcase. JSON to UI."
+        }
       }
     }
   ]

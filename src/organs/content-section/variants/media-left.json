@@ -11,16 +11,28 @@
       "wrap": "wrap"
     }
   },
-  "params": {},
+  "params": {
+    "moleculeLayout": {
+      "type": "column",
+      "preset": null,
+      "params": {
+        "gap": "1rem",
+        "align": "stretch"
+      }
+    }
+  },
   "children": [
-    { "type": "slot", "slotKey": "content.media" },
     {
-      "type": "Column",
-      "layout": { "type": "column", "params": { "gap": "1rem", "align": "stretch" } },
-      "children": [
-        { "type": "slot", "slotKey": "content.title" },
-        { "type": "slot", "slotKey": "content.body" }
-      ]
+      "type": "slot",
+      "slotKey": "content.media"
+    },
+    {
+      "type": "slot",
+      "slotKey": "content.title"
+    },
+    {
+      "type": "slot",
+      "slotKey": "content.body"
     }
   ]
 }

@@ -11,17 +11,32 @@
       "wrap": "wrap"
     }
   },
-  "params": {},
+  "params": {
+    "moleculeLayout": {
+      "type": "column",
+      "preset": null,
+      "params": {
+        "gap": "1rem",
+        "align": "flex-start"
+      }
+    }
+  },
   "children": [
     {
-      "type": "Column",
-      "layout": { "type": "column", "params": { "gap": "1rem", "align": "flex-start" } },
-      "children": [
-        { "type": "slot", "slotKey": "hero.title" },
-        { "type": "slot", "slotKey": "hero.subtitle" },
-        { "type": "slot", "slotKey": "hero.cta" }
-      ]
+      "type": "slot",
+      "slotKey": "hero.title"
     },
-    { "type": "slot", "slotKey": "hero.media" }
+    {
+      "type": "slot",
+      "slotKey": "hero.subtitle"
+    },
+    {
+      "type": "slot",
+      "slotKey": "hero.cta"
+    },
+    {
+      "type": "slot",
+      "slotKey": "hero.media"
+    }
   ]
 }

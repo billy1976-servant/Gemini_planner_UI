@@ -28,6 +28,7 @@ import {
   collectSectionLabels,
   getEligiblePresetIds,
 } from "@/layout/section-layout-presets";
+import { hasLayoutNodeType, collapseLayoutNodes } from "@/engine/core/collapse-layout-nodes";
 import { applySkinBindings } from "@/logic/bridges/skinBindings.apply";
 import WebsiteShell from "@/lib/site-skin/shells/WebsiteShell";
 import AppShell from "@/lib/site-skin/shells/AppShell";
@@ -385,6 +386,15 @@ export default function Page() {
   });
   setCurrentScreenTree(composed);
 
+  // Content-only rule: no layout node types (Grid/Row/Column/Stack) in JSON. Fail-fast in dev + optional rewrite.
+  let treeForRender = composed;
+  if (typeof process !== "undefined" && process.env.NODE_ENV === "development" && hasLayoutNodeType(composed)) {
+    console.error(
+      "[page] Screen JSON must not contain layout node types (Grid/Row/Column/Stack). Use params.moleculeLayout or layout metadata. Auto-rewriting at load."
+    );
+    treeForRender = collapseLayoutNodes(composed) as typeof composed;
+  }
+
   // Simple hash function for JSON content (fallback only)
   const hashJson = (obj: any): string => {
     if (!obj) return "empty";
@@ -407,7 +417,7 @@ export default function Page() {
 
   // Section layout preset: one row per section instance (no dedupe); labels and role for variant lookup
   const sectionLayoutPresetOverrides = getOverridesForScreen(screenKey);
-  const { sectionKeys: sectionKeysFromTree, sectionByKey } = collectSectionKeysAndNodes(composed?.children ?? []);
+  const { sectionKeys: sectionKeysFromTree, sectionByKey } = collectSectionKeysAndNodes(treeForRender?.children ?? []);
   const sectionKeysForPreset = sectionKeysFromTree;
   sectionKeysRef.current = sectionKeysForPreset;
   const sectionLabels = collectSectionLabels(sectionKeysForPreset, sectionByKey);
@@ -442,7 +452,7 @@ export default function Page() {
   const jsonContent = (
     <JsonRenderer
       key={renderKey}
-      node={composed}
+      node={treeForRender}
       defaultState={json?.state}
       profileOverride={effectiveProfile}
       sectionLayoutPresetOverrides={sectionLayoutPresetOverridesProp}

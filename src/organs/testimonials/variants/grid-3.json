@@ -9,15 +9,24 @@
       "align": "stretch"
     }
   },
-  "params": {},
+  "params": {
+    "moleculeLayout": {
+      "type": "grid",
+      "preset": null,
+      "params": {
+        "columns": 3,
+        "gap": "2rem"
+      }
+    }
+  },
   "children": [
-    { "type": "slot", "slotKey": "testimonials.title" },
     {
-      "type": "Grid",
-      "layout": { "type": "grid", "params": { "columns": 3, "gap": "2rem" } },
-      "children": [
-        { "type": "slot", "slotKey": "testimonials.items" }
-      ]
+      "type": "slot",
+      "slotKey": "testimonials.title"
+    },
+    {
+      "type": "slot",
+      "slotKey": "testimonials.items"
     }
   ]
 }

@@ -9,15 +9,24 @@
       "align": "stretch"
     }
   },
-  "params": {},
+  "params": {
+    "moleculeLayout": {
+      "type": "grid",
+      "preset": null,
+      "params": {
+        "columns": 2,
+        "gap": "1rem"
+      }
+    }
+  },
   "children": [
-    { "type": "slot", "slotKey": "gallery.title" },
     {
-      "type": "Grid",
-      "layout": { "type": "grid", "params": { "columns": 2, "gap": "1rem" } },
-      "children": [
-        { "type": "slot", "slotKey": "gallery.items" }
-      ]
+      "type": "slot",
+      "slotKey": "gallery.title"
+    },
+    {
+      "type": "slot",
+      "slotKey": "gallery.items"
     }
   ]
 }
