@@ -10,12 +10,19 @@ type CollectionAtomProps = {
 };
 
 
+function toCssGapOrPadding(v: any) {
+  const val = resolveToken(v);
+  if (val == null) return undefined;
+  if (typeof val === "number") return `${val}px`;
+  return val;
+}
+
 export default function CollectionAtom({ params = {}, children }: CollectionAtomProps) {
   const style: React.CSSProperties = {
     display: "flex",
     flexDirection: params.direction || "row",
-    gap: resolveToken(params.gap),
-    padding: resolveToken(params.padding),
+    gap: toCssGapOrPadding(params.gap),
+    padding: toCssGapOrPadding(params.padding),
     overflowY: params.scrollable ? "auto" : "visible",
   };
 

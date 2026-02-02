@@ -3,7 +3,7 @@
     "layout": {
       "flow": "row",
       "params": {
-        "gap": "0.75rem",
+        "gap": "gap.sm",
         "align": "center",
         "justify": "flex-start"
       }

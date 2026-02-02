@@ -10,7 +10,10 @@ type SequenceAtomProps = {
 
 function tok(v: any) {
   // token -> value, but allow raw css like "1rem"
-  return resolveToken(v) ?? v;
+  const val = resolveToken(v) ?? v;
+  // Numeric palette tokens (e.g. gap.md -> 12) need a unit for CSS
+  if (typeof val === "number") return `${val}px`;
+  return val;
 }
 
 

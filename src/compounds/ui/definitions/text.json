@@ -12,6 +12,12 @@
       "lineHeight": "textRole.display.lineHeight",
       "color": "color.onSurface"
     },
+    "bodyLg": {
+      "size": "textRole.bodyLg.size",
+      "weight": "textRole.bodyLg.weight",
+      "lineHeight": "textRole.bodyLg.lineHeight",
+      "color": "color.onSurface"
+    },
     "headline": {
       "size": "textRole.headline.size",
       "weight": "textRole.headline.weight",

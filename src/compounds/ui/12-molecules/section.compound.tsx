@@ -44,8 +44,10 @@ export type SectionCompoundProps = {
   params?: {
     surface?: any;
     title?: any;
-    /** Template-driven: contained, edge-to-edge, narrow, split (50/50) */
-    containerWidth?: "contained" | "edge-to-edge" | "narrow" | "split";
+    /** Definition/preset layout (gap, padding) — merged with moleculeLayout.params for inner layout */
+    layout?: { gap?: any; padding?: any; [k: string]: any };
+    /** Template-driven: contained, edge-to-edge, narrow, wide, full, split (50/50) */
+    containerWidth?: "contained" | "edge-to-edge" | "narrow" | "wide" | "full" | "split";
     /** Template-driven: hero section mode (full-screen, overlay, strip) */
     heroMode?: "centered" | "split" | "full-screen" | "overlay" | "strip";
     /** Template-driven: section background variant (hero-accent, alt, dark) */
@@ -95,11 +97,16 @@ export default function SectionCompound({
 
   /* ======================================================
      APPLY MOLECULE LAYOUT *ONLY TO SLOT CONTENT*
+     Definition/preset layout (gap, padding) merged so spacing tokens apply.
      ====================================================== */
+  const layoutParams = {
+    ...(params.layout ?? {}),
+    ...(params.moleculeLayout?.params ?? {}),
+  };
   const layout = resolveWithDefaultLayout(
     params.moleculeLayout?.type,
     params.moleculeLayout?.preset ?? null,
-    params.moleculeLayout?.params,
+    layoutParams,
     "column" // ← default for Section
   );
 
@@ -138,7 +145,7 @@ export default function SectionCompound({
 
   const innerContent =
     params.containerWidth === "split" ? (
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--spacing-8)", alignItems: "start" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--spacing-lg)", alignItems: "start" }}>
         <div>{laidOutSlots}</div>
         <div>{children}</div>
       </div>
@@ -175,30 +182,23 @@ export default function SectionCompound({
   );
 
   /* ======================================================
-     Container width from template (contained, narrow, split, edge-to-edge)
+     Container width from template (contained, narrow, wide, full, split, edge-to-edge)
+     Default contained so sections have readable line length unless overridden.
      ====================================================== */
-  const containerWidth = params.containerWidth;
-  if (containerWidth === "contained") {
-    return (
-      <div style={{ width: "100%", maxWidth: "var(--container-xl)", marginLeft: "auto", marginRight: "auto" }}>
-        {maybeHeroWrapped}
-      </div>
-    );
+  const containerWidth = params.containerWidth ?? "contained";
+  if (containerWidth === "edge-to-edge") {
+    return maybeHeroWrapped;
   }
-  if (containerWidth === "narrow") {
-    return (
-      <div style={{ width: "100%", maxWidth: "var(--container-md, 768px)", marginLeft: "auto", marginRight: "auto" }}>
-        {maybeHeroWrapped}
-      </div>
-    );
-  }
-  if (containerWidth === "split") {
-    return (
-      <div style={{ width: "100%", maxWidth: "var(--container-xl)", marginLeft: "auto", marginRight: "auto" }}>
-        {maybeHeroWrapped}
-      </div>
-    );
-  }
-  return maybeHeroWrapped;
+  const containerVar =
+    containerWidth === "contained" ? "var(--container-content)" :
+    containerWidth === "narrow" ? "var(--container-narrow)" :
+    containerWidth === "wide" ? "var(--container-wide)" :
+    containerWidth === "full" ? "var(--container-full)" :
+    containerWidth === "split" ? "var(--container-wide)" : "var(--container-content)";
+  return (
+    <div style={{ width: "100%", maxWidth: containerVar, marginLeft: "auto", marginRight: "auto" }}>
+      {maybeHeroWrapped}
+    </div>
+  );
 }
 

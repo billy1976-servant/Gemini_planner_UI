@@ -3,14 +3,14 @@
     "layout": {
       "flow": "grid",
       "params": {
-        "gap": "1rem",
+        "gap": "gap.md",
         "columns": 2
       },
       "responsive": {
         "breakpoint": 768,
         "flow": "column",
         "params": {
-          "gap": "0.5rem"
+          "gap": "gap.sm"
         }
       }
     }

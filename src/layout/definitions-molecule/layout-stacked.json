@@ -3,7 +3,7 @@
     "layout": {
       "flow": "column",
       "params": {
-        "gap": "0.25rem",
+        "gap": "gap.xs",
         "align": "flex-start",
         "justify": "flex-start"
       }

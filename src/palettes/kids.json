@@ -1,14 +1,14 @@
 {
     "color": {
-      "surface": "#FFFDF7",
-      "surfaceVariant": "#FFF3C4",
-      "primary": "#F57C00",
-      "primaryVariant": "#EF6C00",
+      "surface": "#FFFBF0",
+      "surfaceVariant": "#FFF0B8",
+      "primary": "#E65100",
+      "primaryVariant": "#BF360C",
       "onPrimary": "#FFFFFF",
-      "onSurface": "#1F1F1F",
-      "outline": "#FBC02D",
-      "secondary": "#039BE5",
-      "error": "#E53935",
+      "onSurface": "#1A1A1A",
+      "outline": "#FFB74D",
+      "secondary": "#0277BD",
+      "error": "#C62828",
       "errorContainer": "#FFCDD2",
       "onErrorContainer": "#5D0000"
     },
@@ -25,37 +25,46 @@
   
     "padding": {
       "none": 0,
-      "xs": 8,
+      "xs": 6,
       "sm": 12,
-      "md": 18,
-      "lg": 28,
-      "xl": 36,
-      "2xl": 48
+      "md": 20,
+      "lg": 32,
+      "xl": 48,
+      "2xl": 72,
+      "3xl": 112
     },
 
 
     "gap": {
-      "xs": 8,
+      "xs": 6,
       "sm": 12,
-      "md": 18,
-      "lg": 28,
-      "xl": 36,
-      "2xl": 48
+      "md": 20,
+      "lg": 32,
+      "xl": 48,
+      "2xl": 72,
+      "3xl": 112
     },
 
 
     "textSize": {
-      "xs": 15,
-      "sm": 18,
-      "md": 21,
-      "lg": 26,
-      "xl": 34
+      "xs": 14,
+      "sm": 16,
+      "md": 18,
+      "lg": 20,
+      "xl": 24,
+      "display": 64,
+      "headline": 44,
+      "title": 30,
+      "bodyLg": 18,
+      "body": 16,
+      "caption": 14
     },
 
 
     "textWeight": {
       "regular": 500,
       "medium": 600,
+      "semibold": 600,
       "bold": 800
     },
 
@@ -76,9 +85,9 @@
   
     "shadow": {
       "none": "none",
-      "sm": "0px 2px 4px rgba(0,0,0,0.15)",
-      "md": "0px 4px 8px rgba(0,0,0,0.2)",
-      "lg": "0px 8px 16px rgba(0,0,0,0.25)"
+      "sm": "0 1px 3px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.08)",
+      "md": "0 4px 12px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.1)",
+      "lg": "0 12px 24px rgba(0,0,0,0.15), 0 4px 8px rgba(0,0,0,0.1)"
     },
   
   
@@ -104,12 +113,13 @@
     },
 
     "textRole": {
-      "display": { "size": "textSize.xl", "weight": "textWeight.bold", "lineHeight": "lineHeight.tight" },
-      "headline": { "size": "textSize.lg", "weight": "textWeight.bold", "lineHeight": "lineHeight.tight" },
-      "title": { "size": "textSize.md", "weight": "textWeight.medium", "lineHeight": "lineHeight.normal" },
-      "body": { "size": "textSize.md", "weight": "textWeight.regular", "lineHeight": "lineHeight.normal" },
+      "display": { "size": "textSize.display", "weight": "textWeight.bold", "lineHeight": "lineHeight.tight" },
+      "headline": { "size": "textSize.headline", "weight": "textWeight.semibold", "lineHeight": "lineHeight.tight" },
+      "title": { "size": "textSize.title", "weight": "textWeight.semibold", "lineHeight": "lineHeight.normal" },
+      "bodyLg": { "size": "textSize.bodyLg", "weight": "textWeight.regular", "lineHeight": "lineHeight.normal" },
+      "body": { "size": "textSize.body", "weight": "textWeight.regular", "lineHeight": "lineHeight.normal" },
       "label": { "size": "textSize.sm", "weight": "textWeight.medium", "lineHeight": "lineHeight.normal" },
-      "caption": { "size": "textSize.xs", "weight": "textWeight.regular", "lineHeight": "lineHeight.normal" }
+      "caption": { "size": "textSize.caption", "weight": "textWeight.regular", "lineHeight": "lineHeight.normal" }
     },
 
     "surfaceTier": {
@@ -121,10 +131,10 @@
 
     "elevation": {
       "0": "none",
-      "1": "0px 2px 4px rgba(0,0,0,0.15)",
-      "2": "0px 4px 8px rgba(0,0,0,0.2)",
-      "3": "0px 8px 16px rgba(0,0,0,0.25)",
-      "4": "0px 12px 24px rgba(0,0,0,0.3)"
+      "1": "0 1px 3px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.08)",
+      "2": "0 4px 12px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.1)",
+      "3": "0 12px 24px rgba(0,0,0,0.15), 0 4px 8px rgba(0,0,0,0.1)",
+      "4": "0 20px 40px rgba(0,0,0,0.18), 0 8px 16px rgba(0,0,0,0.12)"
     },
 
     "prominence": {

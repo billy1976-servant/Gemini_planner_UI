@@ -52,5 +52,22 @@
     "collection": { "gap": "gap.md" },
     "layout": { "gap": "gap.md" },
     "surface": { "padding": "padding.md" }
+  },
+  "navigation": {
+    "surface": {
+      "background": "color.surface",
+      "padding": "padding.md",
+      "radius": "radius.sm",
+      "borderColor": "color.outline",
+      "borderWidth": "borderWidth.sm"
+    }
+  },
+  "pricingtable": {
+    "surface": {
+      "background": "color.surfaceVariant",
+      "padding": "padding.lg",
+      "radius": "radius.lg",
+      "shadow": "shadow.sm"
+    }
   }
 }

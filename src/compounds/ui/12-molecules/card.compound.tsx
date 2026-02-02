@@ -45,6 +45,8 @@ export type CardCompoundProps = {
     media?: any;
     title?: any;
     body?: any;
+    /** Definition/preset layout (gap, padding) — merged with moleculeLayout.params for inner layout */
+    layout?: { gap?: any; padding?: any; [k: string]: any };
     moleculeLayout?: {
       type: string;
       preset?: string;
@@ -130,11 +132,16 @@ export default function CardCompound({
 
   /* ======================================================
      APPLY MOLECULE LAYOUT *ONLY TO SLOT CONTENT*
+     Definition/preset layout (gap, padding) merged so spacing tokens apply.
      ====================================================== */
+  const layoutParams = {
+    ...(params.layout ?? {}),
+    ...(params.moleculeLayout?.params ?? {}),
+  };
   const layout = resolveWithDefaultLayout(
     params.moleculeLayout?.type,
     params.moleculeLayout?.preset ?? null,
-    params.moleculeLayout?.params,
+    layoutParams,
     "column" // default for Card
   );
 

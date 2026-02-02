@@ -114,10 +114,14 @@ export default function ListCompound({
   /* ======================================================
      APPLY MOLECULE LAYOUT *ONLY TO SLOT CONTENT*
      ====================================================== */
+  const layoutParams = {
+    ...(params.layout ?? {}),
+    ...(params.moleculeLayout?.params ?? {}),
+  };
   const layout = resolveWithDefaultLayout(
     params.moleculeLayout?.type,
     params.moleculeLayout?.preset ?? null,
-    params.moleculeLayout?.params,
+    layoutParams,
     "column" // ← default for List
   );
 

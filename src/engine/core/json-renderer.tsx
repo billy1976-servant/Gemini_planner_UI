@@ -291,6 +291,17 @@ function applyProfileToNode(node: any, profile: any): any {
       profile.sectionBackgroundPattern === "hero-accent"
         ? { backgroundVariant: "hero-accent" }
         : {}),
+      // Hero sections use headline typography role for the title
+      ...(node.role === "hero"
+        ? {
+            title: {
+              ...(next.params?.title && typeof next.params.title === "object" ? next.params.title : {}),
+              size: "textRole.headline.size",
+              weight: "textRole.headline.weight",
+              lineHeight: "textRole.headline.lineHeight",
+            },
+          }
+        : {}),
     };
   }
 
@@ -473,11 +484,14 @@ export function renderNode(
       moleculeSpec.preset,
       moleculeSpec.params
     );
-
-
+    // Preserve preset/spacing-scale gap/padding; layout definition fills flow/direction/defaults
+    const mergedLayoutParams = {
+      ...layoutParams,
+      ...(resolvedNode.params.moleculeLayout?.params ?? {}),
+    };
     resolvedNode.params.moleculeLayout = {
       ...moleculeSpec,
-      params: layoutParams,
+      params: mergedLayoutParams,
     };
   }
 

@@ -32,6 +32,7 @@ export function usePaletteCSS(containerRef?: RefObject<HTMLElement | null>) {
         root.style.setProperty("--color-primary-hover", c.primaryVariant ?? c.primary ?? d?.color?.primaryVariant ?? d?.color?.primary);
         root.style.setProperty("--color-bg-primary", c.surface ?? d?.color?.surface);
         root.style.setProperty("--color-bg-secondary", c.surfaceVariant ?? d?.color?.surfaceVariant);
+        if (c.surfaceHero != null) root.style.setProperty("--color-surface-hero-accent", c.surfaceHero);
         root.style.setProperty("--color-text-primary", c.onSurface ?? d?.color?.onSurface);
         root.style.setProperty("--color-text-secondary", c.secondary ?? d?.color?.secondary);
         root.style.setProperty("--color-border", c.outline ?? d?.color?.outline);
@@ -50,53 +51,62 @@ export function usePaletteCSS(containerRef?: RefObject<HTMLElement | null>) {
 
       const p = palette.padding ?? d?.padding;
       if (p) {
+        const toRem = (px: number) => `${Number(px) / 16}rem`;
         const xs = p.xs ?? d?.padding?.xs;
         const sm = p.sm ?? d?.padding?.sm;
         const md = p.md ?? d?.padding?.md;
         const lg = p.lg ?? d?.padding?.lg;
-        if (xs != null) {
-          root.style.setProperty("--spacing-1", `${Number(xs) / 4 / 16}rem`);
-          root.style.setProperty("--spacing-2", `${Number(xs) / 2 / 16}rem`);
-          root.style.setProperty("--spacing-3", `${Number(xs) * 0.75 / 16}rem`);
-          root.style.setProperty("--spacing-4", `${Number(xs) / 16}rem`);
-        }
-        if (sm != null) root.style.setProperty("--spacing-6", `${Number(sm) / 16}rem`);
-        if (md != null) root.style.setProperty("--spacing-8", `${Number(md) / 16}rem`);
-        if (lg != null) root.style.setProperty("--spacing-12", `${Number(lg) / 16}rem`);
+        const xl = p.xl ?? d?.padding?.xl;
+        const xl2 = p["2xl"] ?? d?.padding?.["2xl"];
+        const xl3 = p["3xl"] ?? d?.padding?.["3xl"];
+        if (xs != null) root.style.setProperty("--spacing-xs", toRem(xs));
+        if (sm != null) root.style.setProperty("--spacing-sm", toRem(sm));
+        if (md != null) root.style.setProperty("--spacing-md", toRem(md));
+        if (lg != null) root.style.setProperty("--spacing-lg", toRem(lg));
+        if (xl != null) root.style.setProperty("--spacing-xl", toRem(xl));
+        if (xl2 != null) root.style.setProperty("--spacing-2xl", toRem(xl2));
+        if (xl3 != null) root.style.setProperty("--spacing-3xl", toRem(xl3));
+        if (xs != null) root.style.setProperty("--spacing-1", `${Number(xs) / 4 / 16}rem`);
+        if (xs != null) root.style.setProperty("--spacing-2", `${Number(xs) / 2 / 16}rem`);
+        if (sm != null) root.style.setProperty("--spacing-6", toRem(sm));
+        if (md != null) root.style.setProperty("--spacing-8", toRem(md));
+        if (lg != null) root.style.setProperty("--spacing-12", toRem(lg));
       }
 
       const g = palette.gap ?? d?.gap;
       if (g) {
-        const xs = g.xs ?? d?.gap?.xs; if (xs != null) root.style.setProperty("--gap-xs", `${Number(xs) / 16}rem`);
-        const sm = g.sm ?? d?.gap?.sm; if (sm != null) root.style.setProperty("--gap-sm", `${Number(sm) / 16}rem`);
-        const md = g.md ?? d?.gap?.md; if (md != null) root.style.setProperty("--gap-md", `${Number(md) / 16}rem`);
-        const lg = g.lg ?? d?.gap?.lg; if (lg != null) root.style.setProperty("--gap-lg", `${Number(lg) / 16}rem`);
+        const toRem = (px: number) => `${Number(px) / 16}rem`;
+        const xs = g.xs ?? d?.gap?.xs; if (xs != null) root.style.setProperty("--gap-xs", toRem(xs));
+        const sm = g.sm ?? d?.gap?.sm; if (sm != null) root.style.setProperty("--gap-sm", toRem(sm));
+        const md = g.md ?? d?.gap?.md; if (md != null) root.style.setProperty("--gap-md", toRem(md));
+        const lg = g.lg ?? d?.gap?.lg; if (lg != null) root.style.setProperty("--gap-lg", toRem(lg));
+        const xl = g.xl ?? d?.gap?.xl; if (xl != null) root.style.setProperty("--gap-xl", toRem(xl));
+        const xl2 = g["2xl"] ?? d?.gap?.["2xl"]; if (xl2 != null) root.style.setProperty("--gap-2xl", toRem(xl2));
+        const xl3 = g["3xl"] ?? d?.gap?.["3xl"]; if (xl3 != null) root.style.setProperty("--gap-3xl", toRem(xl3));
       }
 
       const t = palette.textSize ?? d?.textSize;
       if (t) {
-        const xs = t.xs ?? d?.textSize?.xs; if (xs != null) root.style.setProperty("--font-size-xs", `${Number(xs) / 16}rem`);
-        const sm = t.sm ?? d?.textSize?.sm; if (sm != null) root.style.setProperty("--font-size-sm", `${Number(sm) / 16}rem`);
-        const md = t.md ?? d?.textSize?.md; if (md != null) root.style.setProperty("--font-size-base", `${Number(md) / 16}rem`);
-        const lg = t.lg ?? d?.textSize?.lg; if (lg != null) root.style.setProperty("--font-size-lg", `${Number(lg) / 16}rem`);
-        const xl = t.xl ?? d?.textSize?.xl; if (xl != null) {
-          const n = Number(xl);
-          root.style.setProperty("--font-size-xl", `${n / 16}rem`);
-          root.style.setProperty("--font-size-2xl", `${(n * 1.2) / 16}rem`);
-          root.style.setProperty("--font-size-3xl", `${(n * 1.5) / 16}rem`);
-          root.style.setProperty("--font-size-4xl", `${(n * 1.8) / 16}rem`);
-          root.style.setProperty("--font-size-5xl", `${(n * 2.4) / 16}rem`);
-        }
+        const toRem = (px: number) => `${Number(px) / 16}rem`;
+        const xs = t.xs ?? d?.textSize?.xs; if (xs != null) root.style.setProperty("--font-size-xs", toRem(xs));
+        const sm = t.sm ?? d?.textSize?.sm; if (sm != null) root.style.setProperty("--font-size-sm", toRem(sm));
+        const md = t.md ?? d?.textSize?.md; if (md != null) root.style.setProperty("--font-size-base", toRem(md));
+        const lg = t.lg ?? d?.textSize?.lg; if (lg != null) root.style.setProperty("--font-size-lg", toRem(lg));
+        const xl = t.xl ?? d?.textSize?.xl; if (xl != null) root.style.setProperty("--font-size-xl", toRem(xl));
+        const display = t.display ?? d?.textSize?.display; if (display != null) root.style.setProperty("--font-size-display", toRem(display));
+        const headline = t.headline ?? d?.textSize?.headline; if (headline != null) root.style.setProperty("--font-size-headline", toRem(headline));
+        const title = t.title ?? d?.textSize?.title; if (title != null) root.style.setProperty("--font-size-title", toRem(title));
+        const bodyLg = t.bodyLg ?? d?.textSize?.bodyLg; if (bodyLg != null) root.style.setProperty("--font-size-body-lg", toRem(bodyLg));
+        const body = t.body ?? d?.textSize?.body; if (body != null) root.style.setProperty("--font-size-body", toRem(body));
+        const caption = t.caption ?? d?.textSize?.caption; if (caption != null) root.style.setProperty("--font-size-caption", toRem(caption));
       }
 
       const w = palette.textWeight ?? d?.textWeight;
       if (w) {
         const v = w.regular ?? d?.textWeight?.regular; if (v != null) root.style.setProperty("--font-weight-normal", String(v));
-        const m = w.medium ?? d?.textWeight?.medium;
-        if (m != null) {
-          root.style.setProperty("--font-weight-medium", String(m));
-          root.style.setProperty("--font-weight-semibold", String(m));
-        }
+        const m = w.medium ?? d?.textWeight?.medium; if (m != null) root.style.setProperty("--font-weight-medium", String(m));
+        const semibold = w.semibold ?? d?.textWeight?.semibold ?? w.medium;
+        if (semibold != null) root.style.setProperty("--font-weight-semibold", String(semibold));
         const b = w.bold ?? d?.textWeight?.bold; if (b != null) root.style.setProperty("--font-weight-bold", String(b));
       }
 

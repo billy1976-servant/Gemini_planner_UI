@@ -18,8 +18,8 @@ export type LayoutDef = {
   };
 };
 
-/** Section width behavior: contained (max-width), edge-to-edge (full bleed), narrow (reading column), split (50/50) */
-export type ContainerWidth = "contained" | "edge-to-edge" | "narrow" | "split";
+/** Section width behavior: contained (content), edge-to-edge (full bleed), narrow (reading), wide (hero), full, split (50/50) */
+export type ContainerWidth = "contained" | "edge-to-edge" | "narrow" | "wide" | "full" | "split";
 
 /** Spacing scale id: drives vertical rhythm and density per template */
 export type SpacingScaleId = "default" | "luxury" | "saas" | "magazine" | "course";
@@ -60,6 +60,7 @@ const TEMPLATES: TemplateProfile[] = [
     label: "Modern Hero Centered",
     visualPreset: "default",
     containerWidth: "contained",
+    widthByRole: { hero: "wide", content: "contained" },
     spacingScale: "default",
     cardPreset: "soft",
     heroMode: "centered",

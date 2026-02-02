@@ -2,14 +2,14 @@
   "layout": {
     "flow": "column",
     "params": {
-      "gap": "1rem",
+      "gap": "gap.md",
       "align": "stretch",
       "justify": "flex-start"
     },
     "responsive": {
       "breakpoint": 768,
       "flow": "column",
-      "params": { "gap": "0.5rem" }
+      "params": { "gap": "gap.sm" }
     }
   }
 }

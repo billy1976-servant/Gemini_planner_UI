@@ -44,7 +44,7 @@ export function buildTemplateFromTree(
   options: {
     id?: string;
     label?: string;
-    containerWidth?: "contained" | "edge-to-edge" | "narrow" | "split";
+    containerWidth?: "contained" | "edge-to-edge" | "narrow" | "wide" | "full" | "split";
     visualPreset?: "default" | "compact" | "spacious" | "editorial" | "prominent";
   } = {}
 ): Omit<TemplateProfile, "id" | "label"> & { id: string; label: string } {
