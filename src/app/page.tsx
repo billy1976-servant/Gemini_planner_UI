@@ -14,20 +14,28 @@ import { setCurrentScreenTree } from "@/engine/core/current-screen-tree-store";
 import { getExperienceProfile } from "@/layout/profile-resolver";
 import { getTemplateProfile } from "@/layout/template-profiles";
 import { composeOfflineScreen } from "@/lib/screens/compose-offline-screen";
-import { expandOrgansInDocument, assignSectionInstanceKeys, collectOrganVariantsByInstanceKey } from "@/organs/resolve-organs";
+import { expandOrgansInDocument, assignSectionInstanceKeys } from "@/organs/resolve-organs";
 import { loadOrganVariant } from "@/organs/organ-registry";
 import OrganPanel from "@/organs/OrganPanel";
 import {
   getSectionLayoutPresetOverrides,
   getOverridesForScreen,
   setSectionLayoutPresetOverride,
+  getCardLayoutPresetOverrides,
+  getCardOverridesForScreen,
+  setCardLayoutPresetOverride,
   subscribeSectionLayoutPresetOverrides,
+  subscribeCardLayoutPresetOverrides,
 } from "@/state/section-layout-preset-store";
 import {
   collectSectionKeysAndNodes,
   collectSectionLabels,
   getEligiblePresetIds,
 } from "@/layout/section-layout-presets";
+import {
+  getAllowedCardPresetsForSectionPreset,
+  getDefaultCardPresetForSectionPreset,
+} from "@/layout/layout-capabilities";
 import { hasLayoutNodeType, collapseLayoutNodes } from "@/engine/core/collapse-layout-nodes";
 import { applySkinBindings } from "@/logic/bridges/skinBindings.apply";
 import WebsiteShell from "@/lib/site-skin/shells/WebsiteShell";
@@ -135,7 +143,6 @@ export default function Page() {
     useState<React.ComponentType<any> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [host, setHost] = useState<HTMLElement | null>(null);
-  const [organVariantOverrides, setOrganVariantOverrides] = useState<Record<string, string>>({});
   const [sectionHeights, setSectionHeights] = useState<Record<string, number>>({});
   const contentRef = useRef<HTMLDivElement>(null);
   const sectionKeysRef = useRef<string[]>([]);
@@ -164,6 +171,7 @@ export default function Page() {
   const layoutSnapshot = useSyncExternalStore(subscribeLayout, getLayout, getLayout);
   const paletteName = useSyncExternalStore(subscribePalette, getPaletteName, () => "default");
   useSyncExternalStore(subscribeSectionLayoutPresetOverrides, getSectionLayoutPresetOverrides, getSectionLayoutPresetOverrides);
+  useSyncExternalStore(subscribeCardLayoutPresetOverrides, getCardLayoutPresetOverrides, getCardLayoutPresetOverrides);
   const experience = (layoutSnapshot as { experience?: string })?.experience ?? "website";
 
   /* --------------------------------------------------
@@ -353,8 +361,7 @@ export default function Page() {
   const rawChildren = Array.isArray(renderNode?.children) ? renderNode.children : [];
   const children = assignSectionInstanceKeys(rawChildren);
   const docForOrgans = { meta: { domain: "offline", pageId: "screen", version: 1 }, nodes: children };
-  const initialOrganVariants = collectOrganVariantsByInstanceKey(children);
-  const expandedDoc = expandOrgansInDocument(docForOrgans as any, loadOrganVariant, organVariantOverrides);
+  const expandedDoc = expandOrgansInDocument(docForOrgans as any, loadOrganVariant, {});
   const data = json?.data ?? {};
   const boundDoc = applySkinBindings(expandedDoc as any, data);
   const finalChildren = (boundDoc as any).nodes ?? children;
@@ -417,16 +424,11 @@ export default function Page() {
 
   // Section layout preset: one row per section instance (no dedupe); labels and role for variant lookup
   const sectionLayoutPresetOverrides = getOverridesForScreen(screenKey);
+  const cardLayoutPresetOverrides = getCardOverridesForScreen(screenKey);
   const { sectionKeys: sectionKeysFromTree, sectionByKey } = collectSectionKeysAndNodes(treeForRender?.children ?? []);
   const sectionKeysForPreset = sectionKeysFromTree;
   sectionKeysRef.current = sectionKeysForPreset;
   const sectionLabels = collectSectionLabels(sectionKeysForPreset, sectionByKey);
-  const sectionRoleByKey: Record<string, string> = {};
-  sectionKeysForPreset.forEach((k) => {
-    const node = sectionByKey[k];
-    const role = (node?.role ?? "").toString().trim();
-    sectionRoleByKey[k] = role === "features" ? "features-grid" : role === "content" ? "content-section" : role || k;
-  });
   const sectionPresetOptions: Record<string, string[]> = {};
   sectionKeysForPreset.forEach((k) => {
     sectionPresetOptions[k] = getEligiblePresetIds(sectionByKey[k]);
@@ -449,6 +451,18 @@ export default function Page() {
   });
 
   const sectionLayoutPresetOverridesProp = { ...sectionLayoutPresetOverrides };
+  const cardLayoutPresetOverridesProp = { ...cardLayoutPresetOverrides };
+
+  const handleSectionLayoutPresetOverride = (sectionKey: string, presetId: string) => {
+    setSectionLayoutPresetOverride(screenKey, sectionKey, presetId);
+    const currentCard = cardLayoutPresetOverrides[sectionKey] ?? "";
+    const allowed = getAllowedCardPresetsForSectionPreset(presetId || null);
+    if (currentCard && !allowed.includes(currentCard)) {
+      const fallback = getDefaultCardPresetForSectionPreset(presetId || null) ?? "";
+      setCardLayoutPresetOverride(screenKey, sectionKey, fallback);
+    }
+  };
+
   const jsonContent = (
     <JsonRenderer
       key={renderKey}
@@ -456,6 +470,7 @@ export default function Page() {
       defaultState={json?.state}
       profileOverride={effectiveProfile}
       sectionLayoutPresetOverrides={sectionLayoutPresetOverridesProp}
+      cardLayoutPresetOverrides={cardLayoutPresetOverridesProp}
       screenId={screenKey}
     />
   );
@@ -489,18 +504,13 @@ export default function Page() {
             <div style={{ display: "flex", width: "100%", minHeight: "100%" }}>
               <div ref={contentRef} style={{ flex: 1, minWidth: 0 }}>{jsonContent}</div>
             <OrganPanel
-              organIds={sectionKeysForPreset}
-              initialVariants={initialOrganVariants}
-              overrides={organVariantOverrides}
-              onOverrideVariant={(sectionKey, variantId) =>
-                setOrganVariantOverrides((prev) => ({ ...prev, [sectionKey]: variantId }))
-              }
               sectionKeysForPreset={sectionKeysForPreset}
               sectionLabels={sectionLabels}
-              sectionRoleByKey={sectionRoleByKey}
               sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
-              onSectionLayoutPresetOverride={(sectionKey, presetId) =>
-                setSectionLayoutPresetOverride(screenKey, sectionKey, presetId)
+              onSectionLayoutPresetOverride={handleSectionLayoutPresetOverride}
+              cardLayoutPresetOverrides={cardLayoutPresetOverrides}
+              onCardLayoutPresetOverride={(sectionKey, presetId) =>
+                setCardLayoutPresetOverride(screenKey, sectionKey, presetId)
               }
               sectionPresetOptions={sectionPresetOptions}
               sectionHeights={sectionHeights}
@@ -527,18 +537,13 @@ export default function Page() {
           <div style={{ display: "flex", width: "100%", minHeight: "100vh" }}>
             <div ref={contentRef} style={{ flex: 1, minWidth: 0 }}>{wrappedContent}</div>
             <OrganPanel
-              organIds={sectionKeysForPreset}
-              initialVariants={initialOrganVariants}
-              overrides={organVariantOverrides}
-              onOverrideVariant={(sectionKey, variantId) =>
-                setOrganVariantOverrides((prev) => ({ ...prev, [sectionKey]: variantId }))
-              }
               sectionKeysForPreset={sectionKeysForPreset}
               sectionLabels={sectionLabels}
-              sectionRoleByKey={sectionRoleByKey}
               sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
-              onSectionLayoutPresetOverride={(sectionKey, presetId) =>
-                setSectionLayoutPresetOverride(screenKey, sectionKey, presetId)
+              onSectionLayoutPresetOverride={handleSectionLayoutPresetOverride}
+              cardLayoutPresetOverrides={cardLayoutPresetOverrides}
+              onCardLayoutPresetOverride={(sectionKey, presetId) =>
+                setCardLayoutPresetOverride(screenKey, sectionKey, presetId)
               }
               sectionPresetOptions={sectionPresetOptions}
               sectionHeights={sectionHeights}

@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 /* ======================================================
    1) ROLE / CONTRACT (NON-INTERACTIVE)
    ====================================================== */
@@ -34,6 +35,33 @@ function resolveWithDefaultLayout(
     preset ?? null,
     params
   );
+}
+
+/** True when child is a Card (or similar) with content.media — used for hero-split "image right" column. */
+function isMediaChild(child: React.ReactNode): child is React.ReactElement {
+  return (
+    React.isValidElement(child) &&
+    typeof (child.props as { content?: { media?: unknown } })?.content?.media !== "undefined" &&
+    (child.props as { content?: { media?: unknown } }).content?.media != null
+  );
+}
+
+/** Partition children into text group and single media child for hero-split layout. */
+function partitionChildrenForHeroSplit(children: React.ReactNode): {
+  textChildren: React.ReactNode[];
+  mediaChild: React.ReactElement | null;
+} {
+  const arr = React.Children.toArray(children);
+  const textChildren: React.ReactNode[] = [];
+  let mediaChild: React.ReactElement | null = null;
+  for (const child of arr) {
+    if (mediaChild === null && isMediaChild(child)) {
+      mediaChild = child as React.ReactElement;
+    } else {
+      textChildren.push(child);
+    }
+  }
+  return { textChildren, mediaChild };
 }
 
 
@@ -184,6 +212,12 @@ export default function SectionCompound({
       ? { ...surfaceParams, background: "var(--color-surface-dark)", color: "var(--color-on-surface-dark)" }
       : surfaceParams;
 
+  /* Hero-split: partition children into text (left) and single Card with media (right). */
+  const isHeroSplit = heroMode === "split" && isSplitLayout;
+  const { textChildren, mediaChild } = isHeroSplit
+    ? partitionChildrenForHeroSplit(children)
+    : { textChildren: [] as React.ReactNode[], mediaChild: null as React.ReactElement | null };
+
   const innerContent = (
     <div
       style={{
@@ -194,18 +228,35 @@ export default function SectionCompound({
       }}
     >
       {isSplitLayout ? (
-        <>
-          <div>{slotContent}</div>
-          <div
-            style={{
-              display: isGridLayout ? "grid" : "block",
-              gridTemplateColumns: isGridLayout ? `repeat(${gridColumns}, 1fr)` : undefined,
-              gap: isGridLayout ? gridGap : undefined,
-            }}
-          >
-            {children}
-          </div>
-        </>
+        isHeroSplit && mediaChild != null ? (
+          <>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "var(--spacing-4)",
+                alignItems: "flex-start",
+              }}
+            >
+              {slotContent}
+              {textChildren}
+            </div>
+            <div>{mediaChild}</div>
+          </>
+        ) : (
+          <>
+            <div>{slotContent}</div>
+            <div
+              style={{
+                display: isGridLayout ? "grid" : "block",
+                gridTemplateColumns: isGridLayout ? `repeat(${gridColumns}, 1fr)` : undefined,
+                gap: isGridLayout ? gridGap : undefined,
+              }}
+            >
+              {children}
+            </div>
+          </>
+        )
       ) : (
         <>
           {slotContent}

@@ -5,14 +5,7 @@
     {
       "id": "nav_section",
       "type": "Section",
-      "layout": {
-        "type": "row",
-        "params": {
-          "gap": "1rem",
-          "justify": "space-between",
-          "align": "center"
-        }
-      },
+      "role": "nav",
       "content": {},
       "children": [
         {
@@ -78,14 +71,6 @@
       "id": "header_section",
       "type": "Section",
       "role": "header",
-      "layout": {
-        "type": "row",
-        "params": {
-          "gap": "1rem",
-          "justify": "space-between",
-          "align": "center"
-        }
-      },
       "content": {},
       "children": [
         {
@@ -113,15 +98,6 @@
       "id": "hero_section",
       "type": "Section",
       "role": "hero",
-      "layoutPreset": "hero-centered",
-      "layout": {
-        "type": "column",
-        "params": {
-          "gap": "1.5rem",
-          "align": "center",
-          "justify": "center"
-        }
-      },
       "content": {},
       "children": [
         {
@@ -142,8 +118,7 @@
             "media": "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=800"
           },
           "params": {
-            "mediaPosition": "left",
-            "contentAlign": "center"
+            "mediaPosition": "left"
           }
         },
         {
@@ -165,13 +140,6 @@
       "id": "features_section",
       "type": "Section",
       "role": "features",
-      "layout": {
-        "type": "column",
-        "params": {
-          "gap": "1.5rem",
-          "align": "stretch"
-        }
-      },
       "content": {},
       "children": [
         {
@@ -188,8 +156,7 @@
             "body": "Sections and cards driven by one screen. No extra primitives—just JSON and organs."
           },
           "params": {
-            "mediaPosition": "left",
-            "contentAlign": "center"
+            "mediaPosition": "left"
           }
         },
         {
@@ -200,8 +167,7 @@
             "body": "Use image URLs in Card media. Hero and gallery use the same pattern for a consistent look."
           },
           "params": {
-            "mediaPosition": "left",
-            "contentAlign": "center"
+            "mediaPosition": "left"
           }
         },
         {
@@ -212,32 +178,15 @@
             "body": "Switch palette and template in the bar. Section preset layout and card presets apply from this file."
           },
           "params": {
-            "mediaPosition": "left",
-            "contentAlign": "center"
+            "mediaPosition": "left"
           }
         }
-      ],
-      "params": {
-        "moleculeLayout": {
-          "type": "grid",
-          "preset": null,
-          "params": {
-            "columns": 3,
-            "gap": "2rem"
-          }
-        }
-      }
+      ]
     },
     {
       "id": "gallery_section",
       "type": "Section",
       "role": "gallery",
-      "layout": {
-        "type": "column",
-        "params": {
-          "gap": "1.5rem"
-        }
-      },
       "content": {},
       "children": [
         {
@@ -254,8 +203,7 @@
             "body": "Quiet space for long-form."
           },
           "params": {
-            "mediaPosition": "left",
-            "contentAlign": "center"
+            "mediaPosition": "left"
           }
         },
         {
@@ -266,8 +214,7 @@
             "body": "One place for drafts and posts."
           },
           "params": {
-            "mediaPosition": "left",
-            "contentAlign": "center"
+            "mediaPosition": "left"
           }
         },
         {
@@ -278,32 +225,15 @@
             "body": "Publish without the noise."
           },
           "params": {
-            "mediaPosition": "left",
-            "contentAlign": "center"
+            "mediaPosition": "left"
           }
         }
-      ],
-      "params": {
-        "moleculeLayout": {
-          "type": "grid",
-          "preset": null,
-          "params": {
-            "columns": 3,
-            "gap": "2rem"
-          }
-        }
-      }
+      ]
     },
     {
       "id": "testimonials_section",
       "type": "Section",
       "role": "testimonials",
-      "layout": {
-        "type": "column",
-        "params": {
-          "gap": "1.5rem"
-        }
-      },
       "content": {},
       "children": [
         {
@@ -333,28 +263,12 @@
             "body": "Palette and template dropdowns actually change the look. Section gaps and card style update as expected."
           }
         }
-      ],
-      "params": {
-        "moleculeLayout": {
-          "type": "grid",
-          "preset": null,
-          "params": {
-            "columns": 3,
-            "gap": "2rem"
-          }
-        }
-      }
+      ]
     },
     {
       "id": "pricing_section",
       "type": "Section",
       "role": "pricing",
-      "layout": {
-        "type": "column",
-        "params": {
-          "gap": "1.5rem"
-        }
-      },
       "content": {},
       "children": [
         {
@@ -384,28 +298,12 @@
             "body": "€29/mo — Shared spaces, roles, and API access."
           }
         }
-      ],
-      "params": {
-        "moleculeLayout": {
-          "type": "grid",
-          "preset": null,
-          "params": {
-            "columns": 3,
-            "gap": "2rem"
-          }
-        }
-      }
+      ]
     },
     {
       "id": "faq_section",
       "type": "Section",
       "role": "faq",
-      "layout": {
-        "type": "column",
-        "params": {
-          "gap": "1rem"
-        }
-      },
       "content": {},
       "children": [
         {
@@ -433,13 +331,6 @@
       "id": "cta_section",
       "type": "Section",
       "role": "cta",
-      "layout": {
-        "type": "column",
-        "params": {
-          "gap": "1rem",
-          "align": "center"
-        }
-      },
       "content": {
         "title": "Ready to try it?"
       },

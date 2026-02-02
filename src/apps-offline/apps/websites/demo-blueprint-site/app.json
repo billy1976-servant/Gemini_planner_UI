@@ -31,9 +31,9 @@
     "features": {
       "title": [{ "type": "text", "content": { "text": "Why Organ Components?" } }],
       "items": [
-        { "type": "Card", "content": { "media": "⚡", "title": "Simple Syntax", "body": "Write structure in JSON. Organs expand to compound trees." }, "params": { "mediaPosition": "left", "contentAlign": "center" } },
-        { "type": "Card", "content": { "media": "🎨", "title": "Wix-Level Sections", "body": "Header, hero, features grid, gallery, testimonials, pricing, FAQ, CTA, footer." }, "params": { "mediaPosition": "left", "contentAlign": "center" } },
-        { "type": "Card", "content": { "media": "🔒", "title": "No New Primitives", "body": "Organs are compositions of existing molecules only. Palette and presets apply." }, "params": { "mediaPosition": "left", "contentAlign": "center" } }
+        { "type": "Card", "content": { "media": "⚡", "title": "Simple Syntax", "body": "Write structure in JSON. Organs expand to compound trees." }, "params": { "mediaPosition": "left" } },
+        { "type": "Card", "content": { "media": "🎨", "title": "Wix-Level Sections", "body": "Header, hero, features grid, gallery, testimonials, pricing, FAQ, CTA, footer." }, "params": { "mediaPosition": "left" } },
+        { "type": "Card", "content": { "media": "🔒", "title": "No New Primitives", "body": "Organs are compositions of existing molecules only. Palette and presets apply." }, "params": { "mediaPosition": "left" } }
       ]
     },
     "testimonials": {

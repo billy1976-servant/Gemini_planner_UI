@@ -6,15 +6,6 @@
       "id": "nav_section",
       "type": "Section",
       "role": "nav",
-      "layout": {
-        "type": "row",
-        "params": {
-          "gap": "1.25rem",
-          "justify": "space-between",
-          "align": "center",
-          "wrap": "wrap"
-        }
-      },
       "content": {},
       "children": [
         {
@@ -80,30 +71,19 @@
       "id": "header_section",
       "type": "Section",
       "role": "header",
-      "layout": {
-        "type": "row",
-        "params": {
-          "gap": "1.25rem",
-          "justify": "space-between",
-          "align": "center",
-          "wrap": "wrap"
-        }
-      },
       "content": {},
       "children": [
         {
           "type": "Section",
           "content": {
             "title": "Acme"
-          },
-          "variant": "subtle"
+          }
         },
         {
           "type": "Button",
           "content": {
             "label": "Get Started"
           },
-          "variant": "filled",
           "behavior": {
             "type": "Navigation",
             "params": {
@@ -118,27 +98,16 @@
       "id": "hero_section",
       "type": "Section",
       "role": "hero",
-      "layout": {
-        "type": "column",
-        "params": {
-          "gap": "2.5rem",
-          "align": "center",
-          "justify": "center",
-          "padding": "3rem 0"
-        }
-      },
       "content": {},
       "children": [
         {
           "type": "Section",
-          "size": "lg",
           "content": {
             "title": "Build something people love."
           }
         },
         {
           "type": "Section",
-          "variant": "subtle",
           "content": {
             "title": "A complete design system driven by JSON. Typography, layout, and components that scale from landing pages to applications—without rewriting content."
           }
@@ -149,8 +118,7 @@
             "media": "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=1200&fit=crop"
           },
           "params": {
-            "mediaPosition": "left",
-            "contentAlign": "center"
+            "mediaPosition": "left"
           }
         },
         {
@@ -158,8 +126,6 @@
           "content": {
             "label": "Start building"
           },
-          "variant": "filled",
-          "size": "lg",
           "behavior": {
             "type": "Navigation",
             "params": {
@@ -174,21 +140,13 @@
       "id": "features_section",
       "type": "Section",
       "role": "features",
-      "layout": {
-        "type": "column",
-        "params": {
-          "gap": "2.5rem",
-          "align": "stretch"
-        }
-      },
       "content": {},
       "children": [
         {
           "type": "Section",
           "content": {
             "title": "Why this works"
-          },
-          "variant": "standard"
+          }
         },
         {
           "type": "Card",
@@ -198,8 +156,7 @@
             "body": "Headline, lead, and body roles. Display size for heroes, title for sections, body for content. One palette, consistent rhythm."
           },
           "params": {
-            "mediaPosition": "left",
-            "contentAlign": "center"
+            "mediaPosition": "left"
           }
         },
         {
@@ -210,8 +167,7 @@
             "body": "Sections, grids, and cards from a single file. Organs expand to compound trees. No new primitives—only composition."
           },
           "params": {
-            "mediaPosition": "left",
-            "contentAlign": "center"
+            "mediaPosition": "left"
           }
         },
         {
@@ -222,40 +178,22 @@
             "body": "Palette, spacing scale, and templates. Switch experience, template, or palette—layout and style update without touching content."
           },
           "params": {
-            "mediaPosition": "left",
-            "contentAlign": "center"
+            "mediaPosition": "left"
           }
         }
-      ],
-      "params": {
-        "moleculeLayout": {
-          "type": "grid",
-          "preset": null,
-          "params": {
-            "columns": 3,
-            "gap": "2rem"
-          }
-        }
-      }
+      ]
     },
     {
       "id": "testimonials_section",
       "type": "Section",
       "role": "testimonials",
-      "layout": {
-        "type": "column",
-        "params": {
-          "gap": "2rem"
-        }
-      },
       "content": {},
       "children": [
         {
           "type": "Section",
           "content": {
             "title": "What builders say"
-          },
-          "variant": "standard"
+          }
         },
         {
           "type": "Card",
@@ -278,29 +216,12 @@
             "body": "Param key alignment was the missing piece. Now we have tests that prove the pipeline works end to end."
           }
         }
-      ],
-      "params": {
-        "moleculeLayout": {
-          "type": "grid",
-          "preset": null,
-          "params": {
-            "columns": 3,
-            "gap": "2rem"
-          }
-        }
-      }
+      ]
     },
     {
       "id": "cta_section",
       "type": "Section",
       "role": "cta",
-      "layout": {
-        "type": "column",
-        "params": {
-          "gap": "2rem",
-          "align": "center"
-        }
-      },
       "content": {
         "title": "Ready to ship?"
       },
@@ -310,7 +231,6 @@
           "content": {
             "label": "View template"
           },
-          "variant": "outlined",
           "behavior": {
             "type": "Navigation",
             "params": {

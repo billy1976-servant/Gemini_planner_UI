@@ -22,6 +22,7 @@ import {
 import { useSyncExternalStore } from "react";
 import { JsonSkinEngine } from "@/logic/engines/json-skin.engine";
 import { getSectionLayoutPreset } from "@/layout/section-layout-presets";
+import { getCardLayoutPreset } from "@/layout/card-layout-presets";
 
 
 /* ======================================================
@@ -291,13 +292,20 @@ function deepMergeParams(
   return result;
 }
 
+/** Section preset keys only — never merge card params into section. */
+const SECTION_PRESET_KEYS = ["containerWidth", "heroMode", "backgroundVariant", "moleculeLayout"] as const;
+
 /* ======================================================
    PROFILE → SECTION RESOLVER (+ LAYOUT PRESET OVERRIDES)
+   Section preset: container layout only.
+   Card preset: mediaPosition, contentAlign for Card children.
 ====================================================== */
 function applyProfileToNode(
   node: any,
   profile: any,
-  sectionLayoutPresetOverrides?: Record<string, string>
+  sectionLayoutPresetOverrides?: Record<string, string>,
+  cardLayoutPresetOverrides?: Record<string, string>,
+  parentSectionKey?: string | null
 ): any {
   if (!node || !profile) return node;
 
@@ -305,6 +313,7 @@ function applyProfileToNode(
 
   // 🔑 Template = defaults, organ = overrides. When mode === "custom", skip template section logic.
   const isSection = node.type?.toLowerCase?.() === "section";
+  const isCard = node.type?.toLowerCase() === "card";
   const layoutMode = profile?.mode ?? "template";
 
   // Layout from Layout Engine / Preset only — never from node. Strip layout keys from section params so JSON cannot supply layout.
@@ -352,7 +361,7 @@ function applyProfileToNode(
     };
   }
 
-  // Per-section: effective layout preset from overrides only (UI/dropdown). Screen JSON must not set layoutPreset.
+  // Per-section: effective section layout preset (container only). Merge ONLY section-level params.
   if (isSection) {
     const sectionKey = (node.id ?? node.role) ?? "";
     const effectivePreset =
@@ -363,9 +372,13 @@ function applyProfileToNode(
     if (effectiveLayoutPresetId) {
       const preset = getSectionLayoutPreset(effectiveLayoutPresetId);
       if (preset) {
+        const sectionOnly: Record<string, any> = {};
+        for (const k of SECTION_PRESET_KEYS) {
+          if (preset[k] !== undefined) sectionOnly[k] = preset[k];
+        }
         next.params = {
           ...(next.params ?? {}),
-          ...preset,
+          ...sectionOnly,
           moleculeLayout: {
             ...(next.params?.moleculeLayout ?? {}),
             ...(preset.moleculeLayout ?? {}),
@@ -386,9 +399,31 @@ function applyProfileToNode(
     }
   }
 
+  // Per-section card layout preset: merge mediaPosition, contentAlign into Card children only.
+  if (isCard && parentSectionKey && cardLayoutPresetOverrides?.[parentSectionKey]) {
+    const cardPresetId = cardLayoutPresetOverrides[parentSectionKey];
+    const cardPreset = getCardLayoutPreset(cardPresetId);
+    if (cardPreset) {
+      next.params = {
+        ...(next.params ?? {}),
+        ...(cardPreset.mediaPosition != null ? { mediaPosition: cardPreset.mediaPosition } : {}),
+        ...(cardPreset.contentAlign != null ? { contentAlign: cardPreset.contentAlign } : {}),
+      };
+      if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
+        console.log("[JsonRenderer] Card preset applied", {
+          sectionKey: parentSectionKey,
+          cardPresetId,
+          mediaPosition: cardPreset.mediaPosition,
+          contentAlign: cardPreset.contentAlign,
+        });
+      }
+    }
+  }
+
   if (Array.isArray(node.children)) {
+    const sectionKey = isSection ? ((node.id ?? node.role) ?? "") : parentSectionKey ?? null;
     next.children = node.children.map((child) =>
-      applyProfileToNode(child, profile, sectionLayoutPresetOverrides)
+      applyProfileToNode(child, profile, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, sectionKey)
     );
   }
 
@@ -404,7 +439,8 @@ export function renderNode(
   profile: any,
   stateSnapshot: any,
   defaultState?: any,
-  sectionLayoutPresetOverrides?: Record<string, string>
+  sectionLayoutPresetOverrides?: Record<string, string>,
+  cardLayoutPresetOverrides?: Record<string, string>
 ): any {
   if (!node) return null;
 
@@ -420,7 +456,7 @@ export function renderNode(
   if (!shouldRenderNode(node, stateSnapshot, defaultState)) return null;
 
   const profiledNode = profile
-    ? applyProfileToNode(node, profile, sectionLayoutPresetOverrides)
+    ? applyProfileToNode(node, profile, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, null)
     : node;
 
 
@@ -528,10 +564,26 @@ export function renderNode(
   let renderedChildren = null;
   
   if (Array.isArray(resolvedNode.items) && resolvedNode.items.length > 0) {
-    // Repeater mode: render items array
+    // Repeater mode: render items array; apply card layout preset when parent is a section
     const itemType = resolvedNode.params?.repeater?.itemType || "card";
-    
+    const parentSectionKey =
+      (resolvedNode.type?.toLowerCase?.() === "section")
+        ? ((resolvedNode.id ?? resolvedNode.role) ?? "")
+        : "";
+    const cardPresetId = parentSectionKey && cardLayoutPresetOverrides?.[parentSectionKey]
+      ? cardLayoutPresetOverrides[parentSectionKey]
+      : null;
+    const cardPreset = cardPresetId ? getCardLayoutPreset(cardPresetId) : null;
+
     renderedChildren = resolvedNode.items.map((item: any, i: number) => {
+      let itemParams = item.params || {};
+      if (cardPreset && (itemType === "card" || itemType === "feature-card")) {
+        itemParams = {
+          ...itemParams,
+          ...(cardPreset.mediaPosition != null ? { mediaPosition: cardPreset.mediaPosition } : {}),
+          ...(cardPreset.contentAlign != null ? { contentAlign: cardPreset.contentAlign } : {}),
+        };
+      }
       const itemNode = {
         type: itemType === "feature-card" ? "Card" : "Card",
         id: item.id || `item-${i}`,
@@ -540,18 +592,18 @@ export function renderNode(
           body: item.body,
           media: item.icon || item.image,
         },
-        params: item.params || {},
+        params: itemParams,
       };
-      
+
       const uniqueKey = item.id || `item-${i}`;
-      return renderNode({ ...itemNode, key: uniqueKey }, profile, stateSnapshot, defaultState, sectionLayoutPresetOverrides);
+      return renderNode({ ...itemNode, key: uniqueKey }, profile, stateSnapshot, defaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides);
     });
   } else if (Array.isArray(resolvedNode.children)) {
     // Normal mode: render children
     renderedChildren = resolvedNode.children.map((child: any, i: number) => {
       // 🔑 Use child.id if available, otherwise use index + type for unique key
       const uniqueKey = child.id || `${child.type}-${i}`;
-      return renderNode({ ...child, key: uniqueKey }, profile, stateSnapshot, defaultState, sectionLayoutPresetOverrides);
+      return renderNode({ ...child, key: uniqueKey }, profile, stateSnapshot, defaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides);
     });
   }
 
@@ -659,6 +711,7 @@ export default function JsonRenderer({
   defaultState,
   profileOverride,
   sectionLayoutPresetOverrides,
+  cardLayoutPresetOverrides,
   screenId,
 }: {
   node: any;
@@ -668,8 +721,10 @@ export default function JsonRenderer({
    * If omitted, JsonRenderer falls back to the layout-store snapshot (legacy behavior).
    */
   profileOverride?: any;
-  /** Per-section layout preset overrides (sectionKey -> presetId) for this screen. */
+  /** Per-section section layout preset overrides (sectionKey -> presetId). */
   sectionLayoutPresetOverrides?: Record<string, string>;
+  /** Per-section card layout preset overrides (sectionKey -> presetId). */
+  cardLayoutPresetOverrides?: Record<string, string>;
   /** Screen key for this render (e.g. for override lookup). */
   screenId?: string;
 }) {
@@ -788,7 +843,7 @@ export default function JsonRenderer({
 
   traceOnce("root", "Root render");
 
-  return renderNode(node, profile, stateSnapshot, effectiveDefaultState, sectionLayoutPresetOverrides);
+  return renderNode(node, profile, stateSnapshot, effectiveDefaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides);
 }
 
 

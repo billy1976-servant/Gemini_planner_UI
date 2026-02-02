@@ -54,8 +54,8 @@ export type CardCompoundProps = {
     };
     /** Where media appears: top (default), left, right, bottom */
     mediaPosition?: "top" | "left" | "right" | "bottom";
-    /** Alignment of slot content: start (default), center, end */
-    contentAlign?: "start" | "center" | "end";
+    /** Alignment of slot content: start/left (default), center, end/right */
+    contentAlign?: "start" | "center" | "end" | "left" | "right";
   };
   content?: {
     media?: string;   // ← FIXED (was image)
@@ -89,7 +89,12 @@ export default function CardCompound({
   children,
 }: CardCompoundProps) {
   const mediaPosition = params?.mediaPosition ?? "top";
-  const contentAlign = params?.contentAlign ?? "start";
+  const rawContentAlign = params?.contentAlign ?? "start";
+  // Normalize: "left" → "start", "right" → "end" for layout
+  const contentAlign =
+    rawContentAlign === "left" ? "start"
+    : rawContentAlign === "right" ? "end"
+    : rawContentAlign;
 
   const handleTap = () => {
     if (onTap) return onTap();
