@@ -34,11 +34,11 @@ import JournalHistory from "@/ui/molecules/JournalHistory";
 // =====================================================
 // LAYOUT MOLECULES (STRUCTURAL ONLY)
 // =====================================================
-import RowLayout from "@/layout/molecules/row-layout";
-import ColumnLayout from "@/layout/molecules/column-layout";
-import GridLayout from "@/layout/molecules/grid-layout";
-import StackLayout from "@/layout/molecules/stack-layout";
-import PageLayout from "@/layout/molecules/page-layout";
+import RowLayout from "@/lib/layout/molecules/row-layout";
+import ColumnLayout from "@/lib/layout/molecules/column-layout";
+import GridLayout from "@/lib/layout/molecules/grid-layout";
+import StackLayout from "@/lib/layout/molecules/stack-layout";
+import PageLayout from "@/lib/layout/molecules/page-layout";
 // =====================================================
 // REGISTRY — JSON `type` → COMPONENT
 // =====================================================

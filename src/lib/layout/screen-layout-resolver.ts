@@ -4,11 +4,11 @@
 
 
 // Screen layout definitions ONLY
-import row from "@/layout/definitions-screen/row.json";
-import column from "@/layout/definitions-screen/column.json";
-import grid from "@/layout/definitions-screen/grid.json";
-import stack from "@/layout/definitions-screen/stack.json";
-import page from "@/layout/definitions-screen/page.json";
+import row from "@/lib/layout/definitions-screen/row.json";
+import column from "@/lib/layout/definitions-screen/column.json";
+import grid from "@/lib/layout/definitions-screen/grid.json";
+import stack from "@/lib/layout/definitions-screen/stack.json";
+import page from "@/lib/layout/definitions-screen/page.json";
 
 
 /**

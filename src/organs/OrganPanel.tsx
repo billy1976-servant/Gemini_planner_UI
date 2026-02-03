@@ -2,8 +2,7 @@
 
 import React from "react";
 import { getOrganLabel } from "@/organs/organ-registry";
-import { getAllSectionPresetIds } from "@/layout/section-layout-presets";
-import { getAllowedCardPresetsForSectionPreset } from "@/layout/layout-capabilities";
+import { getLayout2Ids, getAllowedCardPresetsForSectionPreset } from "@/layout-2";
 
 export type OrganPanelProps = {
   /** Section keys to show layout preset for (from collectSectionKeysAndNodes). */
@@ -73,7 +72,7 @@ export default function OrganPanel({
   sectionHeights = {},
 }: OrganPanelProps) {
   const rowIds = sectionKeysForPreset ?? [];
-  const allSectionPresetIds = getAllSectionPresetIds();
+  const allSectionLayoutIds = getLayout2Ids();
 
   if (rowIds.length === 0) {
     return (
@@ -90,11 +89,11 @@ export default function OrganPanel({
     <aside style={PANEL_STYLE} data-organ-panel>
       <div style={TITLE_STYLE}>Layout controls</div>
       <p style={{ color: "var(--color-text-muted)", marginBottom: "var(--spacing-3)", marginTop: 0, fontSize: "var(--font-size-xs)" }}>
-        Section layout and card layout. Applies to this screen only.
+        Section layout (layout-2 id only; does not set node type or role) and card layout. Applies to this screen only.
       </p>
       {rowIds.map((sectionKey) => {
         const label = sectionLabels?.[sectionKey] ?? getOrganLabel(sectionKey);
-        const presetOptions = sectionPresetOptions?.[sectionKey] ?? allSectionPresetIds;
+        const presetOptions = sectionPresetOptions?.[sectionKey] ?? allSectionLayoutIds;
         const currentSectionPreset = sectionLayoutPresetOverrides[sectionKey] ?? "";
         const rawCardPreset = cardLayoutPresetOverrides[sectionKey] ?? "";
         const allowedCardPresets = getAllowedCardPresetsForSectionPreset(currentSectionPreset || null);

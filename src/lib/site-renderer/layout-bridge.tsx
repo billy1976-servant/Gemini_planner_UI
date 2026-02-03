@@ -9,15 +9,29 @@
 
 import { useEffect, useState } from "react";
 import { getLayout, subscribeLayout } from "@/engine/core/layout-store";
-import { resolveProfileLayout } from "@/layout/profile-resolver";
-import { resolveMoleculeLayout } from "@/layout/molecule-layout-resolver";
-import { resolveScreenLayout } from "@/layout/screen-layout-resolver";
+import { resolveProfileLayout } from "@/lib/layout/profile-resolver";
+import { resolveMoleculeLayout } from "@/lib/layout/molecule-layout-resolver";
+import { resolveScreenLayout } from "@/lib/layout/screen-layout-resolver";
 
 /**
  * Get layout styles for a section based on:
  * 1. Experience profile defaults
  * 2. Global layout store
  * 3. Section-specific overrides
+ * 
+ * ⚠️ **Currently unused in the main app.**
+ * 
+ * The main JsonRenderer uses a different path: `applyProfileToNode` merges
+ * template/experience profile sections into `node.params.moleculeLayout`, and
+ * Section compound passes that to `resolveMoleculeLayout` for layout rendering.
+ * 
+ * **Reserved for future use:**
+ * - Custom site shells that need dynamic layout from layout store
+ * - Alternative viewers that don't use JsonRenderer pipeline
+ * - Direct section wrappers that need layout styles as CSS properties
+ * 
+ * If implementing a new viewer/shell, call this hook to get layout styles for
+ * section containers and apply them as inline styles or className.
  */
 export function useSectionLayout(
   sectionType?: string,

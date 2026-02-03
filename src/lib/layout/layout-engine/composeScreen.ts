@@ -12,13 +12,13 @@
  * This is a PURE function: no stores, no DOM, no hooks.
  */
 
-import type { LayoutExperience, RegionKey, RegionPolicyState } from "@/layout/layout-engine/region-policy";
+import type { LayoutExperience, RegionKey, RegionPolicyState } from "@/lib/layout/layout-engine/region-policy";
 import {
   getNavPlacement,
   getRegionOrder,
   isRegionEnabled,
   resolveRegionForRole,
-} from "@/layout/layout-engine/region-policy";
+} from "@/lib/layout/layout-engine/region-policy";
 
 export type RoleTaggedNode = {
   id?: string;

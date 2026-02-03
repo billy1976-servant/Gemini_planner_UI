@@ -1,10 +1,10 @@
 // =====================================================
 // MOLECULE LAYOUT RESOLVER (JSON-DRIVEN, PURE, SAFE)
 // =====================================================
-import layoutColumn from "@/layout/definitions-molecule/layout-column.json";
-import layoutRow from "@/layout/definitions-molecule/layout-row.json";
-import layoutStacked from "@/layout/definitions-molecule/layout-stacked.json";
-import layoutGrid from "@/layout/definitions-molecule/layout-grid.json";
+import layoutColumn from "@/lib/layout/definitions-molecule/layout-column.json";
+import layoutRow from "@/lib/layout/definitions-molecule/layout-row.json";
+import layoutStacked from "@/lib/layout/definitions-molecule/layout-stacked.json";
+import layoutGrid from "@/lib/layout/definitions-molecule/layout-grid.json";
 
 
 // =====================================================

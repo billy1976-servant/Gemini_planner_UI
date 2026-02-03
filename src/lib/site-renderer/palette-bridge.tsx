@@ -39,6 +39,10 @@ export function usePaletteCSS(containerRef?: RefObject<HTMLElement | null>) {
         root.style.setProperty("--color-bg-muted", c.surfaceVariant ?? d?.color?.surfaceVariant);
         root.style.setProperty("--color-text-muted", c.secondary ?? d?.color?.secondary);
         if (c.error != null) root.style.setProperty("--color-accent", c.error);
+        /* Chrome bar + Save button — palette-driven */
+        root.style.setProperty("--color-surface-dark", c.surface ?? d?.color?.surface);
+        root.style.setProperty("--color-on-surface-dark", c.onSurface ?? d?.color?.onSurface);
+        root.style.setProperty("--color-on-primary", c.onPrimary ?? d?.color?.onPrimary ?? "#ffffff");
       }
 
       const r = palette.radius ?? d?.radius;

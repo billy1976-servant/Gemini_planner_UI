@@ -1,7 +1,7 @@
 "use client";
 
-import layoutSchema from "@/layout/layout-schema.json";
-import type { LayoutExperience, NavPlacement } from "@/layout/layout-engine/region-policy";
+import layoutSchema from "@/lib/layout/layout-schema.json";
+import type { LayoutExperience, NavPlacement } from "@/lib/layout/layout-engine/region-policy";
 
 /**
  * ======================================================

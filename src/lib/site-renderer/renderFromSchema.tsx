@@ -21,9 +21,9 @@ import BadgeSection from "@/components/site/BadgeSection";
 import RecommendationSection from "@/components/site/RecommendationSection";
 import { SiteLayout, FeatureItem, TrustItem } from "@/lib/site-schema/siteLayout.types";
 import { NormalizedSite, NormalizedProduct } from "@/lib/site-compiler/normalizeSiteData";
-import { resolveProfileLayout } from "@/layout/profile-resolver";
-import { resolveMoleculeLayout } from "@/layout/molecule-layout-resolver";
-import { resolveScreenLayout } from "@/layout/screen-layout-resolver";
+import { resolveProfileLayout } from "@/lib/layout/profile-resolver";
+import { resolveMoleculeLayout } from "@/lib/layout/molecule-layout-resolver";
+import { resolveScreenLayout } from "@/lib/layout/screen-layout-resolver";
 import { RuntimeHelpers, Action, SitePage, LayoutBlock } from "@/types/siteSchema";
 
 interface RenderLayoutBlockProps {

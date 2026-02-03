@@ -36,10 +36,10 @@ export default function MediaAtom({
     placeholder,
     placeholderColor,
   } = params;
-  const placeholderBg = placeholderColor ?? "var(--color-bg-muted)";
-  const placeholderText = "var(--color-text-muted)";
-  const emojiSize = "var(--font-size-2xl)";
-  const captionSize = "var(--font-size-sm)";
+  const placeholderBg = placeholderColor ?? "var(--media-placeholder-bg)";
+  const placeholderText = "var(--media-placeholder-text)";
+  const emojiSize = "var(--media-emoji-size)";
+  const captionSize = "var(--media-caption-size)";
 
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
@@ -51,6 +51,7 @@ export default function MediaAtom({
         style={{
           position: "relative",
           width: "100%",
+          maxWidth: "100%",
           aspectRatio: aspectRatio || "auto",
           borderRadius: radius,
           overflow: "hidden",
@@ -112,13 +113,16 @@ export default function MediaAtom({
       style={{
         position: "relative",
         width: "100%",
+        maxWidth: "100%",
+        overflow: "hidden",
       }}
     >
-      {/* Aspect ratio wrapper */}
+      {/* Aspect ratio wrapper — hard containment so media never escapes column */}
       <div
         style={{
           position: "relative",
           width: "100%",
+          maxWidth: "100%",
           aspectRatio: aspectRatio || "auto",
           borderRadius: radius,
           overflow: "hidden",
@@ -145,7 +149,7 @@ export default function MediaAtom({
           </div>
         )}
 
-        {/* Image */}
+        {/* Image — constrained to column (maxWidth: 100%); never viewport */}
         <img
           src={src}
           alt={alt || ""}
@@ -153,9 +157,10 @@ export default function MediaAtom({
           onError={() => setError(true)}
           style={{
             width: "100%",
+            maxWidth: "100%",
             height: "100%",
-            objectFit,
             display: loaded ? "block" : "none",
+            objectFit,
           }}
         />
       </div>

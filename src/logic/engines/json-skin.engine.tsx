@@ -119,6 +119,7 @@ function JsonNode({ node, state }: { node: any; state: any }) {
             background: "var(--color-bg-secondary)",
             borderRadius: "var(--radius-md)",
             border: "1px solid var(--color-border)",
+            fontFamily: "var(--font-family-base)",
           }}>
             {node.children.map((child: any, i: number) => (
               <JsonNode key={i} node={child} state={state} />
@@ -135,6 +136,7 @@ function JsonNode({ node, state }: { node: any; state: any }) {
           lineHeight: "var(--line-height-normal, 1.6)",
           color: "var(--color-text-primary)",
           fontSize: "var(--font-size-base)",
+          fontFamily: "var(--font-family-base)",
         }}>
           {node.content?.text}
         </p>
@@ -162,6 +164,8 @@ function JsonNode({ node, state }: { node: any; state: any }) {
               marginBottom: "var(--spacing-1, 4px)",
               fontWeight: "var(--font-weight-bold)",
               color: "var(--color-text-primary)",
+              fontFamily: "var(--font-family-base)",
+              fontSize: "var(--font-size-sm)",
             }}>
               {node.params.label}
             </label>
@@ -221,6 +225,9 @@ function JsonNode({ node, state }: { node: any; state: any }) {
               maxWidth: "300px",
               background: "var(--color-bg-primary)",
               color: "var(--color-text-primary)",
+              fontFamily: "var(--font-family-base)",
+              fontSize: "var(--font-size-base)",
+              outline: "none",
             }}
           />
         </div>
@@ -247,6 +254,9 @@ function JsonNode({ node, state }: { node: any; state: any }) {
             color: "var(--color-bg-primary)",
             cursor: "pointer",
             fontWeight: "var(--font-weight-medium)",
+            fontFamily: "var(--font-family-base)",
+            fontSize: "var(--font-size-base)",
+            transition: "var(--transition-base, 200ms ease)",
           }}
         >
           {node.content?.label ?? node.content?.text}
@@ -267,6 +277,7 @@ function JsonNode({ node, state }: { node: any; state: any }) {
           fontSize: "var(--font-size-xs)",
           color: "var(--color-text-primary)",
           border: "1px solid var(--color-border)",
+          fontFamily: "var(--font-family-mono)",
         }}>
           {JSON.stringify(value ?? null, null, 2)}
         </pre>

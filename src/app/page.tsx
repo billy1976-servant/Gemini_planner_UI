@@ -11,8 +11,8 @@ import { resolveLandingPage } from "@/logic/runtime/landing-page-resolver";
 import { getLayout, subscribeLayout } from "@/engine/core/layout-store";
 import { getPaletteName, subscribePalette } from "@/engine/core/palette-store";
 import { setCurrentScreenTree } from "@/engine/core/current-screen-tree-store";
-import { getExperienceProfile } from "@/layout/profile-resolver";
-import { getTemplateProfile } from "@/layout/template-profiles";
+import { getExperienceProfile } from "@/lib/layout/profile-resolver";
+import { getTemplateProfile } from "@/lib/layout/template-profiles";
 import { composeOfflineScreen } from "@/lib/screens/compose-offline-screen";
 import { expandOrgansInDocument, assignSectionInstanceKeys } from "@/organs/resolve-organs";
 import { loadOrganVariant } from "@/organs/organ-registry";
@@ -28,14 +28,12 @@ import {
   subscribeCardLayoutPresetOverrides,
 } from "@/state/section-layout-preset-store";
 import {
+  getLayout2Ids,
   collectSectionKeysAndNodes,
   collectSectionLabels,
-  getEligiblePresetIds,
-} from "@/layout/section-layout-presets";
-import {
   getAllowedCardPresetsForSectionPreset,
   getDefaultCardPresetForSectionPreset,
-} from "@/layout/layout-capabilities";
+} from "@/layout-2";
 import { hasLayoutNodeType, collapseLayoutNodes } from "@/engine/core/collapse-layout-nodes";
 import { applySkinBindings } from "@/logic/bridges/skinBindings.apply";
 import WebsiteShell from "@/lib/site-skin/shells/WebsiteShell";
@@ -376,6 +374,7 @@ export default function Page() {
         ...experienceProfile,
         id: templateProfile.id,
         sections: templateProfile.sections,
+        defaultSectionLayoutId: templateProfile.defaultSectionLayoutId,
         visualPreset: templateProfile.visualPreset,
         containerWidth: templateProfile.containerWidth,
         widthByRole: templateProfile.widthByRole,
@@ -429,15 +428,11 @@ export default function Page() {
   const sectionKeysForPreset = sectionKeysFromTree;
   sectionKeysRef.current = sectionKeysForPreset;
   const sectionLabels = collectSectionLabels(sectionKeysForPreset, sectionByKey);
+  const layout2Ids = getLayout2Ids();
   const sectionPresetOptions: Record<string, string[]> = {};
   sectionKeysForPreset.forEach((k) => {
-    sectionPresetOptions[k] = getEligiblePresetIds(sectionByKey[k]);
+    sectionPresetOptions[k] = layout2Ids;
   });
-  if (Object.keys(sectionPresetOptions).length === 0 && sectionKeysForPreset.length > 0) {
-    sectionKeysForPreset.forEach((k) => {
-      sectionPresetOptions[k] = getEligiblePresetIds(null);
-    });
-  }
 
   // Log once per render to confirm key changes between files
   console.log("[page] 🔑 JsonRenderer KEY RESOLVED", {
@@ -487,6 +482,7 @@ export default function Page() {
           flexDirection: "column",
           gap: "var(--spacing-8)",
           width: "100%",
+          overflowX: "hidden",
         }}
       >
         {jsonContent}
@@ -502,7 +498,7 @@ export default function Page() {
         <AppShell
           primary={
             <div style={{ display: "flex", width: "100%", minHeight: "100%" }}>
-              <div ref={contentRef} style={{ flex: 1, minWidth: 0 }}>{jsonContent}</div>
+              <div ref={contentRef} style={{ flex: 1, minWidth: 0, overflowX: "hidden" }}>{jsonContent}</div>
             <OrganPanel
               sectionKeysForPreset={sectionKeysForPreset}
               sectionLabels={sectionLabels}
@@ -535,7 +531,7 @@ export default function Page() {
       <WebsiteShell
         content={
           <div style={{ display: "flex", width: "100%", minHeight: "100vh" }}>
-            <div ref={contentRef} style={{ flex: 1, minWidth: 0 }}>{wrappedContent}</div>
+            <div ref={contentRef} style={{ flex: 1, minWidth: 0, overflowX: "hidden" }}>{wrappedContent}</div>
             <OrganPanel
               sectionKeysForPreset={sectionKeysForPreset}
               sectionLabels={sectionLabels}

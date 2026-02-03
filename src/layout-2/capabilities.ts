@@ -1,6 +1,6 @@
 /**
- * Layout capabilities: section preset → allowed card preset ids.
- * Single source of truth for deterministic Card Layout options per Section Layout.
+ * Layout-2 capabilities: section layout id → allowed card preset ids.
+ * Single source of truth for Card Layout options per Section Layout (layout-2 ids).
  */
 
 const ALL_CARD_PRESETS = [
@@ -14,7 +14,7 @@ const ALL_CARD_PRESETS = [
 ] as const;
 
 /**
- * sectionPresetId | "" (default/unset) → allowed card preset ids.
+ * layout-2 section layout id | "" (default/unset) → allowed card preset ids.
  * Empty array = no card layout applicable (e.g. full-bleed hero with no cards).
  */
 export const SECTION_TO_CARD_CAPABILITIES: Record<string, string[]> = {
@@ -31,29 +31,30 @@ export const SECTION_TO_CARD_CAPABILITIES: Record<string, string[]> = {
     "centered-image-right",
   ],
   "feature-grid-3": [...ALL_CARD_PRESETS],
+  "features-grid-3": [...ALL_CARD_PRESETS],
   "testimonial-band": [...ALL_CARD_PRESETS],
   "cta-centered": ["centered-card"],
 };
 
 /**
- * Returns allowed card preset ids for the given section preset.
- * Use "" for default/unset section preset.
+ * Returns allowed card preset ids for the given section layout id (layout-2 id).
+ * Use "" for default/unset.
  */
 export function getAllowedCardPresetsForSectionPreset(
-  sectionPresetId: string | null
+  sectionLayoutId: string | null
 ): string[] {
-  const id = (sectionPresetId ?? "").toString().trim() || "";
+  const id = (sectionLayoutId ?? "").toString().trim() || "";
   const allowed = SECTION_TO_CARD_CAPABILITIES[id];
   return allowed ?? [...ALL_CARD_PRESETS];
 }
 
 /**
  * Returns the default card preset for the section (first allowed, or null).
- * Used only when current card preset becomes invalid after section change.
+ * Used when current card preset becomes invalid after section layout change.
  */
 export function getDefaultCardPresetForSectionPreset(
-  sectionPresetId: string | null
+  sectionLayoutId: string | null
 ): string | null {
-  const allowed = getAllowedCardPresetsForSectionPreset(sectionPresetId);
+  const allowed = getAllowedCardPresetsForSectionPreset(sectionLayoutId);
   return allowed.length > 0 ? allowed[0] : null;
 }

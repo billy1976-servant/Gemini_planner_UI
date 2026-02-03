@@ -555,7 +555,7 @@
 .app-chrome .app-chrome-save {
   background: var(--chrome-accent);
   border-color: var(--chrome-accent);
-  color: var(--chrome-text);
+  color: var(--color-on-primary);
 }
 
 .app-chrome .app-chrome-save:hover {

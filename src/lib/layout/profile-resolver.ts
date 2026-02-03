@@ -1,6 +1,6 @@
-import website from "@/layout/presentation/website.profile.json";
-import app from "@/layout/presentation/app.profile.json";
-import learning from "@/layout/presentation/learning.profile.json";
+import website from "@/lib/layout/presentation/website.profile.json";
+import app from "@/lib/layout/presentation/app.profile.json";
+import learning from "@/lib/layout/presentation/learning.profile.json";
 
 
 /**
@@ -28,7 +28,7 @@ export function getExperienceProfile(profileId: string) {
  * This does NOT resolve row/column/grid.
  * It ONLY selects which layout instruction should apply.
  *
- * Output feeds directly into resolveLayout().
+ * Output feeds directly into resolveLayout() from @/layout-2.
  */
 export function resolveProfileLayout(
   profileId: string,

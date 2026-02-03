@@ -161,3 +161,107 @@
 | Media atom | Partially | — | — (hardcoded placeholder/caption) |
 
 This audit did not change any code; it only documents current behavior and recommendations.
+
+---
+
+## 11. Step 2 Implementation: json-skin.engine Tokenization (2025-02-02)
+
+**Fix applied:** Replace json-skin.engine hardcoded styles with tokens.
+
+### Changes Made
+
+- **Section:** Added `fontFamily: "var(--font-family-base)"`.
+- **Text:** Added `fontFamily: "var(--font-family-base)"`.
+- **Field label:** Added `fontFamily: "var(--font-family-base)"`, `fontSize: "var(--font-size-sm)"`.
+- **Field input:** Added `fontFamily: "var(--font-family-base)"`, `fontSize: "var(--font-size-base)"`, `outline: "none"`.
+- **Button:** Added `fontFamily: "var(--font-family-base)"`, `fontSize: "var(--font-size-base)"`, `transition: "var(--transition-base, 200ms ease)"`.
+- **UserInputViewer:** Added `fontFamily: "var(--font-family-mono)"`.
+
+All elements already used `var(--color-*)`, `var(--spacing-*)`, `var(--radius-*)`, `var(--font-*)`; typography and transition tokens were added for full palette alignment.
+
+### Test Results
+
+| Test | Result | Notes |
+|------|--------|-------|
+| Lint (json-skin.engine.tsx) | Pass | No linter errors. |
+| Build compile | Pass | Next.js compiled successfully; failure is in unrelated `google-ads/client.ts`. |
+| Type check (full project) | Fail | `src/app/api/google-ads/client.ts:84` — `access_token` not in `CustomerOptions` (pre-existing). |
+| json-skin.engine changes | Valid | No TypeScript or lint issues in modified file. |
+
+### Expected Results (Manual Verification)
+
+When viewing a json-skin screen (e.g., landing page with `type: "json-skin"`):
+
+1. **Palette responsiveness:** Section background, text color, button background, field background/border, and UserInputViewer update when the palette dropdown changes.
+2. **Typography:** Font family follows `--font-family-base` (or `--font-family-mono` for UserInputViewer) from the active palette.
+3. **Spacing/radius:** Spacing and radius follow `--spacing-*` and `--radius-*` from the palette.
+4. **Transitions:** Button uses `--transition-base` for state transitions.
+
+**How to verify:**
+- Open the app with no `?screen=` (landing page uses json-skin).
+- Open the palette dropdown and switch palettes (default, premium, dark, etc.).
+- Confirm section, text, field, and button colors and typography update with the palette.
+
+---
+
+## 12. Step 3 Implementation: App Chrome on Palette (2025-02-02)
+
+**Fix applied:** Put app chrome on palette (and optional preset).
+
+### Changes Made
+
+- **layout.tsx:** Changed `usePaletteCSS(contentRef)` to `usePaletteCSS()` so palette vars apply to `document.documentElement`. Navigator bar and content both inherit palette.
+- **palette-bridge.tsx:** Added `--color-surface-dark`, `--color-on-surface-dark`, `--color-on-primary` from palette (surface, onSurface, onPrimary). Chrome bar and Save button now use palette-driven tokens.
+- **site-theme.css:** `.app-chrome-save` color changed from `var(--chrome-text)` to `var(--color-on-primary)` for proper contrast on primary-accent button.
+
+### Expected Results
+
+- **Navigator bar:** Background uses `--chrome-bg` → `--color-surface-dark` (palette surface). Text uses `--chrome-text` → `--color-on-surface-dark` (palette onSurface).
+- **Save button:** Background uses `--chrome-accent` → `--color-primary`. Text uses `--color-on-primary`.
+- **Palette switch:** Changing palette (default, premium, dark, kids, etc.) updates the navigator bar and Save button to match.
+
+---
+
+## 13. Step 4 Implementation: Media Atom Tokenization (2025-02-02)
+
+**Fix applied:** Media atom: tokenize placeholder and caption.
+
+### Changes Made
+
+- **media.tsx:** Switched from ad-hoc token vars to the dedicated `--media-*` tokens from site-theme.css:
+  - `placeholderBg`: `var(--media-placeholder-bg)` (→ `var(--color-bg-muted)`)
+  - `placeholderText`: `var(--media-placeholder-text)` (→ `var(--color-text-muted)`)
+  - `emojiSize`: `var(--media-emoji-size)` (→ `var(--font-size-3xl)`)
+  - `captionSize`: `var(--media-caption-size)` (→ `var(--font-size-sm)`)
+
+### Expected Results
+
+- Placeholder background and text color follow palette (`--color-bg-muted`, `--color-text-muted`).
+- Emoji/placeholder size and caption size follow typography scale (`--font-size-3xl`, `--font-size-sm`).
+- Palette and text-size changes propagate to media placeholders and captions.
+
+---
+
+## 14. Step 5 Implementation: useSectionLayout Documentation (2025-02-02)
+
+**Fix applied:** Document `useSectionLayout` as "for future use" to avoid confusion.
+
+### Changes Made
+
+- **layout-bridge.tsx:** Added comprehensive JSDoc comment to `useSectionLayout` explaining:
+  - Why it's currently unused (main app uses JsonRenderer → applyProfileToNode → moleculeLayout path)
+  - When it should be used (custom shells, alternative viewers, direct section wrappers)
+  - How to use it (call hook to get CSS properties for section containers)
+
+### Analysis
+
+- `useSectionLayout` is **never called** in the codebase (only `useContainerLayout` is used).
+- Main section layout flow: `json-renderer` → `applyProfileToNode` (template/profile sections) → `moleculeLayout` → Section compound → `resolveMoleculeLayout`.
+- The hook provides valid alternative path for custom implementations that don't use JsonRenderer.
+
+### Decision
+
+**Kept** for future use rather than removed. The hook is well-implemented and could be valuable for:
+- Custom site shells needing dynamic layout from layout store
+- Alternative viewers outside the JsonRenderer pipeline
+- Direct section wrappers requiring layout styles as CSS properties

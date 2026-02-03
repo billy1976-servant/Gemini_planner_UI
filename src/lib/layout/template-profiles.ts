@@ -39,6 +39,8 @@ export type TemplateProfile = {
   visualPreset: "default" | "compact" | "spacious" | "editorial" | "prominent";
   /** Section role → layout (type + params). Template overrides organ defaults at render time. */
   sections: Record<string, LayoutDef>;
+  /** Default layout-2 id for sections when no override and no explicit node.layout. Layout-only; not keyed by role. */
+  defaultSectionLayoutId?: string;
   /** Default section width; overridden per role by widthByRole when set. */
   containerWidth?: ContainerWidth;
   /** Per-section-role width overrides (e.g. hero edge-to-edge, content contained). */
@@ -58,6 +60,7 @@ const TEMPLATES: TemplateProfile[] = [
   {
     id: "modern-hero-centered",
     label: "Modern Hero Centered",
+    defaultSectionLayoutId: "content-narrow",
     visualPreset: "default",
     containerWidth: "contained",
     widthByRole: { hero: "wide", content: "contained" },
@@ -82,6 +85,7 @@ const TEMPLATES: TemplateProfile[] = [
   {
     id: "startup-split-hero",
     label: "Startup Split Hero",
+    defaultSectionLayoutId: "content-narrow",
     visualPreset: "prominent",
     containerWidth: "contained",
     spacingScale: "saas",

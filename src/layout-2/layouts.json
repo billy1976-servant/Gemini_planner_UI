@@ -8,7 +8,22 @@
         "gap": "var(--spacing-8)",
         "align": "center",
         "justify": "center",
-        "padding": "var(--spacing-12) var(--spacing-6)"
+        "padding": "var(--spacing-14) var(--spacing-6)"
+      }
+    }
+  },
+  "hero-split": {
+    "containerWidth": "full",
+    "split": { "type": "split", "mediaSlot": "right" },
+    "moleculeLayout": {
+      "type": "row",
+      "preset": null,
+      "params": {
+        "gap": "var(--spacing-12)",
+        "align": "center",
+        "justify": "space-between",
+        "padding": "var(--spacing-20) var(--spacing-8)",
+        "minHeight": "min(60vh, 560px)"
       }
     }
   },
@@ -53,7 +68,8 @@
         "align": "center",
         "justify": "center",
         "padding": "var(--spacing-16) var(--spacing-6)",
-        "minHeight": "100vh",
+        "minHeight": "420px",
+        "maxHeight": "70vh",
         "display": "flex",
         "alignItems": "center",
         "justifyContent": "center"
@@ -62,6 +78,18 @@
   },
   "content-narrow": {
     "containerWidth": "narrow",
+    "moleculeLayout": {
+      "type": "column",
+      "preset": null,
+      "params": {
+        "gap": "var(--spacing-6)",
+        "align": "stretch",
+        "padding": "var(--spacing-8) 0"
+      }
+    }
+  },
+  "content-stack": {
+    "containerWidth": "contained",
     "moleculeLayout": {
       "type": "column",
       "preset": null,
@@ -81,6 +109,18 @@
         "gap": "var(--spacing-8)",
         "align": "center",
         "justify": "flex-start",
+        "padding": "var(--spacing-8) 0"
+      }
+    }
+  },
+  "features-grid-3": {
+    "containerWidth": "contained",
+    "moleculeLayout": {
+      "type": "grid",
+      "preset": null,
+      "params": {
+        "columns": 3,
+        "gap": "var(--spacing-6)",
         "padding": "var(--spacing-8) 0"
       }
     }

@@ -18,7 +18,7 @@ import TextAtom from "@/components/9-atoms/primitives/text";
 import SequenceAtom from "@/components/9-atoms/primitives/sequence";
 import CollectionAtom from "@/components/9-atoms/primitives/collection";
 import { resolveParams } from "@/engine/core/palette-resolver";
-import { resolveMoleculeLayout } from "@/layout/molecule-layout-resolver";
+import { resolveMoleculeLayout } from "@/lib/layout/molecule-layout-resolver";
 
 
 function resolveWithDefaultLayout(
@@ -151,6 +151,7 @@ export default function CardCompound({
       <div
         style={{
           width: "100%",
+          maxWidth: "100%",
           height: "100%",
           minHeight: 0,
           overflow: "hidden",
@@ -162,6 +163,7 @@ export default function CardCompound({
           alt=""
           style={{
             width: "100%",
+            maxWidth: "100%",
             height: "100%",
             objectFit: "cover",
             display: "block",

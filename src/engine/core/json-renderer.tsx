@@ -2,10 +2,10 @@
 import React from "react";
 import Registry from "./registry";
 import { resolveParams } from "./palette-resolver";
-import { getVisualPresetForMolecule } from "@/layout/visual-preset-resolver";
-import { getSpacingForScale } from "@/layout/spacing-scale-resolver";
-import { getCardPreset } from "@/layout/card-preset-resolver";
-import { resolveMoleculeLayout } from "@/layout/molecule-layout-resolver";
+import { getVisualPresetForMolecule } from "@/lib/layout/visual-preset-resolver";
+import { getSpacingForScale } from "@/lib/layout/spacing-scale-resolver";
+import { getCardPreset } from "@/lib/layout/card-preset-resolver";
+import { resolveMoleculeLayout } from "@/lib/layout/molecule-layout-resolver";
 import definitions from "@/compounds/ui/index";
 import {
   subscribePalette,
@@ -21,8 +21,8 @@ import {
 } from "@/state/state-store";
 import { useSyncExternalStore } from "react";
 import { JsonSkinEngine } from "@/logic/engines/json-skin.engine";
-import { getSectionLayoutPreset } from "@/layout/section-layout-presets";
-import { getCardLayoutPreset } from "@/layout/card-layout-presets";
+import { getDefaultSectionLayoutId } from "@/layout-2";
+import { getCardLayoutPreset } from "@/lib/layout/card-layout-presets";
 
 
 /* ======================================================
@@ -112,7 +112,7 @@ function SectionLayoutDebugOverlay({ node, children }: { node: any; children: Re
   const sectionKey = node?.id ?? "—";
   const role = node?.role ?? "—";
   const variant = node?.variant ?? "—";
-  const layoutPreset = (node as any)?._effectiveLayoutPreset ?? node?.layoutPreset ?? "—";
+  const layoutId = (node as any)?._effectiveLayoutPreset ?? node?.layout ?? "—";
   const containerWidth = node?.params?.containerWidth ?? "—";
   const layoutType = node?.params?.moleculeLayout?.type ?? "—";
   return (
@@ -137,7 +137,7 @@ function SectionLayoutDebugOverlay({ node, children }: { node: any; children: Re
         <span>sectionKey: {sectionKey}</span>
         <span>role: {role}</span>
         <span>variant: {String(variant)}</span>
-        <span>layoutPreset: {String(layoutPreset)}</span>
+        <span>layout (layout-2 id): {String(layoutId)}</span>
         <span>containerWidth: {String(containerWidth)}</span>
         <span>layoutType: {String(layoutType)}</span>
       </div>
@@ -292,9 +292,6 @@ function deepMergeParams(
   return result;
 }
 
-/** Section preset keys only — never merge card params into section. */
-const SECTION_PRESET_KEYS = ["containerWidth", "split", "backgroundVariant", "moleculeLayout"] as const;
-
 /* ======================================================
    PROFILE → SECTION RESOLVER (+ LAYOUT PRESET OVERRIDES)
    Section preset: container layout only.
@@ -326,84 +323,29 @@ function applyProfileToNode(
     delete p.backgroundVariant;
     delete p.split;
   }
-  if (layoutMode === "template" && isSection && node.role && profile.sections?.[node.role]) {
-    const sectionDef = profile.sections[node.role];
-    next.layout = { ...sectionDef };
-    const layoutType = sectionDef.type === "stack" ? "stacked" : sectionDef.type;
-    const templateParams = sectionDef.params ?? {};
-    const containerWidth =
-      profile.widthByRole?.[node.role] ?? profile.containerWidth;
-    next.params = {
-      ...(next.params ?? {}),
-      moleculeLayout: {
-        type: layoutType,
-        params: { ...templateParams },
-      },
-      ...(containerWidth != null ? { containerWidth } : {}),
-      ...(node.role === "hero" &&
-      profile.sectionBackgroundPattern === "hero-accent"
-        ? { backgroundVariant: "hero-accent" }
-        : {}),
-      // Hero sections use headline typography role for the title
-      ...(node.role === "hero"
-        ? {
-            title: {
-              ...(next.params?.title && typeof next.params.title === "object" ? next.params.title : {}),
-              size: "textRole.headline.size",
-              weight: "textRole.headline.weight",
-              lineHeight: "textRole.headline.lineHeight",
-            },
-          }
-        : {}),
-    };
-  }
-
-  // Per-section: effective section layout preset (container only). Merge ONLY section-level params.
+  // Per-section: set a single layout-2 string id (OrganPanel overrides, explicit node.layout, template default).
+  // Layout is never derived from role — component/layout separation: role is for labels only.
   if (isSection) {
     const sectionKey = (node.id ?? node.role) ?? "";
-    const effectivePreset =
-      (sectionLayoutPresetOverrides?.[sectionKey] ?? null) as string | null;
-    (next as any)._effectiveLayoutPreset =
-      effectivePreset && typeof effectivePreset === "string" ? effectivePreset : null;
-    const effectiveLayoutPresetId = (next as any)._effectiveLayoutPreset;
-    // When no override: default hero sections to split preset so SectionCompound receives params.split + row.
-    const defaultHeroPresetId = (profile as { defaultHeroPreset?: string } | null)?.defaultHeroPreset ?? "hero-split-image-right";
-    const presetToApply =
-      effectiveLayoutPresetId != null && effectiveLayoutPresetId !== ""
-        ? effectiveLayoutPresetId
-        : (node.role === "hero" ? defaultHeroPresetId : null);
-    if (presetToApply) {
-      const preset = getSectionLayoutPreset(presetToApply);
-      if (preset) {
-        const sectionOnly: Record<string, any> = {};
-        for (const k of SECTION_PRESET_KEYS) {
-          if (preset[k] !== undefined) sectionOnly[k] = preset[k];
-        }
-        next.params = {
-          ...(next.params ?? {}),
-          ...sectionOnly,
-          moleculeLayout: {
-            ...(next.params?.moleculeLayout ?? {}),
-            ...(preset.moleculeLayout ?? {}),
-          },
-        };
-        (next as any)._sectionPresetApplied = true;
-        // Verification: when default hero preset is applied, hero section receives params.split + moleculeLayout.row (see [SectionCompound] final params log).
-        if (typeof process !== "undefined" && process.env.NODE_ENV === "development" && !effectiveLayoutPresetId && node.role === "hero") {
-          traceOnce("hero-default-preset", "Hero section default preset applied", { presetId: presetToApply, split: preset.split, moleculeLayoutType: preset.moleculeLayout?.type });
-        }
-      }
-    } else if (!next.params?.moleculeLayout) {
-      // No override and no profile layout: apply default so section layout always comes from engine, not JSON.
-      const defaultPreset = getSectionLayoutPreset("content-narrow");
-      if (defaultPreset?.moleculeLayout) {
-        next.params = {
-          ...(next.params ?? {}),
-          ...defaultPreset,
-          moleculeLayout: { ...defaultPreset.moleculeLayout },
-        };
-      }
-    }
+    const overrideId =
+      (sectionLayoutPresetOverrides?.[sectionKey] && sectionLayoutPresetOverrides[sectionKey].trim())
+        ? sectionLayoutPresetOverrides[sectionKey].trim()
+        : null;
+    const existingLayoutId =
+      typeof node.layout === "string" && (node.layout as string).trim()
+        ? (node.layout as string).trim()
+        : null;
+    const templateId = (profile?.id ?? null) as string | null;
+    const templateDefaultLayoutId =
+      (profile as { defaultSectionLayoutId?: string } | null)?.defaultSectionLayoutId?.trim() ||
+      getDefaultSectionLayoutId(templateId ?? undefined);
+    const layoutId =
+      overrideId ||
+      existingLayoutId ||
+      templateDefaultLayoutId ||
+      "content-narrow";
+    next.layout = layoutId;
+    (next as any)._effectiveLayoutPreset = layoutId;
   }
 
   // Per-section card layout preset: merge mediaPosition, contentAlign into Card children only.
@@ -537,16 +479,6 @@ export function renderNode(
       ? deepMergeParams(paramsAfterSectionLayout, spacingOverlay)
       : paramsAfterSectionLayout;
 
-  // Section layout presets must always merge into section params; ensure preset keys are not dropped by template/visual merges.
-  const sectionLayoutPresetWasApplied = !!(profiledNode as any)._sectionPresetApplied;
-  if (typeKey === "section" && sectionLayoutPresetWasApplied && profiledNode.params) {
-    const p = profiledNode.params as Record<string, unknown>;
-    if (p.split != null) finalParams = { ...finalParams, split: p.split };
-    if (p.moleculeLayout != null) finalParams = { ...finalParams, moleculeLayout: p.moleculeLayout };
-    if (p.containerWidth != null) finalParams = { ...finalParams, containerWidth: p.containerWidth };
-    if (p.backgroundVariant != null) finalParams = { ...finalParams, backgroundVariant: p.backgroundVariant };
-  }
-
   const resolvedNode = {
     ...profiledNode,
     params: finalParams,
@@ -554,17 +486,11 @@ export function renderNode(
 
   logParamsDiagnostic(typeKey, resolvedNode.id, finalParams);
 
-  // Hero section only: log final params after all preset + template merges (diagnose preset → layout).
+  // Hero section only: log layout-2 id (diagnose preset → layout).
   if (typeKey === "section" && (profiledNode.role ?? resolvedNode.role) === "hero") {
-    const hasSplit = finalParams?.split != null && finalParams?.split?.type === "split";
-    const isRow = finalParams?.moleculeLayout?.type === "row";
-    console.log("[JsonRenderer] HERO SECTION FINAL PARAMS (after all merges)", {
+    console.log("[JsonRenderer] HERO SECTION (layout-2)", {
       id: resolvedNode.id,
-      hasSplit,
-      isRow,
-      split: finalParams?.split,
-      moleculeLayoutType: finalParams?.moleculeLayout?.type,
-      _sectionPresetApplied: (profiledNode as any)._sectionPresetApplied,
+      layout: resolvedNode.layout,
       _effectiveLayoutPreset: (profiledNode as any)._effectiveLayoutPreset,
     });
   }
@@ -640,9 +566,8 @@ export function renderNode(
   }
 
 
-  // When a section layout preset was applied in applyProfileToNode, do not overwrite moleculeLayout.
-  const sectionPresetApplied = !!(profiledNode as any)._sectionPresetApplied;
-  if (moleculeSpec?.type && !sectionPresetApplied) {
+  // Section layout is driven by layout-2 (section.layout id); do not overwrite params.moleculeLayout for sections.
+  if (moleculeSpec?.type && typeKey !== "section") {
     const layoutParams = resolveMoleculeLayout(
       moleculeSpec.type,
       moleculeSpec.preset,
@@ -718,9 +643,13 @@ export function renderNode(
 
   delete props.type;
   delete props.key;
-  // Layout wrapping: not from node.layout. Layout comes from Layout Engine / Preset (section params.moleculeLayout injected above).
-  delete (props as any).layout;
+  // Section layout: driven by layout-2 id only (set in applyProfileToNode); strip legacy keys.
   delete (props as any).layoutPreset;
+  delete (props as any).layout;
+  // layout-2: pass through section layout id so SectionCompound can use LayoutMoleculeRenderer.
+  if (typeKey === "section" && resolvedNode.layout != null) {
+    (props as any).layout = resolvedNode.layout;
+  }
 
   const content = (
     <MaybeDebugWrapper node={resolvedNode}>
@@ -750,7 +679,7 @@ export default function JsonRenderer({
   defaultState?: any;
   /**
    * Optional experience profile JSON providing `sections` mapping for role-based section layout.
-   * If omitted, JsonRenderer falls back to the layout-store snapshot (legacy behavior).
+   * If omitted, JsonRenderer falls back to the layout-store snapshot.
    */
   profileOverride?: any;
   /** Per-section section layout preset overrides (sectionKey -> presetId). */

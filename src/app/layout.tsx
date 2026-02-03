@@ -17,13 +17,13 @@ import { usePaletteCSS } from "@/lib/site-renderer/palette-bridge";
 ============================================================ */
 import { setLayout, getLayout, subscribeLayout, type LayoutMode } from "@/engine/core/layout-store";
 import { getCurrentScreenTree } from "@/engine/core/current-screen-tree-store";
-import { buildTemplateFromTree, serializeTemplateProfile } from "@/layout/save-current-as-template";
+import { buildTemplateFromTree, serializeTemplateProfile } from "@/lib/layout/save-current-as-template";
 
 
 /* ============================================================
    📐 TEMPLATE PROFILES (layout + preset override)
 ============================================================ */
-import { getTemplateList } from "@/layout/template-profiles";
+import { getTemplateList } from "@/lib/layout/template-profiles";
 
 /* ============================================================
    🧠 STATE (PHASE B: INTERNAL VIEW NAV)
@@ -40,9 +40,9 @@ import { installBehaviorListener } from "@/engine/core/behavior-listener";
 /* ============================================================
    📐 EXPERIENCE PROFILES
 ============================================================ */
-import websiteProfile from "@/layout/presentation/website.profile.json";
-import appProfile from "@/layout/presentation/app.profile.json";
-import learningProfile from "@/layout/presentation/learning.profile.json";
+import websiteProfile from "@/lib/layout/presentation/website.profile.json";
+import appProfile from "@/lib/layout/presentation/app.profile.json";
+import learningProfile from "@/lib/layout/presentation/learning.profile.json";
 
 
 /* ============================================================
@@ -96,7 +96,8 @@ export default function RootLayout({ children }: any) {
   const [showSections, setShowSections] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  usePaletteCSS(contentRef);
+  /* Apply palette to document root so app-chrome + content both inherit */
+  usePaletteCSS();
 
   /* ============================================================
      🔗 DEMO: INITIAL EXPERIENCE FROM URL
