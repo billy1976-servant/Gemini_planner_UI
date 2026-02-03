@@ -242,6 +242,7 @@ export default function SectionCompound({
       ? { ...surfaceParams, background: "var(--color-surface-dark)", color: "var(--color-on-surface-dark)" }
       : surfaceParams;
 
+  const isHeroSplit = useSplitPartition && mediaChild != null;
   const contentColumn = (
     <div
       style={{
@@ -249,36 +250,88 @@ export default function SectionCompound({
         flexDirection: "column",
         gap: "var(--spacing-4)",
         alignItems: "flex-start",
+        ...(isHeroSplit ? { maxWidth: "min(100%, 42rem)", minWidth: 0 } : {}),
       }}
     >
       {slotContent}
       {contentChildren}
     </div>
   );
-  const mediaColumn = mediaChild != null ? <div>{mediaChild}</div> : null;
+  /** Inject heroMediaFill so hero split media renders full-bleed (no card surface, 100% width/height, object-fit: cover). */
+  const injectHeroMediaFill = (node: React.ReactNode): React.ReactNode => {
+    if (!React.isValidElement(node)) return node;
+    const p = (node.props as any)?.params;
+    if (p != null)
+      return React.cloneElement(node, { params: { ...p, heroMediaFill: true } } as any);
+    const children = (node.props as any)?.children;
+    if (children != null) {
+      const injected = React.Children.map(children, injectHeroMediaFill);
+      if (injected.some((c, i) => c !== React.Children.toArray(children)[i]))
+        return React.cloneElement(node, { children: injected } as any);
+    }
+    return node;
+  };
+  const heroMediaChild =
+    isHeroSplit && mediaChild != null && React.isValidElement(mediaChild)
+      ? React.cloneElement(mediaChild as React.ReactElement<{ children?: React.ReactNode }>, {
+          children: React.Children.map(
+            (mediaChild as React.ReactElement<{ children?: React.ReactNode }>).props.children,
+            injectHeroMediaFill
+          ),
+        })
+      : mediaChild;
+  const mediaColumn =
+    mediaChild != null ? (
+      <div
+        style={
+          isHeroSplit
+            ? {
+                display: "flex",
+                minHeight: 0,
+                overflow: "hidden",
+                alignItems: "stretch",
+              }
+            : undefined
+        }
+      >
+        {heroMediaChild}
+      </div>
+    ) : null;
 
+  const mlParamsForInner = moleculeLayout?.params as Record<string, unknown> | undefined;
   const innerContent = (
     <div
       style={{
         display: isSplitLayout ? "grid" : "block",
         gridTemplateColumns: isSplitLayout ? "1fr 1fr" : undefined,
-        gap: "var(--spacing-6)",
+        gap: (isSplitLayout && mlParamsForInner?.gap) != null ? (mlParamsForInner.gap as string) : "var(--spacing-6)",
         alignItems: "center",
+        ...(isSplitLayout && mlParamsForInner?.padding != null ? { padding: mlParamsForInner.padding as string } : {}),
       }}
     >
       {isSplitLayout ? (
         useSplitPartition && mediaChild != null ? (
-          mediaSlot === "left" ? (
-            <>
-              {mediaColumn}
-              {contentColumn}
-            </>
-          ) : (
-            <>
-              {contentColumn}
-              {mediaColumn}
-            </>
-          )
+          (() => {
+            const textColumn =
+              effectiveContainerWidth === "full" ? (
+                <div style={{ maxWidth: "720px", width: "100%", margin: "0 auto" }}>
+                  {contentColumn}
+                </div>
+              ) : (
+                contentColumn
+              );
+            return mediaSlot === "left" ? (
+              <>
+                {mediaColumn}
+                {textColumn}
+              </>
+            ) : (
+              <>
+                {textColumn}
+                {mediaColumn}
+              </>
+            );
+          })()
         ) : (
           <>
             <div>{slotContent}</div>
@@ -337,34 +390,40 @@ export default function SectionCompound({
   /* ======================================================
      Container width — reads ONLY params.containerWidth (no role fallback).
      Supports enum, CSS var() (e.g. "var(--container-narrow)"), or length (e.g. "100vw", "600px").
+     When containerWidth === "full", use full-bleed breakout so section escapes page/shell max-width and padding.
      ====================================================== */
   const knownWidth =
     effectiveContainerWidth === "contained" ? "var(--container-content)" :
     effectiveContainerWidth === "narrow" ? "var(--container-narrow)" :
     effectiveContainerWidth === "wide" ? "var(--container-wide)" :
-    effectiveContainerWidth === "full" ? "var(--container-full)" :
     effectiveContainerWidth === "split" ? "var(--container-wide)" :
     effectiveContainerWidth === "edge-to-edge" ? null : null;
+  const isFullBleed = effectiveContainerWidth === "full";
   const isCssVar = typeof effectiveContainerWidth === "string" && /^var\s*\([^)]+\)$/.test(effectiveContainerWidth.trim());
   const isLength = typeof effectiveContainerWidth === "string" && /^\d+(\.\d+)?(px|rem|vw|%)$/.test(effectiveContainerWidth.trim());
   const containerVar =
     knownWidth ??
     (isCssVar || isLength ? (effectiveContainerWidth as string).trim() : "var(--container-content)");
-  const outerSectionStyle: React.CSSProperties = {
-    ...(effectiveContainerWidth !== "edge-to-edge"
-      ? { width: "100%", maxWidth: containerVar, marginLeft: "auto", marginRight: "auto" }
-      : {}),
-  };
+  const outerSectionStyle: React.CSSProperties = isFullBleed
+    ? {
+        width: "100vw",
+        maxWidth: "100vw",
+        marginLeft: "calc(50% - 50vw)",
+        marginRight: "calc(50% - 50vw)",
+      }
+    : effectiveContainerWidth !== "edge-to-edge"
+      ? { width: "100%", maxWidth: containerVar!, marginLeft: "auto", marginRight: "auto" }
+      : {};
 
   if (effectiveContainerWidth === "edge-to-edge") {
     return (
-      <div data-section-id={id} style={Object.keys(outerSectionStyle).length > 0 ? outerSectionStyle : undefined}>
+      <div data-section-id={id} data-container-width="edge-to-edge" style={Object.keys(outerSectionStyle).length > 0 ? outerSectionStyle : undefined}>
         {surfaceContent}
       </div>
     );
   }
   return (
-    <div data-section-id={id} style={outerSectionStyle}>
+    <div data-section-id={id} data-container-width={effectiveContainerWidth} style={outerSectionStyle}>
       {surfaceContent}
     </div>
   );

@@ -98,40 +98,23 @@
       "id": "hero_section",
       "type": "Section",
       "role": "hero",
-      "content": {},
+      "content": {
+        "title": "Capture your ideas, beautifully.",
+        "subtitle": "A calm place to write, reflect, and ship. Built with organ components—header, hero, features, gallery, testimonials, pricing, and CTA—all from one JSON screen."
+      },
       "children": [
-        {
-          "type": "Section",
-          "content": {
-            "title": "Capture your ideas, beautifully."
-          }
-        },
-        {
-          "type": "Section",
-          "content": {
-            "title": "A calm place to write, reflect, and ship. Built with organ components—header, hero, features, gallery, testimonials, pricing, and CTA—all from one JSON screen."
-          }
-        },
         {
           "type": "Card",
           "content": {
-            "media": "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=800"
-          },
-          "params": {
-            "mediaPosition": "left"
+            "media": "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=1200"
           }
         },
         {
           "type": "Button",
-          "content": {
-            "label": "Start writing"
-          },
+          "content": { "label": "Start writing" },
           "behavior": {
             "type": "Navigation",
-            "params": {
-              "verb": "go",
-              "to": "apps/journal_track/app-1.json"
-            }
+            "params": { "verb": "go", "to": "apps/journal_track/app-1.json" }
           }
         }
       ]

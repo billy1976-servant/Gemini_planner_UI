@@ -38,30 +38,32 @@ const SECTION_LAYOUT_PRESETS: Record<string, SectionPresetDef> = {
     },
   },
   "hero-split-image-right": {
-    containerWidth: "split",
+    containerWidth: "full",
     split: { type: "split", mediaSlot: "right" },
     moleculeLayout: {
       type: "row",
       preset: null,
       params: {
-        gap: "var(--spacing-8)",
+        gap: "var(--spacing-12)",
         align: "center",
         justify: "space-between",
-        padding: "var(--spacing-8) var(--spacing-6)",
+        padding: "var(--spacing-20) var(--spacing-8)",
+        minHeight: "min(60vh, 560px)",
       },
     },
   },
   "hero-split-image-left": {
-    containerWidth: "split",
+    containerWidth: "full",
     split: { type: "split", mediaSlot: "left" },
     moleculeLayout: {
       type: "row",
       preset: null,
       params: {
-        gap: "var(--spacing-8)",
+        gap: "var(--spacing-12)",
         align: "center",
         justify: "space-between",
-        padding: "var(--spacing-8) var(--spacing-6)",
+        padding: "var(--spacing-20) var(--spacing-8)",
+        minHeight: "min(60vh, 560px)",
       },
     },
   },

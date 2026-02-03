@@ -56,6 +56,10 @@ export type CardCompoundProps = {
     mediaPosition?: "top" | "left" | "right" | "bottom";
     /** Alignment of slot content: start/left (default), center, end/right */
     contentAlign?: "start" | "center" | "end" | "left" | "right";
+    /** Hero split: render only media filling container, no card surface (set by SectionCompound). */
+    heroMediaFill?: boolean;
+    /** Declarative hero media: render only image, no surface/padding/radius/shadow (e.g. hero split column). */
+    variant?: "hero-media" | string;
   };
   content?: {
     media?: string;   // ← FIXED (was image)
@@ -139,6 +143,33 @@ export default function CardCompound({
     !media.includes("icon") &&
     !media.includes("thumb");
   const hasLayoutMedia = isPrimaryMedia && mediaPosition;
+
+  const isHeroMedia =
+    (params?.heroMediaFill || params?.variant === "hero-media") && isPrimaryMedia && media;
+  if (isHeroMedia) {
+    return (
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          minHeight: 0,
+          overflow: "hidden",
+          position: "relative",
+        }}
+      >
+        <img
+          src={media}
+          alt=""
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            display: "block",
+          }}
+        />
+      </div>
+    );
+  }
 
   const mediaChunk = isPrimaryMedia && media ? (
     <MediaAtom
