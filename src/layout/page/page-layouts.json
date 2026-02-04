@@ -1,0 +1,45 @@
+{
+  "hero-centered": {
+    "containerWidth": "wide"
+  },
+  "hero-split": {
+    "containerWidth": "full",
+    "split": { "type": "split", "mediaSlot": "right" }
+  },
+  "hero-split-image-right": {
+    "containerWidth": "full",
+    "split": { "type": "split", "mediaSlot": "right" }
+  },
+  "hero-split-image-left": {
+    "containerWidth": "full",
+    "split": { "type": "split", "mediaSlot": "left" }
+  },
+  "hero-full-bleed-image": {
+    "containerWidth": "full",
+    "backgroundVariant": "default"
+  },
+  "content-narrow": {
+    "containerWidth": "narrow"
+  },
+  "content-stack": {
+    "containerWidth": "contained"
+  },
+  "image-left-text-right": {
+    "containerWidth": "contained"
+  },
+  "features-grid-3": {
+    "containerWidth": "contained"
+  },
+  "feature-grid-3": {
+    "containerWidth": "contained"
+  },
+  "testimonial-band": {
+    "containerWidth": "contained"
+  },
+  "cta-centered": {
+    "containerWidth": "contained"
+  },
+  "test-extensible": {
+    "containerWidth": "contained"
+  }
+}

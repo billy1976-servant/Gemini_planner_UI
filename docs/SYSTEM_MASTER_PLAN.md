@@ -1,5 +1,7 @@
 # SYSTEM MASTER PLAN (HiSense / HIcurv)
 
+**Classification:** REFERENCE — Consolidated apps-offline reference; primary architecture reference: docs/SYSTEM_MASTER/
+
 This is the consolidated, single-source reference for the **apps-offline JSON-driven system**: architecture, runtime wiring, blueprint compiler flow, contract validation, state flow, and the current migration phases.
 
 **Sources of truth used**

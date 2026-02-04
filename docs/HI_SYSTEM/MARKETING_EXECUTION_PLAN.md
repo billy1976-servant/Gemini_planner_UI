@@ -1,5 +1,7 @@
 # Marketing-First Execution Plan
 
+**Classification:** REFERENCE — Phase/packet ordering; primary architecture reference: docs/SYSTEM_MASTER/
+
 Reordered from [ACTION_PLAN_CURSOR.md](ACTION_PLAN_CURSOR.md). Same packets; execution order prioritizes beautiful UI first, then marketing/product page generator; compiler and logic only where required; Journal, Planner, and Migration in "Later Systems."
 
 ---

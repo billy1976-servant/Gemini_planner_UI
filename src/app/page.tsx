@@ -28,12 +28,17 @@ import {
   subscribeCardLayoutPresetOverrides,
 } from "@/state/section-layout-preset-store";
 import {
+  getOrganInternalLayoutOverridesForScreen,
+  setOrganInternalLayoutOverride,
+  subscribeOrganInternalLayoutOverrides,
+  getOrganInternalLayoutOverrides,
+} from "@/state/organ-internal-layout-store";
+import {
   getLayout2Ids,
   collectSectionKeysAndNodes,
   collectSectionLabels,
-  getAllowedCardPresetsForSectionPreset,
-  getDefaultCardPresetForSectionPreset,
-} from "@/layout-2";
+} from "@/layout";
+import { getOrganLayoutOrganIds, getInternalLayoutIds } from "@/layout-organ";
 import { hasLayoutNodeType, collapseLayoutNodes } from "@/engine/core/collapse-layout-nodes";
 import { applySkinBindings } from "@/logic/bridges/skinBindings.apply";
 import WebsiteShell from "@/lib/site-skin/shells/WebsiteShell";
@@ -170,6 +175,7 @@ export default function Page() {
   const paletteName = useSyncExternalStore(subscribePalette, getPaletteName, () => "default");
   useSyncExternalStore(subscribeSectionLayoutPresetOverrides, getSectionLayoutPresetOverrides, getSectionLayoutPresetOverrides);
   useSyncExternalStore(subscribeCardLayoutPresetOverrides, getCardLayoutPresetOverrides, getCardLayoutPresetOverrides);
+  useSyncExternalStore(subscribeOrganInternalLayoutOverrides, getOrganInternalLayoutOverrides, getOrganInternalLayoutOverrides);
   const experience = (layoutSnapshot as { experience?: string })?.experience ?? "website";
 
   /* --------------------------------------------------
@@ -347,6 +353,16 @@ export default function Page() {
 
   if (!json) return <div>Loading…</div>;
 
+  // Screen key for layout/organ overrides (must be stable before expand so organ overrides apply)
+  const hashJson = (obj: any) => {
+    if (!obj) return "empty";
+    const str = JSON.stringify(obj);
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) hash = ((hash << 5) - hash) + str.charCodeAt(i) | 0;
+    return Math.abs(hash).toString(36);
+  };
+  const screenKey = screen ? screen.replace(/[^a-zA-Z0-9]/g, "-") : `screen-${hashJson(json)}`;
+  const organInternalLayoutOverrides = getOrganInternalLayoutOverridesForScreen(screenKey);
 
   // ✅ FIX: render the ACTUAL screen root, not the descriptor
   let renderNode =
@@ -359,7 +375,7 @@ export default function Page() {
   const rawChildren = Array.isArray(renderNode?.children) ? renderNode.children : [];
   const children = assignSectionInstanceKeys(rawChildren);
   const docForOrgans = { meta: { domain: "offline", pageId: "screen", version: 1 }, nodes: children };
-  const expandedDoc = expandOrgansInDocument(docForOrgans as any, loadOrganVariant, {});
+  const expandedDoc = expandOrgansInDocument(docForOrgans as any, loadOrganVariant, organInternalLayoutOverrides);
   const data = json?.data ?? {};
   const boundDoc = applySkinBindings(expandedDoc as any, data);
   const finalChildren = (boundDoc as any).nodes ?? children;
@@ -401,24 +417,8 @@ export default function Page() {
     treeForRender = collapseLayoutNodes(composed) as typeof composed;
   }
 
-  // Simple hash function for JSON content (fallback only)
-  const hashJson = (obj: any): string => {
-    if (!obj) return "empty";
-    const str = JSON.stringify(obj);
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32bit integer
-    }
-    return Math.abs(hash).toString(36);
-  };
-
-  // ✅ ALWAYS use screen path, fallback to JSON hash (NEVER json.id)
+  // ✅ screenKey computed earlier (before expand) for organ overrides
   const currentTemplateId = (layoutSnapshot as { templateId?: string })?.templateId ?? "";
-  const screenKey = screen 
-    ? screen.replace(/[^a-zA-Z0-9]/g, "-") // Sanitize path for React key
-    : `screen-${hashJson(json)}`; // Hash entire JSON, not just id
   const renderKey = `${screenKey}-t-${currentTemplateId || "default"}-p-${paletteName}`;
 
   // Section layout preset: one row per section instance (no dedupe); labels and role for variant lookup
@@ -433,6 +433,15 @@ export default function Page() {
   sectionKeysForPreset.forEach((k) => {
     sectionPresetOptions[k] = layout2Ids;
   });
+  const organIds = getOrganLayoutOrganIds();
+  const roleToOrganId: Record<string, string> = { features: "features-grid", content: "content-section" };
+  const organIdBySectionKey: Record<string, string> = {};
+  sectionKeysForPreset.forEach((k) => {
+    const role = (sectionByKey[k]?.role ?? "").toString().trim();
+    const organId = roleToOrganId[role] ?? role;
+    if (organId && organIds.includes(organId)) organIdBySectionKey[k] = organId;
+  });
+  const organInternalLayoutOverridesProp = { ...getOrganInternalLayoutOverridesForScreen(screenKey) };
 
   // Log once per render to confirm key changes between files
   console.log("[page] 🔑 JsonRenderer KEY RESOLVED", {
@@ -450,12 +459,6 @@ export default function Page() {
 
   const handleSectionLayoutPresetOverride = (sectionKey: string, presetId: string) => {
     setSectionLayoutPresetOverride(screenKey, sectionKey, presetId);
-    const currentCard = cardLayoutPresetOverrides[sectionKey] ?? "";
-    const allowed = getAllowedCardPresetsForSectionPreset(presetId || null);
-    if (currentCard && !allowed.includes(currentCard)) {
-      const fallback = getDefaultCardPresetForSectionPreset(presetId || null) ?? "";
-      setCardLayoutPresetOverride(screenKey, sectionKey, fallback);
-    }
   };
 
   const jsonContent = (
@@ -466,6 +469,7 @@ export default function Page() {
       profileOverride={effectiveProfile}
       sectionLayoutPresetOverrides={sectionLayoutPresetOverridesProp}
       cardLayoutPresetOverrides={cardLayoutPresetOverridesProp}
+      organInternalLayoutOverrides={organInternalLayoutOverridesProp}
       screenId={screenKey}
     />
   );
@@ -510,6 +514,12 @@ export default function Page() {
               }
               sectionPresetOptions={sectionPresetOptions}
               sectionHeights={sectionHeights}
+              organIdBySectionKey={organIdBySectionKey}
+              organInternalLayoutOverrides={organInternalLayoutOverridesProp}
+              onOrganInternalLayoutOverride={(sectionKey, internalLayoutId) =>
+                setOrganInternalLayoutOverride(screenKey, sectionKey, internalLayoutId)
+              }
+              sectionNodesByKey={sectionByKey}
             />
           </div>
         }
@@ -543,6 +553,12 @@ export default function Page() {
               }
               sectionPresetOptions={sectionPresetOptions}
               sectionHeights={sectionHeights}
+              organIdBySectionKey={organIdBySectionKey}
+              organInternalLayoutOverrides={organInternalLayoutOverridesProp}
+              onOrganInternalLayoutOverride={(sectionKey, internalLayoutId) =>
+                setOrganInternalLayoutOverride(screenKey, sectionKey, internalLayoutId)
+              }
+              sectionNodesByKey={sectionByKey}
             />
           </div>
         }

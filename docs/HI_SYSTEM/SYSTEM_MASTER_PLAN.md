@@ -1,4 +1,8 @@
+Primary Architecture Reference: docs/SYSTEM_MASTER/
+
 # System Master Build Plan
+
+**Classification:** FOUNDATIONAL — Phased build plan; primary architecture reference: docs/SYSTEM_MASTER/
 
 **Purpose:** Complete phased plan for building a parallel JSON-driven UI and logic pipeline that will eventually replace most TSX-driven rendering and behavior, while keeping the legacy system intact during migration.
 

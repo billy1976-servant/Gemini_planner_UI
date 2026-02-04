@@ -28,7 +28,7 @@ export function getExperienceProfile(profileId: string) {
  * This does NOT resolve row/column/grid.
  * It ONLY selects which layout instruction should apply.
  *
- * Output feeds directly into resolveLayout() from @/layout-2.
+ * Output feeds directly into resolveLayout() from @/layout.
  */
 export function resolveProfileLayout(
   profileId: string,

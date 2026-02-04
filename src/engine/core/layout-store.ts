@@ -40,7 +40,7 @@ let activeLayout: {
   experience: "website",
   type: "column",
   preset: null,
-  templateId: "modern-hero-centered",
+  templateId: "",
   mode: "template",
   regionPolicy: {
     nav: {

@@ -1,5 +1,7 @@
 # Phase 1 — Proof of Template Impact — VERIFICATION
 
+**Classification:** REFERENCE — Template impact verification; primary architecture reference: docs/SYSTEM_MASTER/
+
 **Status**: ✅ IMPLEMENTED  
 **Date**: 2026-01-31
 

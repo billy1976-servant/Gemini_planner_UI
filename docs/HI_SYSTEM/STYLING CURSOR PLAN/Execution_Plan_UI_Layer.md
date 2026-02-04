@@ -1,5 +1,7 @@
 # Global JSON UI Styling Master Plan
 
+**Classification:** REFERENCE — UI layer execution; primary architecture reference: docs/SYSTEM_MASTER/
+
 **Authoritative reference:** UI Rendering Pipeline — Architecture Audit  
 **Goal:** Extend the JSON styling pipeline so screens can reach the same visual quality as TSX screens, driven entirely by Palette tokens, Visual Presets, Molecule Definitions, and Screen JSON (structure only).
 

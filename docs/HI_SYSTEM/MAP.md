@@ -1,4 +1,8 @@
+Primary Architecture Reference: docs/SYSTEM_MASTER/
+
 Last refreshed: 2026-01-30T15:14:39.548Z
+
+**Classification:** FOUNDATIONAL — System map; primary architecture reference: docs/SYSTEM_MASTER/
 
 # SYSTEM_MASTER_MAP
 

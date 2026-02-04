@@ -1,5 +1,7 @@
 # Hero Layout + Cascading Layout — Phase 1 Audit Report
 
+**Classification:** REFERENCE — Hero/audit findings; primary architecture reference: docs/SYSTEM_MASTER/
+
 **Date:** 2025-02-02  
 **Scope:** SectionCompound, section layout presets, hero vs card media, full-bleed behavior.
 

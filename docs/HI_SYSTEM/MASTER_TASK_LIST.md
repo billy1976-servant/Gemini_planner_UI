@@ -1,5 +1,7 @@
 # MASTER TASK LIST
 
+**Classification:** REFERENCE — Step-level task list; primary architecture reference: docs/SYSTEM_MASTER/
+
 Single master task list for the entire HIcurv/HiSense system build. Aligns with [MAP.md](MAP.md), [SYSTEM_MASTER_PLAN.md](SYSTEM_MASTER_PLAN.md), [ROADMAP.md](ROADMAP.md), [WORKFLOW_RULES.md](WORKFLOW_RULES.md), and [PLAN_ACTIVE.md](PLAN_ACTIVE.md). Before coding: read docs in this folder; update PLAN_ACTIVE before starting a phase; append CHANGELOG and update MAP after major work.
 
 ---

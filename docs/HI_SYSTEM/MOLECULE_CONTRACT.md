@@ -1,4 +1,8 @@
+Primary Architecture Reference: docs/SYSTEM_MASTER/
+
 # Molecule Universe Contract
+
+**Classification:** FOUNDATIONAL — Molecule universe; primary architecture reference: docs/SYSTEM_MASTER/
 
 **Purpose:** Lock the UI molecule/atom universe. All definition JSONs in `src/compounds/ui/definitions/*.json` must conform.
 

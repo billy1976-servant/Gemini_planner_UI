@@ -1,5 +1,7 @@
 # SYSTEM_MASTER_MAP
 
+**Classification:** REDUNDANT — Canonical copy: docs/HI_SYSTEM/MAP.md; primary architecture reference: docs/SYSTEM_MASTER/
+
 **Purpose:** Single authoritative map of the HiSense system—ingested from prior analysis artifacts and verified against the current codebase. No redesign; map reality only.
 
 **Generated:** 2026-01-30

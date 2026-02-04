@@ -1,5 +1,7 @@
 # Template-Driven Visual Wix Quality System — Evaluation & Plan
 
+**Classification:** REFERENCE — Template system; status implemented; primary architecture reference: docs/SYSTEM_MASTER/
+
 **Purpose:** Evaluate the GPT Cursor task for a template-driven website layout system and map an implementation plan that keeps all layers (palette, styling, layout, flow) maintaining their pieces. Verification uses screen JSON files; templates update layout/styling independently of palette and behavior.
 
 **Status:** Implemented. Template dropdown in layout bar; effective profile (template overrides sections + visualPreset) applied in page.tsx for JSON screens. No changes to composeOfflineScreen, JsonRenderer internals, behavior, state, palette, or screen JSON.

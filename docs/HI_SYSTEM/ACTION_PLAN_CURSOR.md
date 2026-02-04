@@ -1,5 +1,7 @@
 # Action Plan (Cursor copy-paste)
 
+**Classification:** HISTORICAL — Packetized execution plan; superseded by phase-based PLAN_ACTIVE/MASTER_TASK_LIST.
+
 Paste this as a single command to Cursor:
 Use ACTION_PLAN_CURSOR.md as the only specification. Execute Packets 11–15 sequentially. For each packet: (1) open and read every file listed under “Files to inspect”, (2) perform only the “Exact edits to make” for that packet, (3) run the packet’s Validation steps, (4) STOP and summarize what changed and whether validation passed, then WAIT for my approval before continuing to the next packet. Do not skip packets, do not combine steps, and do not modify anything not explicitly listed in the current packet.
 

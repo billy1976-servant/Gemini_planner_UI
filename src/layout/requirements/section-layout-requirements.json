@@ -1,0 +1,18 @@
+{
+  "description": "Section layout ID → required content slots. Empty or missing requires = no required slots (always valid).",
+  "layoutRequirements": {
+    "hero-centered": { "requires": ["heading", "body"] },
+    "hero-split": { "requires": ["heading", "body", "image"] },
+    "hero-split-image-right": { "requires": ["heading", "body", "image"] },
+    "hero-split-image-left": { "requires": ["heading", "body", "image"] },
+    "hero-full-bleed-image": { "requires": ["heading", "body", "image"] },
+    "content-narrow": { "requires": [] },
+    "content-stack": { "requires": [] },
+    "image-left-text-right": { "requires": ["image", "body"] },
+    "features-grid-3": { "requires": ["card_list"] },
+    "feature-grid-3": { "requires": ["card_list"] },
+    "testimonial-band": { "requires": ["card_list"] },
+    "cta-centered": { "requires": ["heading", "body"] },
+    "test-extensible": { "requires": [] }
+  }
+}

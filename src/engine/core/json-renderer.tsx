@@ -21,7 +21,7 @@ import {
 } from "@/state/state-store";
 import { useSyncExternalStore } from "react";
 import { JsonSkinEngine } from "@/logic/engines/json-skin.engine";
-import { getDefaultSectionLayoutId } from "@/layout-2";
+import { getDefaultSectionLayoutId, evaluateCompatibility } from "@/layout";
 import { getCardLayoutPreset } from "@/lib/layout/card-layout-presets";
 
 
@@ -137,7 +137,7 @@ function SectionLayoutDebugOverlay({ node, children }: { node: any; children: Re
         <span>sectionKey: {sectionKey}</span>
         <span>role: {role}</span>
         <span>variant: {String(variant)}</span>
-        <span>layout (layout-2 id): {String(layoutId)}</span>
+        <span>layout (section layout id): {String(layoutId)}</span>
         <span>containerWidth: {String(containerWidth)}</span>
         <span>layoutType: {String(layoutType)}</span>
       </div>
@@ -302,7 +302,8 @@ function applyProfileToNode(
   profile: any,
   sectionLayoutPresetOverrides?: Record<string, string>,
   cardLayoutPresetOverrides?: Record<string, string>,
-  parentSectionKey?: string | null
+  parentSectionKey?: string | null,
+  organInternalLayoutOverrides?: Record<string, string>
 ): any {
   if (!node || !profile) return node;
 
@@ -343,9 +344,19 @@ function applyProfileToNode(
       overrideId ||
       existingLayoutId ||
       templateDefaultLayoutId ||
-      "content-narrow";
+      undefined;
     next.layout = layoutId;
     (next as any)._effectiveLayoutPreset = layoutId;
+    const compatibility = evaluateCompatibility({
+      sectionNode: node,
+      sectionLayoutId: next.layout ?? null,
+      cardLayoutId: cardLayoutPresetOverrides?.[sectionKey] ?? null,
+      organId: node.role ?? null,
+      organInternalLayoutId: organInternalLayoutOverrides?.[sectionKey] ?? null,
+    });
+    if (process.env.NODE_ENV === "development") {
+      console.debug("Layout compatibility:", compatibility);
+    }
   }
 
   // Per-section card layout preset: merge mediaPosition, contentAlign into Card children only.
@@ -372,7 +383,7 @@ function applyProfileToNode(
   if (Array.isArray(node.children)) {
     const sectionKey = isSection ? ((node.id ?? node.role) ?? "") : parentSectionKey ?? null;
     next.children = node.children.map((child) =>
-      applyProfileToNode(child, profile, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, sectionKey)
+      applyProfileToNode(child, profile, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, sectionKey, organInternalLayoutOverrides)
     );
   }
 
@@ -389,7 +400,8 @@ export function renderNode(
   stateSnapshot: any,
   defaultState?: any,
   sectionLayoutPresetOverrides?: Record<string, string>,
-  cardLayoutPresetOverrides?: Record<string, string>
+  cardLayoutPresetOverrides?: Record<string, string>,
+  organInternalLayoutOverrides?: Record<string, string>
 ): any {
   if (!node) return null;
 
@@ -405,7 +417,7 @@ export function renderNode(
   if (!shouldRenderNode(node, stateSnapshot, defaultState)) return null;
 
   const profiledNode = profile
-    ? applyProfileToNode(node, profile, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, null)
+    ? applyProfileToNode(node, profile, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, null, organInternalLayoutOverrides)
     : node;
 
 
@@ -486,7 +498,7 @@ export function renderNode(
 
   logParamsDiagnostic(typeKey, resolvedNode.id, finalParams);
 
-  // Hero section only: log layout-2 id (diagnose preset → layout).
+  // Hero section only: log section layout id (diagnose preset → layout).
   if (typeKey === "section" && (profiledNode.role ?? resolvedNode.role) === "hero") {
     console.log("[JsonRenderer] HERO SECTION (layout-2)", {
       id: resolvedNode.id,
@@ -554,19 +566,19 @@ export function renderNode(
       };
 
       const uniqueKey = item.id || `item-${i}`;
-      return renderNode({ ...itemNode, key: uniqueKey }, profile, stateSnapshot, defaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides);
+      return renderNode({ ...itemNode, key: uniqueKey }, profile, stateSnapshot, defaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides);
     });
   } else if (Array.isArray(resolvedNode.children)) {
     // Normal mode: render children
     renderedChildren = resolvedNode.children.map((child: any, i: number) => {
       // 🔑 Use child.id if available, otherwise use index + type for unique key
       const uniqueKey = child.id || `${child.type}-${i}`;
-      return renderNode({ ...child, key: uniqueKey }, profile, stateSnapshot, defaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides);
+      return renderNode({ ...child, key: uniqueKey }, profile, stateSnapshot, defaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides);
     });
   }
 
 
-  // Section layout is driven by layout-2 (section.layout id); do not overwrite params.moleculeLayout for sections.
+  // Section layout is driven by section.layout id; do not overwrite params.moleculeLayout for sections.
   if (moleculeSpec?.type && typeKey !== "section") {
     const layoutParams = resolveMoleculeLayout(
       moleculeSpec.type,
@@ -646,7 +658,7 @@ export function renderNode(
   // Section layout: driven by layout-2 id only (set in applyProfileToNode); strip legacy keys.
   delete (props as any).layoutPreset;
   delete (props as any).layout;
-  // layout-2: pass through section layout id so SectionCompound can use LayoutMoleculeRenderer.
+  // Pass through section layout id so SectionCompound can use LayoutMoleculeRenderer.
   if (typeKey === "section" && resolvedNode.layout != null) {
     (props as any).layout = resolvedNode.layout;
   }
@@ -673,6 +685,7 @@ export default function JsonRenderer({
   profileOverride,
   sectionLayoutPresetOverrides,
   cardLayoutPresetOverrides,
+  organInternalLayoutOverrides,
   screenId,
 }: {
   node: any;
@@ -686,6 +699,8 @@ export default function JsonRenderer({
   sectionLayoutPresetOverrides?: Record<string, string>;
   /** Per-section card layout preset overrides (sectionKey -> presetId). */
   cardLayoutPresetOverrides?: Record<string, string>;
+  /** Per-section organ internal layout overrides (sectionKey -> internalLayoutId). */
+  organInternalLayoutOverrides?: Record<string, string>;
   /** Screen key for this render (e.g. for override lookup). */
   screenId?: string;
 }) {
@@ -804,7 +819,7 @@ export default function JsonRenderer({
 
   traceOnce("root", "Root render");
 
-  return renderNode(node, profile, stateSnapshot, effectiveDefaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides);
+  return renderNode(node, profile, stateSnapshot, effectiveDefaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides);
 }
 
 

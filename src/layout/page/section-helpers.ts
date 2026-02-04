@@ -1,5 +1,5 @@
 /**
- * Section helpers for layout-2: collect section keys/nodes and labels from tree.
+ * Section helpers for page layout: collect section keys/nodes and labels from tree.
  * Used by page.tsx for OrganPanel rows (section layout overrides).
  */
 

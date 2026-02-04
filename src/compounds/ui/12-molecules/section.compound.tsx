@@ -16,8 +16,9 @@ import React from "react";
 /* ======================================================
    2) ATOM IMPORTS (UI ONLY)
    ====================================================== */
-import { resolveLayout } from "@/layout-2";
-import { LayoutMoleculeRenderer } from "@/layout-2";
+import { resolveLayout, LayoutMoleculeRenderer, type LayoutDefinition } from "@/layout";
+import { getOrganLayoutOrganIds, resolveInternalLayoutId } from "@/layout-organ";
+import { loadOrganVariant } from "@/organs/organ-registry";
 
 /* ======================================================
    3) PROPS CONTRACT
@@ -26,7 +27,7 @@ export type SectionCompoundProps = {
   id?: string;
   /** Section role from JSON (e.g. hero, features). Used for hero-only layout branch. */
   role?: string;
-  /** layout-2: layout id or { template, slot }. When resolved, Section uses LayoutMoleculeRenderer (parallel path). */
+  /** Section layout: layout id or { template, slot }. When resolved, Section uses LayoutMoleculeRenderer. */
   layout?: string | { template: string; slot: string };
   /** Effective layout preset ID applied by engine (e.g. hero-full-bleed-image). Used for full-bleed detection. */
   _effectiveLayoutPreset?: string | null;
@@ -46,6 +47,8 @@ export type SectionCompoundProps = {
       preset?: string;
       params?: Record<string, any>;
     };
+    /** Set by organ expansion; used by organ layout resolver for internal arrangement only. */
+    internalLayoutId?: string;
   };
   content?: {
     title?: string;
@@ -73,13 +76,36 @@ export default function SectionCompound({
   content = {},
   children,
 }: SectionCompoundProps) {
-  // layout-2 only: resolve layout id (or fallback) and render via LayoutMoleculeRenderer.
+  // Section layout: section placement (container, split, background).
   const layoutDef = resolveLayout(layout);
-  const fallbackDef = resolveLayout("content-narrow");
-  const effectiveDef = layoutDef ?? fallbackDef;
+  // Organ internal layout: when this section is an organ, inner arrangement from organ layout resolver + variant JSON; does not use section layout for inner moleculeLayout.
+  const organIds = getOrganLayoutOrganIds();
+  const isOrgan = role != null && organIds.includes(role);
+  const effectiveDef =
+    layoutDef != null && isOrgan
+      ? (() => {
+          const internalLayoutId = resolveInternalLayoutId(role, params.internalLayoutId);
+          const variantRoot = loadOrganVariant(role, internalLayoutId ?? "default");
+          const variantParams =
+            variantRoot != null && typeof variantRoot === "object" && "params" in variantRoot
+              ? (variantRoot as { params?: { moleculeLayout?: unknown } }).params
+              : undefined;
+          const organMoleculeLayout = variantParams?.moleculeLayout;
+          return {
+            ...layoutDef,
+            moleculeLayout: organMoleculeLayout ?? layoutDef.moleculeLayout,
+          };
+        })()
+      : layoutDef;
   if (effectiveDef) {
     return (
-      <LayoutMoleculeRenderer layout={effectiveDef} id={id} role={role} params={params} content={content}>
+      <LayoutMoleculeRenderer
+        layout={effectiveDef as LayoutDefinition}
+        id={id}
+        role={role}
+        params={params}
+        content={content}
+      >
         {children}
       </LayoutMoleculeRenderer>
     );

@@ -1,4 +1,8 @@
+Primary Architecture Reference: docs/SYSTEM_MASTER/
+
 # Behavior Contract (Phase 3)
+
+**Classification:** FOUNDATIONAL — Behavior kinds and tokens; primary architecture reference: docs/SYSTEM_MASTER/
 
 Canonical behavior representation for the runtime. Legacy payloads are normalized into this shape via `src/contracts/behavior-normalize.ts`.
 

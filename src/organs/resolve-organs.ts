@@ -123,6 +123,9 @@ export function expandOrgans(
       n.content != null ? { content: n.content as Record<string, unknown> } : {}
     );
     merged.id = (n.id ?? merged.id) as string;
+    // Expose internal layout id for organ layout resolver (SectionCompound uses it; does not touch section layout).
+    const mergedParams = (merged.params ?? {}) as Record<string, unknown>;
+    merged.params = { ...mergedParams, internalLayoutId: variantId };
     if (Array.isArray(merged.children)) {
       merged.children = expandOrgans(merged.children as unknown[], loadOrganVariant, overrides);
     }

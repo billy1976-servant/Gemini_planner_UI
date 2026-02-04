@@ -1,5 +1,7 @@
 # Adapters (compiled data → offline JSON screen)
 
+**Classification:** REFERENCE — Adapter docs; primary architecture reference: docs/SYSTEM_MASTER/
+
 **Purpose:** Document adapters that convert compiled or external data into the offline JSON screen format so it renders through the Molecule renderer without adding new UI types.
 
 ---

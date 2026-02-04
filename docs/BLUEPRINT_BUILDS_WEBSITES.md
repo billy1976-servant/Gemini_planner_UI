@@ -1,5 +1,7 @@
 # YES, Blueprint Builds Websites!
 
+**Classification:** FOUNDATIONAL — How blueprint builds websites; primary architecture reference: docs/SYSTEM_MASTER/
+
 **Date:** 2026-01-31  
 **Status:** ✅ Complete System Implemented
 

@@ -39,7 +39,7 @@ export type TemplateProfile = {
   visualPreset: "default" | "compact" | "spacious" | "editorial" | "prominent";
   /** Section role → layout (type + params). Template overrides organ defaults at render time. */
   sections: Record<string, LayoutDef>;
-  /** Default layout-2 id for sections when no override and no explicit node.layout. Layout-only; not keyed by role. */
+  /** Default layout id for sections when no override and no explicit node.layout. Layout-only; not keyed by role. */
   defaultSectionLayoutId?: string;
   /** Default section width; overridden per role by widthByRole when set. */
   containerWidth?: ContainerWidth;

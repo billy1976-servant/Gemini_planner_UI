@@ -1,4 +1,8 @@
+Primary Architecture Reference: docs/SYSTEM_MASTER/
+
 # Current plan (single doc we edit going forward)
+
+**Classification:** FOUNDATIONAL — Single current plan; primary architecture reference: docs/SYSTEM_MASTER/
 
 Placeholder phases. Fill in Goal / Inputs / Outputs / Stop Criteria per phase.
 

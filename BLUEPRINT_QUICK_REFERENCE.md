@@ -1,5 +1,7 @@
 # Blueprint → Website Quick Reference
 
+**Classification:** REFERENCE — Quick reference; primary architecture reference: docs/SYSTEM_MASTER/
+
 **Status:** ✅ Complete System (All 12 Phases)  
 **Updated:** 2026-01-31
 

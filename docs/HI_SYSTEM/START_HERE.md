@@ -1,4 +1,8 @@
+Primary Architecture Reference: docs/SYSTEM_MASTER/
+
 # If you're new, read this
+
+**Classification:** FOUNDATIONAL — Entry point; primary architecture reference: docs/SYSTEM_MASTER/
 
 ## What the system is
 

@@ -1,5 +1,7 @@
 # UI Layer Verification Report (Packet J)
 
+**Classification:** REFERENCE — UI layer verification report; primary architecture reference: docs/SYSTEM_MASTER/
+
 ## Packet J: Verification and Polish
 
 **Goal:** End-to-end verification (Execution_Plan_UI_Layer.md lines 322–329).

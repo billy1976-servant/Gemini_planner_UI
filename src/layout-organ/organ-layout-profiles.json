@@ -1,0 +1,111 @@
+{
+  "description": "Organ layout profiles: capabilities and valid internal layout IDs per organ type. Internal only; does not control section placement.",
+  "organs": [
+    {
+      "organId": "hero",
+      "capabilities": {
+        "hasMedia": true,
+        "hasCta": true,
+        "mediaPosition": ["none", "left", "right", "background"]
+      },
+      "internalLayoutIds": ["centered", "image-bg", "split-left", "split-right", "full-screen", "short", "with-cta", "video-ready", "right-aligned"],
+      "defaultInternalLayoutId": "centered"
+    },
+    {
+      "organId": "header",
+      "capabilities": {
+        "slots": ["logo", "cta"],
+        "arrangement": "row"
+      },
+      "internalLayoutIds": ["default", "sticky-split", "transparent", "minimal", "centered", "full-width", "mega-ready", "shrink-on-scroll", "with-announcement", "compact", "logo-center", "nav-left"],
+      "defaultInternalLayoutId": "default"
+    },
+    {
+      "organId": "nav",
+      "capabilities": {
+        "slots": ["primary"],
+        "arrangement": "row"
+      },
+      "internalLayoutIds": ["default", "dropdown", "mobile-collapse", "centered-links"],
+      "defaultInternalLayoutId": "default"
+    },
+    {
+      "organId": "footer",
+      "capabilities": {
+        "slots": ["primary"],
+        "arrangement": ["grid", "column"]
+      },
+      "internalLayoutIds": ["multi-column", "minimal", "with-newsletter", "centered", "dense"],
+      "defaultInternalLayoutId": "multi-column"
+    },
+    {
+      "organId": "content-section",
+      "capabilities": {
+        "hasMedia": true,
+        "mediaPosition": ["none", "left", "right"],
+        "blocks": ["title+body", "block1+block2"]
+      },
+      "internalLayoutIds": ["text-only", "media-left", "media-right", "zigzag"],
+      "defaultInternalLayoutId": "text-only"
+    },
+    {
+      "organId": "features-grid",
+      "capabilities": {
+        "slots": ["title", "items"],
+        "gridColumns": [2, 3, 4],
+        "repeater": true
+      },
+      "internalLayoutIds": ["2-col", "3-col", "4-col", "repeater"],
+      "defaultInternalLayoutId": "3-col"
+    },
+    {
+      "organId": "gallery",
+      "capabilities": {
+        "slots": ["title", "items"],
+        "gridColumns": [2, 3, 4],
+        "carousel": true
+      },
+      "internalLayoutIds": ["grid-2", "grid-3", "grid-4", "carousel-ready"],
+      "defaultInternalLayoutId": "grid-3"
+    },
+    {
+      "organId": "testimonials",
+      "capabilities": {
+        "slots": ["title", "items"],
+        "gridColumns": [2, 3],
+        "singleFeatured": true,
+        "carousel": true
+      },
+      "internalLayoutIds": ["grid-2", "grid-3", "single-featured", "carousel-ready"],
+      "defaultInternalLayoutId": "grid-3"
+    },
+    {
+      "organId": "pricing",
+      "capabilities": {
+        "slots": ["title", "primary"],
+        "tiers": [2, 3, 4],
+        "variants": ["minimal", "highlighted"]
+      },
+      "internalLayoutIds": ["2-tier", "3-tier", "4-tier", "highlighted", "minimal"],
+      "defaultInternalLayoutId": "3-tier"
+    },
+    {
+      "organId": "faq",
+      "capabilities": {
+        "slots": ["title", "primary"],
+        "arrangement": ["accordion", "list", "two-column"]
+      },
+      "internalLayoutIds": ["accordion", "list", "two-column"],
+      "defaultInternalLayoutId": "accordion"
+    },
+    {
+      "organId": "cta",
+      "capabilities": {
+        "slots": ["primary"],
+        "arrangement": ["banner", "strip", "split", "full-width"]
+      },
+      "internalLayoutIds": ["banner", "strip", "split", "full-width"],
+      "defaultInternalLayoutId": "banner"
+    }
+  ]
+}

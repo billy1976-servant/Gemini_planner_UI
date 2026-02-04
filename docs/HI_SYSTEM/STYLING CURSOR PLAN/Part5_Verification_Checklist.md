@@ -1,5 +1,7 @@
 # Part 5: Verification Steps — Checklist
 
+**Classification:** REFERENCE — Verification checklist; primary architecture reference: docs/SYSTEM_MASTER/
+
 From [Execution_Plan_UI_Layer.md](Execution_Plan_UI_Layer.md) lines 205–210.
 
 ## 1. Palette dropdown

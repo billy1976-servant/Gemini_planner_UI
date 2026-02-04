@@ -1,5 +1,7 @@
 # Template Layout System — Upgrade or Not (Your Comments vs Plan)
 
+**Classification:** REFERENCE — Template upgrade evaluation; primary architecture reference: docs/SYSTEM_MASTER/
+
 ## Verdict: Upgrade
 
 Your refined spec is an upgrade in clarity and correctness. It does not change the architecture; it tightens the contract and the executable steps.

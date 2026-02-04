@@ -1,4 +1,8 @@
+Primary Architecture Reference: docs/SYSTEM_MASTER/
+
 # Roadmap
+
+**Classification:** FOUNDATIONAL — Current phase; primary architecture reference: docs/SYSTEM_MASTER/
 
 Single place for **current phase**. Details per phase live in [PLAN_ACTIVE.md](PLAN_ACTIVE.md).
 

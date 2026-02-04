@@ -7,7 +7,7 @@ import SequenceAtom from "@/components/9-atoms/primitives/sequence";
 import CollectionAtom from "@/components/9-atoms/primitives/collection";
 import { resolveParams } from "@/engine/core/palette-resolver";
 import { resolveMoleculeLayout } from "@/lib/layout/molecule-layout-resolver";
-import type { LayoutDefinition } from "./layout-resolver";
+import type { LayoutDefinition } from "@/layout/resolver";
 
 function isMediaChild(child: React.ReactNode): child is React.ReactElement {
   if (!React.isValidElement(child)) return false;
@@ -40,7 +40,7 @@ function getMediaUrl(mediaChild: React.ReactElement | null): string | null {
 }
 
 export type LayoutMoleculeRendererProps = {
-  layout: LayoutDefinition;
+  layout: LayoutDefinition | null | undefined;
   id?: string;
   role?: string;
   params?: {
@@ -53,8 +53,8 @@ export type LayoutMoleculeRendererProps = {
 };
 
 /**
- * Renders section structure from a layout-2 layout definition (parallel path).
- * Applies containerWidth, surface, split/grid/column from layout; does not replace existing SectionCompound logic.
+ * Renders section structure from unified layout definition.
+ * Applies containerWidth, surface, split/grid/column from layout only when defined; no invented defaults.
  */
 export default function LayoutMoleculeRenderer({
   layout,
@@ -63,8 +63,12 @@ export default function LayoutMoleculeRenderer({
   content = {},
   children,
 }: LayoutMoleculeRendererProps) {
+  if (layout == null) {
+    return <>{children}</>;
+  }
+
   const {
-    containerWidth: rawWidth = "contained",
+    containerWidth: rawWidth,
     split: splitConfig,
     backgroundVariant: variant,
     moleculeLayout,
@@ -83,13 +87,6 @@ export default function LayoutMoleculeRenderer({
   const slotContent = content?.title ? (
     <TextAtom params={resolveParams(params.title)}>{content.title}</TextAtom>
   ) : null;
-
-  const layoutParams = { ...(moleculeLayout?.params ?? {}) };
-  const resolved = resolveMoleculeLayout(
-    moleculeLayout?.type ?? "column",
-    moleculeLayout?.preset ?? null,
-    layoutParams
-  );
 
   const isSplit = splitConfig?.type === "split";
   const mediaSlot = splitConfig?.mediaSlot ?? "right";
@@ -157,7 +154,16 @@ export default function LayoutMoleculeRenderer({
 
   const mlParams = (moleculeLayout?.params ?? {}) as Record<string, unknown>;
   const gap = (mlParams.gap as string) ?? "var(--spacing-6)";
-  const padding = (mlParams.padding as string) | undefined;
+  const padding: string | undefined = mlParams.padding != null ? (mlParams.padding as string) : undefined;
+
+  const hasMoleculeType = typeof moleculeLayout?.type === "string" && moleculeLayout.type.trim().length > 0;
+  const resolved = hasMoleculeType
+    ? resolveMoleculeLayout(
+        moleculeLayout!.type as "column" | "row" | "grid" | "stacked",
+        moleculeLayout?.preset ?? null,
+        { ...(moleculeLayout?.params ?? {}) }
+      )
+    : null;
 
   const innerContent = isSplit ? (
     <div
@@ -183,21 +189,26 @@ export default function LayoutMoleculeRenderer({
         </>
       )}
     </div>
-  ) : resolved.display === "grid" ? (
+  ) : resolved != null && resolved.display === "grid" ? (
     <CollectionAtom params={resolved}>
       {slotContent}
       {children}
     </CollectionAtom>
-  ) : resolved.direction != null ? (
+  ) : resolved != null && resolved.direction != null ? (
     <SequenceAtom params={resolved}>
       {slotContent}
       {children}
     </SequenceAtom>
-  ) : (
+  ) : resolved != null ? (
     <div style={{ ...resolved, width: "100%" }}>
       {slotContent}
       {children}
     </div>
+  ) : (
+    <>
+      {slotContent}
+      {children}
+    </>
   );
 
   const knownWidth =
@@ -218,14 +229,16 @@ export default function LayoutMoleculeRenderer({
     typeof rawWidth === "string" &&
     /^\d+(\.\d+)?(px|rem|vw|%)$/.test(rawWidth.trim());
   const containerVar =
-    knownWidth ??
-    (isCssVar || isLength ? (rawWidth as string).trim() : "var(--container-content)");
+    rawWidth != null
+      ? knownWidth ??
+        (isCssVar || isLength ? (rawWidth as string).trim() : "var(--container-content)")
+      : null;
 
   const outerStyle: React.CSSProperties =
-    rawWidth !== "edge-to-edge"
+    rawWidth != null && rawWidth !== "edge-to-edge" && containerVar != null
       ? {
           width: "100%",
-          maxWidth: containerVar!,
+          maxWidth: containerVar,
           marginLeft: "auto",
           marginRight: "auto",
           boxSizing: "border-box",
@@ -237,7 +250,7 @@ export default function LayoutMoleculeRenderer({
     <div
       data-section-id={id}
       data-layout-2
-      data-container-width={rawWidth}
+      data-container-width={rawWidth ?? undefined}
       style={Object.keys(outerStyle).length > 0 ? outerStyle : undefined}
     >
       <SurfaceAtom params={surfaceWithVariant}>{innerContent}</SurfaceAtom>

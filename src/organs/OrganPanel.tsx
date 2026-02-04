@@ -2,7 +2,8 @@
 
 import React from "react";
 import { getOrganLabel } from "@/organs/organ-registry";
-import { getLayout2Ids, getAllowedCardPresetsForSectionPreset } from "@/layout-2";
+import { getLayout2Ids, getAllowedCardPresetsForSectionPreset, evaluateCompatibility } from "@/layout";
+import { getInternalLayoutIds } from "@/layout-organ";
 
 export type OrganPanelProps = {
   /** Section keys to show layout preset for (from collectSectionKeysAndNodes). */
@@ -21,6 +22,14 @@ export type OrganPanelProps = {
   sectionPresetOptions?: Record<string, string[]>;
   /** Measured height per section key so each row aligns with its section in the main content. */
   sectionHeights?: Record<string, number>;
+  /** Section key -> organ id (role) for sections that are organs; used for internal layout dropdown only. */
+  organIdBySectionKey?: Record<string, string>;
+  /** Per-section organ internal layout overrides (sectionKey -> internalLayoutId). Dev/testing only. */
+  organInternalLayoutOverrides?: Record<string, string>;
+  /** Called when user changes organ internal layout for a section. Do not mix with section layout. */
+  onOrganInternalLayoutOverride?: (sectionKey: string, internalLayoutId: string) => void;
+  /** Section key -> section node; used for compatibility evaluation only (read-only). */
+  sectionNodesByKey?: Record<string, any>;
 };
 
 const PANEL_STYLE: React.CSSProperties = {
@@ -70,6 +79,10 @@ export default function OrganPanel({
   onCardLayoutPresetOverride,
   sectionPresetOptions,
   sectionHeights = {},
+  organIdBySectionKey = {},
+  organInternalLayoutOverrides = {},
+  onOrganInternalLayoutOverride,
+  sectionNodesByKey,
 }: OrganPanelProps) {
   const rowIds = sectionKeysForPreset ?? [];
   const allSectionLayoutIds = getLayout2Ids();
@@ -89,24 +102,59 @@ export default function OrganPanel({
     <aside style={PANEL_STYLE} data-organ-panel>
       <div style={TITLE_STYLE}>Layout controls</div>
       <p style={{ color: "var(--color-text-muted)", marginBottom: "var(--spacing-3)", marginTop: 0, fontSize: "var(--font-size-xs)" }}>
-        Section layout (layout-2 id only; does not set node type or role) and card layout. Applies to this screen only.
+        Section layout, card layout, and organ internal layout (dev). Applies to this screen only.
       </p>
       {rowIds.map((sectionKey) => {
         const label = sectionLabels?.[sectionKey] ?? getOrganLabel(sectionKey);
+        const sectionNode = sectionNodesByKey?.[sectionKey] ?? null;
         const presetOptions = sectionPresetOptions?.[sectionKey] ?? allSectionLayoutIds;
         const currentSectionPreset = sectionLayoutPresetOverrides[sectionKey] ?? "";
         const rawCardPreset = cardLayoutPresetOverrides[sectionKey] ?? "";
         const allowedCardPresets = getAllowedCardPresetsForSectionPreset(currentSectionPreset || null);
         const currentCardPreset =
           rawCardPreset && allowedCardPresets.includes(rawCardPreset) ? rawCardPreset : "";
-        if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
-          console.log("[OrganPanel] Layout preset state", {
-            sectionKey,
-            currentSectionPreset,
-            currentCardPreset,
-            allowedCardPresets,
-          });
-        }
+        const organId = organIdBySectionKey[sectionKey];
+        const internalLayoutIds = organId ? getInternalLayoutIds(organId) : [];
+        const currentInternalLayout = organInternalLayoutOverrides[sectionKey] ?? "";
+
+        const sectionOptionsFiltered =
+          sectionNode != null
+            ? presetOptions.filter((candidateId) =>
+                evaluateCompatibility({
+                  sectionNode,
+                  sectionLayoutId: candidateId,
+                  cardLayoutId: currentCardPreset || null,
+                  organId: organId ?? null,
+                  organInternalLayoutId: currentInternalLayout || null,
+                }).sectionValid
+              )
+            : presetOptions;
+        const cardOptionsFiltered =
+          sectionNode != null
+            ? allowedCardPresets.filter((candidateId) =>
+                evaluateCompatibility({
+                  sectionNode,
+                  sectionLayoutId: currentSectionPreset || null,
+                  cardLayoutId: candidateId,
+                  organId: organId ?? null,
+                  organInternalLayoutId: currentInternalLayout || null,
+                }).cardValid
+              )
+            : allowedCardPresets;
+        const organOptionsFiltered =
+          sectionNode != null && organId
+            ? internalLayoutIds.filter(
+                (candidateId) =>
+                  evaluateCompatibility({
+                    sectionNode,
+                    sectionLayoutId: currentSectionPreset || null,
+                    cardLayoutId: currentCardPreset || null,
+                    organId,
+                    organInternalLayoutId: candidateId,
+                  }).organValid !== false
+              )
+            : internalLayoutIds;
+
         const rowHeight = sectionHeights[sectionKey];
         const rowBlockStyle: React.CSSProperties = {
           ...ROW_STYLE,
@@ -134,7 +182,7 @@ export default function OrganPanel({
                   style={SELECT_STYLE}
                 >
                   <option value="">(default)</option>
-                  {presetOptions.map((pid) => (
+                  {sectionOptionsFiltered.map((pid) => (
                     <option key={pid} value={pid}>
                       {pid}
                     </option>
@@ -154,9 +202,29 @@ export default function OrganPanel({
                   style={SELECT_STYLE}
                 >
                   <option value="">(default)</option>
-                  {allowedCardPresets.map((pid) => (
+                  {cardOptionsFiltered.map((pid) => (
                     <option key={pid} value={pid}>
                       {pid}
+                    </option>
+                  ))}
+                </select>
+              </>
+            )}
+            {onOrganInternalLayoutOverride && organId && internalLayoutIds.length > 0 && (
+              <>
+                <label style={{ ...LABEL_STYLE, marginTop: "var(--spacing-2)" }} htmlFor={`organ-internal-layout-${sectionKey}`}>
+                  Internal layout (organ)
+                </label>
+                <select
+                  id={`organ-internal-layout-${sectionKey}`}
+                  value={currentInternalLayout}
+                  onChange={(e) => onOrganInternalLayoutOverride(sectionKey, e.target.value)}
+                  style={SELECT_STYLE}
+                >
+                  <option value="">(default)</option>
+                  {organOptionsFiltered.map((lid) => (
+                    <option key={lid} value={lid}>
+                      {lid}
                     </option>
                   ))}
                 </select>

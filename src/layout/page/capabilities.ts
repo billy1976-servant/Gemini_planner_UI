@@ -1,6 +1,6 @@
 /**
- * Layout-2 capabilities: section layout id → allowed card preset ids.
- * Single source of truth for Card Layout options per Section Layout (layout-2 ids).
+ * Page layout capabilities: section layout id → allowed card layout ids (component layout).
+ * Single source of truth for Card Layout options per Section Layout (page layout id).
  */
 
 const ALL_CARD_PRESETS = [
@@ -14,7 +14,7 @@ const ALL_CARD_PRESETS = [
 ] as const;
 
 /**
- * layout-2 section layout id | "" (default/unset) → allowed card preset ids.
+ * Page layout id | "" (default/unset) → allowed card layout (component) ids.
  * Empty array = no card layout applicable (e.g. full-bleed hero with no cards).
  */
 export const SECTION_TO_CARD_CAPABILITIES: Record<string, string[]> = {
@@ -36,10 +36,6 @@ export const SECTION_TO_CARD_CAPABILITIES: Record<string, string[]> = {
   "cta-centered": ["centered-card"],
 };
 
-/**
- * Returns allowed card preset ids for the given section layout id (layout-2 id).
- * Use "" for default/unset.
- */
 export function getAllowedCardPresetsForSectionPreset(
   sectionLayoutId: string | null
 ): string[] {
@@ -48,10 +44,6 @@ export function getAllowedCardPresetsForSectionPreset(
   return allowed ?? [...ALL_CARD_PRESETS];
 }
 
-/**
- * Returns the default card preset for the section (first allowed, or null).
- * Used when current card preset becomes invalid after section layout change.
- */
 export function getDefaultCardPresetForSectionPreset(
   sectionLayoutId: string | null
 ): string | null {

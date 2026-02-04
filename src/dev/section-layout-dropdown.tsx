@@ -1,14 +1,14 @@
 "use client";
 
 /**
- * Section layout dropdown is dev-only; uses layout-2 layout ids only.
+ * Section layout dropdown is dev-only; uses section layout ids only.
  * Writes section.layout only — must not set node.type or node.role (component/layout separation).
  * Section layout in production comes from experience profile + skin JSON.
  * For TSX skin screens, screenJson is { __type: "tsx-screen", path } so findSections returns [] and this dropdown does not render.
  */
 
 import React, { useMemo } from "react";
-import { getLayout2Ids } from "@/layout-2";
+import { getLayout2Ids, evaluateCompatibility } from "@/layout";
 
 function findSections(node: any): any[] {
   if (!node) return [];
@@ -74,26 +74,34 @@ export default function SectionLayoutDropdown({
         minWidth: 220,
       }}
     >
-      <div style={{ fontWeight: 700 }}>Section Layout (layout-2)</div>
-      {sections.map((s: any) => (
-        <label key={s.id ?? s.role} style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <span style={{ fontSize: 12, opacity: 0.85, width: 90, overflow: "hidden", textOverflow: "ellipsis" }}>
-            {s.id || s.role || "Section"}
-          </span>
-          <select
-            value={getSectionLayoutValue(s)}
-            onChange={(e) => setSectionLayout(s.id ?? s.role ?? "", e.target.value)}
-            style={{ flex: 1 }}
-          >
-            <option value="">(inherit)</option>
-            {layoutIds.map((id) => (
-              <option key={id} value={id}>
-                {id}
-              </option>
-            ))}
-          </select>
-        </label>
-      ))}
+      <div style={{ fontWeight: 700 }}>Section Layout</div>
+      {sections.map((s: any) => {
+        const sectionLayoutOptions =
+          s != null
+            ? layoutIds.filter((id) =>
+                evaluateCompatibility({ sectionNode: s, sectionLayoutId: id }).sectionValid
+              )
+            : layoutIds;
+        return (
+          <label key={s.id ?? s.role} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <span style={{ fontSize: 12, opacity: 0.85, width: 90, overflow: "hidden", textOverflow: "ellipsis" }}>
+              {s.id || s.role || "Section"}
+            </span>
+            <select
+              value={getSectionLayoutValue(s)}
+              onChange={(e) => setSectionLayout(s.id ?? s.role ?? "", e.target.value)}
+              style={{ flex: 1 }}
+            >
+              <option value="">(inherit)</option>
+              {sectionLayoutOptions.map((id) => (
+                <option key={id} value={id}>
+                  {id}
+                </option>
+              ))}
+            </select>
+          </label>
+        );
+      })}
     </div>
   );
 }

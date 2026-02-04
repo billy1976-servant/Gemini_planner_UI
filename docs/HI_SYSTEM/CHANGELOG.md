@@ -1,5 +1,7 @@
 # Changelog
 
+**Classification:** REFERENCE — Append-only log; primary architecture reference: docs/SYSTEM_MASTER/
+
 Append-only log. One entry per change; newest at top.
 
 ---

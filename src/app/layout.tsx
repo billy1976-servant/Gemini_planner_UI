@@ -89,7 +89,7 @@ export default function RootLayout({ children }: any) {
     useState<"website" | "app" | "learning">("website");
 
   const layoutSnapshot = useSyncExternalStore(subscribeLayout, getLayout, getLayout);
-  const templateId = (layoutSnapshot as { templateId?: string })?.templateId ?? "modern-hero-centered";
+  const templateId = (layoutSnapshot as { templateId?: string })?.templateId ?? "";
   const layoutMode = (layoutSnapshot as { mode?: LayoutMode })?.mode ?? "template";
   const templateList = getTemplateList();
 
