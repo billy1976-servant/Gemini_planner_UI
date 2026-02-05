@@ -52,3 +52,5 @@ This folder (`src/cursor/`) is for **planning infrastructure only**: architectur
 | Logic    | `logic/`          | Engines, input/output, determinism  |
 | Molecules| `molecules/`      | Component-level plans              |
 | Organs   | `organs/`         | Organ-level plans                  |
+
+**Logic pipeline (planned):** Full index of Logic refactor plans 1–12: [logic/planned/LOGIC_PLANS_INDEX.md](logic/planned/LOGIC_PLANS_INDEX.md).

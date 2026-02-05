@@ -1,0 +1,119 @@
+%% SYSTEM_DEPENDENCY_GRAPH.mmd
+%% Real code dependencies (imports and direct calls). Derived from source.
+
+flowchart TB
+  subgraph Request["Request / Next.js"]
+    PAGE["page.tsx\nsrc/app/page.tsx"]
+    API["api/screens/[...path]/route.ts\nsrc/app/api/screens"]
+  end
+
+  subgraph Loader["Loader"]
+    LOAD["loadScreen\nsrc/engine/core/screen-loader.ts"]
+  end
+
+  subgraph Renderer["Renderer"]
+    JR["JsonRenderer / renderNode\nsrc/engine/core/json-renderer.tsx"]
+    REG["Registry\nsrc/engine/core/registry.tsx"]
+    LMR["LayoutMoleculeRenderer\nsrc/layout/renderer/LayoutMoleculeRenderer.tsx"]
+  end
+
+  subgraph LayoutSystem["Layout system"]
+    LSTORE["layout-store\nsrc/engine/core/layout-store.ts"]
+    LRES["layout/resolver\nlayout-resolver.ts"]
+    LPAGE["layout/page\npage-layout-resolver.ts"]
+    LCOMP["layout/component\ncomponent-layout-resolver.ts"]
+    LCOMPAT["layout/compatibility\ncompatibility-evaluator.ts"]
+    LORG["layout-organ\norgan-layout-resolver.ts"]
+    SLPSTORE["section-layout-preset-store\nsrc/state/section-layout-preset-store.ts"]
+    OISTORE["organ-internal-layout-store\nsrc/state/organ-internal-layout-store.ts"]
+  end
+
+  subgraph BehaviorEngine["Behavior engine"]
+    BL["behavior-listener\nsrc/engine/core/behavior-listener.ts"]
+    BR["behavior-runner\nsrc/behavior/behavior-runner.ts"]
+    BVERB["behavior-verb-resolver\nsrc/behavior/behavior-verb-resolver.ts"]
+    BENG["BehaviorEngine\nsrc/behavior/behavior-engine.ts"]
+    RVI["runtime-verb-interpreter\nsrc/logic/runtime/runtime-verb-interpreter.ts"]
+  end
+
+  subgraph StateEngine["State engine"]
+    SSTORE["state-store\nsrc/state/state-store.ts"]
+    SRES["state-resolver\nsrc/state/state-resolver.ts"]
+  end
+
+  subgraph Blueprint["Blueprint compiler"]
+    BP["blueprint.ts\nsrc/scripts/blueprint.ts"]
+  end
+
+  %% Page dependencies
+  PAGE --> LOAD
+  PAGE --> JR
+  PAGE --> LSTORE
+  PAGE --> SLPSTORE
+  PAGE --> OISTORE
+  PAGE --> LRES
+  PAGE --> LORG
+  PAGE --> compose["composeOfflineScreen\nsrc/lib/screens/compose-offline-screen.ts"]
+  PAGE --> organs["resolve-organs\nsrc/organs/resolve-organs.ts"]
+  PAGE --> skin["applySkinBindings\nsrc/logic/bridges/skinBindings.apply"]
+  PAGE --> profile["profile-resolver\nsrc/lib/layout/profile-resolver.ts"]
+  PAGE --> template["template-profiles\nsrc/lib/layout/template-profiles.ts"]
+
+  %% API: no import of loader; loader fetches API via HTTP
+  LOAD -.->|"fetch"| API
+
+  %% Loader -> State
+  LOAD --> SSTORE
+
+  %% Renderer dependencies
+  JR --> REG
+  JR --> LSTORE
+  JR --> SSTORE
+  JR --> LRES
+  JR --> LCOMPAT
+  JR --> palette["palette-store\npalette-resolver"]
+  JR --> definitions["compounds/ui/index"]
+  JR --> JsonSkinEngine["JsonSkinEngine\nsrc/logic/engines/json-skin.engine"]
+  JR --> cardPreset["card-layout-presets\nlib/layout"]
+
+  %% Section compound uses layout resolver + LayoutMoleculeRenderer
+  REG --> Section["section.compound"]
+  Section --> LRES
+  Section --> LMR
+  Section --> LORG
+
+  %% Layout resolver internal
+  LRES --> LPAGE
+  LRES --> LCOMP
+  LPAGE --> pageLayouts["page-layouts.json"]
+  LPAGE --> templates["templates.json"]
+  LCOMP --> componentLayouts["component-layouts.json"]
+  LCOMPAT --> requirementRegistry["requirement-registry"]
+  LCOMPAT --> contentCap["content-capability-extractor"]
+  contentCap --> LORG
+
+  %% Behavior: app layout installs listener; listener uses runner and state
+  APP_LAYOUT["layout.tsx\nsrc/app/layout.tsx"] --> BL
+  BL --> SSTORE
+  BL --> BR
+  BL -.->|"require"| RVI
+  RVI --> SSTORE
+  RVI --> navigate["runtime-navigation"]
+  BR --> BVERB
+  BR --> BENG
+  BR --> navigations["behavior-navigations.json"]
+  BR --> interactions["behavior-interactions.json"]
+  BVERB --> actions6x7["behavior-actions-6x7.json"]
+
+  %% State engine internal
+  SSTORE --> SRES
+
+  %% Blueprint: writes app.json; no runtime import from app
+  BP -.->|"writes"| appJson["app.json\n(apps-offline/apps/...)"]
+
+  %% Styling
+  classDef node fill:#e1f5fe
+  classDef store fill:#fff3e0
+  classDef external fill:#f3e5f5
+  class LSTORE,SLPSTORE,OISTORE,SSTORE store
+  class API,appJson external
