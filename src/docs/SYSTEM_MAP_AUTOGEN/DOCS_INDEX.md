@@ -51,6 +51,21 @@
 
 ## `src/docs/` (live)
 
+### `src/docs/SYSTEM_MAP_AUTOGEN/` — Reachability and disconnected systems (camera layer)
+
+| File | Purpose |
+|------|--------|
+| [REACHABILITY_REPORT.generated.md](./REACHABILITY_REPORT.generated.md) | Module-level reachability from seed entrypoints; REACHABLE vs UNREACHABLE with first break and reason |
+| [DISCONNECTED_SYSTEMS_REPORT.generated.md](./DISCONNECTED_SYSTEMS_REPORT.generated.md) | High-signal disconnected subsystems by domain (layout, logic, state, behavior, organs, blueprint); what exists, missing link, where to connect |
+| [RUNTIME_CALL_GRAPH.generated.md](./RUNTIME_CALL_GRAPH.generated.md) | Execution chain: file → function → next hop |
+| [DOCS_INDEX.md](./DOCS_INDEX.md) | This index |
+
+### `src/docs/ARCHITECTURE_AUTOGEN/` — Engine wiring
+
+| File | Purpose |
+|------|--------|
+| [ENGINE_WIRING_STATUS.generated.md](../ARCHITECTURE_AUTOGEN/ENGINE_WIRING_STATUS.generated.md) | Engines and engine-like modules: ACTIVE / DORMANT / DISCONNECTED; entry call sites and call chain when ACTIVE |
+
 ### `src/docs/SYSTEM_MASTER/`
 
 | File | Purpose |

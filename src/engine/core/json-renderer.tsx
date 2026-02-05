@@ -23,6 +23,7 @@ import { useSyncExternalStore } from "react";
 import { JsonSkinEngine } from "@/logic/engines/json-skin.engine";
 import { getDefaultSectionLayoutId, evaluateCompatibility } from "@/layout";
 import { getCardLayoutPreset } from "@/lib/layout/card-layout-presets";
+import { logRuntimeDecision } from "@/engine/devtools/runtime-decision-trace";
 
 
 /* ======================================================
@@ -257,11 +258,31 @@ function shouldRenderNode(node: any, state: any, defaultState?: any): boolean {
   
   // If state key doesn't exist in either, don't render (prevents showing wrong content)
   if (stateValue === undefined) {
+    logRuntimeDecision({
+      timestamp: Date.now(),
+      engineId: "renderer",
+      decisionType: "visibility-check",
+      inputsSeen: { nodeId: node?.id, key, equals, stateValue: undefined },
+      ruleApplied: "when.key missing in state and defaultState",
+      decisionMade: false,
+      downstreamEffect: "node not rendered",
+    });
     return false;
   }
 
-
-  return stateValue === equals;
+  const visible = stateValue === equals;
+  if (!visible) {
+    logRuntimeDecision({
+      timestamp: Date.now(),
+      engineId: "renderer",
+      decisionType: "visibility-check",
+      inputsSeen: { nodeId: node?.id, key, equals, stateValue },
+      ruleApplied: "when.equals !== stateValue",
+      decisionMade: false,
+      downstreamEffect: "node not rendered",
+    });
+  }
+  return visible;
 }
 
 
@@ -345,6 +366,29 @@ function applyProfileToNode(
       existingLayoutId ||
       templateDefaultLayoutId ||
       undefined;
+    const ruleApplied =
+      overrideId
+        ? "override"
+        : existingLayoutId
+        ? "explicit node.layout"
+        : templateDefaultLayoutId
+        ? "template default"
+        : "undefined";
+    logRuntimeDecision({
+      timestamp: Date.now(),
+      engineId: "renderer",
+      decisionType: "layout-choice",
+      inputsSeen: {
+        sectionKey,
+        overrideId: overrideId ?? null,
+        existingLayoutId: existingLayoutId ?? null,
+        templateDefaultLayoutId: templateDefaultLayoutId ?? null,
+        layoutMode: layoutMode ?? null,
+      },
+      ruleApplied,
+      decisionMade: layoutId ?? null,
+      downstreamEffect: "section layout + compatibility",
+    });
     next.layout = layoutId;
     (next as any)._effectiveLayoutPreset = layoutId;
     const compatibility = evaluateCompatibility({

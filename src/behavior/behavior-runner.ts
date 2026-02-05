@@ -6,6 +6,7 @@ import interactions from "./behavior-interactions.json";
 import navigations from "./behavior-navigations.json";
 import { BehaviorEngine } from "./behavior-engine";
 import { resolveBehaviorVerb } from "./behavior-verb-resolver";
+import { logRuntimeDecision } from "@/engine/devtools/runtime-decision-trace";
 
 
 /**
@@ -138,13 +139,32 @@ export function runBehavior(
 
 
   const map = fromAction || fromInteraction || fromNavigation;
+  const source = fromAction ? "fromAction" : fromInteraction ? "fromInteraction" : "fromNavigation";
   if (!map) {
+    logRuntimeDecision({
+      timestamp: Date.now(),
+      engineId: "behavior-runner",
+      decisionType: "behavior-dispatch",
+      inputsSeen: { domain, action, argsKeys: args ? Object.keys(args) : [] },
+      ruleApplied: "no map (fromAction | fromInteraction | fromNavigation)",
+      decisionMade: null,
+      downstreamEffect: "none",
+    });
     console.warn("⚠️ No behavior found:", { domain, action, args });
     return;
   }
 
 
   const handlerName = map.handler;
+  logRuntimeDecision({
+    timestamp: Date.now(),
+    engineId: "behavior-runner",
+    decisionType: "behavior-dispatch",
+    inputsSeen: { domain, action, argsKeys: args ? Object.keys(args) : [] },
+    ruleApplied: source,
+    decisionMade: { handlerName },
+    downstreamEffect: "invoke handler",
+  });
   console.log("✔ Behavior Triggered:", { domain, action, handlerName, args });
 
 

@@ -1,5 +1,6 @@
 // src/state/state-resolver.ts
 import type { StateEvent } from "./state";
+import { logRuntimeDecision } from "@/engine/devtools/runtime-decision-trace";
 
 
 /* ======================================================
@@ -104,6 +105,22 @@ export function deriveState(log: StateEvent[]): DerivedState {
   }
 
 
+  const intents = log.map((e) => e.intent);
+  logRuntimeDecision({
+    timestamp: Date.now(),
+    engineId: "state-deriver",
+    decisionType: "state-derivation",
+    inputsSeen: { logLength: log.length, intents: intents.slice(-50) },
+    ruleApplied: "deriveState branch per intent (state:currentView | journal.* | state.update | scan.* | interaction.record)",
+    decisionMade: {
+      hasCurrentView: derived.currentView !== undefined,
+      journalTracks: Object.keys(derived.journal),
+      valuesKeys: derived.values ? Object.keys(derived.values) : [],
+      scansCount: derived.scans?.length ?? 0,
+      interactionsCount: derived.interactions?.length ?? 0,
+    },
+    downstreamEffect: "derived state snapshot",
+  });
   return derived;
 }
 

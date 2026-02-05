@@ -26,6 +26,7 @@
     "export-2": "ts-node src/web2extractor/compile2.ts",
     "catalog": "ts-node src/web2extractor/buildProductCatalog.ts",
     "cleanup": "node scripts/cleanup-docs.js",
+    "docs:reachability": "ts-node -r tsconfig-paths/register src/scripts/docs/generate-reachability-report.ts",
     "plan": "node scripts/plan-runner.js",
     "product-screen": "ts-node -r tsconfig-paths/register src/scripts/compile-product-screen.ts",
     "test:organs:layer1": "ts-node -r tsconfig-paths/register src/organs/organs.layer1.test.ts",

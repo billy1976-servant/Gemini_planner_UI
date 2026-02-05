@@ -11,6 +11,7 @@ import {
   getDefaultSectionLayoutId as getDefaultFromPage,
 } from "@/layout/page";
 import { resolveComponentLayout } from "@/layout/component";
+import { logRuntimeDecision } from "@/engine/devtools/runtime-decision-trace";
 
 export type LayoutDefinition = {
   containerWidth?: "contained" | "edge-to-edge" | "narrow" | "wide" | "full" | "split" | string;
@@ -31,14 +32,46 @@ export function resolveLayout(
   context?: { templateId?: string; sectionRole?: string }
 ): LayoutDefinition | null {
   const layoutId = getPageLayoutId(layout, context);
-  if (!layoutId) return null;
+  if (!layoutId) {
+    logRuntimeDecision({
+      timestamp: Date.now(),
+      engineId: "layout-resolver",
+      decisionType: "layout-choice",
+      inputsSeen: { layout: layout ?? null, context: context ?? null },
+      ruleApplied: "getPageLayoutId returned null or missing pageDef",
+      decisionMade: null,
+      downstreamEffect: "no layout definition",
+    });
+    return null;
+  }
   const pageDef = getPageLayoutById(layoutId);
   const componentDef = resolveComponentLayout(layoutId);
-  if (!pageDef) return null;
-  return {
+  if (!pageDef) {
+    logRuntimeDecision({
+      timestamp: Date.now(),
+      engineId: "layout-resolver",
+      decisionType: "layout-choice",
+      inputsSeen: { layout: layout ?? null, context: context ?? null, layoutId },
+      ruleApplied: "getPageLayoutById returned null",
+      decisionMade: null,
+      downstreamEffect: "no layout definition",
+    });
+    return null;
+  }
+  const result = {
     ...pageDef,
     moleculeLayout: componentDef ?? undefined,
   };
+  logRuntimeDecision({
+    timestamp: Date.now(),
+    engineId: "layout-resolver",
+    decisionType: "layout-choice",
+    inputsSeen: { layout: layout ?? null, context: context ?? null, layoutId },
+    ruleApplied: "getPageLayoutId + getPageLayoutById + resolveComponentLayout",
+    decisionMade: { layoutId, hasMoleculeLayout: !!componentDef },
+    downstreamEffect: "merged page + component layout",
+  });
+  return result;
 }
 
 /** All layout ids (page layout ids; for dropdowns). */

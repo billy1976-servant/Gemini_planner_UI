@@ -1,0 +1,108 @@
+%% RUNTIME REACHABILITY GRAPH (Generated)
+%% Flow: Next.js entry -> screen load -> compose -> renderer -> behaviors -> state
+%% Mark: Reachable ✅ | Present but unreachable ❌ | Docs only ⚠️ | Code only ⚠️
+%% Seed: src/app/page.tsx, layout.tsx, json-renderer, behavior-listener, screen-loader, state-store, layout/index, runtime-verb-interpreter
+
+flowchart TB
+  subgraph nextEntry [Next.js Entry]
+    layout["layout.tsx (RootLayout)"]
+    page["page.tsx (Page)"]
+  end
+
+  subgraph screenLoad [Screen Load]
+    loadScreen["screen-loader.ts (loadScreen)"]
+    apiScreens["api/screens/[...path]/route.ts (GET)"]
+  end
+
+  subgraph compose [Compose]
+    composeOffline["compose-offline-screen.ts"]
+    resolveOrgans["resolve-organs.ts (expandOrgansInDocument)"]
+    organRegistry["organ-registry.ts (loadOrganVariant)"]
+    skinBindings["skinBindings.apply.ts"]
+  end
+
+  subgraph renderer [Renderer]
+    jsonRenderer["json-renderer.tsx (JsonRenderer, applyProfileToNode, renderNode)"]
+    registry["registry.tsx (Registry)"]
+    layoutResolver["layout/index.ts (resolveLayout, getDefaultSectionLayoutId)"]
+    compatibility["compatibility (evaluateCompatibility)"]
+    layoutMolecule["LayoutMoleculeRenderer.tsx"]
+    jsonSkinEngine["json-skin.engine.tsx (JsonSkinEngine)"]
+  end
+
+  subgraph behaviors [Behaviors]
+    behaviorListener["behavior-listener.ts (installBehaviorListener)"]
+    behaviorRunner["behavior-runner.ts (runBehavior)"]
+    runtimeVerb["runtime-verb-interpreter.ts (interpretRuntimeVerb)"]
+    actionRunner["action-runner.ts (runAction)"]
+    actionRegistry["action-registry.ts (getActionHandler)"]
+  end
+
+  subgraph stateLayer [State]
+    stateStore["state-store.ts (dispatchState, getState)"]
+    stateResolver["state-resolver.ts (deriveState)"]
+    sectionPresetStore["section-layout-preset-store.ts"]
+    organLayoutStore["organ-internal-layout-store.ts"]
+  end
+
+  layout --> loadScreen
+  layout --> behaviorListener
+  layout --> stateStore
+  page --> loadScreen
+  page --> resolveOrgans
+  page --> organRegistry
+  page --> skinBindings
+  page --> jsonRenderer
+  loadScreen --> apiScreens
+  loadScreen --> stateStore
+  page --> composeOffline
+  composeOffline --> resolveOrgans
+  jsonRenderer --> layoutResolver
+  jsonRenderer --> compatibility
+  jsonRenderer --> registry
+  jsonRenderer --> jsonSkinEngine
+  layoutResolver --> layoutMolecule
+  behaviorListener --> runtimeVerb
+  behaviorListener --> stateStore
+  behaviorListener --> behaviorRunner
+  runtimeVerb --> actionRunner
+  actionRunner --> actionRegistry
+  actionRegistry --> stateStore
+  jsonSkinEngine --> stateStore
+
+  subgraph unreachable [Present but unreachable from seed]
+    flowLoader["flow-loader.ts"]
+    engineRegistry["engine-registry.ts"]
+    flowRenderer["FlowRenderer.tsx"]
+    learningEngine["learning.engine.ts"]
+    calculatorEngine["calculator.engine.ts"]
+    decisionEngine["decision.engine.ts"]
+    summaryEngine["summary.engine.ts"]
+    apiRoutes["All app/api/* route handlers"]
+    tsxScreens["TSX screens (engine-viewer, onboarding, etc.)"]
+  end
+
+  subgraph docsOnly [Docs only - no implementation]
+    layoutDecisionEngine["Layout Decision Engine"]
+    traitRegistry["Trait Registry"]
+    suggestionInjection["Suggestion Injection Point"]
+    contextualLayout["Contextual Layout Logic"]
+    userPreference["User Preference Adaptation"]
+  end
+
+  layout -.-> apiRoutes
+  page -.-> tsxScreens
+  tsxScreens -.-> flowLoader
+  flowLoader -.-> engineRegistry
+  engineRegistry -.-> learningEngine
+  engineRegistry -.-> calculatorEngine
+  engineRegistry -.-> decisionEngine
+  engineRegistry -.-> summaryEngine
+  engineRegistry -.-> flowRenderer
+
+  classDef reachable fill:default,stroke:green
+  classDef unreachable fill:default,stroke:red
+  classDef docsOnly fill:default,stroke:orange
+  class layout,page,loadScreen,jsonRenderer,registry,layoutResolver,compatibility,layoutMolecule,jsonSkinEngine,behaviorListener,behaviorRunner,runtimeVerb,actionRunner,actionRegistry,stateStore,stateResolver,sectionPresetStore,organLayoutStore,composeOffline,resolveOrgans,organRegistry,skinBindings,apiScreens reachable
+  class flowLoader,engineRegistry,flowRenderer,learningEngine,calculatorEngine,decisionEngine,summaryEngine,apiRoutes,tsxScreens unreachable
+  class layoutDecisionEngine,traitRegistry,suggestionInjection,contextualLayout,userPreference docsOnly
