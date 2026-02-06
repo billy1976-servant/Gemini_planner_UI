@@ -5,7 +5,7 @@
  * to parent.params (layout comes from Layout Engine / Preset at runtime, not from JSON).
  * LAYOUT_NODE_TYPES: single source from @/layout/layout-node-types.
  */
-import { LAYOUT_NODE_TYPES } from "@/layout/layout-node-types";
+import { LAYOUT_NODE_TYPES } from "@/contracts/layout-node-types";
 
 function isLayoutNode(node: unknown): node is { type: string; children?: unknown[] } {
   if (!node || typeof node !== "object") return false;
@@ -58,4 +58,4 @@ export function collapseLayoutNodes(node: unknown): unknown {
   return next;
 }
 
-export { LAYOUT_NODE_TYPES } from "@/layout/layout-node-types";
+export { LAYOUT_NODE_TYPES } from "@/contracts/layout-node-types";

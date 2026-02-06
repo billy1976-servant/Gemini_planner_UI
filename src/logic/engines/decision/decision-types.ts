@@ -3,7 +3,7 @@
 // 
 // CONTRACT-BOUNDARY: Do not change shape without updating SystemContract.ts
 
-import type { ExportDocumentContract } from "@/system/contracts/SystemContract";
+import type { ExportDocumentContract } from "@/contracts/SystemContract";
 
 export type DecisionState = {
   signals: string[];

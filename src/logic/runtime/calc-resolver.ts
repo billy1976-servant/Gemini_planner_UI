@@ -1,9 +1,14 @@
 // src/logic/runtime/calc-resolver.ts
-// Resolves and executes calcRefs from Flow JSON
-// Legacy/unused on main JSON screen path. No callers of resolveCalcs in codebase; for future calculator/flow integration.
+/**
+ * Optional; not on main JSON screen path. No main-path callers.
+ * Resolves calcRefs from Flow JSON for flow/TSX integration only.
+ * For calculator execution use runCalculator (action-registry) or
+ * executeCalc from @/logic/engines/calculator/calcs/calc-registry directly.
+ * @deprecated Prefer action-registry / calc-registry; this module is legacy flow integration only.
+ */
 
 import type { CalcRef } from "../engines/calculator/calcs/types";
-import { executeCalc } from "../engines/calculator/calcs/calc-registry";
+import { executeCalc } from "@/logic/registries/calculator.registry";
 import { readEngineState, writeEngineState } from "./engine-bridge";
 
 /**

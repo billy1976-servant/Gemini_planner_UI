@@ -7,5 +7,6 @@ export {
   getSectionLayoutIds,
   getLayout2Ids,
   getDefaultSectionLayoutId,
+  getSectionLayoutId,
   type LayoutDefinition,
 } from "./layout-resolver";

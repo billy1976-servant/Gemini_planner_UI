@@ -17,8 +17,11 @@ import { setCurrentScreenTree } from "@/engine/core/current-screen-tree-store";
 import { getExperienceProfile } from "@/lib/layout/profile-resolver";
 import { getTemplateProfile } from "@/lib/layout/template-profiles";
 import { composeOfflineScreen } from "@/lib/screens/compose-offline-screen";
-import { expandOrgansInDocument, assignSectionInstanceKeys } from "@/organs/resolve-organs";
-import { loadOrganVariant } from "@/organs/organ-registry";
+import {
+  expandOrgansInDocument,
+  assignSectionInstanceKeys,
+  loadOrganVariant,
+} from "@/organs";
 import OrganPanel from "@/organs/OrganPanel";
 import {
   getSectionLayoutPresetOverrides,
@@ -37,7 +40,7 @@ import {
   setOrganInternalLayoutOverride,
 } from "@/state/organ-internal-layout-store";
 import {
-  getLayout2Ids,
+  getSectionLayoutIds,
   collectSectionKeysAndNodes,
   collectSectionLabels,
 } from "@/layout";
@@ -491,10 +494,10 @@ export default function Page() {
   const sectionKeysForPreset = sectionKeysFromTree;
   sectionKeysRef.current = sectionKeysForPreset;
   const sectionLabels = collectSectionLabels(sectionKeysForPreset, sectionByKey);
-  const layout2Ids = getLayout2Ids();
+  const sectionLayoutIds = getSectionLayoutIds();
   const sectionPresetOptions: Record<string, string[]> = {};
   sectionKeysForPreset.forEach((k) => {
-    sectionPresetOptions[k] = layout2Ids;
+    sectionPresetOptions[k] = sectionLayoutIds;
   });
   const organIds = getOrganLayoutOrganIds();
   const roleToOrganId: Record<string, string> = { features: "features-grid", content: "content-section" };

@@ -1,48 +1,53 @@
 # Phase 4 — Registry & Layout Authority Alignment
 
-**Source:** [src/cursor/REFRACTOR_EXECUTION_MASTER_ROADMAP.md](../REFRACTOR_EXECUTION_MASTER_ROADMAP.md) — Phase 4 (stages 4.1–4.9); Part I B Gaps 15, 17; 4.1/4.2 deferred to Phase 2/3.
+**Source:** [src/cursor/REFRACTOR_EXECUTION_MASTER_ROADMAP.md](../cursor/REFRACTOR_EXECUTION_MASTER_ROADMAP.md) — Phase 4 (stages 4.1–4.9).
 
 ---
 
 ## Goal
 
-Layout types and IDs from registry (Phase 2); rename covered in Phase 3; clarify planned vs implemented layout engines; Component Registry source of truth.
+Layout types and IDs from registry; clarify planned vs implemented layout engines; document Component Registry as single source of truth.
 
 ---
 
 ## Files Expected to Change
 
-- ARCHITECTURE_AUTOGEN, cursor logic plan (Layout Decision Engine)
-- SUGGESTION_INJECTION_POINT.md
-- TRAIT_REGISTRY_SYSTEM.md
-- User Preference Adaptation / Explainability / Contextual Layout Logic docs
-- CONTEXTUAL_LAYOUT_LOGIC.md, CONTRACT_IMPLEMENTATION_DIFF
-- `src/engine/core/registry.tsx`, docs or manifest
+- ARCHITECTURE_AUTOGEN (Layout Decision Engine, Suggestion Injection Point, Trait Registry, User Preference, Explainability/Trace, Contextual Layout Logic)
+- CONTRACT_IMPLEMENTATION_DIFF (status of planned systems)
+- src/engine/core/registry.tsx, docs (PIPELINE_AND_BOUNDARIES_REFERENCE)
 
 ---
 
 ## Exact Refactor Actions
 
-1. **4.3** — Layout Decision Engine: implement or mark planned in docs.
-2. **4.4** — Suggestion Injection Point: implement or mark planned.
-3. **4.5** — Trait Registry System: implement or mark planned.
-4. **4.6** — User Preference Adaptation: implement or mark planned.
-5. **4.7** — Explainability/Trace: implement or mark planned.
-6. **4.8** — Contextual Layout Logic: implement or mark planned.
-7. **4.9** — Document registry.tsx as single type→component map or derive from JSON; no competing maps.
+1. **4.1** — Layout types: covered in Phase 2 (layout-allowed-types.json). No change.
+2. **4.2** — getSectionLayoutIds: covered in Phase 3. No change.
+3. **4.3** — Layout Decision Engine: docs state "planned" or stub. (LAYOUT_DECISION_ENGINE.md)
+4. **4.4** — Suggestion Injection Point: implement or mark planned. (SUGGESTION_INJECTION_POINT.md)
+5. **4.5** — Trait Registry System: implement or mark planned. (TRAIT_REGISTRY_SYSTEM.md)
+6. **4.6** — User Preference Adaptation: implement or mark planned. (Docs)
+7. **4.7** — Explainability/Trace: implement or mark planned. (Docs; layout trace)
+8. **4.8** — Contextual Layout Logic: implement or mark planned. (CONTEXTUAL_LAYOUT_LOGIC.md, CONTRACT_IMPLEMENTATION_DIFF)
+9. **4.9** — Component Registry source of truth: document registry.tsx as single type→component map; no competing maps.
 
 ---
 
 ## What Must NOT Change
 
-- applyProfileToNode; getLayout2Ids/compatibility; resolver; state; override stores; resolveLayout; layout decision logic (unless implementing)
+- applyProfileToNode; getSectionLayoutIds/compatibility
+- Resolver behavior
+- Layout compatibility logic
+- State; override stores
+- resolveLayout; applyProfileToNode
+- JsonRenderer Registry lookup
 
 ---
 
 ## Acceptance Criteria
 
-- Each engine (Layout Decision, Suggestion, Trait, User Preference, Explainability, Contextual Layout) has documented status "planned" or stub.
-- Registry single source documented.
+- 4.1, 4.2 covered by prior phases.
+- 4.3–4.8: Each doc has "Implementation status: PLANNED" (or equivalent); status clear.
+- 4.9: Single source for Registry documented (e.g. PIPELINE_AND_BOUNDARIES_REFERENCE §15).
 
 ---
 
@@ -54,43 +59,61 @@ Layout types and IDs from registry (Phase 2); rename covered in Phase 3; clarify
 
 ## Dependencies
 
-1.4 (Blueprint boundary doc)
+Phase 1.4 (Blueprint boundary doc) recommended first.
+
 
 ---
 
-## Verification Report (Step 1)
+## Verification Report (Step 1 — 2026-02-06)
 
-**Plan Name:** Phase 4 — Registry & Layout Authority Alignment
-
-**Scope:** Layout types and IDs from registry (Phase 2); rename covered in Phase 3; clarify planned vs implemented layout engines; Component Registry source of truth. Documentation only: add implementation status to each engine doc; document registry as single source. No code changes to applyProfileToNode, getLayout2Ids/compatibility, resolver, state, override stores, resolveLayout.
-
-**Date:** 2026-02-04
+**Run:** Phase 4 executed; registry and layout authority alignment verified.
 
 ### Verification Table
 
 | Check | Status |
 |-------|--------|
-| Runtime matches plan contract | ✅ PASS |
-| No forbidden changes made | ✅ PASS |
-| No unexpected side effects | ✅ PASS |
-| All files referenced exist | ✅ PASS |
+| Runtime matches plan contract | PASS |
+| No forbidden changes made | PASS |
+| No unexpected side effects | PASS |
+| All 9 stages addressed | PASS |
 
-### Detailed Findings
+### Actions verified / taken
 
-**What was verified**
+- **4.1** — Layout types: covered in Phase 2 (layout-allowed-types.json). No change.
+- **4.2** — getSectionLayoutIds: covered in Phase 3. No change.
+- **4.3** — Layout Decision Engine: LAYOUT_DECISION_ENGINE.md has "Implementation status: PLANNED". Doc updated to reference getSectionLayoutIds() (replacing getLayout2Ids) for Phase 3 alignment.
+- **4.4** — Suggestion Injection Point: SUGGESTION_INJECTION_POINT.md has "Implementation status: PLANNED". No change.
+- **4.5** — Trait Registry System: TRAIT_REGISTRY_SYSTEM.md has "Implementation status: PLANNED". No change.
+- **4.6** — User Preference Adaptation: USER_PREFERENCE_ADAPTATION.md has "Implementation status: PLANNED". No change.
+- **4.7** — Explainability/Trace: RUNTIME_DECISION_TRACE_IMPLEMENTATION.md states layout suggestion explainability PLANNED with Decision Engine and Suggestion Injection. No change.
+- **4.8** — Contextual Layout Logic: CONTEXTUAL_LAYOUT_LOGIC.md has "Implementation status: PLANNED". CONTRACT_IMPLEMENTATION_DIFF marks it as Missing (planned). No change.
+- **4.9** — Component Registry: PIPELINE_AND_BOUNDARIES_REFERENCE.md §15 documents registry.tsx as single type→component map; no competing maps. No change.
 
-- **4.3** — LAYOUT_DECISION_ENGINE.md: added **Implementation status:** PLANNED (no runtime scoring by traits; compatible ID source and precedence slot exist).
-- **4.4** — SUGGESTION_INJECTION_POINT.md: added **Implementation status:** PLANNED (no resolver call to Logic yet; slot reserved in applyProfileToNode).
-- **4.5** — TRAIT_REGISTRY_SYSTEM.md: added **Implementation status:** PLANNED (no trait-registry.json; prerequisite for Plans 4/5/6).
-- **4.6** — USER_PREFERENCE_ADAPTATION.md: added **Implementation status:** PLANNED (no "more like this" / trait-weight code; depends on Trait Registry and Decision Engine).
-- **4.7** — RUNTIME_DECISION_TRACE_IMPLEMENTATION.md: added **Implementation status (Explainability/Trace):** PARTIAL (runtime trace implemented for dev; layout suggestion explainability planned with Plans 5/8).
-- **4.8** — CONTEXTUAL_LAYOUT_LOGIC.md: added **Implementation status:** PLANNED (no contextual engine or rules JSON; getAvailableSlots exists for future use).
-- **4.9** — registry.tsx: added JSDoc that it is the single source for type→component; no competing maps. PIPELINE_AND_BOUNDARIES_REFERENCE.md: added §15 Component Registry (single source).
+### Files changed this run
 
-**Files changed**
+- **New:** src/refactor_ROUND 1/04_phase4_registry_layout_alignment.md (plan content).
+- **Modified:** src/docs/ARCHITECTURE_AUTOGEN/LAYOUT_DECISION_ENGINE.md (getLayout2Ids → getSectionLayoutIds in three places).
 
-- **Modified:** LAYOUT_DECISION_ENGINE.md, SUGGESTION_INJECTION_POINT.md, TRAIT_REGISTRY_SYSTEM.md, USER_PREFERENCE_ADAPTATION.md, CONTEXTUAL_LAYOUT_LOGIC.md, SYSTEM_INTELLIGENCE/RUNTIME_DECISION_TRACE_IMPLEMENTATION.md, PIPELINE_AND_BOUNDARIES_REFERENCE.md, src/engine/core/registry.tsx.
+### Acceptance
 
-**Gaps / follow-up**
+- 4.1, 4.2 covered by prior phases; 4.3–4.8 each have clear PLANNED status; 4.9 Registry single source documented.
 
-- None. Acceptance criteria met: each engine has documented status "planned" or "partial"; registry single source documented.
+---
+
+## Verification Report (Step 2 — 2026-02-06, post–Phase 3)
+
+**Run:** Phase 4 re-verified after Phase 3 completion; no code or doc changes required.
+
+| Check | Status |
+|-------|--------|
+| 4.1–4.2 covered by prior phases | OK |
+| 4.3 LAYOUT_DECISION_ENGINE.md — PLANNED + getSectionLayoutIds | OK |
+| 4.4 SUGGESTION_INJECTION_POINT.md — PLANNED | OK |
+| 4.5 TRAIT_REGISTRY_SYSTEM.md — PLANNED | OK |
+| 4.6 USER_PREFERENCE_ADAPTATION.md — PLANNED | OK |
+| 4.7 RUNTIME_DECISION_TRACE — explainability PLANNED | OK |
+| 4.8 CONTEXTUAL_LAYOUT_LOGIC.md + CONTRACT_IMPLEMENTATION_DIFF — PLANNED/Missing | OK |
+| 4.9 PIPELINE_AND_BOUNDARIES_REFERENCE §15 — Registry single source | OK |
+
+**Conclusion:** Phase 4 complete. Ready to proceed to Phase 5.
+

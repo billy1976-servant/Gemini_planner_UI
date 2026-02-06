@@ -2,9 +2,11 @@
 import React from "react";
 import Registry from "./registry";
 import { resolveParams } from "./palette-resolver";
-import { getVisualPresetForMolecule } from "@/lib/layout/visual-preset-resolver";
-import { getSpacingForScale } from "@/lib/layout/spacing-scale-resolver";
-import { getCardPreset } from "@/lib/layout/card-preset-resolver";
+import {
+  getVisualPresetForMolecule,
+  getSpacingForScale,
+  getCardPreset,
+} from "@/lib/layout/preset-resolver";
 import { resolveMoleculeLayout } from "@/lib/layout/molecule-layout-resolver";
 import definitions from "@/compounds/ui/index";
 import {
@@ -21,10 +23,11 @@ import {
 } from "@/state/state-store";
 import { useSyncExternalStore } from "react";
 import { JsonSkinEngine } from "@/logic/engines/json-skin.engine";
-import { getDefaultSectionLayoutId, getPageLayoutId, evaluateCompatibility } from "@/layout";
+import { getSectionLayoutId, evaluateCompatibility } from "@/layout";
 import { getCardLayoutPreset } from "@/lib/layout/card-layout-presets";
 import { logRuntimeDecision } from "@/engine/devtools/runtime-decision-trace";
-import rendererContract from "@/config/renderer-contract.json";
+import config from "@/config/config.json";
+const rendererContract = config.rendererContract;
 import { EXPECTED_PARAMS } from "@/contracts/expected-params";
 import { trace } from "@/devtools/interaction-tracer.store";
 import { PipelineDebugStore } from "@/devtools/pipeline-debug-store";
@@ -357,48 +360,30 @@ function applyProfileToNode(
     delete p.split;
   }
   // Per-section: set a single layout-2 string id (OrganPanel overrides, explicit node.layout, template default).
-  // Layout is never derived from role — component/layout separation: role is for labels only.
+  // Single authority: layout.getSectionLayoutId (override → node.layout → template role → template default).
   if (isSection) {
     const sectionKey = (node.id ?? node.role) ?? "";
-    const overrideId =
-      (sectionLayoutPresetOverrides?.[sectionKey] && sectionLayoutPresetOverrides[sectionKey].trim())
-        ? sectionLayoutPresetOverrides[sectionKey].trim()
-        : null;
+    const templateId = (profile?.id ?? null) as string | null;
+    const { layoutId, ruleApplied } = getSectionLayoutId(
+      {
+        sectionKey,
+        node,
+        templateId,
+        sectionLayoutPresetOverrides,
+        defaultSectionLayoutIdFromProfile: (profile as { defaultSectionLayoutId?: string } | null)?.defaultSectionLayoutId,
+      },
+      { includeRule: true }
+    );
+    const overrideId = sectionLayoutPresetOverrides?.[sectionKey]?.trim() ?? null;
     const existingLayoutId =
       typeof node.layout === "string" && (node.layout as string).trim()
         ? (node.layout as string).trim()
         : null;
-    const templateId = (profile?.id ?? null) as string | null;
-    const templateDefaultLayoutId =
-      (profile as { defaultSectionLayoutId?: string } | null)?.defaultSectionLayoutId?.trim() ||
-      getDefaultSectionLayoutId(templateId ?? undefined);
-    // Template role-based layout when no explicit and no override (getPageLayoutId(null, context) reads templates.json slot map).
-    const templateRoleLayoutId =
-      !existingLayoutId && !overrideId && templateId && (node.role ?? "").toString().trim()
-        ? (getPageLayoutId(null, { templateId, sectionRole: (node.role ?? "").toString().trim() }) ?? null)
-        : null;
-    // User override (dropdown/state) wins over explicit JSON layout so the DOM reflects the selection.
-    const layoutId =
-      overrideId ||
-      existingLayoutId ||
-      (templateRoleLayoutId && templateRoleLayoutId.trim() ? templateRoleLayoutId.trim() : null) ||
-      templateDefaultLayoutId ||
-      undefined;
     console.log("FLOW 5 — RENDERER INPUT", {
       sectionId: sectionKey,
       sectionOverride: sectionLayoutPresetOverrides?.[sectionKey],
       finalLayout: layoutId,
     });
-    const ruleApplied =
-      overrideId
-        ? "override"
-        : existingLayoutId
-        ? "explicit node.layout"
-        : templateRoleLayoutId && templateRoleLayoutId.trim()
-        ? "template role"
-        : templateDefaultLayoutId
-        ? "template default"
-        : "undefined";
     logRuntimeDecision({
       timestamp: Date.now(),
       engineId: "renderer",
@@ -407,8 +392,6 @@ function applyProfileToNode(
         sectionKey,
         overrideId: overrideId ?? null,
         existingLayoutId: existingLayoutId ?? null,
-        templateRoleLayoutId: templateRoleLayoutId ?? null,
-        templateDefaultLayoutId: templateDefaultLayoutId ?? null,
         layoutMode: layoutMode ?? null,
       },
       ruleApplied,
@@ -436,7 +419,7 @@ function applyProfileToNode(
       { source: "section override", found: !!overrideId, value: overrideId ?? undefined },
       { source: "card override", found: !!cardVal, value: cardVal },
       { source: "organ override", found: !!organVal, value: organVal },
-      { source: "template default", used: !!(templateDefaultLayoutId || templateRoleLayoutId) },
+      { source: "template default", used: ruleApplied === "template role" || ruleApplied === "template default" },
     ];
     if (process.env.NODE_ENV === "development") {
       PipelineDebugStore.setResolverInputSnapshot({
@@ -497,7 +480,7 @@ function applyProfileToNode(
       requestedLayout: existingLayoutId ?? undefined,
       stateOverride: overrideId ?? undefined,
       presetOverride: undefined,
-      templateDefault: (templateDefaultLayoutId || templateRoleLayoutId) ?? undefined,
+      templateDefault: (ruleApplied === "template role" || ruleApplied === "template default" ? layoutId : undefined) ?? undefined,
       finalLayout: layoutId ?? "",
       reason,
     });
@@ -507,7 +490,7 @@ function applyProfileToNode(
         sectionLayout: existingLayoutId ?? "—",
         cardLayout: "—",
         profileOverride: overrideId ?? "—",
-        templateDefault: templateDefaultLayoutId ?? (templateRoleLayoutId ?? "—"),
+        templateDefault: (ruleApplied === "template role" || ruleApplied === "template default" ? layoutId : undefined) ?? "—",
         FINAL: layoutId ?? "undefined",
       });
     }

@@ -1,10 +1,7 @@
 // =====================================================
 // MOLECULE LAYOUT RESOLVER (JSON-DRIVEN, PURE, SAFE)
 // =====================================================
-import layoutColumn from "@/lib/layout/definitions-molecule/layout-column.json";
-import layoutRow from "@/lib/layout/definitions-molecule/layout-row.json";
-import layoutStacked from "@/lib/layout/definitions-molecule/layout-stacked.json";
-import layoutGrid from "@/lib/layout/definitions-molecule/layout-grid.json";
+import moleculeLayouts from "@/lib/layout/molecule-layouts.json";
 
 
 // =====================================================
@@ -32,10 +29,10 @@ type LayoutDefinition = {
 // 🔒 GLOBAL LAYOUT REGISTRY (JSON → HARD CAST)
 // =====================================================
 const LAYOUT_DEFINITIONS: Record<LayoutFlow, LayoutDefinition> = {
-  column: layoutColumn as LayoutDefinition,
-  row: layoutRow as LayoutDefinition,
-  stacked: layoutStacked as LayoutDefinition,
-  grid: layoutGrid as LayoutDefinition,
+  column: (moleculeLayouts as Record<string, LayoutDefinition>).column,
+  row: (moleculeLayouts as Record<string, LayoutDefinition>).row,
+  stacked: (moleculeLayouts as Record<string, LayoutDefinition>).stacked,
+  grid: (moleculeLayouts as Record<string, LayoutDefinition>).grid,
 };
 
 

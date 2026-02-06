@@ -15,7 +15,7 @@ import type {
   ProductDescriptionBlockContract,
   ProductSpecContract,
   ProductSourceContract,
-} from "@/system/contracts/SystemContract";
+} from "@/contracts/SystemContract";
 
 /**
  * Source - Represents where a fact was extracted from

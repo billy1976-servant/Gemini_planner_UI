@@ -1,7 +1,7 @@
 // src/logic/runtime/export-resolver.ts
 // Export resolver - generates immediateView and exportView from EngineState.exportSlices
 
-import type { DecisionState, UIBlock, DocumentBlock } from "../engines/decision-types";
+import type { DecisionState, UIBlock, DocumentBlock } from "../decision/decision-types";
 import type { EngineState, ExportSlice } from "../../runtime/engine-state";
 import { resolveBusinessProfile } from "../config/business-profiles";
 

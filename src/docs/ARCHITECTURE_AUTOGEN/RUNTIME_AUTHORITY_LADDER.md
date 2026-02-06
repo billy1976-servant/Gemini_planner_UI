@@ -6,13 +6,15 @@
 
 ## Section Layout Authority
 
-1. **Node.layout explicit** — `node.layout` (string) from screen JSON. Explicit JSON never overridden by template or profile.
-2. **User override store** — `sectionLayoutPresetOverrides[sectionKey]` (from section-layout-preset-store; OrganPanel / page.tsx).
-3. **Template role-based** — when layout ref missing and context has `templateId` + `sectionRole`; `getPageLayoutId(null, { templateId, sectionRole })` from templates.json slot map.
-4. **Template default** — `profile.defaultSectionLayoutId` or `getDefaultSectionLayoutId(templateId)` (templates.json or template-profiles).
-5. **Hard fallback** — `undefined` (no layout ID; Section compound may render div wrapper).
+**Order (single authority):** override (store) → node.layout → template role → template default → undefined.
 
-*Implemented in:* `src/engine/core/json-renderer.tsx` — `applyProfileToNode` (layoutId = existingLayoutId || overrideId || templateRoleLayoutId || templateDefaultLayoutId || undefined). See `LAYOUT_SIGNAL_PRIORITY.generated.md` for full hierarchy.
+1. **User override store** — `sectionLayoutPresetOverrides[sectionKey]` (from section-layout-preset-store; OrganPanel / page.tsx). User override wins over explicit JSON so the DOM reflects the selection.
+2. **Explicit node.layout** — `node.layout` (string, trimmed) from screen JSON. Only if no override.
+3. **Template role-based** — when no override and no explicit layout and context has `templateId` + `sectionRole`; `getPageLayoutId(null, { templateId, sectionRole })` from templates.json slot map.
+4. **Template default** — `profile.defaultSectionLayoutId` or `getDefaultSectionLayoutId(templateId)` (templates.json). getDefaultSectionLayoutId lives in layout/page; getSectionLayoutId calls it.
+5. **Hard fallback** — `undefined` (no layout ID; Section compound renders div wrapper only; no invented layout ID).
+
+*Implemented in:* `src/layout/section-layout-id.ts` — `getSectionLayoutId(sectionKey, node, templateId, sectionLayoutPresetOverrides, defaultSectionLayoutIdFromProfile)`. JsonRenderer calls it from `applyProfileToNode`; no second authority for section layout id outside layout/. See `LAYOUT_SIGNAL_PRIORITY.generated.md` for full hierarchy.
 
 ---
 
@@ -68,8 +70,8 @@
 
 ## Layout Resolver Output (Page + Component)
 
-- **resolveLayout** does not apply precedence; it resolves a single layout ref to a definition. Precedence is applied earlier when choosing the layout ref (in applyProfileToNode: override → explicit → template default).
-- **Authority for “which layout ref”:** applyProfileToNode. Authority for “what definition does this ref yield”: getPageLayoutId → getPageLayoutById + resolveComponentLayout; null if ref or page def missing.
+- **resolveLayout** does not apply precedence; it resolves a single layout ref to a definition. Precedence is applied earlier when choosing the layout ref in layout.getSectionLayoutId (override → node.layout → template role → template default → undefined).
+- **Authority for “which layout ref”:** layout/section-layout-id.ts getSectionLayoutId (single authority). Authority for “what definition does this ref yield”: getPageLayoutId → getPageLayoutById + resolveComponentLayout; null if ref or page def missing.
 
 *Implemented in:* `src/layout/resolver/layout-resolver.ts`; `src/layout/page/page-layout-resolver.ts`; `src/layout/component/component-layout-resolver.ts`.
 

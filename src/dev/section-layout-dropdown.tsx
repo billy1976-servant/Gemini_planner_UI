@@ -8,7 +8,7 @@
  */
 
 import React, { useMemo } from "react";
-import { getLayout2Ids, evaluateCompatibility } from "@/layout";
+import { getSectionLayoutIds, evaluateCompatibility } from "@/layout";
 
 function findSections(node: any): any[] {
   if (!node) return [];
@@ -38,7 +38,7 @@ export default function SectionLayoutDropdown({
   onChange: (nextJson: any) => void;
 }) {
   const sections = useMemo(() => findSections(screenJson), [screenJson]);
-  const layoutIds = useMemo(() => getLayout2Ids(), []);
+  const layoutIds = useMemo(() => getSectionLayoutIds(), []);
 
   if (!screenJson || sections.length === 0) return null;
 

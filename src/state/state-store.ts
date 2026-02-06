@@ -1,7 +1,8 @@
 // src/state/state-store.ts
 "use client";
 import { deriveState } from "./state-resolver";
-import stateDefaults from "@/config/state-defaults.json";
+import config from "@/config/config.json";
+const stateDefaults = config.stateDefaults;
 import { trace } from "@/devtools/interaction-tracer.store";
 import { PipelineDebugStore } from "@/devtools/pipeline-debug-store";
 import { recordStage } from "@/engine/debug/pipelineStageTrace";

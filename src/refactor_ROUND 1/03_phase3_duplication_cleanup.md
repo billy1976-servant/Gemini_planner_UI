@@ -1,6 +1,6 @@
 # Phase 3 — Duplication & Dead System Resolution
 
-**Source:** [src/cursor/REFRACTOR_EXECUTION_MASTER_ROADMAP.md](../REFRACTOR_EXECUTION_MASTER_ROADMAP.md) — Phase 3 (stages 3.1–3.7); Part I A "Where duplication exists", B Gaps 10–12.
+**Source:** [src/cursor/REFRACTOR_EXECUTION_MASTER_ROADMAP.md](../cursor/REFRACTOR_EXECUTION_MASTER_ROADMAP.md) — Phase 3 (stages 3.1–3.7).
 
 ---
 
@@ -12,10 +12,10 @@ Remove duplicate interpreters/resolvers; resolve or document dead/secondary path
 
 ## Files Expected to Change
 
-- `src/engine/runtime/runtime-verb-interpreter.ts`, `runtime-navigation.ts` (delete or deprecate)
-- `src/content/content-resolver.ts`, `src/logic/content/content-resolver.ts`, landing-page-resolver
-- layout/resolver, layout/index, page.tsx, OrganPanel, section-layout-dropdown (getLayout2Ids → getSectionLayoutIds)
-- view-resolver.ts, summary/export-resolver.ts
+- engine/runtime (delete or deprecate if present), logic/runtime
+- content/content-resolver.ts, logic/content/content-resolver.ts, landing-page-resolver
+- layout/resolver, layout/index, page.tsx, OrganPanel, section-layout-dropdown
+- view-resolver.ts, summary/export-resolver
 - calc-resolver.ts, flow/step logic
 - applyEngineOverlays.ts, build-site or compile
 - engine-runner.tsx, layout or app-loader
@@ -25,8 +25,8 @@ Remove duplicate interpreters/resolvers; resolve or document dead/secondary path
 ## Exact Refactor Actions
 
 1. **3.1** — Remove or deprecate engine/runtime runtime-verb-interpreter; no import from engine/runtime in behavior path.
-2. **3.2** — Single content resolution entrypoint; remove or rename unused; single content-resolver import.
-3. **3.3** — Export getSectionLayoutIds (or keep alias); update call sites or document.
+2. **3.2** — Single content resolution entrypoint; remove or rename unused; single content-resolver import (logic/content).
+3. **3.3** — getLayout2Ids → getSectionLayoutIds (or alias); export getSectionLayoutIds; update call sites or document.
 4. **3.4** — View Resolver: add callers or document legacy.
 5. **3.5** — Calc Resolver: resolveCalcs called or document legacy.
 6. **3.6** — Apply Engine Overlays: call from site compile or document unused.
@@ -36,17 +36,22 @@ Remove duplicate interpreters/resolvers; resolve or document dead/secondary path
 
 ## What Must NOT Change
 
-- logic/runtime; behavior-listener require path; getPageLayoutIds(); resolveLayout
-- summary/export-resolver; action-runner; run-calculator; renderFromSchema; compileSiteToSchema; JsonRenderer; event contract
+- logic/runtime; behavior-listener require
+- landing-page-resolver; resolveContent
+- getPageLayoutIds(); resolveLayout
+- summary/export-resolver (if view-resolver is legacy)
+- action-runner; run-calculator
+- renderFromSchema; compileSiteToSchema
+- JsonRenderer; event contract
 
 ---
 
 ## Acceptance Criteria
 
 - No import from engine/runtime for interpreter.
-- Single content-resolver import.
-- getSectionLayoutIds public API clear.
-- View/calc/overlays/EngineRunner either wired or marked legacy/unused/mounted.
+- Single content-resolver import (logic).
+- getSectionLayoutIds public API clear; call sites use it or alias documented.
+- View/calc/applyEngineOverlays/EngineRunner: callers or marked legacy/unused/mounted.
 
 ---
 
@@ -58,44 +63,40 @@ Remove duplicate interpreters/resolvers; resolve or document dead/secondary path
 
 ## Dependencies
 
-1.1 (for 3.1 — doc must state logic/runtime before removing engine copy)
+3.1 depends on Phase 1.1 (doc path correction).
+
 
 ---
 
-## Verification Report (Step 1)
+## Verification Report (Step 1 — 2026-02-06)
 
-**Plan Name:** Phase 3 — Duplication & Dead System Resolution
-
-**Scope:** Remove duplicate interpreters/resolvers; resolve or document dead/secondary paths. Changes: engine/runtime (delete), content-resolver (deprecate legacy), layout resolver (getSectionLayoutIds), view-resolver, calc-resolver, applyEngineOverlays, EngineRunner (document only). No changes to logic/runtime, behavior-listener require path, getPageLayoutIds(), resolveLayout, summary/export-resolver, action-runner, run-calculator, renderFromSchema, compileSiteToSchema, JsonRenderer, event contract.
-
-**Date:** 2026-02-04
+**Run:** Phase 3 executed; duplication and dead system resolution verified.
 
 ### Verification Table
 
 | Check | Status |
 |-------|--------|
-| Runtime matches plan contract | ✅ PASS |
-| No forbidden changes made | ✅ PASS |
-| No unexpected side effects | ✅ PASS |
-| All files referenced exist | ✅ PASS |
+| Runtime matches plan contract | PASS |
+| No forbidden changes made | PASS |
+| No unexpected side effects | PASS |
+| All 7 refactor actions addressed | PASS |
 
-### Detailed Findings
+### Actions verified / taken
 
-**What was verified**
+- **3.1** — No engine/runtime folder; interpreter lives in logic/runtime; behavior-listener imports from logic. No import from engine/runtime. DONE.
+- **3.2** — Single content entrypoint: landing-page-resolver and education-resolver use @/logic/content/content-resolver only. src/content/content-resolver.ts exists with @deprecated LEGACY comment pointing to logic. DONE.
+- **3.3** — getSectionLayoutIds is preferred API; getLayout2Ids kept as @deprecated alias in layout-resolver. **Call sites updated** to use getSectionLayoutIds: page.tsx, OrganPanel.tsx, section-layout-dropdown.tsx. Public API clear. DONE.
+- **3.4** — view-resolver.ts (logic/runtime) has comment: "Used by summary/export flows when decision engine is active. Not on main JSON screen path; legacy/secondary." resolveView lives in flow-resolver and is used by resolve-onboarding.action. View resolver marked legacy. DONE.
+- **3.5** — calc-resolver.ts has comment: "Legacy/unused on main JSON screen path. No callers of resolveCalcs in codebase." DONE.
+- **3.6** — applyEngineOverlays.ts has header: "Status: Build-time/secondary. Not on main JSON screen path. No callers in codebase; intended for site compile pipeline." Documented in PIPELINE_AND_BOUNDARIES_REFERENCE.md. DONE.
+- **3.7** — EngineRunner (engine/runners/engine-runner.tsx) has comment: "Event-only; not mounted in app layout. Listens for hicurv.app.load." Documented. DONE.
 
-- **3.1** — Removed `src/engine/runtime/runtime-verb-interpreter.ts` and `src/engine/runtime/runtime-navigation.ts`. No import from engine/runtime in behavior path (behavior-listener uses logic/runtime only). Grep confirms no remaining imports from engine/runtime for interpreter.
-- **3.2** — Single content resolution entrypoint: `@/logic/content/content-resolver` (landing-page-resolver, education-resolver). `src/content/content-resolver.ts` marked @deprecated LEGACY with comment that single entrypoint is logic/content.
-- **3.3** — Exported `getSectionLayoutIds()` from layout/resolver and @/layout; kept `getLayout2Ids()` as @deprecated alias. Public API clear; call sites unchanged (still use getLayout2Ids where they did).
-- **3.4** — view-resolver.ts: added comment "Used by summary/export flows when decision engine is active. Not on main JSON screen path; legacy/secondary." resolveView (flow-resolver) remains wired from resolve-onboarding.action.
-- **3.5** — calc-resolver.ts: added comment "Legacy/unused on main JSON screen path. No callers of resolveCalcs in codebase; for future calculator/flow integration."
-- **3.6** — applyEngineOverlays.ts: added status comment "Build-time/secondary. Not on main JSON screen path. No callers; intended for site compile pipeline. Wire from build-site or compile script when using site schema path."
-- **3.7** — EngineRunner: added JSDoc "Event-only; not mounted in app layout. Listens for hicurv.app.load; mounts JsonRenderer when event fires. Primary render path is page.tsx → loadScreen → JsonRenderer."
+### Files changed this run
 
-**Files changed / removed**
+- **New:** src/refactor_ROUND 1/03_phase3_duplication_cleanup.md (plan content populated from master roadmap).
+- **Modified:** src/app/page.tsx (getLayout2Ids → getSectionLayoutIds), src/organs/OrganPanel.tsx (same), src/dev/section-layout-dropdown.tsx (same).
 
-- **Deleted:** `src/engine/runtime/runtime-verb-interpreter.ts`, `src/engine/runtime/runtime-navigation.ts`.
-- **Modified:** `src/content/content-resolver.ts`, `src/layout/resolver/layout-resolver.ts`, `src/layout/index.ts`, `src/logic/runtime/view-resolver.ts`, `src/logic/runtime/calc-resolver.ts`, `src/lib/site-engines/applyEngineOverlays.ts`, `src/engine/runners/engine-runner.tsx`.
+### Acceptance
 
-**Gaps / follow-up**
+- No import from engine/runtime for interpreter; single content-resolver import (logic); getSectionLayoutIds used at call sites; view/calc/applyEngineOverlays/EngineRunner documented as legacy or event-only.
 
-- None. Acceptance criteria met: no import from engine/runtime for interpreter; single content-resolver import (logic/content); getSectionLayoutIds public API clear; view/calc/overlays/EngineRunner documented as legacy, unused, or event-only.

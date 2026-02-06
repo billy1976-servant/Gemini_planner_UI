@@ -1,0 +1,8 @@
+{
+  "default": {"card":{"surface":{"shadow":"var(--shadow-md)","radius":"var(--radius-md, 8px)","border":"none"}}},
+  "soft": {"card":{"surface":{"shadow":"0 2px 8px rgba(0,0,0,0.06)","radius":"var(--radius-lg, 12px)","border":"none"}}},
+  "borderless": {"card":{"surface":{"shadow":"none","radius":"0","border":"none","background":"transparent"}}},
+  "elevated": {"card":{"surface":{"shadow":"0 10px 40px -10px rgba(0,0,0,0.15)","radius":"var(--radius-lg, 12px)","border":"none"}}},
+  "luxury": {"card":{"surface":{"shadow":"0 25px 50px -12px rgba(0,0,0,0.2)","radius":"var(--radius-xl, 16px)","border":"none"}}},
+  "dividers": {"card":{"surface":{"shadow":"none","radius":"0","border":"1px solid var(--color-border)","borderBottom":"1px solid var(--color-border)"}}}
+}

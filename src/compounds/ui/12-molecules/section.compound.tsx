@@ -18,7 +18,7 @@ import React from "react";
    ====================================================== */
 import { resolveLayout, LayoutMoleculeRenderer, type LayoutDefinition } from "@/layout";
 import { getOrganLayoutOrganIds, resolveInternalLayoutId } from "@/layout-organ";
-import { loadOrganVariant } from "@/organs/organ-registry";
+import { loadOrganVariant } from "@/organs";
 
 /* ======================================================
    3) PROPS CONTRACT

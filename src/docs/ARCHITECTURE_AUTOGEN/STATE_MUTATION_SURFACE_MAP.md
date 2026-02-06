@@ -26,6 +26,8 @@
 | src/screens/tsx-screens/control-json/tsx-proof.tsx | state:currentView | Proof screen buttons A/B/C/D |
 | src/logic/runtime/interaction-controller.ts | interaction.record | recordInteraction(payload) |
 | src/engine/core/global-scan.engine.ts | scan.result | fetchScanSignal / scan run (single or batch) |
+| src/app/page.tsx | layout.override | Layout preset changes (section/card/organ) from OrganPanel |
+| src/behavior/behavior-engine.ts | interaction.record, state.update | Gesture handlers (tap/drag/scroll/swipe); state updates from behavior engine |
 
 ---
 
@@ -121,11 +123,13 @@ Derivation is in state-resolver.deriveState(log). Intents: state:currentView, st
 
 ---
 
-## 11. Interaction Controller
+## 11. Interaction Controller & Behavior Engine
 
 | Source | What It Can Change | How Triggered | File |
 |--------|--------------------|---------------|------|
 | recordInteraction | interactions (append) | recordInteraction(payload) | src/logic/runtime/interaction-controller.ts |
+| behavior-engine gesture handlers | interactions (append) | tap/drag/scroll/swipe → dispatchState("interaction.record", …) | src/behavior/behavior-engine.ts |
+| behavior-engine state updates | values | dispatchState("state.update", …) from behavior engine | src/behavior/behavior-engine.ts |
 
 ---
 
@@ -141,6 +145,7 @@ Derivation is in state-resolver.deriveState(log). Intents: state:currentView, st
 
 | Source | What It Can Change | How Triggered | File |
 |--------|--------------------|---------------|------|
+| page.tsx layout preset handlers | layoutByScreen | OrganPanel section/card/organ preset change → dispatchState("layout.override", { screenKey, type, sectionId, presetId }) | src/app/page.tsx |
 | layout.tsx navigate callback | currentView | navigate(to) with view id → dispatchState("state:currentView", { value: to }) | src/app/layout.tsx |
 | TSX proof screens | currentView | Button click | src/screens/tsx-screens/control-json/tsx-proof.tsx |
 | EducationCard | values | Button / logic | src/screens/tsx-screens/onboarding/cards/EducationCard.tsx |
@@ -152,7 +157,7 @@ Derivation is in state-resolver.deriveState(log). Intents: state:currentView, st
 
 | Surface | What Changes | Trigger |
 |---------|--------------|---------|
-| dispatchState (all callers) | currentView, values, journal, scans, interactions | action, input-change, screen load, ensureInitialView, state-mutate, handlers, adapters, scan, interaction |
+| dispatchState (all callers) | currentView, values, journal, layoutByScreen, scans, interactions | action, input-change, screen load, ensureInitialView, state-mutate, handlers, adapters, scan, interaction, layout preset (page), behavior-engine |
 | setLayout | activeLayout (profile snapshot) | UI (template/experience/mode) |
 | setSectionLayoutPresetOverride | Section override map | OrganPanel |
 | setCardLayoutPresetOverride | Card override map | OrganPanel |

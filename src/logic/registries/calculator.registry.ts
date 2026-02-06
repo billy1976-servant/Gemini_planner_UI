@@ -1,40 +1,14 @@
-import simpleHours from "@/logic/engines/calculator/calculator-types/simple-hours.json";
-import profit from "@/logic/engines/calculator/calculator-types/profit.calculator.json";
-
-
 /**
- * LOCKED REGISTRY
- * Canon lookup table for all calculator definitions.
- * JSON is canon. Registry only wires IDs → JSON.
+ * Single calculator registration surface.
+ * All calculator/calc registration and execution: use this module only.
+ * Implementation lives in logic/engines/calculator/calcs/calc-registry (canon).
  */
-const CALCULATOR_REGISTRY: Record<string, any> = {
-  "cleanup_labor_monthly": simpleHours,
-  "cleanup-labor": simpleHours,
-  "profit": profit,
-  "monthly-loss": profit,
-  "morale": profit,
-};
-
-
-export function getCalculator(calculatorId: string) {
-  const calc = CALCULATOR_REGISTRY[calculatorId];
-  if (!calc) {
-    throw new Error(`Calculator not registered: ${calculatorId}`);
-  }
-  return calc;
-}
-
-
-export function listCalculators() {
-  return Object.keys(CALCULATOR_REGISTRY);
-}
-
-
-export function hasCalculator(calculatorId: string): boolean {
-  return calculatorId in CALCULATOR_REGISTRY;
-}
-
-
-export type CalculatorId = keyof typeof CALCULATOR_REGISTRY;
-
-
+export {
+  getCalculator,
+  listCalculators,
+  hasCalculator,
+  registerCalc,
+  getCalc,
+  executeCalc,
+  listCalcs,
+} from "@/logic/engines/calculator/calcs/calc-registry";

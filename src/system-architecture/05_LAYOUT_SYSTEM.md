@@ -6,12 +6,15 @@
 
 ## Layout resolution order (section layout id)
 
-Applied in **applyProfileToNode**, `src/engine/core/json-renderer.tsx`, for section nodes:
+**Single authority:** `layout.getSectionLayoutId` in `src/layout/section-layout-id.ts`. JsonRenderer calls it from applyProfileToNode; no inline override/node/template logic in the renderer.
+
+**Order:** override (store) → node.layout → template role → template default → undefined.
 
 1. **Section layout preset override** — sectionLayoutPresetOverrides?.[sectionKey] (from getOverridesForScreen(screenKey)).
 2. **Explicit node.layout** — node.layout (string, trimmed). Only if no override.
-3. **Template default** — profile.defaultSectionLayoutId or getDefaultSectionLayoutId(templateId) from page-layout-resolver (templates[templateId].defaultLayout).
-4. **Fallback** — undefined. Section compound: when resolveLayout(layout) returns null, render **div wrapper only**; no LayoutMoleculeRenderer; no invented layout ID.
+3. **Template role-based** — getPageLayoutId(null, { templateId, sectionRole }) when no override and no explicit node.layout.
+4. **Template default** — profile.defaultSectionLayoutId or getDefaultSectionLayoutId(templateId) from layout/page (templates[templateId].defaultLayout).
+5. **Fallback** — undefined. Section compound: when resolveLayout(layout) returns null, render **div wrapper only**; no LayoutMoleculeRenderer; no invented layout ID.
 
 Section params are **stripped** of moleculeLayout, layoutPreset, layout, containerWidth, backgroundVariant, split so JSON cannot supply section layout.
 
@@ -45,8 +48,8 @@ No template default overrides explicit JSON — explicit node.layout always wins
 | Resolver | File | Role |
 |----------|------|------|
 | resolveLayout, getLayout2Ids, getDefaultSectionLayoutId | layout/resolver/layout-resolver.ts | Merges page + component by id |
-| getPageLayoutId, getPageLayoutById, getDefaultSectionLayoutId | layout/page/page-layout-resolver.ts | page-layouts.json, templates.json |
-| resolveComponentLayout | layout/component/component-layout-resolver.ts | component-layouts.json |
+| getPageLayoutId, getPageLayoutById, getDefaultSectionLayoutId | layout/page/page-layout-resolver.ts | layout/data/layout-definitions.json (pageLayouts, templates) |
+| resolveComponentLayout | layout/component/component-layout-resolver.ts | layout/data/layout-definitions.json (componentLayouts) |
 | evaluateCompatibility | layout/compatibility/compatibility-evaluator.ts | required slots vs getAvailableSlots (content-capability-extractor) |
 | getRequiredSlots, getRequiredSlotsForOrgan | requirement-registry.ts | section/card/organ requirement JSON |
 
@@ -89,7 +92,7 @@ No template default overrides explicit JSON — explicit node.layout always wins
 
 ## State and override orchestration (layout domain)
 
-- **Precedence (implemented):** (1) User override (2) Explicit node.layout (3) Logic suggestion [slot reserved] (4) Template default (5) Explicit undefined. applyProfileToNode: layoutId = overrideId ?? existingLayoutId ?? templateDefaultLayoutId ?? undefined.
+- **Precedence (implemented):** (1) User override (2) Explicit node.layout (3) Logic suggestion [slot reserved] (4) Template role (5) Template default (6) Explicit undefined. layout.getSectionLayoutId returns layoutId; JsonRenderer calls it (no inline precedence in renderer).
 - **Override writers:** Only page.tsx/OrganPanel call setSectionLayoutPresetOverride, setCardLayoutPresetOverride, setOrganInternalLayoutOverride. No logic or layout engine calls these.
 - **Event timing:** Load screen JSON → apply template profile → run compatibility per section (read-only) → optionally Logic suggestion (read-only) → resolver applies precedence → render uses resolved node. Logic runs before or during resolution; does not run after render to "fix" layout.
 - **Non-negotiable:** No cross-engine store writes; no silent fallbacks; no hardcoded layout IDs in logic; all layout decisions explainable from inputs.
@@ -116,7 +119,7 @@ No template default overrides explicit JSON — explicit node.layout always wins
 
 | Item | Precedence | Conflict resolution | Where |
 |------|------------|---------------------|-------|
-| Section layout id | User override → Explicit node.layout → Template default → undefined | First defined wins; no silent fallback | json-renderer applyProfileToNode |
+| Section layout id | User override → Explicit node.layout → Template role → Template default → undefined | First defined wins; no silent fallback | layout/section-layout-id.ts getSectionLayoutId (JsonRenderer calls it) |
 | Section override storage | User only (UI) | Only user action writes | section-layout-preset-store; OrganPanel |
 | Card layout preset | User override per section | Override wins | same store; applyProfileToNode cardLayoutPresetOverrides[parentSectionKey] |
 | Organ internal layout | User override per section | Override wins | organ-internal-layout-store; applyProfileToNode organInternalLayoutOverrides |

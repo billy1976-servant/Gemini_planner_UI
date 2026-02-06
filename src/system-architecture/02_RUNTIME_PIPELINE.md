@@ -2,6 +2,8 @@
 
 **Source:** Compiled from `src/docs/ARCHITECTURE_AUTOGEN/RUNTIME_PIPELINE_CONTRACT.md`, `PIPELINE_AND_BOUNDARIES_REFERENCE.md`, `RUNTIME_AUTHORITY_LADDER.md`. Deterministic trace: Request → Screen Load → Layout Resolution → Rendering → Behavior → State Update.
 
+**Single runtime entry spine:** One path for JSON screens: page.tsx → loadScreen → document prep (assignSectionInstanceKeys, expandOrgansInDocument, applySkinBindings, composeOfflineScreen) → setCurrentScreenTree → JsonRenderer → layout.getSectionLayoutId + resolveLayout (layout module) → Section / LayoutMoleculeRenderer → behavior-listener → state-resolver. No second renderer or layout-application entrypoint; JsonRenderer is the only renderer on the main JSON path and delegates section layout id to the layout module.
+
 ---
 
 ## 1. Request → Screen path resolution
@@ -44,8 +46,8 @@ Then setCurrentScreenTree(composed); optional collapseLayoutNodes in dev (hasLay
 
 - **Profile:** getExperienceProfile(experience), getTemplateProfile(templateId) → effectiveProfile; passed as profileOverride to JsonRenderer.
 - **Overrides:** getOverridesForScreen(screenKey), getCardOverridesForScreen(screenKey), getOrganInternalLayoutOverridesForScreen(screenKey) → sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides.
-- **JsonRenderer:** useSyncExternalStore(subscribeLayout, getLayout); useSyncExternalStore(subscribeState, getState). applyProfileToNode: overrideId ?? existingLayoutId ?? templateDefaultLayoutId ?? undefined; getDefaultSectionLayoutId(templateId) from @/layout. Section params stripped of layout keys (moleculeLayout, layoutPreset, layout, containerWidth, backgroundVariant, split).
-- **Section layout id:** In applyProfileToNode: override → node.layout → template default. Section compound receives layout prop; resolveLayout(layout) → LayoutDefinition | null; when null, render div wrapper only (no LayoutMoleculeRenderer).
+- **JsonRenderer:** useSyncExternalStore(subscribeLayout, getLayout); useSyncExternalStore(subscribeState, getState). applyProfileToNode calls **layout.getSectionLayoutId** (sectionKey, node, templateId, overrides) for section layout id; no inline override/node/template logic. Section params stripped of layout keys (moleculeLayout, layoutPreset, layout, containerWidth, backgroundVariant, split).
+- **Section layout id:** Authority in layout module (getSectionLayoutId): override → node.layout → template role → template default. Section compound receives layout prop; **resolveLayout(layout)** from @/layout → LayoutDefinition | null; when null, render div wrapper only (no LayoutMoleculeRenderer).
 
 ---
 

@@ -4,8 +4,7 @@
  * Inner arrangement is resolved by layout/component.
  */
 
-import pageLayoutsData from "./page-layouts.json";
-import templatesData from "./templates.json";
+import layoutDefinitions from "../data/layout-definitions.json";
 
 export type PageLayoutDefinition = {
   containerWidth?: "contained" | "edge-to-edge" | "narrow" | "wide" | "full" | "split" | string;
@@ -16,8 +15,8 @@ export type PageLayoutDefinition = {
 type PageLayoutsMap = Record<string, PageLayoutDefinition>;
 type TemplatesMap = Record<string, Record<string, string>>;
 
-const pageLayouts = pageLayoutsData as PageLayoutsMap;
-const templates = templatesData as TemplatesMap;
+const pageLayouts = (layoutDefinitions as { pageLayouts: PageLayoutsMap }).pageLayouts;
+const templates = (layoutDefinitions as { templates: TemplatesMap }).templates;
 
 export function resolvePageLayout(
   layout: string | { template: string; slot: string } | null | undefined,

@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { getOrganLabel } from "@/organs/organ-registry";
-import { getLayout2Ids, getAllowedCardPresetsForSectionPreset, evaluateCompatibility } from "@/layout";
+import { getOrganLabel } from "@/organs";
+import { getSectionLayoutIds, getAllowedCardPresetsForSectionPreset, evaluateCompatibility } from "@/layout";
 import { getInternalLayoutIds } from "@/layout-organ";
 import { PipelineDebugStore } from "@/devtools/pipeline-debug-store";
 
@@ -86,7 +86,7 @@ export default function OrganPanel({
   sectionNodesByKey,
 }: OrganPanelProps) {
   const rowIds = sectionKeysForPreset ?? [];
-  const allSectionLayoutIds = getLayout2Ids();
+  const allSectionLayoutIds = getSectionLayoutIds();
 
   if (rowIds.length === 0) {
     return (

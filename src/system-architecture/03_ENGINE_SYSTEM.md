@@ -95,3 +95,13 @@
 - **Slot node contract:** type === "slot", slotKey string (dot path e.g. "products.featured", "nav.items"). Used in page.tsx: applySkinBindings(expandedDoc, json?.data ?? {}). SiteSkin and engineToSkin.bridge also call applySkinBindings.
 - **Theme / visual preset:** getExperienceProfile, getTemplateProfile; layout-store (templateId, experience, mode); applyProfileToNode merges profile, getVisualPresetForMolecule, getSpacingForScale, getCardPreset. Palette from palette-store/palette-resolver, not skinBindings.
 - **json-skin type:** Rendered by JsonSkinEngine; selectActiveChildren (when.state/equals); no separate skin resolver for json-skin.
+
+---
+
+## Structural Unification (Round 2) — Engine contract seal
+
+- **Single execution contract:** All trunk engines are invoked via action-registry (getActionHandler) or landing-page-resolver / behavior-listener. engine-registry (flow/TSX path) and action-registry (trunk) both use types from @/contracts/SystemContract (ExecutionEngineContract). No second pipeline.
+- **Trunk actions:** All actions (runCalculator, run25x, resolveOnboarding, etc.) go through action-registry; no direct runCalculator from outside.
+- **Single engine set:** logic/engines is the single micro-engine set; logic/onboarding-engines re-exports from logic/engines only.
+- **Secondary paths (documented, not trunk):** GeneratedSiteViewer, SiteSkin, flow-loader, FlowRenderer — they do not define an alternate runtime; they may reuse JsonRenderer or a separate tree.
+- **Dead paths (documented):** EngineRunner (engine/runners/engine-runner.tsx) — event-only, not on page tree. ScreenRenderer (screens/core/ScreenRenderer.tsx) — DEAD; remove from build or stub if needed.

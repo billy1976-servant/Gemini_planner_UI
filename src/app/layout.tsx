@@ -39,11 +39,9 @@ import { installBehaviorListener } from "@/engine/core/behavior-listener";
 
 
 /* ============================================================
-   📐 EXPERIENCE PROFILES
+   📐 EXPERIENCE PROFILES (single JSON authority)
 ============================================================ */
-import websiteProfile from "@/lib/layout/presentation/website.profile.json";
-import appProfile from "@/lib/layout/presentation/app.profile.json";
-import learningProfile from "@/lib/layout/presentation/learning.profile.json";
+import presentationProfiles from "@/lib/layout/presentation-profiles.json";
 
 
 /* ============================================================
@@ -63,9 +61,9 @@ const PALETTES = [
 
 
 const EXPERIENCES: Record<string, any> = {
-  website: websiteProfile,
-  app: appProfile,
-  learning: learningProfile,
+  website: (presentationProfiles as Record<string, any>).website,
+  app: (presentationProfiles as Record<string, any>).app,
+  learning: (presentationProfiles as Record<string, any>).learning,
 };
 
 

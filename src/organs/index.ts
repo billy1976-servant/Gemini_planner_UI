@@ -1,7 +1,16 @@
 /**
- * Organs layer: JSON-driven UI sections composed of compounds only.
- * Export public API for expansion and loading.
+ * Organs layer: single public API for expansion and loading.
+ * Import from @/organs only; do not import from organ-registry or resolve-organs directly.
  */
-
-export { expandOrgans, expandOrgansInDocument, type LoadOrganVariant } from "./resolve-organs";
-export { loadOrganVariant } from "./organ-registry";
+export {
+  expandOrgans,
+  expandOrgansInDocument,
+  assignSectionInstanceKeys,
+  type LoadOrganVariant,
+} from "./resolve-organs";
+export {
+  loadOrganVariant,
+  getOrganIds,
+  getVariantIds,
+  getOrganLabel,
+} from "./organ-registry";

@@ -1,17 +1,9 @@
-import website from "@/lib/layout/presentation/website.profile.json";
-import app from "@/lib/layout/presentation/app.profile.json";
-import learning from "@/lib/layout/presentation/learning.profile.json";
-
+import presentationProfiles from "@/lib/layout/presentation-profiles.json";
 
 /**
- * Experience profile registry
- * (pure data selection — no layout logic here)
+ * Experience profile registry (single JSON authority).
  */
-const PROFILES: Record<string, any> = {
-  website,
-  app,
-  learning,
-};
+const PROFILES: Record<string, any> = presentationProfiles as Record<string, any>;
 
 /**
  * Return the raw experience profile JSON (sections/defaults).

@@ -101,3 +101,27 @@ None
 **Gaps / follow-up**
 
 - None. All 15 doc artifacts exist; no forbidden changes; protocol “append report to plan file” satisfied.
+---
+
+## Verification Report (Step 2 — 2026-02-06)
+
+**Run:** Phase 1 executed again; docs-only alignment verified.
+
+### Verification Table
+
+| Check | Status |
+|-------|--------|
+| Runtime matches plan contract | PASS |
+| No forbidden changes made | PASS |
+| No unexpected side effects | PASS |
+| All 15 refactor actions present in docs | PASS |
+
+### Actions taken this run
+
+- **1.2** — Added API routes note to REACHABILITY_REPORT.generated.md: API routes (e.g. GET /api/screens/[...path]) are invoked by Next.js/fetch and are not part of the module graph; excluded from reachability seed. See PIPELINE_AND_BOUNDARIES_REFERENCE.md section 2.
+- **1.1** — Verified: grep finds no doc stating engine path as the active interpreter; only DIFF reports mention src/engine/runtime/ (as replaced with logic or deleted).
+- **1.3–1.15** — Confirmed already present in PIPELINE_AND_BOUNDARIES_REFERENCE.md (renderer table, blueprint boundary, branch order, loadScreen, layout order, pipeline order, override stores, ui-verb-map, scripts, state persistence, site compiler, errors, dev-only).
+
+### Files changed
+
+- src/docs/SYSTEM_MAP_AUTOGEN/REACHABILITY_REPORT.generated.md — API routes note added after seed list.

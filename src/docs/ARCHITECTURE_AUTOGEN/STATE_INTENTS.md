@@ -12,6 +12,7 @@
 | `state.update` | derived.values[payload.key] = payload.value | { key: string, value: any } |
 | `journal.set` | derived.journal[track][key] = value | { track?, key, value } |
 | `journal.add` | derived.journal[track][key] = value | { track?, key, value } |
+| `layout.override` | derived.layoutByScreen[screenKey][type][sectionId] = presetId | { screenKey, type: "section" or "card" or "organ", sectionId, presetId } |
 | `scan.result` | derived.scans.push(payload) | scan payload |
 | `scan.interpreted` | derived.scans.push(payload) | interpreted payload |
 | `interaction.record` | derived.interactions.push(payload) | interaction payload |
@@ -32,6 +33,8 @@
 | Intent | Source | Note |
 |--------|--------|------|
 | Any (detail.name) | installStateMutateBridge — CustomEvent "state-mutate" | **Legacy.** External or older consumers can push intents this way. Do not rely for new code; use dispatchState directly or action events. Only intents handled by deriveState affect derived state. |
+
+**Legacy state:* valueFrom "input":** For actions with `params.valueFrom === "input"`, journal.add resolves value from `getState().values[fieldKey]`. Other state:* actions may resolve from ephemeral input buffers (lastFieldKey, inputByFieldKey) when fieldKey is omitted. Prefer explicit fieldKey and state.values for new flows. See behavior-listener.ts.
 
 ---
 

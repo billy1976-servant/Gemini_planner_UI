@@ -3,7 +3,7 @@
  * Used by page.tsx for OrganPanel rows (section layout overrides).
  */
 
-import { getOrganLabel } from "@/organs/organ-registry";
+import { getOrganLabel } from "@/organs";
 
 /**
  * Collect every section instance from top-level nodes (no dedupe).

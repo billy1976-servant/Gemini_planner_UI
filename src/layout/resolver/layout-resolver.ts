@@ -122,4 +122,7 @@ export function getDefaultSectionLayoutId(templateId: string | undefined): strin
   return getDefaultFromPage(templateId);
 }
 
+/** Single authority: resolve section layout id (override → node.layout → template role → template default). */
+export { getSectionLayoutId } from "@/layout/section-layout-id";
+
 export default resolveLayout;

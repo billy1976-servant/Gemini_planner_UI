@@ -6,7 +6,7 @@
  * CONTRACT-BOUNDARY: Do not change shape without updating SystemContract.ts
  */
 
-import type { PresentationModelContract, PresentationGroupContract } from "@/system/contracts/SystemContract";
+import type { PresentationModelContract, PresentationGroupContract } from "@/contracts/SystemContract";
 
 // PresentationModel must satisfy PresentationModelContract
 export type PresentationModel = PresentationModelContract;

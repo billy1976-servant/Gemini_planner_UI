@@ -12,7 +12,7 @@
 
 import type { EngineState } from "../../runtime/engine-state";
 import type { DecisionState } from "./decision-types";
-import { aggregateDecisionState } from "../decision-engine";
+import { aggregateDecisionState } from "./aggregate";
 
 /**
  * Process EngineState to generate decision recommendations

@@ -4,7 +4,7 @@
  * Used by Section (via LayoutMoleculeRenderer), and by molecules that use the same flow.
  */
 
-import componentLayoutsData from "./component-layouts.json";
+import layoutDefinitions from "../data/layout-definitions.json";
 
 export type ComponentLayoutDefinition = {
   type: "column" | "row" | "grid" | "stacked";
@@ -14,7 +14,7 @@ export type ComponentLayoutDefinition = {
 
 type ComponentLayoutsMap = Record<string, ComponentLayoutDefinition>;
 
-const componentLayouts = componentLayoutsData as ComponentLayoutsMap;
+const componentLayouts = (layoutDefinitions as { componentLayouts: ComponentLayoutsMap }).componentLayouts;
 
 /**
  * Resolve a component layout by id (e.g. section layout id used for inner arrangement).

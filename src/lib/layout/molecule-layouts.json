@@ -1,0 +1,21 @@
+{
+  "column": {
+    "layout": {
+      "flow": "column",
+      "params": {"gap": "gap.md", "align": "stretch", "justify": "flex-start"},
+      "responsive": {"breakpoint": 768, "flow": "column", "params": {"gap": "gap.sm"}}
+    }
+  },
+  "row": {
+    "molecule": "Button",
+    "layout": {"flow": "row", "params": {"gap": "gap.sm", "align": "center", "justify": "flex-start"}}
+  },
+  "grid": {
+    "molecule": "Button",
+    "layout": {"flow": "grid", "params": {"gap": "gap.md", "columns": 2}, "responsive": {"breakpoint": 768, "flow": "column", "params": {"gap": "gap.sm"}}}
+  },
+  "stacked": {
+    "molecule": "Button",
+    "layout": {"flow": "column", "params": {"gap": "gap.xs", "align": "flex-start", "justify": "flex-start"}}
+  }
+}

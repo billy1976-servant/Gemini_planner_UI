@@ -8,7 +8,7 @@
 
 import type { EducationFlow } from "../content/flow-loader";
 import type { PresentationModel } from "../engines/presentation-types";
-import type { EngineStateContract, ExportSliceContract } from "@/system/contracts/SystemContract";
+import type { EngineStateContract, ExportSliceContract } from "@/contracts/SystemContract";
 
 export const ENGINE_STATE_KEY = "engine.engineState";
 

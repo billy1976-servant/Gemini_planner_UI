@@ -1,9 +1,0 @@
-{
-  "card": {
-    "surface": {
-      "shadow": "var(--shadow-md)",
-      "radius": "var(--radius-md, 8px)",
-      "border": "none"
-    }
-  }
-}

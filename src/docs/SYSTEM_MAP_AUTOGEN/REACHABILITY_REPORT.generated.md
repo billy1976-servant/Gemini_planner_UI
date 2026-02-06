@@ -4,6 +4,8 @@ Module-level reachability from app entrypoints. **REACHABLE** = reachable from s
 
 **Seed entrypoints:** src/app/page.tsx, src/app/layout.tsx, src/engine/core/json-renderer.tsx, src/engine/core/behavior-listener.ts, src/engine/core/screen-loader.ts, src/state/state-store.ts, src/layout/index.ts, src/engine/core/registry.tsx, src/state/state-resolver.ts, src/logic/runtime/action-registry.ts, src/logic/runtime/runtime-verb-interpreter.ts
 
+**API routes:** API routes (e.g. `GET /api/screens/[...path]`) are invoked by Next.js/fetch and are not part of the module graph. They are excluded from the reachability seed. See PIPELINE_AND_BOUNDARIES_REFERENCE.md §2.
+
 **Generated:** 2026-02-05T01:35:40.934Z
 
 ---

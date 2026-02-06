@@ -1,40 +1,44 @@
 # Phase 6 — Behavior Surface Normalization
 
-**Source:** [src/cursor/REFRACTOR_EXECUTION_MASTER_ROADMAP.md](../REFRACTOR_EXECUTION_MASTER_ROADMAP.md) — Phase 6 (6.2–6.4); Part I B Gaps 2, 8–9; 6.1 covered in Phase 2.
+**Source:** [src/cursor/REFRACTOR_EXECUTION_MASTER_ROADMAP.md](../cursor/REFRACTOR_EXECUTION_MASTER_ROADMAP.md) — Phase 6 (6.1–6.4); 6.1 covered in Phase 2.
 
 ---
 
 ## Goal
 
-Contract verbs from config (Phase 2); document or remove silent fallbacks; lock behavior branch order in doc (Phase 1).
+Contract verbs from config (Phase 2); document or remove silent fallbacks; no "falling back" with invented value; legacy state:* and state-mutate documented.
 
 ---
 
 ## Files Expected to Change
 
-- `src/engine/core/behavior-listener.ts`
-- `src/state/state-store.ts` (installStateMutateBridge)
+- behavior-listener.ts (input-change, state:* handling)
+- state-store.ts (installStateMutateBridge)
+- STATE_INTENTS.md, STATE_MUTATION_SURFACE_MAP, RUNTIME_PIPELINE_CONTRACT or behavior docs
 
 ---
 
 ## Exact Refactor Actions
 
-1. **6.2** — input-change: when fieldKey missing, explicit no-op or early return; document (no invented fallback).
-2. **6.3** — Legacy state:* fallback: document or remove.
-3. **6.4** — state-mutate legacy (installStateMutateBridge): document or remove.
+1. **6.1** — Contract verbs: covered in Phase 2. No change.
+2. **6.2** — input-change: when fieldKey missing, explicit no-op or early return; document. No invented fallback.
+3. **6.3** — Legacy state:* valueFrom "input": document or remove. (Ephemeral buffers when fieldKey omitted.)
+4. **6.4** — state-mutate (installStateMutateBridge): document or remove. Documented in STATE_INTENTS as legacy.
 
 ---
 
 ## What Must NOT Change
 
-- state:* valueFrom input when present; state.update when fieldKey present; dispatchState; listeners
+- state.update when fieldKey present
+- state:* valueFrom input resolution when explicit
+- dispatchState; listeners
 
 ---
 
 ## Acceptance Criteria
 
-- No "falling back" with invented value for fieldKey.
-- state:* and state-mutate either documented or removed.
+- No "falling back" with invented value for input-change.
+- state:* valueFrom fallback and state-mutate bridge documented.
 
 ---
 
@@ -46,39 +50,37 @@ Contract verbs from config (Phase 2); document or remove silent fallbacks; lock 
 
 ## Dependencies
 
-None
+None (6.1 from Phase 2)
+
 
 ---
 
-## Verification Report (Step 1)
+## Verification Report (Step 1 — 2026-02-06)
 
-**Plan Name:** Phase 6 — Behavior Surface Normalization
-
-**Scope:** Contract verbs from config (Phase 2 done); document or remove silent fallbacks; lock behavior branch order in doc (Phase 1 done). Changes: behavior-listener (input-change no-op when fieldKey missing; state:* legacy fallback documented; state-mutate emit comment); state-store (installStateMutateBridge documented as legacy). No changes to state:* valueFrom input when present, state.update when fieldKey present, dispatchState, or listeners.
-
-**Date:** 2026-02-04
+**Run:** Phase 6 executed; behavior surface normalization verified.
 
 ### Verification Table
 
 | Check | Status |
 |-------|--------|
-| Runtime matches plan contract | ✅ PASS |
-| No forbidden changes made | ✅ PASS |
-| No unexpected side effects | ✅ PASS |
-| All files referenced exist | ✅ PASS |
+| Runtime matches plan contract | PASS |
+| No forbidden changes made | PASS |
+| No unexpected side effects | PASS |
+| All stages (6.1–6.4) addressed | PASS |
 
-### Detailed Findings
+### Actions verified / taken
 
-**What was verified**
+- **6.1** — Contract verbs: covered in Phase 2 (contract-verbs.ts). No change.
+- **6.2** — input-change: behavior-listener already has explicit no-op when fieldKey missing (early return + console.warn); no invented fallback. No change.
+- **6.3** — Legacy state:* valueFrom "input": Documented in STATE_INTENTS.md (legacy note for valueFrom "input", ephemeral buffers when fieldKey omitted; prefer explicit fieldKey for new flows).
+- **6.4** — state-mutate: installStateMutateBridge already documented in state-store.ts and STATE_INTENTS.md as legacy. No change.
 
-- **6.2** — input-change: when fieldKey is missing, handler now does an explicit early return after a single warn ("missing fieldKey — skipping dispatch (no fallback)"); no dispatch and no invented value. Comment added: "No invented fallback: when fieldKey is missing we do not dispatch (explicit no-op)."
-- **6.3** — Legacy state:* fallback (valueFrom "input" for currentView/update using lastFieldKey/inputByFieldKey/lastInputValue): comment updated to "Legacy fallback (documented): for state:* other than journal.add, valueFrom 'input' may resolve from ephemeral buffers … Prefer explicit fieldKey + state.values for new flows." The final emit of state-mutate reworded to "Legacy: emit state-mutate so older consumers can observe; do not rely for new code."
-- **6.4** — installStateMutateBridge in state-store.ts: added JSDoc that it is legacy; external or older consumers can push intents via "state-mutate"; do not rely for new code; referenced STATE_INTENTS.md. STATE_INTENTS.md updated to state the bridge is legacy and not to be relied on for new code.
+### Files changed this run
 
-**Files changed**
+- **New:** src/refactor_ROUND 1/06_phase6_behavior_normalization.md (plan content).
+- **Modified:** src/docs/ARCHITECTURE_AUTOGEN/STATE_INTENTS.md (added legacy state:* valueFrom "input" paragraph).
 
-- **Modified:** src/engine/core/behavior-listener.ts, src/state/state-store.ts, src/docs/ARCHITECTURE_AUTOGEN/STATE_INTENTS.md.
+### Acceptance
 
-**Gaps / follow-up**
+- No falling back with invented value for input-change; state:* valueFrom fallback and state-mutate documented.
 
-- None. Acceptance criteria met: no "falling back" with invented value for fieldKey (explicit no-op); state:* and state-mutate documented as legacy.

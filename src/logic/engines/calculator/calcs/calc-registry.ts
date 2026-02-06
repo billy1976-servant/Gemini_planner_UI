@@ -1,11 +1,35 @@
-// src/logic/calcs/calc-registry.ts
-// Calculation registry - pure functions, no inline code in JSON
+// src/logic/engines/calculator/calcs/calc-registry.ts
+// Single calculator/calc registration: JSON definitions + calculation functions
 
-import type { CalcDefinition, CalcFunction, CalcInput, CalcResult } from "./types";
+import type { CalcDefinition, CalcInput, CalcResult } from "./types";
+import simpleHours from "../calculator-types/simple-hours.json";
+import profit from "../calculator-types/profit.calculator.json";
+
+/** Calculator JSON definitions (id → config). Canon lookup for run-calculator and calculator.module. */
+const CALCULATOR_REGISTRY: Record<string, unknown> = {
+  cleanup_labor_monthly: simpleHours,
+  "cleanup-labor": simpleHours,
+  profit,
+  "monthly-loss": profit,
+  morale: profit,
+};
+
+export function getCalculator(calculatorId: string): unknown {
+  const calc = CALCULATOR_REGISTRY[calculatorId];
+  if (!calc) throw new Error(`Calculator not registered: ${calculatorId}`);
+  return calc;
+}
+
+export function listCalculators(): string[] {
+  return Object.keys(CALCULATOR_REGISTRY);
+}
+
+export function hasCalculator(calculatorId: string): boolean {
+  return calculatorId in CALCULATOR_REGISTRY;
+}
 
 /**
- * Registry of available calculations
- * All calculation logic lives here, not in JSON
+ * Registry of calculation functions (registerCalc, getCalc, executeCalc)
  */
 const CALC_REGISTRY: Map<string, CalcDefinition> = new Map();
 

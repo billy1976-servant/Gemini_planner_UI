@@ -32,7 +32,7 @@ import { summaryEngine, summaryPresentation } from "../engines/summary/summary.e
 import type { EducationFlow } from "@/logic/flows/flow-loader";
 import type { EngineFlow } from "../engines/learning.engine";
 import type { PresentationModel } from "../engines/presentation-types";
-import type { ExecutionEngineContract, PresentationModelContract } from "@/system/contracts/SystemContract";
+import type { ExecutionEngineContract, PresentationModelContract } from "@/contracts/SystemContract";
 
 export type EngineId = "learning" | "calculator" | "abc" | "decision" | "summary";
 

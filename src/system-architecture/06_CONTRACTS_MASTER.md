@@ -73,6 +73,13 @@
 
 ---
 
+## Registry vs catalogs
+
+- **Registry (single runtime map):** The **component Registry** (engine/core/registry.tsx) is the single type→React component map. All JSON node types resolve to a React component via this Registry only; no duplicate type→component maps.
+- **Catalogs (data only):** Definitions (compounds/ui/definitions), organs (organ-registry variants), layout IDs (page-layouts, section layout ids), and calculator/calc registration (logic/registries/calculator.registry) are **catalogs**: they hold data or config used at runtime but do not map node types to components. Catalogs are loaded or registered in their own modules; the Registry is only for rendering.
+
+---
+
 ## Data flow contract (transform vs display)
 
 - **Pipeline stages:** Blueprint (transform) → API (read) → loadScreen (state init) → root resolution → assignSectionInstanceKeys → expandOrgansInDocument → applySkinBindings → composeOfflineScreen → setCurrentScreenTree / collapseLayoutNodes → applyProfileToNode → renderNode (transform + display) → Section / LayoutMoleculeRenderer (display) → Registry components (display).

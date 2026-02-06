@@ -22,7 +22,7 @@ The Layout Decision Engine scores **compatible** layout IDs (from the compatibil
 |-------|-------------|--------|
 | **Section node** | Section tree; used when combining with contextual logic. | Caller. |
 | **User context** | Optional: viewport band, density preference, content type. | UI, viewport API, or defaults. |
-| **Compatible layout IDs** | Set where `evaluateCompatibility(..., sectionLayoutId: id).sectionValid === true`. | Compatibility engine + filter over `getLayout2Ids()`. |
+| **Compatible layout IDs** | Set where `evaluateCompatibility(..., sectionLayoutId: id).sectionValid === true`. | Compatibility engine + filter over `getSectionLayoutIds()`. |
 | **Optional contextual suggestion** | Trait set or trait weights from Contextual Layout Logic (Plan 4). | Plan 4 output. |
 | **Optional preference weights** | Trait id → number from User Preference Adaptation (Plan 6). | Plan 6 output. |
 
@@ -55,7 +55,7 @@ For each compatible layout ID: (1) Look up layout's traits from trait registry. 
 
 | Data | Source |
 |------|--------|
-| Compatible layout IDs | Caller filters `getLayout2Ids()` by `evaluateCompatibility(..., sectionLayoutId).sectionValid`. |
+| Compatible layout IDs | Caller filters `getSectionLayoutIds()` by `evaluateCompatibility(..., sectionLayoutId).sectionValid`. |
 | Trait registry | New JSON (e.g. layout-traits.json or trait-registry.json). |
 | Context → weights | New JSON/config (e.g. context-trait-weights.json). |
 | Preference weights | Plan 6 (read-only for this engine). |
@@ -93,5 +93,5 @@ No layout IDs or trait lists hardcoded in TypeScript; all from JSON or compatibi
 
 - **Spec published:** This document is the canonical reference.
 - **No existing Layout Decision Engine:** No runtime code implements layout-ID scoring by traits; `src/logic/engines/decision-engine.ts` is for onboarding, not layout.
-- **Compatible ID source:** `getLayout2Ids()` and `evaluateCompatibility` exist; dropdown/OrganPanel already filter compatible options; ready for future engine to score them.
+- **Compatible ID source:** `getSectionLayoutIds()` and `evaluateCompatibility` exist; dropdown/OrganPanel already filter compatible options; ready for future engine to score them.
 - **Resolver:** Current precedence override → explicit → default (no suggestion step); slot reserved for Plan 8 integration.

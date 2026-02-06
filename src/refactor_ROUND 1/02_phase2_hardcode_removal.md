@@ -108,3 +108,40 @@ None (Phase 1 doc fixes recommended first)
 **Gaps / follow-up**
 
 - Build fails in an unrelated file (`src/app/api/google-ads/client.ts` type error); Phase 2 code compiles and lints clean. Blueprint script still uses literal `DEFAULT_VIEW = "|home"`; could later align with state-defaults.json if script can load config.
+
+
+---
+
+## Verification Report (Step 2 — 2026-02-06)
+
+**Run:** Phase 2 state verified; no code changes required.
+
+### Verification Table
+
+| Check | Status |
+|-------|--------|
+| Runtime matches plan contract | PASS |
+| No forbidden changes made | PASS |
+| No unexpected side effects | PASS |
+| All 9 refactor actions present | PASS |
+
+### Current state verified
+
+- **2.1** — Contract verbs: `src/contracts/contract-verbs.ts` (CONTRACT_VERBS); behavior-listener imports via @/behavior/contract-verbs; no inline array.
+- **2.2** — allowedTypes: `src/lib/layout/layout-allowed-types.json`; layout-store imports LAYOUT_ALLOWED_TYPES; no hardcoded Set.
+- **2.3** — NON_ACTIONABLE_TYPES: `src/config/renderer-contract.json` (nonActionableTypes); json-renderer imports it.
+- **2.4** — LAYOUT_NODE_TYPES: `src/contracts/layout-node-types.ts`; collapse-layout-nodes imports from @/layout/layout-node-types (re-export); single source.
+- **2.5** — EXPECTED_PARAMS: `src/contracts/expected-params.ts`; json-renderer and param-key-mapping.test import it; no hardcoded map in json-renderer.
+- **2.6** — Template roles: `src/lib/layout/template-roles.json` (criticalRoles, optionalRoles); template-profiles imports TEMPLATE_CRITICAL_ROLES and TEMPLATE_OPTIONAL_ROLES; no inline arrays.
+- **2.7** — ensureInitialView: `src/config/state-defaults.json` (defaultInitialView: "|home"); state-store uses it with fallback "|home" only if key missing. Blueprint script still has literal DEFAULT_VIEW (documented follow-up).
+- **2.8** — Organ registry: organ-registry.ts and organs/README.md document single source and extend-only.
+- **2.9** — Palette: palette-store.ts documents single source @/palettes; uses palettes from @/palettes.
+
+### Acceptance
+
+- No inline array of contract verbs; allowedTypes from data; no hardcoded NON_ACTIONABLE_TYPES, LAYOUT_NODE_TYPES, or EXPECTED_PARAMS; no inline template role arrays; no hardcoded "|home" in app path (only fallback and blueprint); single source for organs and palettes.
+
+### Files changed this run
+
+- None (verification only).
+

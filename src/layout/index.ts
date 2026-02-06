@@ -9,8 +9,10 @@ export {
   getSectionLayoutIds,
   getLayout2Ids,
   getDefaultSectionLayoutId,
+  getSectionLayoutId,
   type LayoutDefinition,
 } from "./resolver";
+export type { GetSectionLayoutIdArgs, GetSectionLayoutIdResult } from "./section-layout-id";
 export { default as LayoutMoleculeRenderer } from "./renderer/LayoutMoleculeRenderer";
 export {
   evaluateCompatibility,

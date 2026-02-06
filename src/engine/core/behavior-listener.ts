@@ -10,7 +10,7 @@
  */
 import { dispatchState, getState } from "@/state/state-store";
 import runBehavior from "@/behavior/behavior-runner";
-import { CONTRACT_VERBS, inferContractVerbDomain } from "@/behavior/contract-verbs";
+import { CONTRACT_VERBS, inferContractVerbDomain } from "@/contracts/contract-verbs";
 import { trace } from "@/devtools/interaction-tracer.store";
 import { PipelineDebugStore } from "@/devtools/pipeline-debug-store";
 import { recordStage, resetPipelineTrace } from "@/engine/debug/pipelineStageTrace";
