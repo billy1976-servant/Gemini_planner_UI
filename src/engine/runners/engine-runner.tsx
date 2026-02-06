@@ -1,5 +1,9 @@
 "use client";
 
+/**
+ * Event-only; not mounted in app layout. Listens for hicurv.app.load; mounts JsonRenderer
+ * when event fires. Primary render path is page.tsx → loadScreen → JsonRenderer.
+ */
 
 import React, { useEffect, useState } from "react";
 import JsonRenderer from "@/engine/core/json-renderer";

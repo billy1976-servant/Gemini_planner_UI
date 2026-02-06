@@ -1,7 +1,8 @@
 # User Preference Adaptation
 
 **Source:** Logic Plan 6 — [6_USER_PREFERENCE_ADAPTATION_PLAN.md](../../cursor/logic/complete/6_USER_PREFERENCE_ADAPTATION_PLAN.md).  
-**Classification:** REFERENCE — Future preference adaptation; primary architecture reference: src/docs/ARCHITECTURE_AUTOGEN, src/docs/SYSTEM_MAP_AUTOGEN
+**Classification:** REFERENCE — Future preference adaptation; primary architecture reference: src/docs/ARCHITECTURE_AUTOGEN, src/docs/SYSTEM_MAP_AUTOGEN  
+**Implementation status:** PLANNED. No runtime code for "more like this" / "less like this" or trait-weight persistence; depends on Trait Registry (Plan 7) and Layout Decision Engine (Plan 5).
 
 Capture **"more like this"** and **"less like this"** signals and persist **preference weights per trait** so the Layout Decision Engine (Plan 5) can bias scoring. The system does not mutate the layout store or node.layout; it only reads layout state to translate signals into trait deltas and writes to a separate preference memory (trait id → number). Resolution order remains **override > explicit > suggestion > default**.
 

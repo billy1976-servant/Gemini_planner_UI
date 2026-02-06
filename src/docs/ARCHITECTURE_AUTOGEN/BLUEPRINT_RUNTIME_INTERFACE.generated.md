@@ -51,6 +51,12 @@ button: [label], avatar: [media, text], chip: [title, body, media], field: [labe
 
 ---
 
+## Contract (9.2): No layout primitives in screen tree
+
+**Enforced:** Screen tree must not contain layout primitive node types (Grid, Row, Column, Stack) as content nodes. Blueprint must not emit them. If present at runtime, page.tsx (dev only) runs `collapseLayoutNodes` so the renderer sees a content-only tree. See `hasLayoutNodeType` / `collapse-layout-nodes.ts` and LAYOUT_NODE_TYPES.
+
+---
+
 ## Fields compiler must NOT generate (enforced elsewhere)
 
 - **Section layout ids in params**: Runtime strips section params.moleculeLayout, layoutPreset, layout, containerWidth, backgroundVariant, split in applyProfileToNode. Section layout comes from: section layout preset override (store) → node.layout (explicit) → template defaultSectionLayoutId. Blueprint may emit explicit node.layout if desired; otherwise template/organ override applies.
@@ -81,9 +87,18 @@ button: [label], avatar: [media, text], chip: [title, body, media], field: [labe
 
 ---
 
+## Blueprint compiler boundary
+
+- **Compiler output only:** Blueprint produces app.json and content.manifest.json; runtime only consumes these files via loadScreen/API, never runs the blueprint script.
+- **No runtime layout IDs:** Blueprint does not emit layout ids for sections at build time; layout resolution is entirely runtime (override store → node.layout → template default).
+- **No blueprint script in runtime:** No script under `src/scripts/` (including blueprint.ts) is imported by app/engine/state/layout at runtime. Blueprint is build-time or one-off CLI only.
+
+---
+
 ## Summary
 
 - **Compiler**: blueprint.ts → app.json (+ content.manifest.json); tree nodes have id, type, children, content, optional role/behavior/params; no section layout keys in params; no screen IDs.
 - **Runtime expects**: root/screen/node or self, optional state.currentView, optional data; section layout from store/template/node.layout only.
 - **Must NOT generate**: section layout in params, screen IDs for load, layout primitive nodes (or they get collapsed in dev).
 - **Validation**: blueprint validateContentKeys; API JSON parse; screen-loader path check; compose inferRolesFromOfflineTree; no runtime schema validation of full screen doc in traced path.
+- **Boundary**: Compiler output only; no blueprint script in runtime; no runtime layout IDs from blueprint.

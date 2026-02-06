@@ -1,6 +1,8 @@
 /**
  * Sync loader for organ variant JSON.
- * Variants are imported at build time; add new organs here.
+ * Single source for organ list and variant map: VARIANTS and getOrganIds/getVariantIds.
+ * Extend-only: to add an organ, add imports and an entry in VARIANTS; add label in getOrganLabel.
+ * Do not duplicate organ list or variant map elsewhere.
  */
 
 import headerDefault from "./header/variants/default.json";

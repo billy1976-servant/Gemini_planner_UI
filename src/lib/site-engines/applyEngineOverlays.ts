@@ -1,11 +1,14 @@
 /**
  * Engine Overlay System
- * 
+ *
  * Pure transformation layer that injects engine-driven blocks into SiteSchema.
  * This runs between compileSiteToSchema and renderFromSchema.
- * 
+ *
  * NO UI. NO JSX. ONLY JSON TRANSFORMATION.
- * 
+ *
+ * Status: Build-time/secondary. Not on main JSON screen path. No callers in codebase;
+ * intended for site compile pipeline. Wire from build-site or compile script when using site schema path.
+ *
  * Input: SiteSchema (from compileSiteToSchema)
  * Output: SiteSchema with engine overlay blocks injected
  */

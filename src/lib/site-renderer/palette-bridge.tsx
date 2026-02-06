@@ -1,26 +1,27 @@
 /**
  * Palette Bridge
- * 
- * Connects the palette store to CSS variables used by site renderer.
- * Maps palette tokens to CSS custom properties for instant theme switching.
+ *
+ * State is source of truth for palette name; palette-store used only as fallback.
+ * Connects the active palette to CSS variables used by site renderer.
  */
 
 "use client";
 
 import { useEffect, type RefObject } from "react";
-import { getPalette, subscribePalette } from "@/engine/core/palette-store";
+import { getPalette, getPaletteName, subscribePalette } from "@/engine/core/palette-store";
+import { getState, subscribeState } from "@/state/state-store";
+import { palettes } from "@/palettes";
 import defaultPalette from "@/palettes/default.json";
 
 /**
  * Hook that applies active palette to CSS variables.
- * When containerRef is provided and has a current element, variables are set on that element only (e.g. app content).
- * Otherwise they are set on document.documentElement (backward compatibility).
- * Fallbacks use default palette JSON (no hardcoded values).
+ * Palette name comes from state.values.paletteName with fallback to palette-store.
  */
 export function usePaletteCSS(containerRef?: RefObject<HTMLElement | null>) {
   useEffect(() => {
     const updateCSS = () => {
-      const palette = getPalette();
+      const name = (getState()?.values?.paletteName ?? getPaletteName()) || "default";
+      const palette = (palettes as Record<string, any>)[name] ?? getPalette();
       const root = containerRef?.current ?? document.documentElement;
       const d = defaultPalette as Record<string, any>;
 
@@ -140,14 +141,12 @@ export function usePaletteCSS(containerRef?: RefObject<HTMLElement | null>) {
       }
     };
     
-    // Initial update
     updateCSS();
-    
-    // Subscribe to palette changes
-    const unsubscribe = subscribePalette(updateCSS);
-    
+    const unsubPalette = subscribePalette(updateCSS);
+    const unsubState = subscribeState(updateCSS);
     return () => {
-      unsubscribe();
+      unsubPalette();
+      unsubState();
     };
   }, [containerRef]);
 }

@@ -57,3 +57,28 @@ Reachability seed fix; blueprint contract (no layout primitives); optional schem
 ## Dependencies
 
 1.4 (9.2), 1.6 (9.3), Phases 1–9 for 9.6
+
+---
+
+## Verification report (Phase 9 executed)
+
+**Plan name:** Phase 9 — Validation Layer & Contract Enforcement  
+**Scope:** Reachability seed fix; blueprint contract; optional validation; separation checklist; critical-path tests.  
+**Date:** 2025-02-04
+
+| Check | Status |
+|-------|--------|
+| Runtime matches plan contract | ✅ PASS |
+| No forbidden changes made | ✅ PASS |
+| No unexpected side effects | ✅ PASS |
+| All files referenced exist | ✅ PASS |
+
+**Detailed findings**
+
+- **9.1 — Reachability seed:** Added to `generate-reachability-report.ts` SEED_ENTRYPOINTS: `src/engine/core/registry.tsx`, `src/state/state-resolver.ts`, `src/logic/runtime/action-registry.ts`. `src/layout/index.ts` was already in seed. Re-running the script will report fewer false unreachable (registry, state-resolver, action-registry no longer listed as UNREACHABLE).
+- **9.2 — Blueprint / no layout primitives:** Added subsection **"Contract (9.2): No layout primitives in screen tree"** in `BLUEPRINT_RUNTIME_INTERFACE.generated.md` stating screen tree must not contain Grid/Row/Column/Stack; blueprint must not emit them; runtime uses collapseLayoutNodes in dev if present. Existing "Fields compiler must NOT generate" already included layout primitive nodes.
+- **9.3 / 9.4 — Optional:** Not implemented (at most one validation call site and single JSON_SCREEN_CONTRACT import deferred).
+- **9.5 — Separation checklist:** Created `src/docs/ARCHITECTURE_AUTOGEN/BOUNDARY_SEPARATION_CHECKLIST.md` with boundaries (Layout, Logic, State, Behavior, Blueprint, Organs, Registry), rule "no cross-boundary writes", and checklist for changes. Linked from DOCS_INDEX.
+- **9.6 — Test coverage:** Added `src/contracts/critical-path.smoke.test.ts` importing and asserting: `deriveState` (state-resolver), `loadScreen` (screen-loader), `installBehaviorListener` (behavior-listener). JsonRenderer/applyProfileToNode not imported in smoke to avoid TSX under ts-node; documented in file. Run: `npx ts-node -r tsconfig-paths/register src/contracts/critical-path.smoke.test.ts` — passes.
+
+**Files modified:** `src/scripts/docs/generate-reachability-report.ts`, `src/docs/ARCHITECTURE_AUTOGEN/BLUEPRINT_RUNTIME_INTERFACE.generated.md`, `src/docs/ARCHITECTURE_AUTOGEN/BOUNDARY_SEPARATION_CHECKLIST.md` (new), `src/docs/SYSTEM_MAP_AUTOGEN/DOCS_INDEX.md`, `src/contracts/critical-path.smoke.test.ts` (new).

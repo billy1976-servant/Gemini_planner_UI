@@ -1,6 +1,7 @@
 // src/state/state-resolver.ts
 import type { StateEvent } from "./state";
 import { logRuntimeDecision } from "@/engine/devtools/runtime-decision-trace";
+import { PipelineDebugStore } from "@/devtools/pipeline-debug-store";
 
 
 /* ======================================================
@@ -21,6 +22,13 @@ export type DerivedState = {
      - Extend-only, no breaking changes
   ==================================================== */
   values?: Record<string, any>;
+
+  /* ====================================================
+     layoutByScreen — layout override target for renderer
+     - Written by layout.override; consumed by page → JsonRenderer
+     - Do not store layout presets in values
+  ==================================================== */
+  layoutByScreen?: Record<string, { section: Record<string, string>; card: Record<string, string>; organ: Record<string, string> }>;
 };
 
 
@@ -34,6 +42,7 @@ export function deriveState(log: StateEvent[]): DerivedState {
     scans: [],
     interactions: [],
     values: {}, // 🔧 ADD
+    layoutByScreen: {},
   };
 
 
@@ -85,12 +94,53 @@ export function deriveState(log: StateEvent[]): DerivedState {
       continue;
     }
 
+    /* =========================
+       LAYOUT OVERRIDE (per-screen section/card/organ)
+       - Renderer consumes state.layoutByScreen[screenKey]
+       - Do not write layout presets to values
+    ========================== */
+    if (intent === "layout.override") {
+      const { screenKey, type, sectionId, presetId } = payload;
+      if (typeof screenKey !== "string" || typeof type !== "string" || typeof sectionId !== "string" || typeof presetId !== "string") continue;
+      if (!derived.layoutByScreen![screenKey]) {
+        derived.layoutByScreen![screenKey] = { section: {}, card: {}, organ: {} };
+      }
+      const t = type as "section" | "card" | "organ";
+      if (t === "section" || t === "card" || t === "organ") {
+        derived.layoutByScreen![screenKey][t][sectionId] = presetId;
+      }
+      console.log("FLOW 3 — STATE WRITE", {
+        screenKey,
+        type: t,
+        sectionId,
+        presetId,
+        stateAfter: derived.layoutByScreen?.[screenKey],
+      });
+      if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
+        PipelineDebugStore.mark("state-resolver", "layout.override", {
+          screenKey,
+          type: t,
+          sectionId,
+          presetId,
+        });
+      }
+      continue;
+    }
 
     /* =========================
        SCANS
     ========================== */
     if (intent === "scan.result" || intent === "scan.interpreted") {
       derived.scans!.push(payload);
+      continue;
+    }
+    if (intent === "scan.record") {
+      derived.scans!.push(payload);
+      continue;
+    }
+    if (intent === "scan.batch") {
+      const scans = payload?.scans;
+      if (Array.isArray(scans)) derived.scans!.push(...scans);
       continue;
     }
 
@@ -116,6 +166,7 @@ export function deriveState(log: StateEvent[]): DerivedState {
       hasCurrentView: derived.currentView !== undefined,
       journalTracks: Object.keys(derived.journal),
       valuesKeys: derived.values ? Object.keys(derived.values) : [],
+      layoutByScreenKeys: derived.layoutByScreen ? Object.keys(derived.layoutByScreen) : [],
       scansCount: derived.scans?.length ?? 0,
       interactionsCount: derived.interactions?.length ?? 0,
     },

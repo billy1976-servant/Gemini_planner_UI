@@ -1,0 +1,2282 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "stepId": "interaction",
+      "step": "interaction",
+      "label": "Interaction",
+      "pass": true,
+      "reason": "Interaction detected",
+      "before": null,
+      "after": {
+        "time": 1770318658515,
+        "type": "change",
+        "target": "section-layout-preset-nav_organ"
+      }
+    },
+    {
+      "stepId": "action",
+      "step": "action",
+      "label": "Action",
+      "pass": true,
+      "reason": "Action emitted",
+      "before": null,
+      "after": [
+        {
+          "stage": "action",
+          "status": "pass",
+          "message": {
+            "name": "state:update",
+            "key": "sectionLayoutPreset.nav_organ",
+            "value": "content-narrow",
+            "ts": 1770318658517
+          }
+        },
+        {
+          "stage": "behavior",
+          "status": "pass",
+          "message": {
+            "matched": false,
+            "bypass": "state:update is direct state op",
+            "matchedBehavior": "state:update"
+          }
+        }
+      ]
+    },
+    {
+      "stepId": "state",
+      "step": "state",
+      "label": "State Update",
+      "pass": true,
+      "reason": "State updated for layout key",
+      "before": [],
+      "after": [
+        {
+          "key": "layoutByScreen",
+          "prev": {},
+          "curr": {
+            "websites-demo-blueprint-site-app": {
+              "section": {
+                "nav_organ": "content-narrow"
+              },
+              "card": {},
+              "organ": {}
+            }
+          }
+        }
+      ]
+    },
+    {
+      "stepId": "page-overrides",
+      "step": "page-overrides",
+      "label": "Page Overrides",
+      "pass": true,
+      "reason": "Page recomputed overrides",
+      "before": null,
+      "after": {
+        "overrideAfter": {
+          "sectionLayoutPresetOverrides": {
+            "nav_organ": "content-narrow"
+          },
+          "cardLayoutPresetOverrides": {},
+          "organInternalLayoutOverrides": {},
+          "screenId": "websites-demo-blueprint-site-app"
+        },
+        "perActiveSectionDelta": null
+      }
+    },
+    {
+      "stepId": "resolver-input",
+      "step": "resolver-input",
+      "label": "Resolver Input",
+      "pass": true,
+      "reason": "Resolver received override",
+      "before": null,
+      "after": {
+        "requestedLayout": "content-narrow",
+        "sectionKey": "nav_organ"
+      }
+    },
+    {
+      "stepId": "render-pass",
+      "step": "render-pass",
+      "label": "Render Pass",
+      "pass": true,
+      "reason": "Render pass completed",
+      "before": null,
+      "after": {
+        "sectionsRendered": [
+          "nav_organ",
+          "header_organ",
+          "hero_organ",
+          "features_organ",
+          "testimonials_organ",
+          "pricing_organ",
+          "faq_organ",
+          "cta_organ",
+          "anonymous",
+          "footer_organ"
+        ]
+      }
+    },
+    {
+      "stepId": "final-layout",
+      "step": "final-layout",
+      "label": "Final Layout Change",
+      "pass": true,
+      "reason": "Final layout changed",
+      "before": {
+        "nav_organ": ""
+      },
+      "after": {
+        "nav_organ": "content-narrow"
+      }
+    }
+  ],
+  "debugDump": {
+    "screenKey": "websites-demo-blueprint-site-app",
+    "activeSection": "nav_organ",
+    "lastInteractionTarget": "section-layout-preset-nav_organ",
+    "pipelineStages": [
+      {
+        "stage": "action",
+        "status": "pass",
+        "message": {
+          "name": "state:update",
+          "key": "sectionLayoutPreset.nav_organ",
+          "value": "content-narrow",
+          "ts": 1770318658517
+        }
+      },
+      {
+        "stage": "behavior",
+        "status": "pass",
+        "message": {
+          "matched": false,
+          "bypass": "state:update is direct state op",
+          "matchedBehavior": "state:update"
+        }
+      },
+      {
+        "stage": "state",
+        "status": "pass",
+        "message": {
+          "key": "sectionLayoutPreset.nav_organ",
+          "value": "content-narrow",
+          "storedValue": "content-narrow",
+          "ts": 1770318658518
+        }
+      },
+      {
+        "stage": "state",
+        "status": "pass",
+        "message": {
+          "key": "layout.override",
+          "ts": 1770318658519
+        }
+      },
+      {
+        "stage": "page-overrides",
+        "status": "pass",
+        "message": {
+          "screenKey": "websites-demo-blueprint-site-app",
+          "source": "state",
+          "sectionKeys": [
+            "nav_organ"
+          ],
+          "sectionOverrides": {
+            "nav_organ": "content-narrow"
+          },
+          "cardOverrides": {},
+          "organOverrides": {}
+        }
+      },
+      {
+        "stage": "page",
+        "status": "pass",
+        "message": {
+          "screenKey": "websites-demo-blueprint-site-app",
+          "activeTemplateId": "",
+          "overrides": {
+            "section": {
+              "nav_organ": "content-narrow"
+            },
+            "card": {},
+            "organ": {}
+          },
+          "ts": 1770318658522
+        }
+      },
+      {
+        "stage": "page-overrides",
+        "status": "pass",
+        "message": {
+          "screenKey": "websites-demo-blueprint-site-app",
+          "source": "state",
+          "sectionKeys": [
+            "nav_organ"
+          ],
+          "sectionOverrides": {
+            "nav_organ": "content-narrow"
+          },
+          "cardOverrides": {},
+          "organOverrides": {}
+        }
+      },
+      {
+        "stage": "page",
+        "status": "pass",
+        "message": {
+          "screenKey": "websites-demo-blueprint-site-app",
+          "activeTemplateId": "",
+          "overrides": {
+            "section": {
+              "nav_organ": "content-narrow"
+            },
+            "card": {},
+            "organ": {}
+          },
+          "ts": 1770318658523
+        }
+      },
+      {
+        "stage": "jsonRenderer",
+        "status": "pass",
+        "message": {
+          "templateId": "website",
+          "hasDoc": true,
+          "overrideKeys": {
+            "section": [
+              "nav_organ"
+            ],
+            "card": [],
+            "organ": []
+          },
+          "ts": 1770318658524
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "nav_organ",
+          "chosenLayout": "content-narrow"
+        }
+      },
+      {
+        "stage": "resolver",
+        "status": "pass",
+        "message": {
+          "sectionKey": "nav_organ",
+          "requested": {
+            "type": "row",
+            "params": {
+              "gap": "1rem",
+              "justify": "space-between",
+              "align": "center",
+              "wrap": "wrap"
+            }
+          },
+          "sectionOverride": "content-narrow",
+          "cardOverride": null,
+          "organOverride": null,
+          "finalLayout": "content-narrow",
+          "chain": [
+            {
+              "source": "section override",
+              "found": true,
+              "value": "content-narrow"
+            },
+            {
+              "source": "card override",
+              "found": false
+            },
+            {
+              "source": "organ override",
+              "found": false
+            },
+            {
+              "source": "template default",
+              "used": false
+            }
+          ],
+          "ts": 1770318658525
+        }
+      },
+      {
+        "stage": "layout",
+        "status": "pass",
+        "message": {
+          "sectionKey": "nav_organ",
+          "layoutResolved": "content-narrow",
+          "layoutRequested": null,
+          "ts": 1770318658525
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "header_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "hero_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "features_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "testimonials_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "pricing_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "faq_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "cta_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "anonymous",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "footer_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "nav_organ",
+          "chosenLayout": "content-narrow"
+        }
+      },
+      {
+        "stage": "resolver",
+        "status": "pass",
+        "message": {
+          "sectionKey": "nav_organ",
+          "requested": "content-narrow",
+          "sectionOverride": "content-narrow",
+          "cardOverride": null,
+          "organOverride": null,
+          "finalLayout": "content-narrow",
+          "chain": [
+            {
+              "source": "section override",
+              "found": true,
+              "value": "content-narrow"
+            },
+            {
+              "source": "card override",
+              "found": false
+            },
+            {
+              "source": "organ override",
+              "found": false
+            },
+            {
+              "source": "template default",
+              "used": false
+            }
+          ],
+          "ts": 1770318658533
+        }
+      },
+      {
+        "stage": "layout",
+        "status": "pass",
+        "message": {
+          "sectionKey": "nav_organ",
+          "layoutResolved": "content-narrow",
+          "layoutRequested": "content-narrow",
+          "ts": 1770318658533
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "header_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "hero_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "features_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "testimonials_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "pricing_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "faq_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "cta_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "anonymous",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "anonymous",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "footer_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "render-pass",
+        "status": "pass",
+        "message": {
+          "sectionsRendered": [
+            "nav_organ",
+            "header_organ",
+            "hero_organ",
+            "features_organ",
+            "testimonials_organ",
+            "pricing_organ",
+            "faq_organ",
+            "cta_organ",
+            "anonymous",
+            "footer_organ"
+          ]
+        }
+      },
+      {
+        "stage": "render",
+        "status": "pass",
+        "message": "Render cycle completed"
+      },
+      {
+        "stage": "jsonRenderer",
+        "status": "pass",
+        "message": {
+          "templateId": "website",
+          "hasDoc": true,
+          "overrideKeys": {
+            "section": [
+              "nav_organ"
+            ],
+            "card": [],
+            "organ": []
+          },
+          "ts": 1770318658543
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "nav_organ",
+          "chosenLayout": "content-narrow"
+        }
+      },
+      {
+        "stage": "resolver",
+        "status": "pass",
+        "message": {
+          "sectionKey": "nav_organ",
+          "requested": {
+            "type": "row",
+            "params": {
+              "gap": "1rem",
+              "justify": "space-between",
+              "align": "center",
+              "wrap": "wrap"
+            }
+          },
+          "sectionOverride": "content-narrow",
+          "cardOverride": null,
+          "organOverride": null,
+          "finalLayout": "content-narrow",
+          "chain": [
+            {
+              "source": "section override",
+              "found": true,
+              "value": "content-narrow"
+            },
+            {
+              "source": "card override",
+              "found": false
+            },
+            {
+              "source": "organ override",
+              "found": false
+            },
+            {
+              "source": "template default",
+              "used": false
+            }
+          ],
+          "ts": 1770318658544
+        }
+      },
+      {
+        "stage": "layout",
+        "status": "pass",
+        "message": {
+          "sectionKey": "nav_organ",
+          "layoutResolved": "content-narrow",
+          "layoutRequested": null,
+          "ts": 1770318658544
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "header_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "hero_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "features_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "testimonials_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "pricing_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "faq_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "cta_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "anonymous",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "footer_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "nav_organ",
+          "chosenLayout": "content-narrow"
+        }
+      },
+      {
+        "stage": "resolver",
+        "status": "pass",
+        "message": {
+          "sectionKey": "nav_organ",
+          "requested": "content-narrow",
+          "sectionOverride": "content-narrow",
+          "cardOverride": null,
+          "organOverride": null,
+          "finalLayout": "content-narrow",
+          "chain": [
+            {
+              "source": "section override",
+              "found": true,
+              "value": "content-narrow"
+            },
+            {
+              "source": "card override",
+              "found": false
+            },
+            {
+              "source": "organ override",
+              "found": false
+            },
+            {
+              "source": "template default",
+              "used": false
+            }
+          ],
+          "ts": 1770318658553
+        }
+      },
+      {
+        "stage": "layout",
+        "status": "pass",
+        "message": {
+          "sectionKey": "nav_organ",
+          "layoutResolved": "content-narrow",
+          "layoutRequested": "content-narrow",
+          "ts": 1770318658553
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "header_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "hero_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "features_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "testimonials_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "pricing_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "faq_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "cta_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "anonymous",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "anonymous",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "footer_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "render-pass",
+        "status": "pass",
+        "message": {
+          "sectionsRendered": [
+            "nav_organ",
+            "header_organ",
+            "hero_organ",
+            "features_organ",
+            "testimonials_organ",
+            "pricing_organ",
+            "faq_organ",
+            "cta_organ",
+            "anonymous",
+            "footer_organ"
+          ]
+        }
+      },
+      {
+        "stage": "render",
+        "status": "pass",
+        "message": "Render cycle completed"
+      },
+      {
+        "stage": "layout",
+        "status": "pass",
+        "message": "Layout recalculated for sections"
+      },
+      {
+        "stage": "layout",
+        "status": "fail",
+        "message": "Layout resolver ran but no layout changes detected"
+      },
+      {
+        "stage": "page-overrides",
+        "status": "pass",
+        "message": {
+          "screenKey": "websites-demo-blueprint-site-app",
+          "source": "state",
+          "sectionKeys": [
+            "nav_organ"
+          ],
+          "sectionOverrides": {
+            "nav_organ": "content-narrow"
+          },
+          "cardOverrides": {},
+          "organOverrides": {}
+        }
+      },
+      {
+        "stage": "page",
+        "status": "pass",
+        "message": {
+          "screenKey": "websites-demo-blueprint-site-app",
+          "activeTemplateId": "",
+          "overrides": {
+            "section": {
+              "nav_organ": "content-narrow"
+            },
+            "card": {},
+            "organ": {}
+          },
+          "ts": 1770318658592
+        }
+      },
+      {
+        "stage": "page-overrides",
+        "status": "pass",
+        "message": {
+          "screenKey": "websites-demo-blueprint-site-app",
+          "source": "state",
+          "sectionKeys": [
+            "nav_organ"
+          ],
+          "sectionOverrides": {
+            "nav_organ": "content-narrow"
+          },
+          "cardOverrides": {},
+          "organOverrides": {}
+        }
+      },
+      {
+        "stage": "page",
+        "status": "pass",
+        "message": {
+          "screenKey": "websites-demo-blueprint-site-app",
+          "activeTemplateId": "",
+          "overrides": {
+            "section": {
+              "nav_organ": "content-narrow"
+            },
+            "card": {},
+            "organ": {}
+          },
+          "ts": 1770318658593
+        }
+      },
+      {
+        "stage": "jsonRenderer",
+        "status": "pass",
+        "message": {
+          "templateId": "website",
+          "hasDoc": true,
+          "overrideKeys": {
+            "section": [
+              "nav_organ"
+            ],
+            "card": [],
+            "organ": []
+          },
+          "ts": 1770318658594
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "nav_organ",
+          "chosenLayout": "content-narrow"
+        }
+      },
+      {
+        "stage": "resolver",
+        "status": "pass",
+        "message": {
+          "sectionKey": "nav_organ",
+          "requested": {
+            "type": "row",
+            "params": {
+              "gap": "1rem",
+              "justify": "space-between",
+              "align": "center",
+              "wrap": "wrap"
+            }
+          },
+          "sectionOverride": "content-narrow",
+          "cardOverride": null,
+          "organOverride": null,
+          "finalLayout": "content-narrow",
+          "chain": [
+            {
+              "source": "section override",
+              "found": true,
+              "value": "content-narrow"
+            },
+            {
+              "source": "card override",
+              "found": false
+            },
+            {
+              "source": "organ override",
+              "found": false
+            },
+            {
+              "source": "template default",
+              "used": false
+            }
+          ],
+          "ts": 1770318658595
+        }
+      },
+      {
+        "stage": "layout",
+        "status": "pass",
+        "message": {
+          "sectionKey": "nav_organ",
+          "layoutResolved": "content-narrow",
+          "layoutRequested": null,
+          "ts": 1770318658595
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "header_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "hero_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "features_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "testimonials_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "pricing_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "faq_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "cta_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "anonymous",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "footer_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "nav_organ",
+          "chosenLayout": "content-narrow"
+        }
+      },
+      {
+        "stage": "resolver",
+        "status": "pass",
+        "message": {
+          "sectionKey": "nav_organ",
+          "requested": "content-narrow",
+          "sectionOverride": "content-narrow",
+          "cardOverride": null,
+          "organOverride": null,
+          "finalLayout": "content-narrow",
+          "chain": [
+            {
+              "source": "section override",
+              "found": true,
+              "value": "content-narrow"
+            },
+            {
+              "source": "card override",
+              "found": false
+            },
+            {
+              "source": "organ override",
+              "found": false
+            },
+            {
+              "source": "template default",
+              "used": false
+            }
+          ],
+          "ts": 1770318658602
+        }
+      },
+      {
+        "stage": "layout",
+        "status": "pass",
+        "message": {
+          "sectionKey": "nav_organ",
+          "layoutResolved": "content-narrow",
+          "layoutRequested": "content-narrow",
+          "ts": 1770318658602
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "header_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "hero_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "features_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "testimonials_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "pricing_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "faq_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "cta_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "anonymous",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "anonymous",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "footer_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "render-pass",
+        "status": "pass",
+        "message": {
+          "sectionsRendered": [
+            "nav_organ",
+            "header_organ",
+            "hero_organ",
+            "features_organ",
+            "testimonials_organ",
+            "pricing_organ",
+            "faq_organ",
+            "cta_organ",
+            "anonymous",
+            "footer_organ",
+            "content-narrow"
+          ]
+        }
+      },
+      {
+        "stage": "render",
+        "status": "pass",
+        "message": "Render cycle completed"
+      },
+      {
+        "stage": "jsonRenderer",
+        "status": "pass",
+        "message": {
+          "templateId": "website",
+          "hasDoc": true,
+          "overrideKeys": {
+            "section": [
+              "nav_organ"
+            ],
+            "card": [],
+            "organ": []
+          },
+          "ts": 1770318658612
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "nav_organ",
+          "chosenLayout": "content-narrow"
+        }
+      },
+      {
+        "stage": "resolver",
+        "status": "pass",
+        "message": {
+          "sectionKey": "nav_organ",
+          "requested": {
+            "type": "row",
+            "params": {
+              "gap": "1rem",
+              "justify": "space-between",
+              "align": "center",
+              "wrap": "wrap"
+            }
+          },
+          "sectionOverride": "content-narrow",
+          "cardOverride": null,
+          "organOverride": null,
+          "finalLayout": "content-narrow",
+          "chain": [
+            {
+              "source": "section override",
+              "found": true,
+              "value": "content-narrow"
+            },
+            {
+              "source": "card override",
+              "found": false
+            },
+            {
+              "source": "organ override",
+              "found": false
+            },
+            {
+              "source": "template default",
+              "used": false
+            }
+          ],
+          "ts": 1770318658613
+        }
+      },
+      {
+        "stage": "layout",
+        "status": "pass",
+        "message": {
+          "sectionKey": "nav_organ",
+          "layoutResolved": "content-narrow",
+          "layoutRequested": null,
+          "ts": 1770318658613
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "header_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "hero_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "features_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "testimonials_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "pricing_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "faq_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "cta_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "anonymous",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "footer_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "nav_organ",
+          "chosenLayout": "content-narrow"
+        }
+      },
+      {
+        "stage": "resolver",
+        "status": "pass",
+        "message": {
+          "sectionKey": "nav_organ",
+          "requested": "content-narrow",
+          "sectionOverride": "content-narrow",
+          "cardOverride": null,
+          "organOverride": null,
+          "finalLayout": "content-narrow",
+          "chain": [
+            {
+              "source": "section override",
+              "found": true,
+              "value": "content-narrow"
+            },
+            {
+              "source": "card override",
+              "found": false
+            },
+            {
+              "source": "organ override",
+              "found": false
+            },
+            {
+              "source": "template default",
+              "used": false
+            }
+          ],
+          "ts": 1770318658620
+        }
+      },
+      {
+        "stage": "layout",
+        "status": "pass",
+        "message": {
+          "sectionKey": "nav_organ",
+          "layoutResolved": "content-narrow",
+          "layoutRequested": "content-narrow",
+          "ts": 1770318658620
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "header_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "hero_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "features_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "testimonials_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "pricing_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "faq_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "cta_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "anonymous",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "anonymous",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "footer_organ",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "render-pass",
+        "status": "pass",
+        "message": {
+          "sectionsRendered": [
+            "nav_organ",
+            "header_organ",
+            "hero_organ",
+            "features_organ",
+            "testimonials_organ",
+            "pricing_organ",
+            "faq_organ",
+            "cta_organ",
+            "anonymous",
+            "footer_organ",
+            "content-narrow"
+          ]
+        }
+      },
+      {
+        "stage": "render",
+        "status": "pass",
+        "message": "Render cycle completed"
+      },
+      {
+        "stage": "layout",
+        "status": "fail",
+        "message": "Layout resolver ran but no layout changes detected"
+      },
+      {
+        "stage": "layout",
+        "status": "fail",
+        "message": "Layout resolver ran but no layout changes detected"
+      },
+      {
+        "stage": "page-overrides",
+        "status": "pass",
+        "message": {
+          "screenKey": "websites-demo-blueprint-site-app",
+          "source": "state",
+          "sectionKeys": [
+            "nav_organ"
+          ],
+          "sectionOverrides": {
+            "nav_organ": "content-narrow"
+          },
+          "cardOverrides": {},
+          "organOverrides": {}
+        }
+      },
+      {
+        "stage": "page",
+        "status": "pass",
+        "message": {
+          "screenKey": "websites-demo-blueprint-site-app",
+          "activeTemplateId": "",
+          "overrides": {
+            "section": {
+              "nav_organ": "content-narrow"
+            },
+            "card": {},
+            "organ": {}
+          },
+          "ts": 1770318658653
+        }
+      },
+      {
+        "stage": "page-overrides",
+        "status": "pass",
+        "message": {
+          "screenKey": "websites-demo-blueprint-site-app",
+          "source": "state",
+          "sectionKeys": [
+            "nav_organ"
+          ],
+          "sectionOverrides": {
+            "nav_organ": "content-narrow"
+          },
+          "cardOverrides": {},
+          "organOverrides": {}
+        }
+      },
+      {
+        "stage": "page",
+        "status": "pass",
+        "message": {
+          "screenKey": "websites-demo-blueprint-site-app",
+          "activeTemplateId": "",
+          "overrides": {
+            "section": {
+              "nav_organ": "content-narrow"
+            },
+            "card": {},
+            "organ": {}
+          },
+          "ts": 1770318658655
+        }
+      }
+    ],
+    "jsonRendererPropsSnapshotBefore": null,
+    "jsonRendererPropsSnapshotAfter": {
+      "sectionLayoutPresetOverrides": {
+        "nav_organ": "content-narrow"
+      },
+      "cardLayoutPresetOverrides": {},
+      "organInternalLayoutOverrides": {},
+      "screenId": "websites-demo-blueprint-site-app"
+    },
+    "layoutMapBefore": {
+      "nav_organ": "",
+      "header_organ": "",
+      "hero_organ": "",
+      "features_organ": "",
+      "testimonials_organ": "",
+      "pricing_organ": "",
+      "faq_organ": "",
+      "cta_organ": "",
+      "anonymous": "",
+      "footer_organ": ""
+    },
+    "layoutMapAfter": {
+      "nav_organ": "content-narrow",
+      "header_organ": "",
+      "hero_organ": "",
+      "features_organ": "",
+      "testimonials_organ": "",
+      "pricing_organ": "",
+      "faq_organ": "",
+      "cta_organ": "",
+      "anonymous": "",
+      "footer_organ": "",
+      "content-narrow": "content-narrow"
+    },
+    "stateDiffAfter": [
+      {
+        "key": "journal",
+        "prev": {},
+        "curr": {}
+      },
+      {
+        "key": "rawCount",
+        "prev": 4,
+        "curr": 5
+      },
+      {
+        "key": "scans",
+        "prev": [],
+        "curr": []
+      },
+      {
+        "key": "interactions",
+        "prev": [],
+        "curr": []
+      },
+      {
+        "key": "layoutByScreen",
+        "prev": {},
+        "curr": {
+          "websites-demo-blueprint-site-app": {
+            "section": {
+              "nav_organ": "content-narrow"
+            },
+            "card": {},
+            "organ": {}
+          }
+        }
+      }
+    ]
+  },
+  "conciseHandoffReport": {
+    "interaction": {
+      "time": 1770318658515,
+      "type": "change",
+      "target": "section-layout-preset-nav_organ"
+    },
+    "action": {
+      "name": "state:update",
+      "key": "sectionLayoutPreset.nav_organ",
+      "value": "content-narrow",
+      "ts": 1770318658517
+    },
+    "state": {
+      "key": "sectionLayoutPreset.nav_organ",
+      "value": "content-narrow",
+      "storedValue": "content-narrow",
+      "ts": 1770318658518
+    },
+    "pageOverrides": {
+      "screenKey": "websites-demo-blueprint-site-app",
+      "source": "state",
+      "sectionKeys": [
+        "nav_organ"
+      ],
+      "sectionOverrides": {
+        "nav_organ": "content-narrow"
+      },
+      "cardOverrides": {},
+      "organOverrides": {}
+    },
+    "jsonRenderer": {
+      "templateId": "website",
+      "hasDoc": true,
+      "overrideKeys": {
+        "section": [
+          "nav_organ"
+        ],
+        "card": [],
+        "organ": []
+      },
+      "ts": 1770318658524
+    },
+    "resolverInput": {
+      "sectionKey": "nav_organ",
+      "chosenLayout": "content-narrow"
+    },
+    "resolver": {
+      "sectionKey": "nav_organ",
+      "requested": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center",
+          "wrap": "wrap"
+        }
+      },
+      "sectionOverride": "content-narrow",
+      "cardOverride": null,
+      "organOverride": null,
+      "finalLayout": "content-narrow",
+      "chain": [
+        {
+          "source": "section override",
+          "found": true,
+          "value": "content-narrow"
+        },
+        {
+          "source": "card override",
+          "found": false
+        },
+        {
+          "source": "organ override",
+          "found": false
+        },
+        {
+          "source": "template default",
+          "used": false
+        }
+      ],
+      "ts": 1770318658525
+    },
+    "layout": {
+      "sectionKey": "nav_organ",
+      "layoutResolved": "content-narrow",
+      "layoutRequested": null,
+      "ts": 1770318658525
+    },
+    "layoutHandoff": [
+      {
+        "stage": "section-prop",
+        "sectionKey": "nav_organ",
+        "ts": 1770318658040
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "nav_organ",
+        "ts": 1770318658041
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "header_organ",
+        "ts": 1770318658042
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "header_organ",
+        "ts": 1770318658043
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "hero_organ",
+        "ts": 1770318658043
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "hero_organ",
+        "ts": 1770318658044
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "features_organ",
+        "ts": 1770318658044
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "features_organ",
+        "ts": 1770318658044
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "testimonials_organ",
+        "ts": 1770318658048
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "testimonials_organ",
+        "ts": 1770318658048
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "pricing_organ",
+        "ts": 1770318658050
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "pricing_organ",
+        "ts": 1770318658050
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "faq_organ",
+        "ts": 1770318658051
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "faq_organ",
+        "ts": 1770318658051
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "cta_organ",
+        "ts": 1770318658052
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "cta_organ",
+        "ts": 1770318658052
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "",
+        "ts": 1770318658053
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "",
+        "ts": 1770318658053
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "footer_organ",
+        "ts": 1770318658053
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "footer_organ",
+        "ts": 1770318658054
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "nav_organ",
+        "ts": 1770318658172
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "nav_organ",
+        "ts": 1770318658172
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "header_organ",
+        "ts": 1770318658173
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "header_organ",
+        "ts": 1770318658174
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "hero_organ",
+        "ts": 1770318658174
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "hero_organ",
+        "ts": 1770318658175
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "features_organ",
+        "ts": 1770318658176
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "features_organ",
+        "ts": 1770318658176
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "testimonials_organ",
+        "ts": 1770318658177
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "testimonials_organ",
+        "ts": 1770318658178
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "pricing_organ",
+        "ts": 1770318658178
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "pricing_organ",
+        "ts": 1770318658179
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "faq_organ",
+        "ts": 1770318658179
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "faq_organ",
+        "ts": 1770318658179
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "cta_organ",
+        "ts": 1770318658180
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "cta_organ",
+        "ts": 1770318658180
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "",
+        "ts": 1770318658180
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "",
+        "ts": 1770318658181
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "footer_organ",
+        "ts": 1770318658181
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "footer_organ",
+        "ts": 1770318658182
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "nav_organ",
+        "ts": 1770318658247
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "nav_organ",
+        "ts": 1770318658247
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "header_organ",
+        "ts": 1770318658248
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "header_organ",
+        "ts": 1770318658248
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "hero_organ",
+        "ts": 1770318658248
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "hero_organ",
+        "ts": 1770318658248
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "features_organ",
+        "ts": 1770318658248
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "features_organ",
+        "ts": 1770318658248
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "testimonials_organ",
+        "ts": 1770318658250
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "testimonials_organ",
+        "ts": 1770318658250
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "pricing_organ",
+        "ts": 1770318658251
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "pricing_organ",
+        "ts": 1770318658251
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "faq_organ",
+        "ts": 1770318658252
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "faq_organ",
+        "ts": 1770318658252
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "cta_organ",
+        "ts": 1770318658253
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "cta_organ",
+        "ts": 1770318658253
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "",
+        "ts": 1770318658253
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "",
+        "ts": 1770318658253
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "footer_organ",
+        "ts": 1770318658254
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "footer_organ",
+        "ts": 1770318658254
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "nav_organ",
+        "layoutPropReceived": "content-narrow",
+        "ts": 1770318658566
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "nav_organ",
+        "layoutPropReceived": "content-narrow",
+        "ts": 1770318658567
+      },
+      {
+        "stage": "layout-renderer",
+        "sectionKey": "nav_organ",
+        "layoutIdUsed": "content-narrow",
+        "containerWidthApplied": "narrow",
+        "ts": 1770318658568
+      },
+      {
+        "stage": "layout-renderer",
+        "sectionKey": "nav_organ",
+        "layoutIdUsed": "content-narrow",
+        "containerWidthApplied": "narrow",
+        "ts": 1770318658569
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "header_organ",
+        "ts": 1770318658570
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "header_organ",
+        "ts": 1770318658571
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "hero_organ",
+        "ts": 1770318658572
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "hero_organ",
+        "ts": 1770318658573
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "features_organ",
+        "ts": 1770318658573
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "features_organ",
+        "ts": 1770318658573
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "testimonials_organ",
+        "ts": 1770318658574
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "testimonials_organ",
+        "ts": 1770318658575
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "pricing_organ",
+        "ts": 1770318658576
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "pricing_organ",
+        "ts": 1770318658576
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "faq_organ",
+        "ts": 1770318658576
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "faq_organ",
+        "ts": 1770318658577
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "cta_organ",
+        "ts": 1770318658577
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "cta_organ",
+        "ts": 1770318658578
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "",
+        "ts": 1770318658578
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "",
+        "ts": 1770318658578
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "footer_organ",
+        "ts": 1770318658579
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "footer_organ",
+        "ts": 1770318658579
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "nav_organ",
+        "layoutPropReceived": "content-narrow",
+        "ts": 1770318658630
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "nav_organ",
+        "layoutPropReceived": "content-narrow",
+        "ts": 1770318658630
+      },
+      {
+        "stage": "layout-renderer",
+        "sectionKey": "nav_organ",
+        "layoutIdUsed": "content-narrow",
+        "containerWidthApplied": "narrow",
+        "ts": 1770318658631
+      },
+      {
+        "stage": "layout-renderer",
+        "sectionKey": "nav_organ",
+        "layoutIdUsed": "content-narrow",
+        "containerWidthApplied": "narrow",
+        "ts": 1770318658631
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "header_organ",
+        "ts": 1770318658632
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "header_organ",
+        "ts": 1770318658632
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "hero_organ",
+        "ts": 1770318658632
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "hero_organ",
+        "ts": 1770318658633
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "features_organ",
+        "ts": 1770318658633
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "features_organ",
+        "ts": 1770318658633
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "testimonials_organ",
+        "ts": 1770318658634
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "testimonials_organ",
+        "ts": 1770318658634
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "pricing_organ",
+        "ts": 1770318658635
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "pricing_organ",
+        "ts": 1770318658635
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "faq_organ",
+        "ts": 1770318658636
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "faq_organ",
+        "ts": 1770318658636
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "cta_organ",
+        "ts": 1770318658636
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "cta_organ",
+        "ts": 1770318658637
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "",
+        "ts": 1770318658637
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "",
+        "ts": 1770318658637
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "footer_organ",
+        "ts": 1770318658638
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "footer_organ",
+        "ts": 1770318658638
+      }
+    ]
+  }
+}

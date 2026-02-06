@@ -23,6 +23,9 @@ const SEED_ENTRYPOINTS: string[] = [
   "src/engine/core/screen-loader.ts",
   "src/state/state-store.ts",
   "src/layout/index.ts",
+  "src/engine/core/registry.tsx",
+  "src/state/state-resolver.ts",
+  "src/logic/runtime/action-registry.ts",
   "src/logic/runtime/runtime-verb-interpreter.ts",
 ];
 

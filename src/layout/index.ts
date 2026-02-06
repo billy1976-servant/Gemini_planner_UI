@@ -6,6 +6,7 @@ export * from "./page";
 export * from "./component";
 export {
   resolveLayout,
+  getSectionLayoutIds,
   getLayout2Ids,
   getDefaultSectionLayoutId,
   type LayoutDefinition,

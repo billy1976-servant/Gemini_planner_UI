@@ -72,6 +72,8 @@ Deterministic trace: Request → Screen Load → Layout Resolution → Rendering
 
 ## 6. Behavior (user gesture → event → handler)
 
+**Branch order (single reference):** state:* → navigate → contract verbs → visual-proof → interpretRuntimeVerb → warn. See PIPELINE_AND_BOUNDARIES_REFERENCE.md §4.
+
 | Stage | File path | Function name | Input shape | Output shape | Next stage receives |
 |-------|-----------|---------------|-------------|--------------|---------------------|
 | Install | `src/app/layout.tsx` | `installBehaviorListener(navigate)` | `navigate: (to: string) => void` (router.push) | — | Listener installed once |

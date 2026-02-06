@@ -1,6 +1,7 @@
 # Runtime Decision Trace — Implementation
 
-**Purpose:** Document the runtime decision trace layer: which engines are traced, what is logged, how to view logs, and how this connects to existing SYSTEM_INTELLIGENCE docs.
+**Purpose:** Document the runtime decision trace layer: which engines are traced, what is logged, how to view logs, and how this connects to existing SYSTEM_INTELLIGENCE docs.  
+**Implementation status (Explainability/Trace):** PARTIAL. Runtime decision trace (layout-resolver, renderer, behavior-runner, state-deriver) is implemented for dev; layout suggestion explainability (matchedTraits, score, "suggested" badge) is PLANNED with Layout Decision Engine and Suggestion Injection (Plans 5/8).
 
 ---
 

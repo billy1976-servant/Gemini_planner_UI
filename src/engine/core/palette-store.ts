@@ -1,7 +1,10 @@
 // src/engine/core/palette-store.ts
 "use client";
 
-
+/**
+ * Palette list and resolution: single source is @/palettes (palettes object and PaletteName type).
+ * Do not hardcode palette names; add new palettes in src/palettes/index.ts only.
+ */
 import { palettes } from "@/palettes";
 
 

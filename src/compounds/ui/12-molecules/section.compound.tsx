@@ -76,6 +76,20 @@ export default function SectionCompound({
   content = {},
   children,
 }: SectionCompoundProps) {
+  if (typeof window !== "undefined") {
+    const sectionKey = id ?? role ?? "";
+    console.log("[LAYOUT TRACE] Section received layout prop", {
+      sectionKey,
+      layoutPropReceived: layout,
+    });
+    (window as any).__LAYOUT_TRACE__ = (window as any).__LAYOUT_TRACE__ || [];
+    (window as any).__LAYOUT_TRACE__.push({
+      stage: "section-prop",
+      sectionKey,
+      layoutPropReceived: layout,
+      ts: Date.now(),
+    });
+  }
   // Section layout: section placement (container, split, background).
   const layoutDef = resolveLayout(layout);
   // Organ internal layout: when this section is an organ, inner arrangement from organ layout resolver + variant JSON; does not use section layout for inner moleculeLayout.
@@ -98,9 +112,11 @@ export default function SectionCompound({
         })()
       : layoutDef;
   if (effectiveDef) {
+    const layoutPresetId = typeof layout === "string" && layout.trim() ? layout.trim() : null;
     return (
       <LayoutMoleculeRenderer
         layout={effectiveDef as LayoutDefinition}
+        layoutPresetId={layoutPresetId}
         id={id}
         role={role}
         params={params}

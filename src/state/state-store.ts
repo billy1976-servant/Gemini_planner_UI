@@ -1,6 +1,10 @@
 // src/state/state-store.ts
 "use client";
 import { deriveState } from "./state-resolver";
+import stateDefaults from "@/config/state-defaults.json";
+import { trace } from "@/devtools/interaction-tracer.store";
+import { PipelineDebugStore } from "@/devtools/pipeline-debug-store";
+import { recordStage } from "@/engine/debug/pipelineStageTrace";
 
 
 /* ======================
@@ -44,6 +48,7 @@ export function dispatchState(intent: string, payload?: any) {
   if (isDeriving) return;
 
 
+  const prevState = state;
   log.push({ intent, payload });
 
 
@@ -60,18 +65,44 @@ export function dispatchState(intent: string, payload?: any) {
     persist();
   }
   listeners.forEach(l => l());
+  PipelineDebugStore.setLastStateIntent(intent, getState() ?? {});
+  trace({ time: Date.now(), type: "state", label: intent, payload });
+
+  const nextState = state;
+  if (process.env.NODE_ENV === "development") {
+    if (nextState !== prevState) {
+      const key =
+        intent === "state.update" && payload && typeof payload.key === "string"
+          ? payload.key
+          : intent;
+      const value = payload?.value;
+      const storedValue = key ? nextState?.values?.[key] : undefined;
+      const ts = Date.now();
+      if (intent === "state.update" && value !== undefined && storedValue !== value) {
+        recordStage("state", "fail", { key, expected: value, got: storedValue });
+      } else {
+        recordStage("state", "pass", { key, value, storedValue, ts });
+      }
+    } else {
+      recordStage("state", "fail", { reason: "No state mutation occurred" });
+    }
+  }
 }
 
 
 /* ======================
  * EVENT BRIDGE
  * ====================== */
+/**
+ * Legacy bridge: CustomEvent "state-mutate" → dispatchState(detail.name, payload).
+ * External or older consumers can push intents this way. Do not rely for new code;
+ * use dispatchState directly or action events. Documented in STATE_INTENTS.md.
+ */
 function installStateMutateBridge() {
   if (typeof window === "undefined") return;
   const w = window as any;
   if (w.__STATE_MUTATE_BRIDGE_INSTALLED__) return;
   w.__STATE_MUTATE_BRIDGE_INSTALLED__ = true;
-
 
   window.addEventListener("state-mutate", (e: any) => {
     const detail = e?.detail;
@@ -141,7 +172,9 @@ function rehydrate() {
  * ====================== */
 if (typeof window !== "undefined") {
   rehydrate();
-  ensureInitialView("|home");
+  ensureInitialView(
+    (stateDefaults as { defaultInitialView?: string }).defaultInitialView ?? "|home"
+  );
   (window as any).TEST_STATE = () =>
     dispatchState("journal.set", { key: "test", value: "hello" });
 }

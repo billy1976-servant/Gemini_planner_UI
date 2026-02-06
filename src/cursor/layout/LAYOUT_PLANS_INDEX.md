@@ -38,11 +38,17 @@ Plan 10:     Validation and governance
 
 ---
 
+## Layout Authority Resolution Refactor (executed 2025-02-04)
+
+**Status: Complete.** Deterministic layout priority: explicit node.layout → profile override → template role → template default → undefined. Implementation: `src/engine/core/json-renderer.tsx` (applyProfileToNode). Doc: [LAYOUT_SIGNAL_PRIORITY.generated.md](../../docs/ARCHITECTURE_AUTOGEN/LAYOUT_SIGNAL_PRIORITY.generated.md). Authority ladder: [RUNTIME_AUTHORITY_LADDER.md](../../docs/ARCHITECTURE_AUTOGEN/RUNTIME_AUTHORITY_LADDER.md) Section Layout Authority updated.
+
+---
+
 ## Related documents
 
 - **Master roadmap:** [MASTER_ENGINE_COMPLETION_ROADMAP.md](MASTER_ENGINE_COMPLETION_ROADMAP.md) — Phases 1–9 layout→adaptive roadmap.
 - **Logic plans:** `src/cursor/logic/planned/` — Logic ↔ Layout contract (1), State/override (2), Suggestion injection (8), Explainability (10).
-- **Architecture:** `src/docs/ARCHITECTURE_AUTOGEN/` — LAYOUT_RESOLUTION_CONTRACT, LAYOUT_COMPATIBILITY_ENGINE, RUNTIME_FALLBACKS, etc.
+- **Architecture:** `src/docs/ARCHITECTURE_AUTOGEN/` — LAYOUT_RESOLUTION_CONTRACT, LAYOUT_SIGNAL_PRIORITY.generated.md, LAYOUT_COMPATIBILITY_ENGINE, RUNTIME_FALLBACKS, RUNTIME_AUTHORITY_LADDER, etc.
 - **System map:** `src/docs/SYSTEM_MAP_AUTOGEN/` — ENGINE_INDEX, RUNTIME_PIPELINE, CONTRACTS_EXTRACTED.
 
 ---

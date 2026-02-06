@@ -4,6 +4,7 @@
 
 export {
   resolveLayout,
+  getSectionLayoutIds,
   getLayout2Ids,
   getDefaultSectionLayoutId,
   type LayoutDefinition,

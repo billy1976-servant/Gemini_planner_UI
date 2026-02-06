@@ -1,7 +1,8 @@
 # Trait Registry System
 
 **Source:** Logic Plan 7 — [7_TRAIT_REGISTRY_SYSTEM_PLAN.md](../../cursor/logic/complete/7_TRAIT_REGISTRY_SYSTEM_PLAN.md).  
-**Classification:** FOUNDATIONAL — Single source of truth for layout ID ↔ traits; primary architecture reference: src/docs/ARCHITECTURE_AUTOGEN, src/docs/SYSTEM_MAP_AUTOGEN
+**Classification:** FOUNDATIONAL — Single source of truth for layout ID ↔ traits; primary architecture reference: src/docs/ARCHITECTURE_AUTOGEN, src/docs/SYSTEM_MAP_AUTOGEN  
+**Implementation status:** PLANNED. No trait-registry.json or layout-traits.json in codebase; no layout→trait mapping in code. Prerequisite for Layout Decision Engine (Plan 5), Contextual Layout (Plan 4), User Preference (Plan 6).
 
 The Trait Registry is the single source of truth for **layout ID → traits** (and optionally trait → layout IDs). Static config; consumed by Layout Decision Engine (Plan 5), Contextual Layout Logic (Plan 4), and User Preference Adaptation (Plan 6). No layout IDs or trait lists are hardcoded in code; all mapping comes from JSON.
 

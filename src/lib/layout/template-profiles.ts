@@ -4,6 +4,15 @@
  * Does NOT touch palette, behavior, state, or screen JSON.
  */
 
+import templateRolesData from "./template-roles.json";
+
+const TEMPLATE_CRITICAL_ROLES: readonly string[] = (
+  templateRolesData as { criticalRoles: string[] }
+).criticalRoles;
+const TEMPLATE_OPTIONAL_ROLES: readonly string[] = (
+  templateRolesData as { optionalRoles: string[] }
+).optionalRoles;
+
 export type LayoutDef = {
   type: "row" | "column" | "grid" | "stack";
   params?: {
@@ -554,17 +563,15 @@ export function validateTemplateCompatibility(
   const missing: string[] = [];
   const warnings: string[] = [];
 
-  // Check for critical roles
-  const criticalRoles = ["header", "footer"];
-  for (const role of criticalRoles) {
+  // Check for critical roles (from template-roles.json)
+  for (const role of TEMPLATE_CRITICAL_ROLES) {
     if (templateRoles.includes(role) && !screenRoleSet.has(role)) {
       missing.push(role);
     }
   }
 
-  // Warn about optional roles
-  const optionalRoles = ["hero", "features", "pricing", "testimonials", "gallery", "faq", "cta"];
-  for (const role of optionalRoles) {
+  // Warn about optional roles (from template-roles.json)
+  for (const role of TEMPLATE_OPTIONAL_ROLES) {
     if (templateRoles.includes(role) && !screenRoleSet.has(role)) {
       warnings.push(`Template expects "${role}" but screen does not have it`);
     }

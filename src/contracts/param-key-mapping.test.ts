@@ -14,21 +14,7 @@ import definitions from "@/compounds/ui/index";
 import { resolveParams } from "@/engine/core/palette-resolver";
 import { resolveToken } from "@/engine/core/palette-resolve-token";
 import app1 from "@/apps-offline/apps/journal_track/app-1.json";
-
-// Expected params per molecule (must match JsonRenderer EXPECTED_PARAMS)
-const EXPECTED_PARAMS: Record<string, string[]> = {
-  button: ["surface", "label", "trigger"],
-  section: ["surface", "title"],
-  card: ["surface", "title", "body", "media"],
-  toolbar: ["surface", "item"],
-  list: ["surface", "item"],
-  footer: ["surface", "item"],
-  chip: ["surface", "text", "body", "media"],
-  avatar: ["surface", "media", "text"],
-  field: ["surface", "label", "field", "error"],
-  toast: ["surface", "text"],
-  modal: ["surface", "title", "body"],
-};
+import { EXPECTED_PARAMS } from "./expected-params";
 
 function assert(condition: boolean, message: string): void {
   if (!condition) {

@@ -1,7 +1,12 @@
 "use client";
 
 import layoutSchema from "@/lib/layout/layout-schema.json";
+import layoutAllowedTypesData from "@/lib/layout/layout-allowed-types.json";
 import type { LayoutExperience, NavPlacement } from "@/lib/layout/layout-engine/region-policy";
+
+const LAYOUT_ALLOWED_TYPES = new Set(
+  (layoutAllowedTypesData as { allowedTypes: string[] }).allowedTypes
+);
 
 /**
  * ======================================================
@@ -96,9 +101,8 @@ export function setLayout(next: {
     regions: Record<string, Partial<{ enabled: boolean }>>;
   }>;
 }) {
-  const allowedTypes = new Set(["column", "row", "grid", "stack", "page"]);
   const resolvedType =
-    next.type && allowedTypes.has(next.type) ? next.type : activeLayout.type;
+    next.type && LAYOUT_ALLOWED_TYPES.has(next.type) ? next.type : activeLayout.type;
 
   activeLayout = {
     experience: next.experience ?? activeLayout.experience,

@@ -1,5 +1,7 @@
 # Organs Layer — JSON-Driven UI Sections
 
+**Single source:** Organ list and variant map live in `src/organs/organ-registry.ts` only. Extend by adding imports and VARIANTS entries; do not duplicate the list or variant map elsewhere.
+
 Organs are **section-scale compositions** of existing compounds only. They are configured entirely by JSON variants and never introduce new UI primitives or modify atoms/compounds.
 
 ## Manifest schema

@@ -1,5 +1,6 @@
 // src/logic/runtime/calc-resolver.ts
 // Resolves and executes calcRefs from Flow JSON
+// Legacy/unused on main JSON screen path. No callers of resolveCalcs in codebase; for future calculator/flow integration.
 
 import type { CalcRef } from "../engines/calculator/calcs/types";
 import { executeCalc } from "../engines/calculator/calcs/calc-registry";

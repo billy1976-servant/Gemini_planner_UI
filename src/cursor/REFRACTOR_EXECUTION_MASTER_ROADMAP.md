@@ -79,6 +79,29 @@ See Part II for the staged execution breakdown. High-level: fix docs, remove har
 - Single content resolution.
 - Organ registry single source or documented; Registry source of truth; palette from JSON or documented; state persistence contract; scripts boundary; site compiler secondary.
 
+### Extended acceptance list (Phase 10.3)
+
+| Criterion | Ref |
+|-----------|-----|
+| Organ registry single source or documented | organs/README.md, organ-registry.ts |
+| Registry (JSON → component) source of truth | registry.tsx; PIPELINE_AND_BOUNDARIES_REFERENCE.md §1 |
+| Palette from JSON or documented | palette-store; documented in Phase 2 |
+| State persistence contract | state-store persist/rehydrate; STATE_MUTATION_SURFACE_MAP, STATE_INTENTS |
+| Scripts boundary (no script in runtime) | No import of src/scripts in app/engine/state/layout |
+| Site compiler secondary | PIPELINE_AND_BOUNDARIES_REFERENCE.md §12; not on main JSON path |
+
+### Phase 10 integrity run (2025-02-05)
+
+| Check | Result |
+|-------|--------|
+| Reachability seed includes registry, state-resolver, action-registry | PASS — report regenerated; 110 REACHABLE |
+| No layout in state (layout does not import state-store/dispatchState) | PASS — grep src/layout: no matches |
+| No behavior in layout (layout does not import behavior-listener/runBehavior) | PASS — grep src/layout: no matches |
+| No blueprint in runtime (app/engine/state do not import blueprint/scripts) | PASS — grep: no matches |
+| JsonRenderer primary | PASS — page.tsx JSON branch uses JsonRenderer; PIPELINE_AND_BOUNDARIES_REFERENCE §1 |
+| Separation checklist | PASS — BOUNDARY_SEPARATION_CHECKLIST.md; Phase 10 sign-off below |
+| Critical-path smoke test | PASS — deriveState, loadScreen, installBehaviorListener |
+
 ---
 
 ## E) "DO FIRST" (TOP 5)

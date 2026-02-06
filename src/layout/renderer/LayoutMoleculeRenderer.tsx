@@ -41,6 +41,8 @@ function getMediaUrl(mediaChild: React.ReactElement | null): string | null {
 
 export type LayoutMoleculeRendererProps = {
   layout: LayoutDefinition | null | undefined;
+  /** Preset id applied (e.g. from dropdown); used for data-section-layout in DOM for e2e. */
+  layoutPresetId?: string | null;
   id?: string;
   role?: string;
   params?: {
@@ -58,6 +60,7 @@ export type LayoutMoleculeRendererProps = {
  */
 export default function LayoutMoleculeRenderer({
   layout,
+  layoutPresetId,
   id,
   params = {},
   content = {},
@@ -211,6 +214,23 @@ export default function LayoutMoleculeRenderer({
     </>
   );
 
+  if (typeof window !== "undefined") {
+    const sectionKey = id ?? "";
+    console.log("[LAYOUT TRACE] Layout renderer using layout", {
+      sectionKey,
+      layoutIdUsed: layoutPresetId ?? null,
+      containerWidth: layout?.containerWidth,
+    });
+    (window as any).__LAYOUT_TRACE__ = (window as any).__LAYOUT_TRACE__ || [];
+    (window as any).__LAYOUT_TRACE__.push({
+      stage: "layout-renderer",
+      sectionKey,
+      layoutIdUsed: layoutPresetId ?? null,
+      containerWidthApplied: layout?.containerWidth,
+      ts: Date.now(),
+    });
+  }
+
   const knownWidth =
     rawWidth === "contained"
       ? "var(--container-content)"
@@ -249,6 +269,7 @@ export default function LayoutMoleculeRenderer({
   return (
     <div
       data-section-id={id}
+      data-section-layout={layoutPresetId ?? undefined}
       data-layout-2
       data-container-width={rawWidth ?? undefined}
       style={Object.keys(outerStyle).length > 0 ? outerStyle : undefined}

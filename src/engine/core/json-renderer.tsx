@@ -21,9 +21,15 @@ import {
 } from "@/state/state-store";
 import { useSyncExternalStore } from "react";
 import { JsonSkinEngine } from "@/logic/engines/json-skin.engine";
-import { getDefaultSectionLayoutId, evaluateCompatibility } from "@/layout";
+import { getDefaultSectionLayoutId, getPageLayoutId, evaluateCompatibility } from "@/layout";
 import { getCardLayoutPreset } from "@/lib/layout/card-layout-presets";
 import { logRuntimeDecision } from "@/engine/devtools/runtime-decision-trace";
+import rendererContract from "@/config/renderer-contract.json";
+import { EXPECTED_PARAMS } from "@/contracts/expected-params";
+import { trace } from "@/devtools/interaction-tracer.store";
+import { PipelineDebugStore } from "@/devtools/pipeline-debug-store";
+import { recordStage } from "@/engine/debug/pipelineStageTrace";
+import { emitRendererTrace } from "@/engine/debug/renderer-trace";
 
 
 /* ======================================================
@@ -147,15 +153,6 @@ function SectionLayoutDebugOverlay({ node, children }: { node: any; children: Re
   );
 }
 
-const EXPECTED_PARAMS: Record<string, string[]> = {
-  button: ["surface", "label", "trigger"],
-  section: ["surface", "title"],
-  card: ["surface", "title", "body", "media"],
-  toolbar: ["surface", "item"],
-  list: ["surface", "item"],
-  footer: ["surface", "item"],
-};
-
 function logParamsDiagnostic(typeKey: string, id: string | undefined, params: any) {
   if (!isTraceUI()) return;
   const expected = EXPECTED_PARAMS[typeKey];
@@ -186,8 +183,11 @@ function MaybeDebugWrapper({ node, children }: any) {
 
 /* ======================================================
    BEHAVIOR CONTRACT (Packet 11) — strip invalid at runtime
+   Source: @/config/renderer-contract.json (single source)
 ====================================================== */
-const NON_ACTIONABLE_TYPES = new Set(["section", "field", "avatar"]);
+const NON_ACTIONABLE_TYPES = new Set(
+  (rendererContract as { nonActionableTypes: string[] }).nonActionableTypes
+);
 
 function isCloseOnlyBehavior(behavior: any): boolean {
   if (!behavior || typeof behavior !== "object") return false;
@@ -220,7 +220,12 @@ function isValidReactComponentType(x: any) {
 ====================================================== */
 function shouldRenderNode(node: any, state: any, defaultState?: any): boolean {
   // No condition → always render
-  if (!node?.when) return true;
+  if (!node?.when) {
+    const nodeKey = node?.id ?? node?.role ?? "anonymous";
+    PipelineDebugStore.setVisibility(nodeKey, true);
+    PipelineDebugStore.recordSectionRender(nodeKey, { visible: true, controlledByStateKeys: [] });
+    return true;
+  }
 
 
   const { state: key, equals } = node.when;
@@ -271,6 +276,12 @@ function shouldRenderNode(node: any, state: any, defaultState?: any): boolean {
   }
 
   const visible = stateValue === equals;
+  const nodeKey = node?.id ?? node?.role ?? "anonymous";
+  PipelineDebugStore.setVisibility(nodeKey, visible);
+  PipelineDebugStore.recordSectionRender(nodeKey, {
+    visible,
+    controlledByStateKeys: key ? [key] : [],
+  });
   if (!visible) {
     logRuntimeDecision({
       timestamp: Date.now(),
@@ -361,16 +372,30 @@ function applyProfileToNode(
     const templateDefaultLayoutId =
       (profile as { defaultSectionLayoutId?: string } | null)?.defaultSectionLayoutId?.trim() ||
       getDefaultSectionLayoutId(templateId ?? undefined);
+    // Template role-based layout when no explicit and no override (getPageLayoutId(null, context) reads templates.json slot map).
+    const templateRoleLayoutId =
+      !existingLayoutId && !overrideId && templateId && (node.role ?? "").toString().trim()
+        ? (getPageLayoutId(null, { templateId, sectionRole: (node.role ?? "").toString().trim() }) ?? null)
+        : null;
+    // User override (dropdown/state) wins over explicit JSON layout so the DOM reflects the selection.
     const layoutId =
       overrideId ||
       existingLayoutId ||
+      (templateRoleLayoutId && templateRoleLayoutId.trim() ? templateRoleLayoutId.trim() : null) ||
       templateDefaultLayoutId ||
       undefined;
+    console.log("FLOW 5 — RENDERER INPUT", {
+      sectionId: sectionKey,
+      sectionOverride: sectionLayoutPresetOverrides?.[sectionKey],
+      finalLayout: layoutId,
+    });
     const ruleApplied =
       overrideId
         ? "override"
         : existingLayoutId
         ? "explicit node.layout"
+        : templateRoleLayoutId && templateRoleLayoutId.trim()
+        ? "template role"
         : templateDefaultLayoutId
         ? "template default"
         : "undefined";
@@ -382,6 +407,7 @@ function applyProfileToNode(
         sectionKey,
         overrideId: overrideId ?? null,
         existingLayoutId: existingLayoutId ?? null,
+        templateRoleLayoutId: templateRoleLayoutId ?? null,
         templateDefaultLayoutId: templateDefaultLayoutId ?? null,
         layoutMode: layoutMode ?? null,
       },
@@ -391,6 +417,100 @@ function applyProfileToNode(
     });
     next.layout = layoutId;
     (next as any)._effectiveLayoutPreset = layoutId;
+    if (process.env.NODE_ENV === "development") {
+      PipelineDebugStore.mark("json-renderer", "applyProfileToNode.section", {
+        sectionKey,
+        layoutId: layoutId ?? null,
+      });
+    }
+    const resolvedSectionKey = (sectionKey && sectionKey.trim()) ? sectionKey : (node?.id ?? node?.role ?? "anonymous");
+    const cardVal = cardLayoutPresetOverrides?.[sectionKey];
+    const organVal = organInternalLayoutOverrides?.[sectionKey];
+    console.log("RESOLVER INPUT", resolvedSectionKey, {
+      sectionOverride: overrideId ?? undefined,
+      cardOverride: cardVal,
+      organOverride: organVal,
+      chosenLayout: layoutId ?? undefined,
+    });
+    const resolutionChain: Array<{ source: string; found?: boolean; value?: string; used?: boolean }> = [
+      { source: "section override", found: !!overrideId, value: overrideId ?? undefined },
+      { source: "card override", found: !!cardVal, value: cardVal },
+      { source: "organ override", found: !!organVal, value: organVal },
+      { source: "template default", used: !!(templateDefaultLayoutId || templateRoleLayoutId) },
+    ];
+    if (process.env.NODE_ENV === "development") {
+      PipelineDebugStore.setResolverInputSnapshot({
+        sectionKey: resolvedSectionKey,
+        overrideLayout: overrideId ?? undefined,
+        nodeLayout: typeof node.layout === "string" ? node.layout : undefined,
+        finalChosenLayout: layoutId ?? undefined,
+      });
+      recordStage("resolver-input", "pass", {
+        sectionKey: resolvedSectionKey,
+        chosenLayout: layoutId ?? null,
+      });
+    }
+    PipelineDebugStore.setLayout(resolvedSectionKey, layoutId ?? "");
+    if (process.env.NODE_ENV === "development") {
+      let activeSection = PipelineDebugStore.getSnapshot().lastEvent?.target ?? null;
+      if (activeSection?.startsWith("section-layout-preset-")) activeSection = activeSection.slice("section-layout-preset-".length);
+      if (activeSection?.startsWith("card-layout-preset-")) activeSection = activeSection.slice("card-layout-preset-".length);
+      if (activeSection?.startsWith("organ-internal-layout-")) activeSection = activeSection.slice("organ-internal-layout-".length);
+      const isTargetSection = activeSection && (resolvedSectionKey === activeSection || sectionKey === activeSection);
+      if (isTargetSection) {
+        const ts = Date.now();
+        recordStage("resolver", "pass", {
+          sectionKey: resolvedSectionKey,
+          requested: existingLayoutId ?? node.layout ?? null,
+          sectionOverride: overrideId ?? null,
+          cardOverride: cardVal ?? null,
+          organOverride: organVal ?? null,
+          finalLayout: layoutId ?? null,
+          chain: resolutionChain,
+          ts,
+        });
+        recordStage("layout", "pass", {
+          sectionKey: resolvedSectionKey,
+          layoutResolved: layoutId ?? "",
+          layoutRequested: existingLayoutId ?? null,
+          ts,
+        });
+      }
+    }
+    PipelineDebugStore.recordSectionRender(resolvedSectionKey, {
+      layoutRequested: existingLayoutId ?? (typeof node.layout === "string" ? node.layout : null),
+      layoutResolved: layoutId ?? "",
+      resolutionChain,
+    });
+    const reason =
+      ruleApplied === "override"
+        ? "state"
+        : ruleApplied === "explicit node.layout"
+        ? "preset"
+        : ruleApplied === "template role" || ruleApplied === "template default"
+        ? "template"
+        : "fallback";
+    emitRendererTrace({
+      stage: "profile-resolution",
+      nodeId: resolvedSectionKey || (node?.id ?? node?.role ?? "anonymous"),
+      sectionKey: resolvedSectionKey || undefined,
+      requestedLayout: existingLayoutId ?? undefined,
+      stateOverride: overrideId ?? undefined,
+      presetOverride: undefined,
+      templateDefault: (templateDefaultLayoutId || templateRoleLayoutId) ?? undefined,
+      finalLayout: layoutId ?? "",
+      reason,
+    });
+    if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
+      console.debug("[LAYOUT RESOLVE]", {
+        nodeId: sectionKey || (node.id ?? node.role),
+        sectionLayout: existingLayoutId ?? "—",
+        cardLayout: "—",
+        profileOverride: overrideId ?? "—",
+        templateDefault: templateDefaultLayoutId ?? (templateRoleLayoutId ?? "—"),
+        FINAL: layoutId ?? "undefined",
+      });
+    }
     const compatibility = evaluateCompatibility({
       sectionNode: node,
       sectionLayoutId: next.layout ?? null,
@@ -419,6 +539,14 @@ function applyProfileToNode(
           cardPresetId,
           mediaPosition: cardPreset.mediaPosition,
           contentAlign: cardPreset.contentAlign,
+        });
+        console.debug("[LAYOUT RESOLVE]", {
+          nodeId: node.id ?? node.role ?? parentSectionKey,
+          sectionLayout: "—",
+          cardLayout: cardPresetId,
+          profileOverride: cardPresetId,
+          templateDefault: "—",
+          FINAL: "card preset applied",
         });
       }
     }
@@ -540,6 +668,9 @@ export function renderNode(
     params: finalParams,
   };
 
+  PipelineDebugStore.recordSectionRender(resolvedNode.id ?? resolvedNode.role ?? "anonymous", {
+    cardMoleculeType: resolvedNode.type,
+  });
   logParamsDiagnostic(typeKey, resolvedNode.id, finalParams);
 
   // Hero section only: log section layout id (diagnose preset → layout).
@@ -555,6 +686,11 @@ export function renderNode(
 
 
   if (!Component) {
+    emitRendererTrace({
+      stage: "renderer-error",
+      nodeId: resolvedNode.id ?? resolvedNode.role,
+      message: `Missing registry entry: ${resolvedNode.type}`,
+    });
     return (
       <MaybeDebugWrapper node={resolvedNode}>
         <div style={{ color: "red" }}>
@@ -566,6 +702,11 @@ export function renderNode(
 
 
   if (!isValidReactComponentType(Component)) {
+    emitRendererTrace({
+      stage: "renderer-error",
+      nodeId: resolvedNode.id ?? resolvedNode.role,
+      message: `Invalid registry component type: ${resolvedNode.type}`,
+    });
     console.error("INVALID REGISTRY COMPONENT TYPE", resolvedNode.type);
     return null;
   }
@@ -696,6 +837,30 @@ export function renderNode(
     }
   }
 
+  // Phase B: state binding for Select — controlled value from stateSnapshot (same pattern as Field).
+  if (
+    (resolvedNode.type === "select" || resolvedNode.type === "Select") &&
+    (resolvedNode.params?.field?.fieldKey || resolvedNode.params?.key)
+  ) {
+    const key =
+      typeof resolvedNode.params?.field?.fieldKey === "string" &&
+      resolvedNode.params.field.fieldKey.length > 0
+        ? resolvedNode.params.field.fieldKey
+        : resolvedNode.params?.key;
+    if (typeof key === "string" && key.length > 0) {
+      const nextValue =
+        stateSnapshot?.values && stateSnapshot.values[key] !== undefined
+          ? stateSnapshot.values[key]
+          : stateSnapshot?.[key];
+      if (nextValue !== undefined) {
+        props.params = {
+          ...(props.params ?? {}),
+          value: nextValue,
+        };
+      }
+    }
+  }
+
 
   delete props.type;
   delete props.key;
@@ -706,6 +871,16 @@ export function renderNode(
   if (typeKey === "section" && resolvedNode.layout != null) {
     (props as any).layout = resolvedNode.layout;
   }
+
+  const nodeIdForTrace = resolvedNode.id ?? resolvedNode.role ?? "anonymous";
+  const layoutIdForTrace = resolvedNode.layout != null ? String(resolvedNode.layout) : "";
+  const componentName = (Component as any).displayName ?? (Component as any).name ?? resolvedNode.type ?? "Unknown";
+  emitRendererTrace({
+    stage: "component-render",
+    nodeId: nodeIdForTrace,
+    layoutId: layoutIdForTrace,
+    component: componentName,
+  });
 
   const content = (
     <MaybeDebugWrapper node={resolvedNode}>
@@ -784,6 +959,34 @@ export default function JsonRenderer({
 
   beginCycle();
 
+  if (process.env.NODE_ENV === "development") {
+    const templateId = profileOverride?.id ?? null;
+    recordStage("jsonRenderer", "pass", {
+      templateId,
+      hasDoc: !!node,
+      overrideKeys: {
+        section: Object.keys(sectionLayoutPresetOverrides ?? {}).slice(0, 8),
+        card: Object.keys(cardLayoutPresetOverrides ?? {}).slice(0, 8),
+        organ: Object.keys(organInternalLayoutOverrides ?? {}).slice(0, 8),
+      },
+      ts: Date.now(),
+    });
+    PipelineDebugStore.setJsonRendererPropsSnapshot({
+      sectionLayoutPresetOverrides: sectionLayoutPresetOverrides ?? {},
+      cardLayoutPresetOverrides: cardLayoutPresetOverrides ?? {},
+      organInternalLayoutOverrides: organInternalLayoutOverrides ?? {},
+      screenId: screenId ?? null,
+    });
+    if (process.env.NODE_ENV === "development") {
+      PipelineDebugStore.mark("json-renderer", "props-snapshot", {
+        screenId: screenId ?? null,
+        overrideKeys: {
+          section: Object.keys(sectionLayoutPresetOverrides ?? {}).slice(0, 8),
+          card: Object.keys(cardLayoutPresetOverrides ?? {}).slice(0, 8),
+        },
+      });
+    }
+  }
 
   useSyncExternalStore(
     subscribePalette,
@@ -862,8 +1065,14 @@ export default function JsonRenderer({
 
 
   traceOnce("root", "Root render");
+  trace({ time: Date.now(), type: "render", label: node?.type ?? "unknown" });
+  PipelineDebugStore.setLastRenderRoot(node?.id ?? "unknown");
 
-  return renderNode(node, profile, stateSnapshot, effectiveDefaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides);
+  PipelineDebugStore.startRenderPass();
+  const result = renderNode(node, profile, stateSnapshot, effectiveDefaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides);
+  PipelineDebugStore.endRenderPass();
+  recordStage("render", "pass", "Render cycle completed");
+  return result;
 }
 
 

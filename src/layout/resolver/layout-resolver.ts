@@ -12,6 +12,9 @@ import {
 } from "@/layout/page";
 import { resolveComponentLayout } from "@/layout/component";
 import { logRuntimeDecision } from "@/engine/devtools/runtime-decision-trace";
+import { trace } from "@/devtools/interaction-tracer.store";
+import { PipelineDebugStore } from "@/devtools/pipeline-debug-store";
+import { recordStage } from "@/engine/debug/pipelineStageTrace";
 
 export type LayoutDefinition = {
   containerWidth?: "contained" | "edge-to-edge" | "narrow" | "wide" | "full" | "split" | string;
@@ -31,6 +34,12 @@ export function resolveLayout(
   layout: string | { template: string; slot: string } | null | undefined,
   context?: { templateId?: string; sectionRole?: string }
 ): LayoutDefinition | null {
+  if (process.env.NODE_ENV === "development") {
+    PipelineDebugStore.mark("layout-resolver", "resolveLayout.entry", {
+      layoutId: typeof layout === "string" ? layout : null,
+      sectionId: context?.sectionRole ?? null,
+    });
+  }
   const layoutId = getPageLayoutId(layout, context);
   if (!layoutId) {
     logRuntimeDecision({
@@ -71,10 +80,39 @@ export function resolveLayout(
     decisionMade: { layoutId, hasMoleculeLayout: !!componentDef },
     downstreamEffect: "merged page + component layout",
   });
+  trace({ time: Date.now(), type: "layout", label: layoutId });
+  const sectionKey = context?.sectionRole ?? layoutId;
+  const before = PipelineDebugStore.getSnapshot
+    ? PipelineDebugStore.getSnapshot()
+    : null;
+  const prevLayout = before?.layoutMap?.[sectionKey];
+  PipelineDebugStore.setLayout(sectionKey, layoutId);
+  const after = PipelineDebugStore.getSnapshot
+    ? PipelineDebugStore.getSnapshot()
+    : null;
+  const nextLayout = after?.layoutMap?.[sectionKey];
+  if (prevLayout !== nextLayout) {
+    recordStage("layout", "pass", "Layout recalculated for sections");
+  } else {
+    recordStage("layout", "fail", "Layout resolver ran but no layout changes detected");
+  }
+  if (process.env.NODE_ENV === "development") {
+    PipelineDebugStore.mark("layout-resolver", "resolveLayout.exit", {
+      layoutId,
+      sectionKey,
+    });
+  }
   return result;
 }
 
-/** All layout ids (page layout ids; for dropdowns). */
+/** Section (page) layout ids for dropdowns and compatibility filtering. Preferred public API. */
+export function getSectionLayoutIds(): string[] {
+  return getPageLayoutIds();
+}
+
+/**
+ * @deprecated Use getSectionLayoutIds(). Legacy alias for section layout ID set (page-layouts.json keys).
+ */
 export function getLayout2Ids(): string[] {
   return getPageLayoutIds();
 }

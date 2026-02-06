@@ -1,7 +1,8 @@
 # Contextual Layout Logic (Content → Traits)
 
 **Source:** Logic Plan 4 — [4_CONTEXTUAL_LAYOUT_LOGIC_PLAN.md](../../cursor/logic/complete/4_CONTEXTUAL_LAYOUT_LOGIC_PLAN.md).  
-**Classification:** REFERENCE — Content→traits logic; primary architecture reference: src/docs/ARCHITECTURE_AUTOGEN, src/docs/SYSTEM_MAP_AUTOGEN
+**Classification:** REFERENCE — Content→traits logic; primary architecture reference: src/docs/ARCHITECTURE_AUTOGEN, src/docs/SYSTEM_MAP_AUTOGEN  
+**Implementation status:** PLANNED. No contextual engine or contextual-layout-rules.json yet; getAvailableSlots exists for future use; output feeds Layout Decision Engine (Plan 5).
 
 Deterministic logic that, from a section's **content structure** only, suggests layout **patterns** or **trait preferences** (never layout IDs). Output feeds the Layout Decision Engine (Plan 5) for trait-based scoring. Data-driven: rules in JSON (conditions on slots, counts, or content hints → suggested traits or trait weights). Layout IDs are never mentioned in rules or engine code; Decision Engine maps traits to layout IDs via the trait registry only.
 

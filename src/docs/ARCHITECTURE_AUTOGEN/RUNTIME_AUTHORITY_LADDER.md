@@ -6,12 +6,13 @@
 
 ## Section Layout Authority
 
-1. **User override store** — `sectionLayoutPresetOverrides[sectionKey]` (from section-layout-preset-store; OrganPanel / page.tsx).
-2. **Node.layout explicit** — `node.layout` (string) from screen JSON.
-3. **Template default** — `profile.defaultSectionLayoutId` or `getDefaultSectionLayoutId(templateId)` (templates.json or template-profiles).
-4. **Hard fallback** — `undefined` (no layout ID; Section compound may render div wrapper).
+1. **Node.layout explicit** — `node.layout` (string) from screen JSON. Explicit JSON never overridden by template or profile.
+2. **User override store** — `sectionLayoutPresetOverrides[sectionKey]` (from section-layout-preset-store; OrganPanel / page.tsx).
+3. **Template role-based** — when layout ref missing and context has `templateId` + `sectionRole`; `getPageLayoutId(null, { templateId, sectionRole })` from templates.json slot map.
+4. **Template default** — `profile.defaultSectionLayoutId` or `getDefaultSectionLayoutId(templateId)` (templates.json or template-profiles).
+5. **Hard fallback** — `undefined` (no layout ID; Section compound may render div wrapper).
 
-*Implemented in:* `src/engine/core/json-renderer.tsx` — `applyProfileToNode` (layoutId = overrideId || existingLayoutId || templateDefaultLayoutId || undefined).
+*Implemented in:* `src/engine/core/json-renderer.tsx` — `applyProfileToNode` (layoutId = existingLayoutId || overrideId || templateRoleLayoutId || templateDefaultLayoutId || undefined). See `LAYOUT_SIGNAL_PRIORITY.generated.md` for full hierarchy.
 
 ---
 
@@ -87,6 +88,14 @@
 
 ---
 
+## Section layoutDef null fallback (8.3)
+
+When **resolveLayout(layout)** returns **null** (e.g. no layoutId, or layoutId not in page defs), the section compound does **not** invent a layout ID. It renders a **div wrapper** only: `<div data-section-id={id}>{children}</div>`. No LayoutMoleculeRenderer is used.
+
+*Implemented in:* `src/compounds/ui/12-molecules/section.compound.tsx` — `layoutDef = resolveLayout(layout)`; when `effectiveDef` is falsy (including `layoutDef == null`), return div; no fallback layout ID is passed.
+
+---
+
 ## Hard Fallbacks (No Override Layer)
 
 | Location | Condition | Result |
@@ -95,7 +104,7 @@
 | resolveLayout | !layoutId or !pageDef | null |
 | getDefaultSectionLayoutId | No template or no defaultLayout | undefined |
 | ensureInitialView | !state?.currentView | dispatchState("state:currentView", { value: defaultView }) |
-| Section compound | layoutDef == null | Render div wrapper (no LayoutMoleculeRenderer) |
+| Section compound | layoutDef == null | Render div wrapper (no LayoutMoleculeRenderer); **no invented layout ID** |
 
 *Implemented in:* See ENGINE_DECISION_TRACE_MAP.md and code references above.
 

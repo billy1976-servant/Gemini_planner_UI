@@ -5,11 +5,14 @@ import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
 import { useSyncExternalStore } from "react";
 import JsonRenderer from "@/engine/core/json-renderer";
+import { recordStage } from "@/engine/debug/pipelineStageTrace";
+import { PipelineDebugStore } from "@/devtools/pipeline-debug-store";
 import { loadScreen } from "@/engine/core/screen-loader";
 import SectionLayoutDropdown from "@/dev/section-layout-dropdown";
 import { resolveLandingPage } from "@/logic/runtime/landing-page-resolver";
 import { getLayout, subscribeLayout } from "@/engine/core/layout-store";
 import { getPaletteName, subscribePalette } from "@/engine/core/palette-store";
+import { getState, subscribeState, dispatchState } from "@/state/state-store";
 import { setCurrentScreenTree } from "@/engine/core/current-screen-tree-store";
 import { getExperienceProfile } from "@/lib/layout/profile-resolver";
 import { getTemplateProfile } from "@/lib/layout/template-profiles";
@@ -20,18 +23,18 @@ import OrganPanel from "@/organs/OrganPanel";
 import {
   getSectionLayoutPresetOverrides,
   getOverridesForScreen,
-  setSectionLayoutPresetOverride,
   getCardLayoutPresetOverrides,
   getCardOverridesForScreen,
-  setCardLayoutPresetOverride,
   subscribeSectionLayoutPresetOverrides,
   subscribeCardLayoutPresetOverrides,
+  setSectionLayoutPresetOverride,
+  setCardLayoutPresetOverride,
 } from "@/state/section-layout-preset-store";
 import {
   getOrganInternalLayoutOverridesForScreen,
-  setOrganInternalLayoutOverride,
   subscribeOrganInternalLayoutOverrides,
   getOrganInternalLayoutOverrides,
+  setOrganInternalLayoutOverride,
 } from "@/state/organ-internal-layout-store";
 import {
   getLayout2Ids,
@@ -170,13 +173,32 @@ export default function Page() {
     });
   });
 
-  // Experience → shell: must run unconditionally (Rules of Hooks) so same hook count every render
+  // State is source of truth for layout/palette; fall back to legacy stores when state key is missing
+  const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
+  if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
+    console.log("STATE LAYOUT BY SCREEN", stateSnapshot?.layoutByScreen);
+  }
   const layoutSnapshot = useSyncExternalStore(subscribeLayout, getLayout, getLayout);
-  const paletteName = useSyncExternalStore(subscribePalette, getPaletteName, () => "default");
+  useSyncExternalStore(subscribePalette, getPaletteName, () => "default");
   useSyncExternalStore(subscribeSectionLayoutPresetOverrides, getSectionLayoutPresetOverrides, getSectionLayoutPresetOverrides);
   useSyncExternalStore(subscribeCardLayoutPresetOverrides, getCardLayoutPresetOverrides, getCardLayoutPresetOverrides);
   useSyncExternalStore(subscribeOrganInternalLayoutOverrides, getOrganInternalLayoutOverrides, getOrganInternalLayoutOverrides);
-  const experience = (layoutSnapshot as { experience?: string })?.experience ?? "website";
+
+  const experience = (stateSnapshot?.values?.experience ?? (layoutSnapshot as { experience?: string })?.experience) ?? "website";
+  const templateIdFromState = stateSnapshot?.values?.templateId;
+  const layoutModeFromState = stateSnapshot?.values?.layoutMode;
+  const paletteName = (stateSnapshot?.values?.paletteName ?? getPaletteName()) || "default";
+
+  /** Section/card/organ overrides from state.layoutByScreen[screenKey]. Do not use state.values for layout presets. */
+  const getLayoutOverridesFromState = (screenKey: string) => {
+    const byScreen = stateSnapshot?.layoutByScreen?.[screenKey];
+    if (!byScreen) return { section: {} as Record<string, string>, card: {} as Record<string, string>, organ: {} as Record<string, string> };
+    return {
+      section: { ...(byScreen.section ?? {}) },
+      card: { ...(byScreen.card ?? {}) },
+      organ: { ...(byScreen.organ ?? {}) },
+    };
+  };
 
   /* --------------------------------------------------
      DEV PANEL HOST (UNCHANGED)
@@ -362,7 +384,14 @@ export default function Page() {
     return Math.abs(hash).toString(36);
   };
   const screenKey = screen ? screen.replace(/[^a-zA-Z0-9]/g, "-") : `screen-${hashJson(json)}`;
-  const organInternalLayoutOverrides = getOrganInternalLayoutOverridesForScreen(screenKey);
+  const layoutFromState = getLayoutOverridesFromState(screenKey);
+  const sectionLayoutPresetFromState = layoutFromState.section;
+  const cardLayoutPresetFromState = layoutFromState.card;
+  const organInternalLayoutFromState = layoutFromState.organ;
+  const organInternalLayoutOverrides =
+    Object.keys(organInternalLayoutFromState).length > 0
+      ? organInternalLayoutFromState
+      : getOrganInternalLayoutOverridesForScreen(screenKey);
 
   // ✅ FIX: render the ACTUAL screen root, not the descriptor
   let renderNode =
@@ -381,10 +410,11 @@ export default function Page() {
   const finalChildren = (boundDoc as any).nodes ?? children;
   renderNode = { ...renderNode, children: finalChildren };
 
-  // Apps-offline: compose with experience profile; template overrides sections + full visual architecture
+  // Apps-offline: compose with experience profile; template overrides sections + full visual architecture (from state with fallback to layout-store)
+  const effectiveTemplateId = templateIdFromState ?? (layoutSnapshot as { templateId?: string })?.templateId ?? "";
+  const effectiveLayoutMode = layoutModeFromState ?? (layoutSnapshot as { mode?: "template" | "custom" })?.mode ?? "template";
   const experienceProfile = getExperienceProfile(experience);
-  const templateProfile = getTemplateProfile((layoutSnapshot as { templateId?: string })?.templateId ?? "");
-  const layoutSnapshotTyped = layoutSnapshot as { templateId?: string; mode?: "template" | "custom" };
+  const templateProfile = getTemplateProfile(effectiveTemplateId);
   const effectiveProfile = templateProfile
     ? {
         ...experienceProfile,
@@ -398,13 +428,19 @@ export default function Page() {
         cardPreset: templateProfile.cardPreset,
         heroMode: templateProfile.heroMode,
         sectionBackgroundPattern: templateProfile.sectionBackgroundPattern,
-        mode: layoutSnapshotTyped.mode ?? "template",
+        mode: effectiveLayoutMode,
       }
-    : { ...experienceProfile, mode: layoutSnapshotTyped.mode ?? "template" };
+    : { ...experienceProfile, mode: effectiveLayoutMode };
+  const layoutStateForCompose = {
+    ...layoutSnapshot,
+    experience,
+    templateId: effectiveTemplateId,
+    mode: effectiveLayoutMode,
+  };
   const composed = composeOfflineScreen({
     rootNode: renderNode as any,
     experienceProfile,
-    layoutState: layoutSnapshot,
+    layoutState: layoutStateForCompose,
   });
   setCurrentScreenTree(composed);
 
@@ -418,12 +454,39 @@ export default function Page() {
   }
 
   // ✅ screenKey computed earlier (before expand) for organ overrides
-  const currentTemplateId = (layoutSnapshot as { templateId?: string })?.templateId ?? "";
+  const currentTemplateId = effectiveTemplateId;
   const renderKey = `${screenKey}-t-${currentTemplateId || "default"}-p-${paletteName}`;
 
-  // Section layout preset: one row per section instance (no dedupe); labels and role for variant lookup
-  const sectionLayoutPresetOverrides = getOverridesForScreen(screenKey);
-  const cardLayoutPresetOverrides = getCardOverridesForScreen(screenKey);
+  // Section/card layout presets: from state with fallback to legacy stores
+  const sectionLayoutPresetOverrides =
+    Object.keys(sectionLayoutPresetFromState).length > 0
+      ? sectionLayoutPresetFromState
+      : getOverridesForScreen(screenKey);
+  const cardLayoutPresetOverrides =
+    Object.keys(cardLayoutPresetFromState).length > 0
+      ? cardLayoutPresetFromState
+      : getCardOverridesForScreen(screenKey);
+  if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
+    const sectionFromState = sectionLayoutPresetFromState;
+    const cardFromState = cardLayoutPresetFromState;
+    const organFromState = organInternalLayoutFromState;
+    console.log("OVERRIDE SOURCE TRACE", {
+      screenKey,
+      fromState: { section: sectionFromState, card: cardFromState, organ: organFromState },
+      sectionLayoutPresetOverrides,
+      cardLayoutPresetOverrides,
+    });
+    console.log("STATE LAYOUT FOR SCREEN", screenKey, {
+      section: sectionFromState,
+      card: cardFromState,
+      organ: organFromState,
+    });
+    PipelineDebugStore.mark("page", "override-maps", {
+      screenKey,
+      sectionCount: Object.keys(sectionLayoutPresetOverrides || {}).length,
+      sectionKeys: Object.keys(sectionLayoutPresetFromState).slice(0, 8),
+    });
+  }
   const { sectionKeys: sectionKeysFromTree, sectionByKey } = collectSectionKeysAndNodes(treeForRender?.children ?? []);
   const sectionKeysForPreset = sectionKeysFromTree;
   sectionKeysRef.current = sectionKeysForPreset;
@@ -457,19 +520,89 @@ export default function Page() {
   const sectionLayoutPresetOverridesProp = { ...sectionLayoutPresetOverrides };
   const cardLayoutPresetOverridesProp = { ...cardLayoutPresetOverrides };
 
+  // Layout preset changes: write to state.layoutByScreen via layout.override; mirror to legacy store for fallback.
   const handleSectionLayoutPresetOverride = (sectionKey: string, presetId: string) => {
+    dispatchState("layout.override", { screenKey, type: "section", sectionId: sectionKey, presetId });
     setSectionLayoutPresetOverride(screenKey, sectionKey, presetId);
   };
+  const handleCardLayoutPresetOverride = (sectionKey: string, presetId: string) => {
+    dispatchState("layout.override", { screenKey, type: "card", sectionId: sectionKey, presetId });
+    setCardLayoutPresetOverride(screenKey, sectionKey, presetId);
+  };
+  const handleOrganInternalLayoutOverride = (sectionKey: string, internalLayoutId: string) => {
+    dispatchState("layout.override", { screenKey, type: "organ", sectionId: sectionKey, presetId: internalLayoutId });
+    setOrganInternalLayoutOverride(screenKey, sectionKey, internalLayoutId);
+  };
 
+  // Pipeline trace: page-overrides — state.layoutByScreen[screenKey] → override maps before JsonRenderer
+  const byScreen = stateSnapshot?.layoutByScreen?.[screenKey];
+  const stateHasSection = byScreen && Object.keys(byScreen.section ?? {}).length > 0;
+  const stateHasCard = byScreen && Object.keys(byScreen.card ?? {}).length > 0;
+  const stateHasOrgan = byScreen && Object.keys(byScreen.organ ?? {}).length > 0;
+  const overridesEmptyWhenStateHas =
+    (stateHasSection && Object.keys(sectionLayoutPresetOverrides).length === 0) ||
+    (stateHasCard && Object.keys(cardLayoutPresetOverrides).length === 0) ||
+    (stateHasOrgan && Object.keys(organInternalLayoutOverrides).length === 0);
+  if (overridesEmptyWhenStateHas) {
+    recordStage("page-overrides", "fail", {
+      reason: "Overrides not built from state",
+      stateSnapshot: stateSnapshot?.values,
+    });
+  } else {
+    recordStage("page-overrides", "pass", {
+      screenKey,
+      source: "state",
+      sectionKeys: Object.keys(sectionLayoutPresetOverrides || {}),
+      sectionOverrides: sectionLayoutPresetOverrides,
+      cardOverrides: cardLayoutPresetOverrides,
+      organOverrides: organInternalLayoutOverrides,
+    });
+  }
+
+  if (process.env.NODE_ENV === "development") {
+    let lastTarget = PipelineDebugStore.getSnapshot().lastEvent?.target ?? null;
+    if (lastTarget?.startsWith("section-layout-preset-")) lastTarget = lastTarget.slice("section-layout-preset-".length);
+    if (lastTarget?.startsWith("card-layout-preset-")) lastTarget = lastTarget.slice("card-layout-preset-".length);
+    if (lastTarget?.startsWith("organ-internal-layout-")) lastTarget = lastTarget.slice("organ-internal-layout-".length);
+    const pruneOverrides = <T extends Record<string, string>>(m: T): Record<string, string> => {
+      const keys = lastTarget && lastTarget in m ? [lastTarget] : Object.keys(m).slice(0, 5);
+      const out: Record<string, string> = {};
+      keys.forEach((k) => {
+        if (m[k] != null) out[k] = m[k];
+      });
+      return out;
+    };
+    recordStage("page", "pass", {
+      screenKey,
+      activeTemplateId: effectiveTemplateId,
+      overrides: {
+        section: pruneOverrides(sectionLayoutPresetOverrides),
+        card: pruneOverrides(cardLayoutPresetOverrides),
+        organ: pruneOverrides(organInternalLayoutOverrides),
+    },
+      ts: Date.now(),
+    });
+  }
+
+  console.log("OVERRIDES", {
+    section: sectionLayoutPresetOverridesProp,
+    card: cardLayoutPresetOverridesProp,
+    organ: organInternalLayoutOverridesProp,
+  });
+
+  console.log("FLOW 4 — PAGE OVERRIDES", {
+    screenKey,
+    sectionOverrides: sectionLayoutPresetOverrides,
+  });
   const jsonContent = (
     <JsonRenderer
       key={renderKey}
       node={treeForRender}
       defaultState={json?.state}
       profileOverride={effectiveProfile}
-      sectionLayoutPresetOverrides={sectionLayoutPresetOverridesProp}
-      cardLayoutPresetOverrides={cardLayoutPresetOverridesProp}
-      organInternalLayoutOverrides={organInternalLayoutOverridesProp}
+      sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
+      cardLayoutPresetOverrides={cardLayoutPresetOverrides}
+      organInternalLayoutOverrides={organInternalLayoutOverrides}
       screenId={screenKey}
     />
   );
@@ -509,16 +642,12 @@ export default function Page() {
               sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
               onSectionLayoutPresetOverride={handleSectionLayoutPresetOverride}
               cardLayoutPresetOverrides={cardLayoutPresetOverrides}
-              onCardLayoutPresetOverride={(sectionKey, presetId) =>
-                setCardLayoutPresetOverride(screenKey, sectionKey, presetId)
-              }
+              onCardLayoutPresetOverride={handleCardLayoutPresetOverride}
               sectionPresetOptions={sectionPresetOptions}
               sectionHeights={sectionHeights}
               organIdBySectionKey={organIdBySectionKey}
               organInternalLayoutOverrides={organInternalLayoutOverridesProp}
-              onOrganInternalLayoutOverride={(sectionKey, internalLayoutId) =>
-                setOrganInternalLayoutOverride(screenKey, sectionKey, internalLayoutId)
-              }
+              onOrganInternalLayoutOverride={handleOrganInternalLayoutOverride}
               sectionNodesByKey={sectionByKey}
             />
           </div>
@@ -548,16 +677,12 @@ export default function Page() {
               sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
               onSectionLayoutPresetOverride={handleSectionLayoutPresetOverride}
               cardLayoutPresetOverrides={cardLayoutPresetOverrides}
-              onCardLayoutPresetOverride={(sectionKey, presetId) =>
-                setCardLayoutPresetOverride(screenKey, sectionKey, presetId)
-              }
+              onCardLayoutPresetOverride={handleCardLayoutPresetOverride}
               sectionPresetOptions={sectionPresetOptions}
               sectionHeights={sectionHeights}
               organIdBySectionKey={organIdBySectionKey}
               organInternalLayoutOverrides={organInternalLayoutOverridesProp}
-              onOrganInternalLayoutOverride={(sectionKey, internalLayoutId) =>
-                setOrganInternalLayoutOverride(screenKey, sectionKey, internalLayoutId)
-              }
+              onOrganInternalLayoutOverride={handleOrganInternalLayoutOverride}
               sectionNodesByKey={sectionByKey}
             />
           </div>

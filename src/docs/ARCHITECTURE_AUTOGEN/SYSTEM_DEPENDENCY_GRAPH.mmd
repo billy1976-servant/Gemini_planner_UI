@@ -98,7 +98,8 @@ flowchart TB
   BL --> BR
   BL -.->|"require"| RVI
   RVI --> SSTORE
-  RVI --> navigate["runtime-navigation"]
+  RVI --> actionRunner["action-runner\nsrc/logic/runtime/action-runner.ts"]
+  actionRunner --> actionRegistry["action-registry\nsrc/logic/runtime/action-registry.ts"]
   BR --> BVERB
   BR --> BENG
   BR --> navigations["behavior-navigations.json"]

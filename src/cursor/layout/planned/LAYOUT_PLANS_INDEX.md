@@ -23,6 +23,8 @@ Plans 1–10 are in **complete** with verification reports appended. Links below
 | 1.8 | [1.8_EXPLAINABILITY_AND_TRACE_PLAN.md](../complete/1.8_EXPLAINABILITY_AND_TRACE_PLAN.md) | Layout-side trace: source, layoutId, optional compatibility/suggestionDetail; align with Logic Plan 10. |
 | 1.9 | [1.9_LAYOUT_LOGIC_INTERFACE_FINALIZATION_PLAN.md](../complete/1.9_LAYOUT_LOGIC_INTERFACE_FINALIZATION_PLAN.md) | What Layout exposes to Logic (capabilities, compatible sets); Logic suggests only; align with Logic Plan 1 and 8. |
 | 1.10 | [1.10_LAYOUT_VALIDATION_AND_GOVERNANCE_PLAN.md](../complete/1.10_LAYOUT_VALIDATION_AND_GOVERNANCE_PLAN.md) | Requirement registry coverage; slot name governance (SLOT_NAMES.md); validation and diagnostics. |
+| 1.11 | [1.11_DROPDOWN_LAYOUT_PIPELINE_REPAIR_PLAN.md](../complete/1.11_DROPDOWN_LAYOUT_PIPELINE_REPAIR_PLAN.md) | ✅ Complete — Repair dropdown→behavior→state→layout pipeline; make layout state single-source-of-truth and verifiable via Pipeline Debugger tests. |
+| — | [TRACE_AND_REPAIR_LAYOUT_SIGNAL_CHAIN_PLAN.md](../complete/TRACE_AND_REPAIR_LAYOUT_SIGNAL_CHAIN_PLAN.md) | ✅ Complete — Trace UI→action→state→overrides→resolver; add diagnostics; fix first failure (synchronous state write in behavior-listener). |
 
 ---
 

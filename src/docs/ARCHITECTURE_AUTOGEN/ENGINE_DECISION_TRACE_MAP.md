@@ -183,9 +183,9 @@
 
 ---
 
-## Engine: Runtime Verb Interpreter (engine/runtime — state/navigate bridge)
+## Engine: Runtime Verb Interpreter (logic/runtime — state/navigate bridge)
 
-**Entry:** `src/engine/runtime/runtime-verb-interpreter.ts` — `handleAction(detail)` (used when that layer is wired)
+**Entry:** `src/logic/runtime/runtime-verb-interpreter.ts` — `handleAction(detail)` (used when that layer is wired)
 
 **Decision Flow:**
 1. **Condition:** params.name starts with "state:".

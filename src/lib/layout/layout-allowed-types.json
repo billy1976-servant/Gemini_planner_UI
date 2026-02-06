@@ -1,0 +1,3 @@
+{
+  "allowedTypes": ["column", "row", "grid", "stack", "page"]
+}

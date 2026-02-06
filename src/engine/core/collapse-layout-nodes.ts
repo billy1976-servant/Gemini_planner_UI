@@ -3,9 +3,9 @@
  * appear as node types in JSON. This module collapses such nodes into their parent:
  * parent.children is flattened to the layout node's children. Layout is NOT written
  * to parent.params (layout comes from Layout Engine / Preset at runtime, not from JSON).
+ * LAYOUT_NODE_TYPES: single source from @/layout/layout-node-types.
  */
-
-const LAYOUT_NODE_TYPES = new Set(["Grid", "Row", "Column", "Stack"]);
+import { LAYOUT_NODE_TYPES } from "@/layout/layout-node-types";
 
 function isLayoutNode(node: unknown): node is { type: string; children?: unknown[] } {
   if (!node || typeof node !== "object") return false;
@@ -58,4 +58,4 @@ export function collapseLayoutNodes(node: unknown): unknown {
   return next;
 }
 
-export { LAYOUT_NODE_TYPES };
+export { LAYOUT_NODE_TYPES } from "@/layout/layout-node-types";

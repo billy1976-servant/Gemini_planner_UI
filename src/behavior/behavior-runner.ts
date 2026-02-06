@@ -87,9 +87,9 @@ function fireNavigation(ctx: any, target: any) {
   if (!target) return;
 
 
-  // Prefer explicit navigation hooks if present
-  if (typeof ctx?.setScreen === "function") return ctx.setScreen(target);
+  // Prefer single navigate() so semantic targets (back:1, root, panel:close) reach the callback
   if (typeof ctx?.navigate === "function") return ctx.navigate(target);
+  if (typeof ctx?.setScreen === "function") return ctx.setScreen(target);
   if (typeof ctx?.router?.push === "function") return ctx.router.push(target);
 
 
@@ -110,10 +110,31 @@ export function runBehavior(
   const fromAction = resolveBehaviorVerb(domain as any, action);
 
 
-  // 2) Resolve INTERACTION (flat)
-  const fromInteraction = (interactions as any)?.[action]
-    ? { handler: (interactions as any)[action] }
-    : null;
+  // 2) Resolve INTERACTION (flat or variant map: drag, scroll, swipe)
+  let fromInteraction: { handler: string } | null = null;
+  const interactionEntry = (interactions as any)?.[action];
+  if (interactionEntry) {
+    if (typeof interactionEntry === "string") {
+      fromInteraction = { handler: interactionEntry };
+    } else if (interactionEntry && typeof interactionEntry === "object") {
+      const variant =
+        args?.variant ||
+        args?.direction ||
+        args?.mode ||
+        "default";
+      const handlerName =
+        interactionEntry[variant] || interactionEntry.default;
+      if (typeof handlerName === "string") {
+        fromInteraction = { handler: handlerName };
+      } else {
+        console.warn("⚠️ Interaction missing variant:", {
+          action,
+          variant,
+          args,
+        });
+      }
+    }
+  }
 
 
   // 3) Resolve NAVIGATION (nested: verb + variant)

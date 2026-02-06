@@ -4,6 +4,11 @@ import data from "./data.content.json";
 
 
 /**
+ * @deprecated LEGACY — Not on main app path. Single content resolution entrypoint is
+ * @/logic/content/content-resolver (resolveContent(key)). Used by landing-page-resolver
+ * and education-resolver. This file (kind, key, valueOverride API) is unused; retain only
+ * for reference or remove when safe.
+ *
  * HIcurv Content Resolver v1.0
  *
  * This resolver:

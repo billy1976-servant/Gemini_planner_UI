@@ -1,4 +1,10 @@
 "use client";
+/**
+ * Component Registry — single source of truth for JSON node type → React component.
+ * JsonRenderer resolves node.type via Registry only; no competing type→component maps.
+ * Add new node types here (or derive from JSON manifest if a future contract requires);
+ * do not duplicate Registry or maintain a separate type map elsewhere.
+ */
 // =====================================================
 // ATOMS (ENGINE INTERNAL)
 // =====================================================
@@ -11,6 +17,7 @@ import CollectionAtom from "@/components/9-atoms/primitives/collection";
 import ConditionAtom from "@/components/9-atoms/primitives/condition";
 import ShellAtom from "@/components/9-atoms/primitives/shell";
 import FieldAtom from "@/components/9-atoms/primitives/field";
+import SelectAtom from "@/components/9-atoms/primitives/select";
 // =====================================================
 // UI MOLECULES (LOCKED, JSON-FACING — DO NOT ADD MORE)
 // =====================================================
@@ -88,6 +95,10 @@ export const Registry = {
   // 🔹 INPUT ALIAS
   textarea: FieldAtom,
   Textarea: FieldAtom,
+
+
+  select: SelectAtom,
+  Select: SelectAtom,
 
 
   // 🔹 UI molecules

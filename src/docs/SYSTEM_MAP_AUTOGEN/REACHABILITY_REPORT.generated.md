@@ -2,9 +2,9 @@
 
 Module-level reachability from app entrypoints. **REACHABLE** = reachable from seed set; **UNREACHABLE** = not reachable.
 
-**Seed entrypoints:** src/app/page.tsx, src/app/layout.tsx, src/engine/core/json-renderer.tsx, src/engine/core/behavior-listener.ts, src/engine/core/screen-loader.ts, src/state/state-store.ts, src/layout/index.ts, src/logic/runtime/runtime-verb-interpreter.ts
+**Seed entrypoints:** src/app/page.tsx, src/app/layout.tsx, src/engine/core/json-renderer.tsx, src/engine/core/behavior-listener.ts, src/engine/core/screen-loader.ts, src/state/state-store.ts, src/layout/index.ts, src/engine/core/registry.tsx, src/state/state-resolver.ts, src/logic/runtime/action-registry.ts, src/logic/runtime/runtime-verb-interpreter.ts
 
-**Generated:** 2026-02-04T21:24:20.462Z
+**Generated:** 2026-02-05T01:35:40.934Z
 
 ---
 
@@ -12,8 +12,8 @@ Module-level reachability from app entrypoints. **REACHABLE** = reachable from s
 
 | Status       | Count |
 |-------------|-------|
-| REACHABLE   | 55 |
-| UNREACHABLE | 451 |
+| REACHABLE   | 110 |
+| UNREACHABLE | 401 |
 
 ---
 
@@ -27,10 +27,47 @@ Module-level reachability from app entrypoints. **REACHABLE** = reachable from s
 ### `src/behavior/`
 
 - `src/behavior/behavior-runner.ts`
+- `src/behavior/contract-verbs.ts`
+
+### `src/components/9-atoms/primitives/`
+
+- `src/components/9-atoms/primitives/collection.tsx`
+- `src/components/9-atoms/primitives/condition.tsx`
+- `src/components/9-atoms/primitives/field.tsx`
+- `src/components/9-atoms/primitives/media.tsx`
+- `src/components/9-atoms/primitives/sequence.tsx`
+- `src/components/9-atoms/primitives/shell.tsx`
+- `src/components/9-atoms/primitives/surface.tsx`
+- `src/components/9-atoms/primitives/text.tsx`
+- `src/components/9-atoms/primitives/trigger.tsx`
 
 ### `src/compounds/ui/`
 
 - `src/compounds/ui/index.ts`
+
+### `src/compounds/ui/12-molecules/`
+
+- `src/compounds/ui/12-molecules/avatar.compound.tsx`
+- `src/compounds/ui/12-molecules/button.compound.tsx`
+- `src/compounds/ui/12-molecules/card.compound.tsx`
+- `src/compounds/ui/12-molecules/chip.compound.tsx`
+- `src/compounds/ui/12-molecules/field.compound.tsx`
+- `src/compounds/ui/12-molecules/footer.compound.tsx`
+- `src/compounds/ui/12-molecules/list.compound.tsx`
+- `src/compounds/ui/12-molecules/modal.compound.tsx`
+- `src/compounds/ui/12-molecules/section.compound.tsx`
+- `src/compounds/ui/12-molecules/stepper.compound.tsx`
+- `src/compounds/ui/12-molecules/toast.compound.tsx`
+- `src/compounds/ui/12-molecules/toolbar.compound.tsx`
+
+### `src/config/`
+
+- `src/config/renderer-contract.json.ts`
+- `src/config/state-defaults.json.ts`
+
+### `src/contracts/`
+
+- `src/contracts/expected-params.ts`
 
 ### `src/dev/`
 
@@ -43,7 +80,10 @@ Module-level reachability from app entrypoints. **REACHABLE** = reachable from s
 - `src/engine/core/current-screen-tree-store.ts`
 - `src/engine/core/json-renderer.tsx`
 - `src/engine/core/layout-store.ts`
+- `src/engine/core/palette-resolve-token.ts`
+- `src/engine/core/palette-resolver.ts`
 - `src/engine/core/palette-store.ts`
+- `src/engine/core/registry.tsx`
 - `src/engine/core/screen-loader.ts`
 
 ### `src/engine/devtools/`
@@ -53,6 +93,7 @@ Module-level reachability from app entrypoints. **REACHABLE** = reachable from s
 ### `src/layout/`
 
 - `src/layout/index.ts`
+- `src/layout/layout-node-types.ts`
 
 ### `src/layout-organ/`
 
@@ -62,6 +103,7 @@ Module-level reachability from app entrypoints. **REACHABLE** = reachable from s
 
 - `src/lib/layout/card-layout-presets.ts`
 - `src/lib/layout/card-preset-resolver.ts`
+- `src/lib/layout/layout-allowed-types.json.ts`
 - `src/lib/layout/layout-schema.json.ts`
 - `src/lib/layout/molecule-layout-resolver.ts`
 - `src/lib/layout/profile-resolver.ts`
@@ -80,6 +122,14 @@ Module-level reachability from app entrypoints. **REACHABLE** = reachable from s
 ### `src/lib/layout/layout-engine/`
 
 - `src/lib/layout/layout-engine/region-policy.ts`
+
+### `src/lib/layout/molecules/`
+
+- `src/lib/layout/molecules/column-layout.tsx`
+- `src/lib/layout/molecules/grid-layout.tsx`
+- `src/lib/layout/molecules/page-layout.tsx`
+- `src/lib/layout/molecules/row-layout.tsx`
+- `src/lib/layout/molecules/stack-layout.tsx`
 
 ### `src/lib/layout/presentation/`
 
@@ -105,6 +155,11 @@ Module-level reachability from app entrypoints. **REACHABLE** = reachable from s
 - `src/lib/site-skin/shells/LearningShell.tsx`
 - `src/lib/site-skin/shells/WebsiteShell.tsx`
 
+### `src/logic/actions/`
+
+- `src/logic/actions/resolve-onboarding.action.ts`
+- `src/logic/actions/run-calculator.action.ts`
+
 ### `src/logic/bridges/`
 
 - `src/logic/bridges/skinBindings.apply.ts`
@@ -113,14 +168,43 @@ Module-level reachability from app entrypoints. **REACHABLE** = reachable from s
 
 - `src/logic/content/content-resolver.ts`
 
+### `src/logic/content/flows/`
+
+- `src/logic/content/flows/flow-a.json.ts`
+- `src/logic/content/flows/flow-b.json.ts`
+- `src/logic/content/flows/flow-c.json.ts`
+- `src/logic/content/flows/flow-with-meta.json.ts`
+- `src/logic/content/flows/test-flow.json.ts`
+
 ### `src/logic/engines/`
 
+- `src/logic/engines/25x.engine.ts`
 - `src/logic/engines/Onboarding-flow-router.tsx`
 - `src/logic/engines/json-skin.engine.tsx`
 
+### `src/logic/engines/calculator/`
+
+- `src/logic/engines/calculator/calculator.engine.ts`
+
+### `src/logic/engines/calculator/calculator-types/`
+
+- `src/logic/engines/calculator/calculator-types/profit.calculator.json.ts`
+- `src/logic/engines/calculator/calculator-types/simple-hours.json.ts`
+
+### `src/logic/flows/`
+
+- `src/logic/flows/flow-definitions.ts`
+- `src/logic/flows/flow-loader.ts`
+
+### `src/logic/registries/`
+
+- `src/logic/registries/calculator.registry.ts`
+
 ### `src/logic/runtime/`
 
+- `src/logic/runtime/action-registry.ts`
 - `src/logic/runtime/engine-bridge.ts`
+- `src/logic/runtime/flow-resolver.ts`
 - `src/logic/runtime/interaction-controller.ts`
 - `src/logic/runtime/landing-page-resolver.ts`
 - `src/logic/runtime/runtime-verb-interpreter.ts`
@@ -136,15 +220,28 @@ Module-level reachability from app entrypoints. **REACHABLE** = reachable from s
 - `src/palettes/default.json.ts`
 - `src/palettes/index.ts`
 
+### `src/screens/tsx-screens/Gibson_Guitars/`
+
+- `src/screens/tsx-screens/Gibson_Guitars/generated.flow-Gibson.json.ts`
+
 ### `src/state/`
 
 - `src/state/organ-internal-layout-store.ts`
 - `src/state/section-layout-preset-store.ts`
+- `src/state/state-resolver.ts`
 - `src/state/state-store.ts`
 
 ### `src/styles/`
 
 - `src/styles/site-theme.css.ts`
+
+### `src/ui/`
+
+- `src/ui/user-input-viewer.tsx`
+
+### `src/ui/molecules/`
+
+- `src/ui/molecules/JournalHistory.tsx`
 
 ---
 
@@ -402,51 +499,6 @@ For each: file path, first break (nearest reachable parent that does not import 
 - **First break:** (no importers)
 - **Why unreachable:** Never imported by any module.
 
-### `src/components/9-atoms/primitives/collection.tsx`
-
-- **First break:** `src/compounds/ui/12-molecules/avatar.compound.tsx`, `src/compounds/ui/12-molecules/button.compound.tsx`, `src/compounds/ui/12-molecules/card.compound.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/components/9-atoms/primitives/condition.tsx`
-
-- **First break:** `src/engine/core/registry.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/components/9-atoms/primitives/field.tsx`
-
-- **First break:** `src/compounds/ui/12-molecules/field.compound.tsx`, `src/engine/core/registry.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/components/9-atoms/primitives/media.tsx`
-
-- **First break:** `src/compounds/ui/12-molecules/avatar.compound.tsx`, `src/compounds/ui/12-molecules/card.compound.tsx`, `src/compounds/ui/12-molecules/chip.compound.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/components/9-atoms/primitives/sequence.tsx`
-
-- **First break:** `src/compounds/ui/12-molecules/avatar.compound.tsx`, `src/compounds/ui/12-molecules/button.compound.tsx`, `src/compounds/ui/12-molecules/card.compound.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/components/9-atoms/primitives/shell.tsx`
-
-- **First break:** `src/engine/core/registry.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/components/9-atoms/primitives/surface.tsx`
-
-- **First break:** `src/compounds/ui/12-molecules/avatar.compound.tsx`, `src/compounds/ui/12-molecules/button.compound.tsx`, `src/compounds/ui/12-molecules/card.compound.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/components/9-atoms/primitives/text.tsx`
-
-- **First break:** `src/compounds/ui/12-molecules/avatar.compound.tsx`, `src/compounds/ui/12-molecules/button.compound.tsx`, `src/compounds/ui/12-molecules/card.compound.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/components/9-atoms/primitives/trigger.tsx`
-
-- **First break:** `src/compounds/ui/12-molecules/avatar.compound.tsx`, `src/compounds/ui/12-molecules/button.compound.tsx`, `src/compounds/ui/12-molecules/card.compound.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
 ### `src/components/site/BadgeSection.tsx`
 
 - **First break:** `src/lib/site-renderer/renderFromSchema.tsx`
@@ -552,46 +604,6 @@ For each: file path, first break (nearest reachable parent that does not import 
 - **First break:** (no importers)
 - **Why unreachable:** Never imported by any module.
 
-### `src/compounds/ui/12-molecules/avatar.compound.tsx`
-
-- **First break:** `src/engine/core/registry.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/compounds/ui/12-molecules/button.compound.tsx`
-
-- **First break:** `src/engine/core/registry.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/compounds/ui/12-molecules/card.compound.tsx`
-
-- **First break:** `src/engine/core/registry.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/compounds/ui/12-molecules/chip.compound.tsx`
-
-- **First break:** `src/engine/core/registry.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/compounds/ui/12-molecules/field.compound.tsx`
-
-- **First break:** `src/engine/core/registry.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/compounds/ui/12-molecules/footer.compound.tsx`
-
-- **First break:** `src/engine/core/registry.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/compounds/ui/12-molecules/list.compound.tsx`
-
-- **First break:** `src/engine/core/registry.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/compounds/ui/12-molecules/modal.compound.tsx`
-
-- **First break:** `src/engine/core/registry.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
 ### `src/compounds/ui/12-molecules/navigation.compound.tsx`
 
 - **First break:** (no importers)
@@ -601,26 +613,6 @@ For each: file path, first break (nearest reachable parent that does not import 
 
 - **First break:** (no importers)
 - **Why unreachable:** Never imported by any module.
-
-### `src/compounds/ui/12-molecules/section.compound.tsx`
-
-- **First break:** `src/engine/core/registry.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/compounds/ui/12-molecules/stepper.compound.tsx`
-
-- **First break:** `src/engine/core/registry.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/compounds/ui/12-molecules/toast.compound.tsx`
-
-- **First break:** `src/engine/core/registry.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/compounds/ui/12-molecules/toolbar.compound.tsx`
-
-- **First break:** `src/engine/core/registry.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
 
 ### `src/compounds/ui/BaseCompound.tsx`
 
@@ -651,6 +643,11 @@ For each: file path, first break (nearest reachable parent that does not import 
 
 - **First break:** `src/organs/organs.layer1.test.ts`, `src/organs/organs.layer2.test.ts`
 - **Why unreachable:** Only imported by other unreachable modules.
+
+### `src/contracts/critical-path.smoke.test.ts`
+
+- **First break:** (no importers)
+- **Why unreachable:** Never imported by any module.
 
 ### `src/contracts/param-key-mapping.test.ts`
 
@@ -691,21 +688,6 @@ For each: file path, first break (nearest reachable parent that does not import 
 
 - **First break:** `src/state/global-scan.state-bridge.ts`
 - **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/engine/core/palette-resolve-token.ts`
-
-- **First break:** `src/components/9-atoms/primitives/collection.tsx`, `src/components/9-atoms/primitives/field.tsx`, `src/components/9-atoms/primitives/sequence.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/engine/core/palette-resolver.ts`
-
-- **First break:** `src/compounds/ui/12-molecules/avatar.compound.tsx`, `src/compounds/ui/12-molecules/button.compound.tsx`, `src/compounds/ui/12-molecules/card.compound.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/engine/core/registry.tsx`
-
-- **First break:** (no importers)
-- **Why unreachable:** Never imported by any module.
 
 ### `src/engine/core/site-loader.ts`
 
@@ -753,16 +735,6 @@ For each: file path, first break (nearest reachable parent that does not import 
 - **Why unreachable:** Only imported by other unreachable modules.
 
 ### `src/engine/runners/engine-runner.tsx`
-
-- **First break:** (no importers)
-- **Why unreachable:** Never imported by any module.
-
-### `src/engine/runtime/runtime-navigation.ts`
-
-- **First break:** `src/engine/runtime/runtime-verb-interpreter.ts`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/engine/runtime/runtime-verb-interpreter.ts`
 
 - **First break:** (no importers)
 - **Why unreachable:** Never imported by any module.
@@ -1052,31 +1024,6 @@ For each: file path, first break (nearest reachable parent that does not import 
 - **First break:** `src/lib/site-skin/SiteSkin.tsx`
 - **Why unreachable:** Only imported by other unreachable modules.
 
-### `src/lib/layout/molecules/column-layout.tsx`
-
-- **First break:** `src/engine/core/registry.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/lib/layout/molecules/grid-layout.tsx`
-
-- **First break:** `src/engine/core/registry.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/lib/layout/molecules/page-layout.tsx`
-
-- **First break:** `src/engine/core/registry.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/lib/layout/molecules/row-layout.tsx`
-
-- **First break:** `src/engine/core/registry.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/lib/layout/molecules/stack-layout.tsx`
-
-- **First break:** `src/engine/core/registry.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
 ### `src/lib/layout/screen-layout-resolver.ts`
 
 - **First break:** `src/lib/site-renderer/layout-bridge.tsx`, `src/lib/site-renderer/renderFromSchema.tsx`
@@ -1212,16 +1159,6 @@ For each: file path, first break (nearest reachable parent that does not import 
 - **First break:** `src/components/siteRenderer/ContentSection.tsx`, `src/components/siteRenderer/CTASection.tsx`, `src/components/siteRenderer/HeroSection.tsx`
 - **Why unreachable:** Only imported by other unreachable modules.
 
-### `src/logic/actions/resolve-onboarding.action.ts`
-
-- **First break:** `src/logic/runtime/action-registry.ts`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/logic/actions/run-calculator.action.ts`
-
-- **First break:** `src/logic/runtime/action-registry.ts`
-- **Why unreachable:** Only imported by other unreachable modules.
-
 ### `src/logic/bridges/engineToSkin.bridge.ts`
 
 - **First break:** `src/screens/tsx-screens/site-skin/SiteSkinPreviewScreen.tsx`
@@ -1252,31 +1189,6 @@ For each: file path, first break (nearest reachable parent that does not import 
 - **First break:** (no importers)
 - **Why unreachable:** Never imported by any module.
 
-### `src/logic/content/flows/flow-a.json.ts`
-
-- **First break:** `src/logic/flows/flow-loader.ts`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/logic/content/flows/flow-b.json.ts`
-
-- **First break:** `src/logic/flows/flow-loader.ts`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/logic/content/flows/flow-c.json.ts`
-
-- **First break:** `src/logic/flows/flow-loader.ts`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/logic/content/flows/flow-with-meta.json.ts`
-
-- **First break:** `src/logic/flows/flow-loader.ts`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/logic/content/flows/test-flow.json.ts`
-
-- **First break:** `src/logic/flows/flow-loader.ts`
-- **Why unreachable:** Only imported by other unreachable modules.
-
 ### `src/logic/controllers/control-flow.ts`
 
 - **First break:** `src/screens/tsx-screens/google-ads/google-ads-dashboard.tsx`
@@ -1300,11 +1212,6 @@ For each: file path, first break (nearest reachable parent that does not import 
 ### `src/logic/engine-system/engine-registry.ts`
 
 - **First break:** `src/engine/onboarding/IntegrationFlowEngine.tsx`, `src/engine/onboarding/OnboardingFlowRenderer.tsx`, `src/logic/flow-runtime/FlowRenderer.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/logic/engines/25x.engine.ts`
-
-- **First break:** `src/logic/runtime/action-registry.ts`, `src/screens/tsx-screens/global-scans/25x-Onboarding.Test.tsx`
 - **Why unreachable:** Only imported by other unreachable modules.
 
 ### `src/logic/engines/abc.engine.ts`
@@ -1331,21 +1238,6 @@ For each: file path, first break (nearest reachable parent that does not import 
 
 - **First break:** (no importers)
 - **Why unreachable:** Never imported by any module.
-
-### `src/logic/engines/calculator/calculator-types/profit.calculator.json.ts`
-
-- **First break:** `src/logic/registries/calculator.registry.ts`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/logic/engines/calculator/calculator-types/simple-hours.json.ts`
-
-- **First break:** `src/logic/registries/calculator.registry.ts`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/logic/engines/calculator/calculator.engine.ts`
-
-- **First break:** `src/logic/actions/run-calculator.action.ts`, `src/logic/engines/calculator/calculator.module.ts`
-- **Why unreachable:** Only imported by other unreachable modules.
 
 ### `src/logic/engines/calculator/calculator.module.ts`
 
@@ -1430,16 +1322,6 @@ For each: file path, first break (nearest reachable parent that does not import 
 ### `src/logic/flow-runtime/FlowRenderer.tsx`
 
 - **First break:** `src/screens/tsx-screens/Gibson_Guitars/Gibson_Landing.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/logic/flows/flow-definitions.ts`
-
-- **First break:** `src/logic/runtime/flow-resolver.ts`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/logic/flows/flow-loader.ts`
-
-- **First break:** `src/engine/onboarding/IntegrationFlowEngine.tsx`, `src/engine/onboarding/OnboardingFlowRenderer.tsx`, `src/logic/engine-system/engine-explain.ts`
 - **Why unreachable:** Only imported by other unreachable modules.
 
 ### `src/logic/modules/25x-sample.ts`
@@ -1547,11 +1429,6 @@ For each: file path, first break (nearest reachable parent that does not import 
 - **First break:** `src/screens/tsx-screens/onboarding/cards/ComparisonCard.tsx`, `src/screens/tsx-screens/onboarding/cards/ExportButton.tsx`, `src/screens/tsx-screens/onboarding/cards/ProductCalculatorCard.tsx`
 - **Why unreachable:** Only imported by other unreachable modules.
 
-### `src/logic/registries/calculator.registry.ts`
-
-- **First break:** `src/logic/actions/run-calculator.action.ts`, `src/logic/engines/calculator/calculator.module.ts`
-- **Why unreachable:** Only imported by other unreachable modules.
-
 ### `src/logic/research/research-collectors.ts`
 
 - **First break:** (no importers)
@@ -1561,11 +1438,6 @@ For each: file path, first break (nearest reachable parent that does not import 
 
 - **First break:** `src/scripts/websites/adapters/research-adapter.ts`
 - **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/logic/runtime/action-registry.ts`
-
-- **First break:** (no importers)
-- **Why unreachable:** Never imported by any module.
 
 ### `src/logic/runtime/action-runner.ts`
 
@@ -1585,11 +1457,6 @@ For each: file path, first break (nearest reachable parent that does not import 
 ### `src/logic/runtime/engine-state.ts`
 
 - **First break:** `src/logic/engines/post-processing/hi-engine-runner.ts`, `src/logic/flow-runtime/FlowRenderer.tsx`, `src/logic/ui-bindings/engine-viewer.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/logic/runtime/flow-resolver.ts`
-
-- **First break:** `src/logic/actions/resolve-onboarding.action.ts`
 - **Why unreachable:** Only imported by other unreachable modules.
 
 ### `src/logic/runtime/view-resolver.ts`
@@ -1791,11 +1658,6 @@ For each: file path, first break (nearest reachable parent that does not import 
 
 - **First break:** (no importers)
 - **Why unreachable:** Never imported by any module.
-
-### `src/screens/tsx-screens/Gibson_Guitars/generated.flow-Gibson.json.ts`
-
-- **First break:** `src/logic/flows/flow-loader.ts`
-- **Why unreachable:** Only imported by other unreachable modules.
 
 ### `src/screens/tsx-screens/calculators/Education-flow.tsx`
 
@@ -2262,11 +2124,6 @@ For each: file path, first break (nearest reachable parent that does not import 
 - **First break:** (no importers)
 - **Why unreachable:** Never imported by any module.
 
-### `src/state/state-resolver.ts`
-
-- **First break:** `src/engine/selectors/global-scan-time-window-viewer.ts`, `src/logic/actions/resolve-onboarding.action.ts`, `src/logic/runtime/flow-resolver.ts`
-- **Why unreachable:** Only imported by other unreachable modules.
-
 ### `src/state/state.ts`
 
 - **First break:** (no importers)
@@ -2337,19 +2194,9 @@ For each: file path, first break (nearest reachable parent that does not import 
 - **First break:** `src/engine/loaders/ui-loader.ts`
 - **Why unreachable:** Only imported by other unreachable modules.
 
-### `src/ui/molecules/JournalHistory.tsx`
-
-- **First break:** `src/engine/core/registry.tsx`
-- **Why unreachable:** Only imported by other unreachable modules.
-
 ### `src/ui/motion.json.ts`
 
 - **First break:** `src/engine/loaders/ui-loader.ts`
-- **Why unreachable:** Only imported by other unreachable modules.
-
-### `src/ui/user-input-viewer.tsx`
-
-- **First break:** `src/engine/core/registry.tsx`
 - **Why unreachable:** Only imported by other unreachable modules.
 
 ### `src/ui/ux/driver.json.ts`

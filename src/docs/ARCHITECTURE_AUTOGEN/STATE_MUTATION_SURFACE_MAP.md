@@ -2,6 +2,31 @@
 
 **Purpose:** Every place state can change. Read-only selectors are excluded.
 
+**Contribution rule:** Any new `dispatchState` call site must be added to the bounded audit below and to the appropriate section (2–13). New intents must be added to [STATE_INTENTS.md](./STATE_INTENTS.md) and to state-resolver deriveState. No new state mutation surfaces without updating this contract.
+
+---
+
+## Bounded audit: every dispatchState call site
+
+| File | Intent(s) | Trigger |
+|------|-----------|---------|
+| src/state/state-store.ts | (internal) name, payload from event | installStateMutateBridge — "state-mutate" CustomEvent |
+| src/state/state-store.ts | state:currentView | ensureInitialView(defaultView) when !state?.currentView |
+| src/state/state-store.ts | journal.set, scan.record, scan.batch | Dev/test only (TEST_STATE, recordScan, recordScanBatch) |
+| src/engine/core/behavior-listener.ts | state.update | input-change CustomEvent (fieldKey, value) |
+| src/engine/core/behavior-listener.ts | state:currentView, state.update, journal.add | action (params.name state:*, valueFrom input) |
+| src/engine/core/screen-loader.ts | state:currentView | loadScreen JSON path — json.state?.currentView |
+| src/logic/engines/json-skin.engine.tsx | state.update | Button / interaction handler from json-skin |
+| src/app/layout.tsx | state:currentView | navigate(to) callback with view id |
+| src/logic/actions/resolve-onboarding.action.ts | state.update | resolveOnboarding action handler |
+| src/screens/tsx-screens/onboarding/cards/EducationCard.tsx | state.update | Button / logic in EducationCard |
+| src/logic/actions/run-calculator.action.ts | state.update | run-calculator action (outputKey, __proof.lastCalculatorRun) |
+| src/state/state-adapter.ts | journal.set | applyStateToNode — field two-way binding |
+| src/state/global-scan.state-bridge.ts | scan.interpreted | Interpreted scan result |
+| src/screens/tsx-screens/control-json/tsx-proof.tsx | state:currentView | Proof screen buttons A/B/C/D |
+| src/logic/runtime/interaction-controller.ts | interaction.record | recordInteraction(payload) |
+| src/engine/core/global-scan.engine.ts | scan.result | fetchScanSignal / scan run (single or batch) |
+
 ---
 
 ## 1. dispatchState (state-store) — Central Log
@@ -35,11 +60,11 @@ Derivation is in state-resolver.deriveState(log). Intents: state:currentView, st
 
 ---
 
-## 4. Runtime Verb Interpreter (engine) → dispatchState
+## 4. Runtime Verb Interpreter (logic) → dispatchState
 
 | Source | What It Can Change | How Triggered | File |
 |--------|--------------------|---------------|------|
-| handleAction state:* | intent = params.name without "state:"; payload value + rest | CustomEvent detail with params.name starting "state:" | src/engine/runtime/runtime-verb-interpreter.ts |
+| handleAction state:* | intent = params.name without "state:"; payload value + rest | CustomEvent detail with params.name starting "state:" | src/logic/runtime/runtime-verb-interpreter.ts |
 
 ---
 
@@ -133,6 +158,12 @@ Derivation is in state-resolver.deriveState(log). Intents: state:currentView, st
 | setCardLayoutPresetOverride | Card override map | OrganPanel |
 | setOrganInternalLayoutOverride | Organ internal override map | OrganPanel |
 | setCurrentScreenTree | Composed tree | page.tsx after compose |
+
+---
+
+## Contribution rule
+
+**New dispatchState call sites:** Must be added to (1) the **Bounded audit** table above, (2) the relevant section (2–13), and (3) [STATE_INTENTS.md](./STATE_INTENTS.md) if the intent is new. **New intents** also require a branch in `src/state/state-resolver.ts` deriveState. No new state mutation surfaces without this contract update.
 
 ---
 

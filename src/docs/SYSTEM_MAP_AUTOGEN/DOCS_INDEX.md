@@ -65,6 +65,22 @@
 | File | Purpose |
 |------|--------|
 | [ENGINE_WIRING_STATUS.generated.md](../ARCHITECTURE_AUTOGEN/ENGINE_WIRING_STATUS.generated.md) | Engines and engine-like modules: ACTIVE / DORMANT / DISCONNECTED; entry call sites and call chain when ACTIVE |
+| [PIPELINE_AND_BOUNDARIES_REFERENCE.md](../ARCHITECTURE_AUTOGEN/PIPELINE_AND_BOUNDARIES_REFERENCE.md) | Single reference: renderer table, API routes, blueprint boundary, behavior branch order, loadScreen, layout order, pipeline order, override stores, ui-verb-map, scripts, state persistence, site compiler, errors, dev-only surfaces |
+| [BOUNDARY_SEPARATION_CHECKLIST.md](../ARCHITECTURE_AUTOGEN/BOUNDARY_SEPARATION_CHECKLIST.md) | Layout ≠ Logic ≠ State ≠ Behavior ≠ Blueprint ≠ Organs ≠ Registry; no cross-boundary writes; checklist for changes (Phase 9.5) |
+
+### `src/docs/SYSTEM_INTELLIGENCE_AUTOGEN/` — System scan artifacts
+
+| File | Purpose |
+|------|--------|
+| [START_HERE.generated.md](../SYSTEM_INTELLIGENCE_AUTOGEN/START_HERE.generated.md) | Entry point; artifacts index (MASTER_SYSTEM_INDEX, reachability graph/table, disconnected systems, violations, state write audit, authority precedence, verification summary) |
+| [MASTER_SYSTEM_INDEX.generated.md](../SYSTEM_INTELLIGENCE_AUTOGEN/MASTER_SYSTEM_INDEX.generated.md) | Subsystems, entrypoints, runtime callers, state surfaces, status |
+| [graphs/RUNTIME_REACHABILITY_GRAPH.generated.mmd](../SYSTEM_INTELLIGENCE_AUTOGEN/graphs/RUNTIME_REACHABILITY_GRAPH.generated.mmd) | Mermaid: Next.js → screen load → compose → renderer → behaviors → state |
+| [graphs/ENGINE_REACHABILITY_TABLE.generated.md](../SYSTEM_INTELLIGENCE_AUTOGEN/graphs/ENGINE_REACHABILITY_TABLE.generated.md) | Engine-level reachability table |
+| [DISCONNECTED_SYSTEMS_REPORT.generated.md](../SYSTEM_INTELLIGENCE_AUTOGEN/DISCONNECTED_SYSTEMS_REPORT.generated.md) | What exists, where, what should call it, wiring TODOs |
+| [JSON_DRIVEN_VIOLATIONS.generated.md](../SYSTEM_INTELLIGENCE_AUTOGEN/JSON_DRIVEN_VIOLATIONS.generated.md) | Hardcoded layout IDs, registry lists, silent fallbacks |
+| [STATE_WRITE_SURFACE_AUDIT.generated.md](../SYSTEM_INTELLIGENCE_AUTOGEN/STATE_WRITE_SURFACE_AUDIT.generated.md) | All mutations: dispatchState, setState, store setters |
+| [AUTHORITY_PRECEDENCE_AUDIT.generated.md](../SYSTEM_INTELLIGENCE_AUTOGEN/AUTHORITY_PRECEDENCE_AUDIT.generated.md) | Resolver precedence vs documented hierarchy |
+| [MASTER_VERIFICATION_SUMMARY.generated.md](../SYSTEM_INTELLIGENCE_AUTOGEN/MASTER_VERIFICATION_SUMMARY.generated.md) | Rollup of verification reports |
 
 ### `src/docs/SYSTEM_MASTER/`
 

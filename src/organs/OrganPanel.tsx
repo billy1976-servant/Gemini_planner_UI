@@ -4,6 +4,7 @@ import React from "react";
 import { getOrganLabel } from "@/organs/organ-registry";
 import { getLayout2Ids, getAllowedCardPresetsForSectionPreset, evaluateCompatibility } from "@/layout";
 import { getInternalLayoutIds } from "@/layout-organ";
+import { PipelineDebugStore } from "@/devtools/pipeline-debug-store";
 
 export type OrganPanelProps = {
   /** Section keys to show layout preset for (from collectSectionKeysAndNodes). */
@@ -178,7 +179,29 @@ export default function OrganPanel({
                 <select
                   id={`section-layout-preset-${sectionKey}`}
                   value={currentSectionPreset}
-                  onChange={(e) => onSectionLayoutPresetOverride(sectionKey, e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    const presetId = value;
+                    console.log("FLOW 1 — UI VALUE", {
+                      sectionId: sectionKey,
+                      selected: presetId,
+                    });
+                    const target = `section-layout-preset-${sectionKey}`;
+                    PipelineDebugStore.setLastEvent({ time: Date.now(), type: "change", target });
+                    window.dispatchEvent(
+                      new CustomEvent("action", {
+                        detail: {
+                          type: "Action",
+                          params: {
+                            name: "state:update",
+                            key: `sectionLayoutPreset.${sectionKey}`,
+                            value,
+                          },
+                        },
+                      })
+                    );
+                    onSectionLayoutPresetOverride?.(sectionKey, value);
+                  }}
                   style={SELECT_STYLE}
                 >
                   <option value="">(default)</option>
@@ -198,7 +221,24 @@ export default function OrganPanel({
                 <select
                   id={`card-layout-preset-${sectionKey}`}
                   value={currentCardPreset}
-                  onChange={(e) => onCardLayoutPresetOverride(sectionKey, e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    const target = `card-layout-preset-${sectionKey}`;
+                    PipelineDebugStore.setLastEvent({ time: Date.now(), type: "change", target });
+                    window.dispatchEvent(
+                      new CustomEvent("action", {
+                        detail: {
+                          type: "Action",
+                          params: {
+                            name: "state:update",
+                            key: `cardLayoutPreset.${sectionKey}`,
+                            value,
+                          },
+                        },
+                      })
+                    );
+                    onCardLayoutPresetOverride?.(sectionKey, value);
+                  }}
                   style={SELECT_STYLE}
                 >
                   <option value="">(default)</option>
@@ -218,7 +258,24 @@ export default function OrganPanel({
                 <select
                   id={`organ-internal-layout-${sectionKey}`}
                   value={currentInternalLayout}
-                  onChange={(e) => onOrganInternalLayoutOverride(sectionKey, e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    const target = `organ-internal-layout-${sectionKey}`;
+                    PipelineDebugStore.setLastEvent({ time: Date.now(), type: "change", target });
+                    window.dispatchEvent(
+                      new CustomEvent("action", {
+                        detail: {
+                          type: "Action",
+                          params: {
+                            name: "state:update",
+                            key: `organInternalLayout.${sectionKey}`,
+                            value,
+                          },
+                        },
+                      })
+                    );
+                    onOrganInternalLayoutOverride?.(sectionKey, value);
+                  }}
                   style={SELECT_STYLE}
                 >
                   <option value="">(default)</option>

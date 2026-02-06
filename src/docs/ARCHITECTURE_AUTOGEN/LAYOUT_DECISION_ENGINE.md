@@ -1,7 +1,8 @@
 # Layout Decision Engine
 
 **Source:** Logic Plan 5 — [5_LAYOUT_DECISION_ENGINE_PLAN.md](../../cursor/logic/complete/5_LAYOUT_DECISION_ENGINE_PLAN.md).  
-**Classification:** REFERENCE — Future decision engine; primary architecture reference: src/docs/ARCHITECTURE_AUTOGEN, src/docs/SYSTEM_MAP_AUTOGEN
+**Classification:** REFERENCE — Future decision engine; primary architecture reference: src/docs/ARCHITECTURE_AUTOGEN, src/docs/SYSTEM_MAP_AUTOGEN  
+**Implementation status:** PLANNED. No runtime code implements layout-ID scoring by traits; compatible ID source (getSectionLayoutIds, evaluateCompatibility) and precedence slot exist; trait registry and context→weights JSON are prerequisites.
 
 The Layout Decision Engine scores **compatible** layout IDs (from the compatibility engine) using traits, user context, and optional preference weights, and produces a single **recommended** layout ID (or ranked list). It never forces a choice: precedence remains **override > explicit > suggestion > default**. No hardcoded layout IDs; all from JSON or compatibility/layout resolvers.
 

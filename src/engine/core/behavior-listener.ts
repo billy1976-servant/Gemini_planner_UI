@@ -10,9 +10,14 @@
  */
 import { dispatchState, getState } from "@/state/state-store";
 import runBehavior from "@/behavior/behavior-runner";
+import { CONTRACT_VERBS, inferContractVerbDomain } from "@/behavior/contract-verbs";
+import { trace } from "@/devtools/interaction-tracer.store";
+import { PipelineDebugStore } from "@/devtools/pipeline-debug-store";
+import { recordStage, resetPipelineTrace } from "@/engine/debug/pipelineStageTrace";
 
 
 let installed = false;
+let installCount = 0;
 
 
 /** 🔑 Global ephemeral input buffer (NOT state) */
@@ -38,34 +43,41 @@ if (typeof window !== "undefined") {
     const fieldKey = e?.detail?.fieldKey;
     lastInputValue = value;
 
-
-    if (typeof fieldKey === "string" && fieldKey) {
-      inputByFieldKey[fieldKey] = value;
-      lastFieldKey = fieldKey;
-      console.log("[input-change] captured:", { value, fieldKey });
-
-      // Phase B: reconnect Field typing → state-store (candidate surface)
-      // Writes into DerivedState.values via intent === "state.update".
-      // This enables other components to read live input without waiting for a click action.
-      if (value !== undefined) {
-        dispatchState("state.update", { key: fieldKey, value });
-      }
+    // No invented fallback: when fieldKey is missing we do not dispatch (explicit no-op).
+    if (typeof fieldKey !== "string" || !fieldKey) {
+      console.warn("[input-change] missing fieldKey — skipping dispatch (no fallback)", {
+        value,
+        fieldKey,
+      });
       return;
     }
 
+    inputByFieldKey[fieldKey] = value;
+    lastFieldKey = fieldKey;
+    console.log("[input-change] captured:", { value, fieldKey });
 
-    console.warn("[input-change] missing fieldKey — falling back", {
-      value,
-      fieldKey,
-    });
+    // Phase B: reconnect Field typing → state-store (candidate surface)
+    // Writes into DerivedState.values via intent === "state.update".
+    if (value !== undefined) {
+      dispatchState("state.update", { key: fieldKey, value });
+    }
   });
 }
 
 
 export function installBehaviorListener(navigate: (to: string) => void) {
-  if (installed) return;
-  installed = true;
   if (typeof window === "undefined") return;
+  installCount += 1;
+  if (installed) {
+    if (process.env.NODE_ENV === "development") {
+      recordStage("listener", "warn", { installedTwice: true, count: installCount });
+    }
+    return;
+  }
+  installed = true;
+  if (process.env.NODE_ENV === "development") {
+    recordStage("listener", "pass", { installed: true, ts: Date.now() });
+  }
 
 
   /* =========================
@@ -92,14 +104,42 @@ export function installBehaviorListener(navigate: (to: string) => void) {
      ACTION → STATE / NAV
   ========================= */
   window.addEventListener("action", (e: any) => {
+    resetPipelineTrace();
     const behavior = e.detail || {};
-    const params = behavior.params || {};
+    const params = behavior?.params ?? {};
+    console.log("FLOW 2 — ACTION RECEIVED", params);
     const actionName = params.name;
     const target = params.target;
+    if (process.env.NODE_ENV === "development") {
+      const state = getState();
+      const snap = PipelineDebugStore.getSnapshot();
+      PipelineDebugStore.setBeforeSnapshot({
+        stateValues: state?.values,
+        layoutMap: { ...(snap.layoutMap ?? {}) },
+      });
+      PipelineDebugStore.mark("behavior-listener", "action.receive", {
+        actionName,
+        target: target ?? null,
+      });
+    }
+    const ts = Date.now();
 
+    if (process.env.NODE_ENV === "development") {
+      if (!behavior || typeof params !== "object") {
+        recordStage("action", "fail", { reason: "Missing params" });
+      } else if (!actionName) {
+        recordStage("action", "fail", { reason: "No action name provided on action event" });
+      } else {
+        recordStage("action", "pass", { name: params.name, key: params.key, value: params.value, ts });
+      }
+    }
 
-    console.log("[action]", actionName, params);
-
+    PipelineDebugStore.setLastBehavior(behavior);
+    PipelineDebugStore.setLastAction(actionName ?? null);
+    trace({ time: ts, type: "event", label: actionName, payload: params });
+    if (process.env.NODE_ENV === "development") {
+      console.log("[action]", actionName, params);
+    }
 
     if (!actionName) {
       console.warn("[action] Missing action name");
@@ -110,6 +150,9 @@ export function installBehaviorListener(navigate: (to: string) => void) {
        STATE MUTATION BRIDGE
     ========================= */
     if (actionName.startsWith("state:")) {
+      if (process.env.NODE_ENV === "development") {
+        recordStage("behavior", "pass", { matched: false, bypass: "state:update is direct state op", matchedBehavior: actionName });
+      }
       const mutation = actionName.replace("state:", "");
       const {
         name: _drop,
@@ -137,7 +180,9 @@ export function installBehaviorListener(navigate: (to: string) => void) {
             value: inputValue,
           });
         } else {
-          // Legacy fallback for other state:* mutations that still reference input buffers.
+          // Legacy fallback (documented): for state:* other than journal.add, valueFrom "input"
+          // may resolve from ephemeral buffers (lastFieldKey, inputByFieldKey, lastInputValue)
+          // when fieldKey is omitted. Prefer explicit fieldKey + state.values for new flows.
           const fk =
             typeof fkParam === "string" && fkParam
               ? fkParam
@@ -162,48 +207,53 @@ export function installBehaviorListener(navigate: (to: string) => void) {
         });
       }
 
-      // Phase 2: map legacy state:* action names onto the state-store's real intents
-      import("@/state/state-store").then(({ dispatchState }) => {
-        // View selection
-        if (mutation === "currentView" && resolvedValue !== undefined) {
-          dispatchState("state:currentView", { value: resolvedValue });
+      // Phase 2: map legacy state:* action names onto the state-store's real intents (sync so layout dropdown → state is visible on next render)
+      // View selection
+      if (mutation === "currentView" && resolvedValue !== undefined) {
+        dispatchState("state:currentView", { value: resolvedValue });
+        return;
+      }
+
+      // Generic key/value update (matches state-resolver intent === "state.update")
+      if (mutation === "update") {
+        const key = rest.key ?? rest.target;
+        if (typeof key === "string" && key.length > 0) {
+          dispatchState("state.update", { key, value: resolvedValue });
+          if (process.env.NODE_ENV === "development") {
+            PipelineDebugStore.mark("behavior-listener", "action.dispatchState", {
+              intent: "state.update",
+              key,
+            });
+          }
+          console.log("STATE WRITE", key, getState()?.values?.[key]);
           return;
         }
+      }
 
-        // Generic key/value update (matches state-resolver intent === "state.update")
-        if (mutation === "update") {
-          const key = rest.key ?? rest.target;
-          if (typeof key === "string" && key.length > 0) {
-            dispatchState("state.update", { key, value: resolvedValue });
-            return;
-          }
+      // Journal add (matches state-resolver intent === "journal.add")
+      if (mutation === "journal.add") {
+        const track = rest.track;
+        const key = rest.key;
+        if (typeof key === "string") {
+          dispatchState("journal.add", {
+            track,
+            key,
+            value: resolvedValue,
+          });
+          return;
         }
+      }
 
-        // Journal add (matches state-resolver intent === "journal.add")
-        if (mutation === "journal.add") {
-          const track = rest.track;
-          const key = rest.key;
-          if (typeof key === "string") {
-            dispatchState("journal.add", {
-              track,
-              key,
-              value: resolvedValue,
-            });
-            return;
-          }
-        }
-
-        // Fallback (legacy): keep emitting state-mutate so older consumers can observe it.
-        window.dispatchEvent(
-          new CustomEvent("state-mutate", {
-            detail: {
-              name: mutation,
-              value: resolvedValue,
-              ...rest,
-            },
-          })
-        );
-      });
+      // Legacy: emit state-mutate so older consumers can observe; do not rely for new code.
+      window.dispatchEvent(
+        new CustomEvent("state-mutate", {
+          detail: {
+            name: mutation,
+            value: resolvedValue,
+            ...rest,
+          },
+        })
+      );
 
       return;
     }
@@ -213,6 +263,7 @@ export function installBehaviorListener(navigate: (to: string) => void) {
        ACTION → NAVIGATE
     ========================= */
     if (actionName === "navigate") {
+      recordStage("behavior", "pass", { matchedBehavior: actionName });
       const to = params.to;
       if (!to) {
         console.warn("[action:navigate] Missing 'to'");
@@ -225,51 +276,31 @@ export function installBehaviorListener(navigate: (to: string) => void) {
     /* =========================
        CONTRACT VERB PATH (PHASE 3)
        - If actionName is a contract verb token, route it through BehaviorRunner
-       - Otherwise fall through to the existing runtime verb interpreter
+       - Verb set and domain inference from @/behavior/contract-verbs (single source)
     ========================= */
-    if (
-      actionName === "tap" ||
-      actionName === "double" ||
-      actionName === "long" ||
-      actionName === "drag" ||
-      actionName === "scroll" ||
-      actionName === "swipe" ||
-      actionName === "go" ||
-      actionName === "back" ||
-      actionName === "open" ||
-      actionName === "close" ||
-      actionName === "route" ||
-      actionName === "crop" ||
-      actionName === "filter" ||
-      actionName === "frame" ||
-      actionName === "layout" ||
-      actionName === "motion" ||
-      actionName === "overlay"
-    ) {
-      // Best-effort domain inference for Action verbs (contract says infer from content type).
-      const domain =
-        actionName === "crop" ||
-        actionName === "filter" ||
-        actionName === "frame" ||
-        actionName === "layout" ||
-        actionName === "motion" ||
-        actionName === "overlay"
-          ? (params.domain ?? "image")
-          : actionName === "tap" ||
-            actionName === "double" ||
-            actionName === "long" ||
-            actionName === "drag" ||
-            actionName === "scroll" ||
-            actionName === "swipe"
-          ? "interaction"
-          : "navigation";
-
+    if (CONTRACT_VERBS.has(actionName)) {
+      const domain = inferContractVerbDomain(actionName, params.domain);
+      const ctx = {
+        navigate,
+        setScreen: (id: string) => navigate("|" + id),
+        openModal: (id: string) => navigate("modal:" + id),
+        setFlow: (id: string) => navigate("flow:" + id),
+        goBack: (n: number | string = 1) =>
+          navigate(typeof n === "number" ? "back:" + n : "back:" + n),
+        goRoot: () => navigate("root"),
+        openPanel: (id: string) => navigate("panel:" + id),
+        openSheet: (id: string) => navigate("sheet:" + id),
+        closePanel: () => navigate("panel:close"),
+        closeSheet: () => navigate("sheet:close"),
+      };
       try {
-        runBehavior(domain, actionName, { navigate }, params);
+        runBehavior(domain, actionName, ctx, params);
+        trace({ time: Date.now(), type: "behavior", label: actionName });
+        recordStage("behavior", "pass", { matchedBehavior: actionName });
       } catch (err) {
         console.warn("[behavior-runner] failed", { domain, actionName, err });
+        recordStage("behavior", "fail", { matchedBehavior: null });
       }
-
       return;
     }
 
@@ -278,6 +309,7 @@ export function installBehaviorListener(navigate: (to: string) => void) {
        DEV VISUAL PROOF
     ========================= */
     if (actionName === "visual-proof") {
+      recordStage("behavior", "pass", { matchedBehavior: actionName });
       if (!target) return;
       const el = document.querySelector(
         `[data-node-id="${target}"]`
@@ -301,7 +333,7 @@ export function installBehaviorListener(navigate: (to: string) => void) {
       return;
     }
 
-
+    recordStage("behavior", "pass", { matchedBehavior: actionName });
     const currentState = getState?.();
     if (currentState) {
       runtimeInFlight = true;
@@ -344,6 +376,7 @@ export function installBehaviorListener(navigate: (to: string) => void) {
 
 
     console.warn("[action] Unhandled action:", actionName);
+    recordStage("behavior", "fail", { matchedBehavior: null, reason: "No behavior matched action" });
   });
 
 

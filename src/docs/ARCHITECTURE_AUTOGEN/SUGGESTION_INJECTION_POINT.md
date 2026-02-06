@@ -1,7 +1,8 @@
 # Suggestion Injection Point
 
 **Source:** Logic Plan 8 — [8_SUGGESTION_INJECTION_POINT_PLAN.md](../../cursor/logic/complete/8_SUGGESTION_INJECTION_POINT_PLAN.md).  
-**Classification:** FOUNDATIONAL — Where Logic hands suggestion to Layout resolver; primary architecture reference: src/docs/ARCHITECTURE_AUTOGEN, src/docs/SYSTEM_MAP_AUTOGEN
+**Classification:** FOUNDATIONAL — Where Logic hands suggestion to Layout resolver; primary architecture reference: src/docs/ARCHITECTURE_AUTOGEN, src/docs/SYSTEM_MAP_AUTOGEN  
+**Implementation status:** PLANNED. No resolver call to Logic for suggestion yet; precedence slot (after explicit node.layout, before template default) reserved in applyProfileToNode.
 
 The **single place** where the Layout resolver requests a layout suggestion from Logic when user override and explicit node.layout are absent. Clear interface: inputs, output shape, and guarantee that suggestion is advisory only. Precedence remains **override → explicit → suggestion → default**; Logic never writes to the layout store or to node.layout.
 

@@ -13,7 +13,7 @@
     "build": "node --max-old-space-size=4096 ./node_modules/next/dist/bin/next build",
     "start": "next start",
     "allfiles": "ts-node src/scripts/generate-allfiles.ts",
-    "diagnostics": "ts-node ./src/scripts/run-diagnostics.ts",
+    "diagnostics": "ts-node src/devtools/run-diagnostics.ts",
     "chain": "ts-node src/scripts/run-chain-test.ts",
     "globalscan": "ts-node -r tsconfig-paths/register src/scripts/global-scan.ts",
     "schema": "ts-node src/scripts/generate-schema.ts",
@@ -37,7 +37,11 @@
     "test:organs:layer6": "ts-node -r tsconfig-paths/register src/organs/organs.layer6.test.ts",
     "test:organs:layer7": "ts-node -r tsconfig-paths/register src/organs/organs.layer7.test.ts",
     "test:param-keys": "ts-node -r tsconfig-paths/register src/contracts/param-key-mapping.test.ts",
-    "test:showcase-visual": "ts-node -r tsconfig-paths/register src/contracts/showcase-visual-quality.test.ts"
+    "test:showcase-visual": "ts-node -r tsconfig-paths/register src/contracts/showcase-visual-quality.test.ts",
+    "test:e2e": "playwright test",
+    "screen": "playwright test runtime-pipeline-contract.spec.ts --reporter=html",
+    "screen:headed": "playwright test runtime-pipeline-contract.spec.ts --headed --reporter=html",
+    "screen:debug": "playwright test runtime-pipeline-contract.spec.ts --headed --debug"
   },
   "dependencies": {
     "@types/chalk": "^0.4.31",
@@ -48,6 +52,7 @@
     "react-dom": "18.2.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.1",
     "@types/react": "19.2.6",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",

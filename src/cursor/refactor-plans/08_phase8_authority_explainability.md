@@ -48,3 +48,25 @@ Authority ladder audit; document section layoutDef null fallback; planned engine
 ## Dependencies
 
 None
+
+---
+
+## Verification report (Phase 8 executed)
+
+**Plan name:** Phase 8 — Runtime Authority + Explainability  
+**Scope:** Authority ladder audit; document section layoutDef null fallback.  
+**Date:** 2025-02-04
+
+| Check | Status |
+|-------|--------|
+| Runtime matches plan contract | ✅ PASS |
+| No forbidden changes made | ✅ PASS |
+| No unexpected side effects | ✅ PASS |
+| All files referenced exist | ✅ PASS |
+
+**Detailed findings**
+
+- **8.1 — Authority ladder:** `RUNTIME_AUTHORITY_LADDER.md` already documented override → explicit (node.layout) → template default → undefined. Audited `json-renderer.tsx` `applyProfileToNode`: `layoutId = overrideId || existingLayoutId || templateDefaultLayoutId || undefined` and `ruleApplied` order match. No code change; doc and code align.
+- **8.3 — Section layoutDef null fallback:** Confirmed in `section.compound.tsx`: `layoutDef = resolveLayout(layout)`; when `effectiveDef` is falsy (including `layoutDef == null`), component returns `<div data-section-id={id}>{children}</div>` with no LayoutMoleculeRenderer and **no invented layout ID**. Added dedicated subsection **"Section layoutDef null fallback (8.3)"** in `RUNTIME_AUTHORITY_LADDER.md` and clarified the Hard Fallbacks table row with "no invented layout ID".
+
+**Files modified:** `src/docs/ARCHITECTURE_AUTOGEN/RUNTIME_AUTHORITY_LADDER.md` only (documentation; no behavior change).

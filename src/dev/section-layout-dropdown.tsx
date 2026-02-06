@@ -89,7 +89,23 @@ export default function SectionLayoutDropdown({
             </span>
             <select
               value={getSectionLayoutValue(s)}
-              onChange={(e) => setSectionLayout(s.id ?? s.role ?? "", e.target.value)}
+              onChange={(e) => {
+                const sectionId = s.id ?? s.role ?? "";
+                const value = e.target.value;
+                window.dispatchEvent(
+                  new CustomEvent("action", {
+                    detail: {
+                      type: "Action",
+                      params: {
+                        name: "state:update",
+                        key: `devSectionLayout.${sectionId}`,
+                        value,
+                      },
+                    },
+                  })
+                );
+                setSectionLayout(sectionId, value);
+              }}
               style={{ flex: 1 }}
             >
               <option value="">(inherit)</option>

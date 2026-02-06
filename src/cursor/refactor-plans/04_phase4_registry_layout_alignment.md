@@ -55,3 +55,42 @@ Layout types and IDs from registry (Phase 2); rename covered in Phase 3; clarify
 ## Dependencies
 
 1.4 (Blueprint boundary doc)
+
+---
+
+## Verification Report (Step 1)
+
+**Plan Name:** Phase 4 — Registry & Layout Authority Alignment
+
+**Scope:** Layout types and IDs from registry (Phase 2); rename covered in Phase 3; clarify planned vs implemented layout engines; Component Registry source of truth. Documentation only: add implementation status to each engine doc; document registry as single source. No code changes to applyProfileToNode, getLayout2Ids/compatibility, resolver, state, override stores, resolveLayout.
+
+**Date:** 2026-02-04
+
+### Verification Table
+
+| Check | Status |
+|-------|--------|
+| Runtime matches plan contract | ✅ PASS |
+| No forbidden changes made | ✅ PASS |
+| No unexpected side effects | ✅ PASS |
+| All files referenced exist | ✅ PASS |
+
+### Detailed Findings
+
+**What was verified**
+
+- **4.3** — LAYOUT_DECISION_ENGINE.md: added **Implementation status:** PLANNED (no runtime scoring by traits; compatible ID source and precedence slot exist).
+- **4.4** — SUGGESTION_INJECTION_POINT.md: added **Implementation status:** PLANNED (no resolver call to Logic yet; slot reserved in applyProfileToNode).
+- **4.5** — TRAIT_REGISTRY_SYSTEM.md: added **Implementation status:** PLANNED (no trait-registry.json; prerequisite for Plans 4/5/6).
+- **4.6** — USER_PREFERENCE_ADAPTATION.md: added **Implementation status:** PLANNED (no "more like this" / trait-weight code; depends on Trait Registry and Decision Engine).
+- **4.7** — RUNTIME_DECISION_TRACE_IMPLEMENTATION.md: added **Implementation status (Explainability/Trace):** PARTIAL (runtime trace implemented for dev; layout suggestion explainability planned with Plans 5/8).
+- **4.8** — CONTEXTUAL_LAYOUT_LOGIC.md: added **Implementation status:** PLANNED (no contextual engine or rules JSON; getAvailableSlots exists for future use).
+- **4.9** — registry.tsx: added JSDoc that it is the single source for type→component; no competing maps. PIPELINE_AND_BOUNDARIES_REFERENCE.md: added §15 Component Registry (single source).
+
+**Files changed**
+
+- **Modified:** LAYOUT_DECISION_ENGINE.md, SUGGESTION_INJECTION_POINT.md, TRAIT_REGISTRY_SYSTEM.md, USER_PREFERENCE_ADAPTATION.md, CONTEXTUAL_LAYOUT_LOGIC.md, SYSTEM_INTELLIGENCE/RUNTIME_DECISION_TRACE_IMPLEMENTATION.md, PIPELINE_AND_BOUNDARIES_REFERENCE.md, src/engine/core/registry.tsx.
+
+**Gaps / follow-up**
+
+- None. Acceptance criteria met: each engine has documented status "planned" or "partial"; registry single source documented.

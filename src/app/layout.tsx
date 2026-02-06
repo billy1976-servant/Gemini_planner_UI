@@ -4,18 +4,19 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useSyncExternalStore } from "react";
 
 import "@/styles/site-theme.css";
+import InteractionTracerPanel from "@/devtools/InteractionTracerPanel";
 
 /* ============================================================
-   🎨 PALETTE ENGINE
+   🎨 PALETTE ENGINE (state is source of truth; palette-store used only as fallback)
 ============================================================ */
-import { setPalette, getPaletteName } from "@/engine/core/palette-store";
+import { getPaletteName } from "@/engine/core/palette-store";
 import { usePaletteCSS } from "@/lib/site-renderer/palette-bridge";
 
 
 /* ============================================================
-   🧱 LAYOUT ENGINE
+   🧱 LAYOUT ENGINE (state is source of truth; layout-store used only as fallback)
 ============================================================ */
-import { setLayout, getLayout, subscribeLayout, type LayoutMode } from "@/engine/core/layout-store";
+import { getLayout, subscribeLayout, type LayoutMode } from "@/engine/core/layout-store";
 import { getCurrentScreenTree } from "@/engine/core/current-screen-tree-store";
 import { buildTemplateFromTree, serializeTemplateProfile } from "@/lib/layout/save-current-as-template";
 
@@ -28,7 +29,7 @@ import { getTemplateList } from "@/lib/layout/template-profiles";
 /* ============================================================
    🧠 STATE (PHASE B: INTERNAL VIEW NAV)
 ============================================================ */
-import { dispatchState } from "@/state/state-store";
+import { dispatchState, getState, subscribeState } from "@/state/state-store";
 
 
 /* ============================================================
@@ -84,14 +85,15 @@ export default function RootLayout({ children }: any) {
   const [selectedFile, setSelectedFile] = useState("");
 
 
-  const [paletteName, setPaletteName] = useState(getPaletteName());
-  const [experience, setExperience] =
-    useState<"website" | "app" | "learning">("website");
-
+  const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
   const layoutSnapshot = useSyncExternalStore(subscribeLayout, getLayout, getLayout);
-  const templateId = (layoutSnapshot as { templateId?: string })?.templateId ?? "";
-  const layoutMode = (layoutSnapshot as { mode?: LayoutMode })?.mode ?? "template";
   const templateList = getTemplateList();
+
+  // State is source of truth; fall back to layout-store / palette-store when key is missing
+  const experience = (stateSnapshot?.values?.experience ?? (layoutSnapshot as { experience?: string })?.experience) ?? "website";
+  const templateId = (stateSnapshot?.values?.templateId ?? (layoutSnapshot as { templateId?: string })?.templateId) ?? "";
+  const layoutMode = (stateSnapshot?.values?.layoutMode ?? (layoutSnapshot as { mode?: LayoutMode })?.mode) ?? "template";
+  const paletteName = (stateSnapshot?.values?.paletteName ?? getPaletteName()) || "default";
 
   const [showSections, setShowSections] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -100,15 +102,14 @@ export default function RootLayout({ children }: any) {
   usePaletteCSS();
 
   /* ============================================================
-     🔗 DEMO: INITIAL EXPERIENCE FROM URL
-     Deep links can open in a specific experience, e.g. ?experience=app
+     🔗 DEMO: INITIAL EXPERIENCE FROM URL (seed state so dropdown reflects it)
   ============================================================ */
   useEffect(() => {
     const exp = searchParams.get("experience");
-    if (exp === "website" || exp === "app" || exp === "learning") {
-      setExperience(exp);
+    if ((exp === "website" || exp === "app" || exp === "learning") && stateSnapshot?.values?.experience !== exp) {
+      dispatchState("state:update", { key: "experience", value: exp });
     }
-  }, [searchParams]);
+  }, [searchParams, stateSnapshot?.values?.experience]);
 
   /* ============================================================
      🔁 INSTALL BEHAVIOR ROUTER (ONCE)
@@ -116,8 +117,6 @@ export default function RootLayout({ children }: any) {
   ============================================================ */
   useEffect(() => {
     installBehaviorListener((to: string) => {
-      // Phase B: Back-compat for legacy multi-view screens.
-      // Destinations like "|Signup" are *view IDs*, not screen file paths.
       if (typeof to === "string" && to.startsWith("|")) {
         dispatchState("state:currentView", { value: to });
         return;
@@ -125,14 +124,6 @@ export default function RootLayout({ children }: any) {
       router.replace(`/?screen=${encodeURIComponent(to)}`);
     });
   }, [router]);
-
-
-  /* ============================================================
-     🧱 APPLY EXPERIENCE PRESET
-  ============================================================ */
-  useEffect(() => {
-    setLayout({ experience });
-  }, [experience]);
 
 
   /* ============================================================
@@ -175,13 +166,6 @@ export default function RootLayout({ children }: any) {
     const screenPath = `${category}/${folder}/${file}`;
     router.replace(`/?screen=${encodeURIComponent(screenPath)}`);
   };
-
-
-  const onPaletteChange = (name: string) => {
-    setPalette(name);
-    setPaletteName(name);
-  };
-
 
   return (
     <html>
@@ -255,7 +239,17 @@ export default function RootLayout({ children }: any) {
 
           <select
             value={experience}
-            onChange={e => setExperience(e.target.value as any)}
+            onChange={e => {
+              const value = e.target.value as "website" | "app" | "learning";
+              window.dispatchEvent(
+                new CustomEvent("action", {
+                  detail: {
+                    type: "Action",
+                    params: { name: "state:update", key: "experience", value },
+                  },
+                })
+              );
+            }}
           >
             <option value="website">Experience: Website</option>
             <option value="app">Experience: App</option>
@@ -265,7 +259,17 @@ export default function RootLayout({ children }: any) {
 
           <select
             value={layoutMode}
-            onChange={e => setLayout({ mode: e.target.value as LayoutMode })}
+            onChange={e => {
+              const value = e.target.value as LayoutMode;
+              window.dispatchEvent(
+                new CustomEvent("action", {
+                  detail: {
+                    type: "Action",
+                    params: { name: "state:update", key: "layoutMode", value },
+                  },
+                })
+              );
+            }}
             title="Template = defaults (organs override). Custom = no template section layout."
           >
             <option value="template">Mode: Template</option>
@@ -274,7 +278,17 @@ export default function RootLayout({ children }: any) {
 
           <select
             value={templateId}
-            onChange={e => setLayout({ templateId: e.target.value })}
+            onChange={e => {
+              const value = e.target.value;
+              window.dispatchEvent(
+                new CustomEvent("action", {
+                  detail: {
+                    type: "Action",
+                    params: { name: "state:update", key: "templateId", value },
+                  },
+                })
+              );
+            }}
             style={{ minWidth: 180 }}
             title="Template: section layout (row/column/grid) + density. Change to see gaps and structure update."
           >
@@ -312,7 +326,20 @@ export default function RootLayout({ children }: any) {
             Header &amp; Nav: right panel
           </span>
 
-          <select value={paletteName} onChange={e => onPaletteChange(e.target.value)}>
+          <select
+            value={paletteName}
+            onChange={e => {
+              const value = e.target.value;
+              window.dispatchEvent(
+                new CustomEvent("action", {
+                  detail: {
+                    type: "Action",
+                    params: { name: "state:update", key: "paletteName", value },
+                  },
+                })
+              );
+            }}
+          >
             {PALETTES.map(p => (
               <option key={p} value={p}>
                 Palette: {p}
@@ -332,6 +359,7 @@ export default function RootLayout({ children }: any) {
         )}
 
         <div ref={contentRef} className="app-content">{children}</div>
+        {process.env.NODE_ENV === "development" && <InteractionTracerPanel />}
       </body>
     </html>
   );
