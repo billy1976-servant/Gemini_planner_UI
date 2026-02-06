@@ -1,0 +1,433 @@
+{
+  "generated": "2026-02-06T15:43:43.920Z",
+  "gitHash": "722a85d6905c2041a047da777ce3c12d25163ca9",
+  "repoRootName": "HiSense",
+  "spineStages": [
+    {
+      "stage": "JSON Screen",
+      "files": [
+        {
+          "path": "src/app/page.tsx",
+          "role": "Entry; searchParams.get('screen')/('flow'); loadScreen(path); resolveLandingPage()"
+        },
+        {
+          "path": "src/app/api/screens/[...path]/route.ts",
+          "role": "GET handler; serves JSON from apps-offline/apps or TSX marker from screens"
+        },
+        {
+          "path": "src/engine/core/screen-loader.ts",
+          "role": "loadScreen(path): TSX descriptor or fetch /api/screens; dispatchState state:currentView if json.state"
+        }
+      ]
+    },
+    {
+      "stage": "Engines",
+      "files": [
+        {
+          "path": "src/app/page.tsx",
+          "role": "assignSectionInstanceKeys, expandOrgansInDocument, applySkinBindings, composeOfflineScreen, setCurrentScreenTree"
+        },
+        {
+          "path": "src/lib/site-renderer/palette-bridge.tsx",
+          "role": "applySkinBindings / skin application"
+        },
+        {
+          "path": "src/engine/core/behavior-listener.ts",
+          "role": "installBehaviorListener; action → state:* | navigate | runBehavior | interpretRuntimeVerb"
+        },
+        {
+          "path": "src/behavior/behavior-runner.ts",
+          "role": "runBehavior(domain, action, ctx, args)"
+        },
+        {
+          "path": "src/logic/runtime/engine-bridge.ts",
+          "role": "Engine I/O bridge for logic engines"
+        }
+      ]
+    },
+    {
+      "stage": "State",
+      "files": [
+        {
+          "path": "src/state/state-store.ts",
+          "role": "dispatchState(intent, payload); log; persist/rehydrate; listeners"
+        },
+        {
+          "path": "src/state/state-resolver.ts",
+          "role": "deriveState(log): currentView, journal, values, layoutByScreen, scans, interactions"
+        }
+      ]
+    },
+    {
+      "stage": "Layout",
+      "files": [
+        {
+          "path": "src/layout/resolver/layout-resolver.ts",
+          "role": "resolveLayout(layoutId, context); getDefaultSectionLayoutId"
+        },
+        {
+          "path": "src/layout/index.ts",
+          "role": "Layout module entry; resolveLayout, getExperienceProfile, getTemplateProfile"
+        },
+        {
+          "path": "src/engine/core/layout-store.ts",
+          "role": "Section/card/organ layout override store (section-layout-preset-store, organ-internal)"
+        },
+        {
+          "path": "src/lib/layout/molecule-layout-resolver.ts",
+          "role": "resolveMoleculeLayout; molecule layout from definition"
+        }
+      ]
+    },
+    {
+      "stage": "Renderer",
+      "files": [
+        {
+          "path": "src/engine/core/json-renderer.tsx",
+          "role": "JsonRenderer; renderNode; applyProfileToNode; Registry lookup; section layout override → Section"
+        },
+        {
+          "path": "src/engine/core/registry.tsx",
+          "role": "Registry: type → component; Section, primitives"
+        },
+        {
+          "path": "src/compounds/ui/12-molecules/section.compound.tsx",
+          "role": "Section compound; resolveLayout(layout); LayoutMoleculeRenderer"
+        },
+        {
+          "path": "src/layout/renderer/LayoutMoleculeRenderer.tsx",
+          "role": "Renders section structure; containerWidth, split, data-section-layout, data-container-width"
+        }
+      ]
+    },
+    {
+      "stage": "DOM",
+      "files": [
+        {
+          "path": "src/engine/core/json-renderer.tsx",
+          "role": "data-node-id, data-section-debug; sectionKey, containerWidth in dev"
+        },
+        {
+          "path": "src/layout/renderer/LayoutMoleculeRenderer.tsx",
+          "role": "data-section-layout={layoutPresetId}; data-container-width={rawWidth}"
+        },
+        {
+          "path": "src/compounds/ui/12-molecules/section.compound.tsx",
+          "role": "data-section-id={id}"
+        }
+      ]
+    }
+  ],
+  "topCentral": [
+    {
+      "path": "src/state/state-store.ts",
+      "inDegree": 25,
+      "outDegree": 4,
+      "score": 27,
+      "role": "state"
+    },
+    {
+      "path": "src/lib/layout/molecule-layout-resolver.ts",
+      "inDegree": 15,
+      "outDegree": 4,
+      "score": 17
+    },
+    {
+      "path": "src/logic/flows/flow-loader.ts",
+      "inDegree": 14,
+      "outDegree": 6,
+      "score": 17
+    },
+    {
+      "path": "src/components/9-atoms/primitives/surface.tsx",
+      "inDegree": 15,
+      "outDegree": 1,
+      "score": 15.5,
+      "role": "primitives"
+    },
+    {
+      "path": "src/engine/core/palette-resolver.ts",
+      "inDegree": 15,
+      "outDegree": 1,
+      "score": 15.5,
+      "role": "engines"
+    },
+    {
+      "path": "src/engine/core/json-renderer.tsx",
+      "inDegree": 6,
+      "outDegree": 18,
+      "score": 15,
+      "role": "engines"
+    },
+    {
+      "path": "src/lib/site-compiler/normalizeSiteData.ts",
+      "inDegree": 12,
+      "outDegree": 6,
+      "score": 15
+    },
+    {
+      "path": "src/logic/runtime/engine-bridge.ts",
+      "inDegree": 15,
+      "outDegree": 0,
+      "score": 15
+    },
+    {
+      "path": "src/engine/core/registry.tsx",
+      "inDegree": 0,
+      "outDegree": 29,
+      "score": 14.5,
+      "role": "engines"
+    },
+    {
+      "path": "src/components/9-atoms/primitives/collection.tsx",
+      "inDegree": 13,
+      "outDegree": 1,
+      "score": 13.5,
+      "role": "primitives"
+    },
+    {
+      "path": "src/components/9-atoms/primitives/sequence.tsx",
+      "inDegree": 13,
+      "outDegree": 1,
+      "score": 13.5,
+      "role": "primitives"
+    },
+    {
+      "path": "src/components/9-atoms/primitives/text.tsx",
+      "inDegree": 13,
+      "outDegree": 1,
+      "score": 13.5,
+      "role": "primitives"
+    },
+    {
+      "path": "src/app/page.tsx",
+      "inDegree": 0,
+      "outDegree": 25,
+      "score": 12.5,
+      "role": "runtime_core"
+    },
+    {
+      "path": "src/lib/site-renderer/renderFromSchema.tsx",
+      "inDegree": 2,
+      "outDegree": 18,
+      "score": 11
+    },
+    {
+      "path": "src/components/9-atoms/primitives/trigger.tsx",
+      "inDegree": 10,
+      "outDegree": 1,
+      "score": 10.5,
+      "role": "primitives"
+    },
+    {
+      "path": "src/engine/core/layout-store.ts",
+      "inDegree": 9,
+      "outDegree": 3,
+      "score": 10.5,
+      "role": "engines"
+    },
+    {
+      "path": "src/engine/core/palette-resolve-token.ts",
+      "inDegree": 10,
+      "outDegree": 1,
+      "score": 10.5,
+      "role": "engines"
+    },
+    {
+      "path": "src/devtools/pipeline-debug-store.ts",
+      "inDegree": 9,
+      "outDegree": 2,
+      "score": 10
+    },
+    {
+      "path": "src/screens/tsx-screens/onboarding/cards/EducationCard.tsx",
+      "inDegree": 5,
+      "outDegree": 9,
+      "score": 9.5
+    },
+    {
+      "path": "src/engine/debug/pipelineStageTrace.ts",
+      "inDegree": 9,
+      "outDegree": 0,
+      "score": 9,
+      "role": "engines"
+    },
+    {
+      "path": "src/lib/siteCompiler/types.ts",
+      "inDegree": 9,
+      "outDegree": 0,
+      "score": 9
+    },
+    {
+      "path": "src/lib/site-skin/SiteSkin.tsx",
+      "inDegree": 2,
+      "outDegree": 13,
+      "score": 8.5
+    },
+    {
+      "path": "src/logic/products/product-types.ts",
+      "inDegree": 7,
+      "outDegree": 1,
+      "score": 7.5
+    },
+    {
+      "path": "src/engine/onboarding/OnboardingFlowRenderer.tsx",
+      "inDegree": 3,
+      "outDegree": 8,
+      "score": 7,
+      "role": "engines"
+    },
+    {
+      "path": "src/engine/site-runtime/GeneratedSiteViewer.tsx",
+      "inDegree": 3,
+      "outDegree": 8,
+      "score": 7,
+      "role": "engines"
+    }
+  ],
+  "exportHubs": [
+    {
+      "path": "src/state/state-store.ts",
+      "exportCount": 0,
+      "inDegree": 25
+    },
+    {
+      "path": "src/components/9-atoms/primitives/surface.tsx",
+      "exportCount": 0,
+      "inDegree": 15
+    },
+    {
+      "path": "src/engine/core/palette-resolver.ts",
+      "exportCount": 0,
+      "inDegree": 15
+    },
+    {
+      "path": "src/lib/layout/molecule-layout-resolver.ts",
+      "exportCount": 0,
+      "inDegree": 15
+    },
+    {
+      "path": "src/logic/runtime/engine-bridge.ts",
+      "exportCount": 0,
+      "inDegree": 15
+    },
+    {
+      "path": "src/logic/flows/flow-loader.ts",
+      "exportCount": 0,
+      "inDegree": 14
+    },
+    {
+      "path": "src/components/9-atoms/primitives/collection.tsx",
+      "exportCount": 0,
+      "inDegree": 13
+    },
+    {
+      "path": "src/components/9-atoms/primitives/sequence.tsx",
+      "exportCount": 0,
+      "inDegree": 13
+    },
+    {
+      "path": "src/components/9-atoms/primitives/text.tsx",
+      "exportCount": 0,
+      "inDegree": 13
+    },
+    {
+      "path": "src/lib/site-compiler/normalizeSiteData.ts",
+      "exportCount": 0,
+      "inDegree": 12
+    },
+    {
+      "path": "src/components/9-atoms/primitives/trigger.tsx",
+      "exportCount": 0,
+      "inDegree": 10
+    },
+    {
+      "path": "src/engine/core/palette-resolve-token.ts",
+      "exportCount": 0,
+      "inDegree": 10
+    },
+    {
+      "path": "src/devtools/pipeline-debug-store.ts",
+      "exportCount": 0,
+      "inDegree": 9
+    },
+    {
+      "path": "src/engine/core/layout-store.ts",
+      "exportCount": 0,
+      "inDegree": 9
+    },
+    {
+      "path": "src/engine/debug/pipelineStageTrace.ts",
+      "exportCount": 0,
+      "inDegree": 9
+    }
+  ],
+  "observedStateKeys": [
+    {
+      "key": "currentView",
+      "writtenIn": [
+        "C:/Users/New User/Documents/HiSense/src/state/state-resolver.ts"
+      ],
+      "readIn": [
+        "state-resolver (derived)"
+      ]
+    },
+    {
+      "key": "journal",
+      "writtenIn": [
+        "C:/Users/New User/Documents/HiSense/src/state/state-resolver.ts"
+      ],
+      "readIn": [
+        "state-resolver (derived)"
+      ]
+    },
+    {
+      "key": "values",
+      "writtenIn": [
+        "C:/Users/New User/Documents/HiSense/src/state/state-resolver.ts"
+      ],
+      "readIn": [
+        "state-resolver (derived)"
+      ]
+    },
+    {
+      "key": "layoutByScreen",
+      "writtenIn": [
+        "C:/Users/New User/Documents/HiSense/src/state/state-resolver.ts"
+      ],
+      "readIn": [
+        "state-resolver (derived)"
+      ]
+    },
+    {
+      "key": "values.<key> (generic)",
+      "writtenIn": [
+        "C:/Users/New User/Documents/HiSense/src/state/state-store.ts",
+        "src/engine/core/behavior-listener.ts",
+        "src/engine/core/screen-loader.ts"
+      ],
+      "readIn": [
+        "src/state/state-resolver.ts",
+        "getState() consumers"
+      ]
+    }
+  ],
+  "engineContracts": {
+    "inputs": {
+      "path": "string (screen path or tsx:path)",
+      "json": "object (screen document with root/screen/node, state?, sections?)",
+      "context": "layout context (screenKey, sectionKey, profile)"
+    },
+    "outputs": {
+      "screenTree": "object (composed tree with section keys, layout applied)",
+      "state": "DerivedState (currentView, journal, values, layoutByScreen)",
+      "dom": "React tree → data-node-id, data-section-layout, data-container-width"
+    },
+    "enforcedIn": [
+      "src/engine/core/screen-loader.ts",
+      "src/state/state-store.ts",
+      "src/engine/core/json-renderer.tsx"
+    ]
+  },
+  "latestDiffSummary": null
+}

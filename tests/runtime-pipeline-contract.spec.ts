@@ -69,6 +69,40 @@ test("Runtime pipeline contract: layout dropdown triggers full pipeline and all 
     console.log("[CONTRACT] Artifact saved:", artifactPath);
   }
 
+  // --- BROWSER LAYOUT PROOF CAPTURE ---
+  const sectionKeyForProof = activeSection ?? "nav_organ";
+  const layoutProof = await page.evaluate((sectionKey: string) => {
+    const results: Record<string, unknown> = {};
+    const el = document.querySelector(`[data-section-id="${sectionKey}"]`) as HTMLElement | null;
+    if (!el) {
+      results.error = "Section element not found in DOM";
+      results.sectionKey = sectionKey;
+      return results;
+    }
+    const computed = window.getComputedStyle(el);
+    results.sectionKey = sectionKey;
+    results.dataset = { ...el.dataset };
+    results.className = el.className;
+    results.computedStyles = {
+      maxWidth: computed.maxWidth,
+      width: computed.width,
+      display: computed.display,
+      paddingLeft: computed.paddingLeft,
+      paddingRight: computed.paddingRight,
+    };
+    results.boundingBox = {
+      offsetWidth: el.offsetWidth,
+      clientWidth: el.clientWidth,
+      scrollWidth: el.scrollWidth,
+    };
+    return results;
+  }, sectionKeyForProof);
+
+  await testInfo.attach("layout-browser-proof.json", {
+    body: JSON.stringify(layoutProof, null, 2),
+    contentType: "application/json",
+  });
+
   await testInfo.attach("pipeline-contract-result.json", {
     body: JSON.stringify(results, null, 2),
     contentType: "application/json",
