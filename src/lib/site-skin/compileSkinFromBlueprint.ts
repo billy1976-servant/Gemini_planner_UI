@@ -30,7 +30,7 @@ export function compileSkinFromBlueprintScreen(args: {
   pageId?: string;
 }): SiteSkinDocument {
   const { screen } = args;
-  const domain = args.domain ?? "apps-offline";
+  const domain = args.domain ?? "apps-json";
   const pageId = args.pageId ?? (typeof screen.id === "string" ? screen.id : "screen");
 
   const sections = Array.isArray(screen.children) ? screen.children : [];

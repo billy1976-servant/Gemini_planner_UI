@@ -24,8 +24,8 @@
 |-------|------|----------|-------|---------------|
 | Load entry | `src/app/page.tsx` | loadScreen(screen) (useEffect) | path: string | Promise: { __type: "tsx-screen", path } or raw JSON screen |
 | Loader TSX | `src/engine/core/screen-loader.ts` | loadScreen | path (contains "/" or starts with "tsx:") | If tsx: return descriptor; page sets TsxComponent, setJson(null) |
-| Loader JSON | `src/engine/core/screen-loader.ts` | loadScreen | Normalized path (strip leading /, src/, apps-offline/apps/, apps/) | Fetch GET /api/screens/${normalized}?t=... |
-| API handler | `src/app/api/screens/[...path]/route.ts` | GET | params.path | Reads src/apps-offline/apps/... + .json; NextResponse.json(json) or 404 |
+| Loader JSON | `src/engine/core/screen-loader.ts` | loadScreen | Normalized path (strip leading /, src/, apps-json/apps/, apps/) | Fetch GET /api/screens/${normalized}?t=... |
+| API handler | `src/app/api/screens/[...path]/route.ts` | GET | params.path | Reads src/apps-json/apps/... + .json; NextResponse.json(json) or 404 |
 | State init | `src/engine/core/screen-loader.ts` | After res.json() | json.state?.currentView | dispatchState("state:currentView", { value }) if present; return json |
 | Page state | `src/app/page.tsx` | .then((data) => { ... }) | Load result | JSON: setJson(data); TSX: setTsxComponent, setJson(null) |
 
@@ -116,7 +116,7 @@ Passed from page to JsonRenderer as sectionLayoutPresetOverrides, cardLayoutPres
 | Stage | File(s) | Transform or display | In → out |
 |-------|---------|----------------------|----------|
 | Blueprint compile | blueprint.ts | Transform | blueprint + content → app.json (id, type, children, content, role, params, behavior) |
-| API serve screen | api/screens/[...path]/route.ts | Read | Reads apps-offline/apps/...path.json; returns JSON |
+| API serve screen | api/screens/[...path]/route.ts | Read | Reads apps-json/apps/...path.json; returns JSON |
 | loadScreen | screen-loader.ts | Transform (state init) | Fetch JSON; if json.state?.currentView, dispatchState; return json |
 | Root resolution | page.tsx | Transform | renderNode = json?.root ?? json?.screen ?? json?.node ?? json |
 | assignSectionInstanceKeys | resolve-organs.ts | Transform | children get id = node.id ?? \`section-${i}\` |

@@ -2,7 +2,7 @@
 /**
  * Contract report generator (documentation-only)
  *
- * Scans JSON under src/apps-offline and reports parse failures only.
+ * Scans JSON under src/apps-json and reports parse failures only.
  * Contracts are documentation only; no programmatic validation.
  *
  * Output: `CONTRACT_VALIDATION_REPORT.md` at repo root.
@@ -10,7 +10,7 @@
 import fs from "fs";
 import path from "path";
 
-const ROOT = path.join(process.cwd(), "src", "apps-offline");
+const ROOT = path.join(process.cwd(), "src", "apps-json");
 const OUT = path.join(process.cwd(), "CONTRACT_VALIDATION_REPORT.md");
 
 function rel(p: string) {

@@ -1,4 +1,8 @@
 "use client";
+// CONTRACT:
+// Palette = visual only
+// Layout = structural only
+// Palette must never mutate layout config, dropdowns, or layout persistence.
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSyncExternalStore } from "react";
@@ -306,7 +310,10 @@ export default function RootLayout({ children }: any) {
               const tree = getCurrentScreenTree();
               if (!tree) return;
               const profile = buildTemplateFromTree(tree);
-              const json = serializeTemplateProfile(profile);
+              const payload = { ...profile } as Record<string, unknown>;
+              delete payload.palette;
+              delete payload.paletteName;
+              const json = serializeTemplateProfile(payload as ReturnType<typeof buildTemplateFromTree>);
               const blob = new Blob([json], { type: "application/json" });
               const url = URL.createObjectURL(blob);
               const a = document.createElement("a");

@@ -62,7 +62,11 @@ export function buildTemplateFromTree(
 
 /**
  * Return profile as JSON string for download or API.
+ * Palette is visual-only; never persisted in layout/template payloads.
  */
 export function serializeTemplateProfile(profile: ReturnType<typeof buildTemplateFromTree>): string {
-  return JSON.stringify(profile, null, 2);
+  const payload = { ...profile } as Record<string, unknown>;
+  delete payload.palette;
+  delete payload.paletteName;
+  return JSON.stringify(payload, null, 2);
 }

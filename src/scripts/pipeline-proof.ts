@@ -19,7 +19,7 @@ type Check = {
 const DIAG_DIR = path.join(
   process.cwd(),
   "src",
-  "apps-offline",
+  "apps-json",
   "apps",
   "diagnostics"
 );

@@ -6,19 +6,18 @@ import path from "path";
 /* ======================================================
    JSON SCREENS (UNCHANGED)
 ====================================================== */
-const BASE = path.join(process.cwd(), "src", "apps-offline");
+const BASE = path.join(process.cwd(), "src", "apps-json");
 
 
 /* ======================================================
    TSX SCREENS (CORRECT ROOT)
    Matches EXACTLY:
-   src/screens/tsx-screens/<group>/<app>/<file>.tsx
+   src/apps-tsx/tsx-screens/<group>/<app>/<file>.tsx
 ====================================================== */
 const TSX_BASE = path.join(
   process.cwd(),
   "src",
-  "screens",
-
+  "apps-tsx"
 );
 
 

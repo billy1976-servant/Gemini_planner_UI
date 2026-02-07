@@ -1,0 +1,10 @@
+{
+  "engines": [
+    { "id": "learning", "type": "flow" },
+    { "id": "calculator", "type": "flow" },
+    { "id": "abc", "type": "flow" },
+    { "id": "decision", "type": "aftermath" },
+    { "id": "summary", "type": "aftermath" },
+    { "id": "system7", "type": "system" }
+  ]
+}

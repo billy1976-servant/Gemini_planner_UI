@@ -64,7 +64,7 @@ export type EducationFlow = {
 };
 
 // Import registered flows
-import GibsonFlow from "@/screens/tsx-screens/Gibson_Guitars/generated.flow-Gibson.json";
+import GibsonFlow from "@/apps-tsx/tsx-screens/Gibson_Guitars/generated.flow-Gibson.json";
 import FlowA from "@/logic/content/flows/flow-a.json";
 import FlowB from "@/logic/content/flows/flow-b.json";
 import FlowC from "@/logic/content/flows/flow-c.json";

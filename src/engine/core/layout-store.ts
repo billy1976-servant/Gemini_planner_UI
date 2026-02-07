@@ -87,7 +87,9 @@ export function getExperience() {
 /**
  * ======================================================
  * SET LAYOUT
- * Merges partial updates and validates type
+ * Merges partial updates and validates type.
+ * CONTRACT: Palette = visual only. Layout = structural only.
+ * Palette must never mutate layout config; attempts are blocked and warned.
  * ======================================================
  */
 export function setLayout(next: {
@@ -101,6 +103,16 @@ export function setLayout(next: {
     regions: Record<string, Partial<{ enabled: boolean }>>;
   }>;
 }) {
+  if (!next) return;
+  const nextAny = next as Record<string, unknown>;
+  if ("palette" in nextAny || "paletteName" in nextAny) {
+    if (typeof console !== "undefined" && console.warn) {
+      console.warn("Blocked: palette attempted to modify layout");
+    }
+    next = { ...next } as Parameters<typeof setLayout>[0];
+    delete (next as Record<string, unknown>).palette;
+    delete (next as Record<string, unknown>).paletteName;
+  }
   const resolvedType =
     next.type && LAYOUT_ALLOWED_TYPES.has(next.type) ? next.type : activeLayout.type;
 

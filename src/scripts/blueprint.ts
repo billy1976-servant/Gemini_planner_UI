@@ -21,7 +21,7 @@ import readline from "readline";
 /* ============================================================
    CONSTANTS
 ============================================================ */
-const APPS_ROOT = path.resolve(process.cwd(), "src/apps-offline");
+const APPS_ROOT = path.resolve(process.cwd(), "src/apps-json");
 const SCREEN_ROOT_ID = "screenRoot";
 const DEFAULT_VIEW = "|home";
 

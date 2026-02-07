@@ -1,1 +1,0 @@
-either the json renderer will collapse unnecessarily or show all modals at the same time. It flips with the json renderer, and should only show screens based on whether STATE is there as in the A-B-C buttons.

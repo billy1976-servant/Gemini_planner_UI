@@ -28,8 +28,8 @@ Flow:
 **Citation:** `src/engine/core/screen-loader.ts` lines 27–151 (export async function loadScreen).
 
 **API that serves JSON:** `src/app/api/screens/[...path]/route.ts` GET:
-- JSON: resolve file under `SCREENS_ROOT = path.join(process.cwd(), "src", "apps-offline", "apps")`; optional `.json` suffix.
-- TSX: resolve `TSX_ROOT = path.join(process.cwd(), "src", "screens")` + `params.path` + `.screen.tsx`; if exists, return `{ __tsx__: true, screen: requestedPath }`.
+- JSON: resolve file under `SCREENS_ROOT = path.join(process.cwd(), "src", "apps-json", "apps")`; optional `.json` suffix.
+- TSX: resolve `TSX_ROOT = path.join(process.cwd(), "src", "apps-tsx")` + `params.path` + `.screen.tsx`; if exists, return `{ __tsx__: true, screen: requestedPath }`.
 
 **Citation:** `src/app/api/screens/[...path]/route.ts` lines 34–141.
 
@@ -156,7 +156,7 @@ In `src/app/page.tsx` (JSON branch, after setJson(data)):
 |------|------|------------------|
 | Entry | `src/app/page.tsx` | searchParams.get("screen") → loadScreen(screen) or resolveLandingPage() |
 | Load screen | `src/engine/core/screen-loader.ts` | loadScreen(path) → TSX descriptor or fetch /api/screens → dispatchState state:currentView → return json |
-| API | `src/app/api/screens/[...path]/route.ts` | GET → read from apps-offline/apps or screens (TSX marker) |
+| API | `src/app/api/screens/[...path]/route.ts` | GET → read from apps-json/apps or apps-tsx (TSX marker) |
 | Prepare tree | `src/app/page.tsx` | assignSectionInstanceKeys → expandOrgansInDocument → applySkinBindings → composeOfflineScreen → setCurrentScreenTree |
 | Compose | `src/lib/screens/compose-offline-screen.ts` | composeOfflineScreen → inferRolesFromOfflineTree |
 | Resolve layout | `src/layout/resolver/layout-resolver.ts` | resolveLayout(layoutId, context) (page + component) |

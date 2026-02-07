@@ -1092,235 +1092,273 @@ export default function InteractionTracerPanel() {
 
   return (
     <div
+      id="pipeline-debugger-root"
       {...{ [PANEL_ATTR]: true }}
       style={{
         position: "fixed",
         bottom: 0,
+        left: 0,
         right: 0,
-        width: expanded ? "700px" : "360px",
-        height: expanded ? "80vh" : "280px",
-        overflow: "auto",
-        resize: "both",
-        minWidth: 320,
-        minHeight: 200,
-        background: "#111",
-        color: "#0f0",
-        fontSize: 11,
-        padding: 8,
-        zIndex: 99999,
-        borderTopLeftRadius: 8,
-        pointerEvents: "auto",
+        zIndex: 9999,
+        height: expanded ? "60vh" : "42px",
+        maxHeight: "65vh",
+        overflow: "hidden",
+        background: "rgba(0,0,0,0.92)",
+        borderTop: "2px solid #00ff88",
+        transition: "height 0.18s ease",
         display: "flex",
         flexDirection: "column",
+        pointerEvents: "auto",
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
-        <b>Pipeline Debugger</b>
+      <div
+        onClick={() => setExpanded(!expanded)}
+        style={{
+          height: 42,
+          display: "flex",
+          alignItems: "center",
+          padding: "0 12px",
+          cursor: "pointer",
+          fontWeight: 600,
+          color: "#00ff88",
+          fontSize: 11,
+          flexShrink: 0,
+        }}
+      >
+        PIPELINE DEBUGGER {expanded ? "▼" : "▲"}
         <button
           type="button"
-          onClick={() => setExpanded((e) => !e)}
-          style={{ padding: "2px 8px", cursor: "pointer", background: "#222", color: "#0f0", border: "1px solid #0f0" }}
-        >
-          {expanded ? "Collapse" : "Expand"}
-        </button>
-        <button
-          type="button"
-          onClick={() => setMode("live")}
-          style={{
-            padding: "2px 8px",
-            cursor: "pointer",
-            background: mode === "live" ? "#0f0" : "#222",
-            color: mode === "live" ? "#000" : "#0f0",
-            border: "1px solid #0f0",
+          onClick={(e) => {
+            e.stopPropagation();
+            setExpanded(true);
           }}
-        >
-          LIVE STATE
-        </button>
-        <button
-          type="button"
-          onClick={() => setMode("log")}
           style={{
-            padding: "2px 8px",
-            cursor: "pointer",
-            background: mode === "log" ? "#0f0" : "#222",
-            color: mode === "log" ? "#000" : "#0f0",
-            border: "1px solid #0f0",
-          }}
-        >
-          EVENT LOG
-        </button>
-        <button
-          type="button"
-          onClick={exportInteractionReport}
-          style={{
-            padding: "2px 8px",
-            cursor: "pointer",
-            background: exportCopied ? "#0f0" : "#222",
-            color: exportCopied ? "#000" : "#0f0",
-            border: "1px solid #0f0",
-          }}
-          title="Copy last interaction + behavior + state diff + layout diff + section rows as JSON"
-        >
-          {exportCopied ? "Copied" : "Export Interaction Report"}
-        </button>
-        <button
-          type="button"
-          onClick={() => exportFocusedPipelineSnapshot()}
-          style={{
-            padding: "2px 8px",
+            marginLeft: 12,
+            padding: "2px 6px",
             cursor: "pointer",
             background: "#222",
-            color: "#0f0",
-            border: "1px solid #0f0",
+            color: "#00ff88",
+            border: "1px solid #00ff88",
+            fontSize: 10,
           }}
-          title="Copy focused dropdown→layout pipeline (layout state + section diff + render row + stage status only)"
         >
-          COPY PIPELINE SNAPSHOT
+          MAX
         </button>
       </div>
+      {expanded && (
+        <div
+          style={{
+            overflowY: "auto",
+            height: "calc(60vh - 42px)",
+            minHeight: 0,
+            padding: 8,
+            color: "#0f0",
+            fontSize: 11,
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
+            <button
+              type="button"
+              onClick={() => setMode("live")}
+              style={{
+                padding: "2px 8px",
+                cursor: "pointer",
+                background: mode === "live" ? "#0f0" : "#222",
+                color: mode === "live" ? "#000" : "#0f0",
+                border: "1px solid #0f0",
+              }}
+            >
+              LIVE STATE
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode("log")}
+              style={{
+                padding: "2px 8px",
+                cursor: "pointer",
+                background: mode === "log" ? "#0f0" : "#222",
+                color: mode === "log" ? "#000" : "#0f0",
+                border: "1px solid #0f0",
+              }}
+            >
+              EVENT LOG
+            </button>
+            <button
+              type="button"
+              onClick={exportInteractionReport}
+              style={{
+                padding: "2px 8px",
+                cursor: "pointer",
+                background: exportCopied ? "#0f0" : "#222",
+                color: exportCopied ? "#000" : "#0f0",
+                border: "1px solid #0f0",
+              }}
+              title="Copy last interaction + behavior + state diff + layout diff + section rows as JSON"
+            >
+              {exportCopied ? "Copied" : "Export Interaction Report"}
+            </button>
+            <button
+              type="button"
+              onClick={() => exportFocusedPipelineSnapshot()}
+              style={{
+                padding: "2px 8px",
+                cursor: "pointer",
+                background: "#222",
+                color: "#0f0",
+                border: "1px solid #0f0",
+              }}
+              title="Copy focused dropdown→layout pipeline (layout state + section diff + render row + stage status only)"
+            >
+              COPY PIPELINE SNAPSHOT
+            </button>
+          </div>
 
-      {/* Active node snapshot strip (always visible, above tabs) */}
-      <ActiveNodeSnapshotBlock snapshot={snapshot} />
+          {/* Active node snapshot strip (always visible, above tabs) */}
+          <ActiveNodeSnapshotBlock snapshot={snapshot} />
 
-      {/* Tab bar */}
-      <div style={{ display: "flex", gap: 6, marginBottom: 6, flexWrap: "wrap" }}>
-        {(["trace", "state", "layout", "sections", "tests", "contracts", "renderer"] as const).map((name) => (
-          <button
-            key={name}
-            type="button"
-            onClick={() => setTab(name)}
-            style={{
-              padding: "2px 8px",
-              cursor: "pointer",
-              background: tab === name ? "#0f0" : "#222",
-              color: tab === name ? "#000" : "#0f0",
-              border: "1px solid #0f0",
-            }}
-          >
-            {name.charAt(0).toUpperCase() + name.slice(1)}
-          </button>
-        ))}
-      </div>
-
-      {/* TRACE tab: preserve existing LIVE/LOG behavior */}
-      {tab === "trace" && mode === "log" && (
-        <div style={{ display: "flex", gap: 6, marginBottom: 6, flexWrap: "wrap" }}>
-          {(["layout", "render", "interaction", "engine", "state"] as const).map((key) => (
-            <label key={key} style={{ display: "flex", alignItems: "center", gap: 4, cursor: "pointer" }}>
-              <input
-                type="checkbox"
-                checked={!hiddenFilters.has(key)}
-                onChange={() => toggleFilter(key)}
-              />
-              <span style={{ textTransform: "capitalize" }}>{key}</span>
-            </label>
-          ))}
-        </div>
-      )}
-
-      {tab === "trace" && (
-        mode === "live" ? (
-          <LiveStateView snapshot={snapshot} />
-        ) : (
-          <div style={{ flex: 1, overflow: "auto" }}>
-            {filtered.map((e, i) => (
-              <div key={i}>
-                [{e.type}] {e.label}
-                {e.payload != null && typeof e.payload === "object" && (e.payload.componentId ?? e.payload.eventType != null) && (
-                  <span style={{ opacity: 0.85 }}> — {e.payload.componentId ?? e.payload.eventType}</span>
-                )}
-              </div>
+          {/* Tab bar */}
+          <div style={{ display: "flex", gap: 6, marginBottom: 6, flexWrap: "wrap" }}>
+            {(["trace", "state", "layout", "sections", "tests", "contracts", "renderer"] as const).map((name) => (
+              <button
+                key={name}
+                type="button"
+                onClick={() => setTab(name)}
+                style={{
+                  padding: "2px 8px",
+                  cursor: "pointer",
+                  background: tab === name ? "#0f0" : "#222",
+                  color: tab === name ? "#000" : "#0f0",
+                  border: "1px solid #0f0",
+                }}
+              >
+                {name.charAt(0).toUpperCase() + name.slice(1)}
+              </button>
             ))}
           </div>
-        )
-      )}
 
-      {tab === "state" && (
-        <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
-          <StateDiffBlock snapshot={snapshot} />
-        </div>
-      )}
-
-      {tab === "layout" && (
-        <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
-          <LayoutChangeTraceBlock snapshot={snapshot} />
-        </div>
-      )}
-
-      {tab === "sections" && (
-        <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
-          <SectionRenderTableBlock rows={snapshot.sectionRenderRows ?? []} />
-        </div>
-      )}
-
-      {tab === "tests" && (
-        <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
-          <button
-            type="button"
-            onClick={runPipelineTests}
-            style={{
-              padding: "4px 10px",
-              marginBottom: 8,
-              cursor: "pointer",
-              background: "#222",
-              color: "#0f0",
-              border: "1px solid #0f0",
-            }}
-          >
-            Run Pipeline Tests
-          </button>
-          {testResults && (
-            <div style={{ fontFamily: "monospace", fontSize: 10, whiteSpace: "pre-wrap" as const }}>
-              {testResults.map((t, i) => (
-                <div key={i} style={{ color: t.pass ? "#0f0" : "#f66" }}>
-                  {t.pass ? "✓" : "✗"} {t.name} — {t.reason}
-                </div>
+          {/* TRACE tab: preserve existing LIVE/LOG behavior */}
+          {tab === "trace" && mode === "log" && (
+            <div style={{ display: "flex", gap: 6, marginBottom: 6, flexWrap: "wrap" }}>
+              {(["layout", "render", "interaction", "engine", "state"] as const).map((key) => (
+                <label key={key} style={{ display: "flex", alignItems: "center", gap: 4, cursor: "pointer" }}>
+                  <input
+                    type="checkbox"
+                    checked={!hiddenFilters.has(key)}
+                    onChange={() => toggleFilter(key)}
+                  />
+                  <span style={{ textTransform: "capitalize" }}>{key}</span>
+                </label>
               ))}
             </div>
           )}
-        </div>
-      )}
 
-      {tab === "contracts" && (
-        <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
-          {snapshot.contractTestResults == null ? (
-            <div style={{ fontFamily: "monospace", fontSize: 10, color: "#888", marginTop: 8 }}>
-              Run a layout dropdown interaction to see contract results.
+          {tab === "trace" && (
+            mode === "live" ? (
+              <LiveStateView snapshot={snapshot} />
+            ) : (
+              <div style={{ flex: 1, overflow: "auto" }}>
+                {filtered.map((e, i) => (
+                  <div key={i}>
+                    [{e.type}] {e.label}
+                    {e.payload != null && typeof e.payload === "object" && (e.payload.componentId ?? e.payload.eventType != null) && (
+                      <span style={{ opacity: 0.85 }}> — {e.payload.componentId ?? e.payload.eventType}</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )
+          )}
+
+          {tab === "state" && (
+            <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
+              <StateDiffBlock snapshot={snapshot} />
             </div>
-          ) : (
-            <div style={{ fontFamily: "monospace", fontSize: 10, whiteSpace: "pre-wrap" as const, marginTop: 8 }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 10 }}>
-                <thead>
-                  <tr style={{ borderBottom: "1px solid #333" }}>
-                    <th style={{ textAlign: "left", padding: "4px 8px" }}>Step</th>
-                    <th style={{ textAlign: "left", padding: "4px 8px" }}>Result</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {snapshot.contractTestResults.results.map((r, i) => (
-                    <tr key={i} style={{ borderBottom: "1px solid #222" }}>
-                      <td style={{ padding: "4px 8px" }}>{r.step}</td>
-                      <td style={{ padding: "4px 8px", color: r.pass ? "#0f0" : "#f66" }}>
-                        {r.pass ? "PASS" : "FAIL"}
-                        {r.reason != null && !r.pass && ` — ${r.reason}`}
-                      </td>
-                    </tr>
+          )}
+
+          {tab === "layout" && (
+            <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
+              <LayoutChangeTraceBlock snapshot={snapshot} />
+            </div>
+          )}
+
+          {tab === "sections" && (
+            <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
+              <SectionRenderTableBlock rows={snapshot.sectionRenderRows ?? []} />
+            </div>
+          )}
+
+          {tab === "tests" && (
+            <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
+              <button
+                type="button"
+                onClick={runPipelineTests}
+                style={{
+                  padding: "4px 10px",
+                  marginBottom: 8,
+                  cursor: "pointer",
+                  background: "#222",
+                  color: "#0f0",
+                  border: "1px solid #0f0",
+                }}
+              >
+                Run Pipeline Tests
+              </button>
+              {testResults && (
+                <div style={{ fontFamily: "monospace", fontSize: 10, whiteSpace: "pre-wrap" as const }}>
+                  {testResults.map((t, i) => (
+                    <div key={i} style={{ color: t.pass ? "#0f0" : "#f66" }}>
+                      {t.pass ? "✓" : "✗"} {t.name} — {t.reason}
+                    </div>
                   ))}
-                </tbody>
-              </table>
-              {snapshot.contractTestResults.failureReason != null && (
-                <div style={{ marginTop: 8, padding: 8, background: "rgba(255,0,0,0.12)", border: "1px solid #f66", color: "#f66", borderRadius: 6 }}>
-                  <b>Failure:</b> {snapshot.contractTestResults.failureReason}
                 </div>
               )}
             </div>
           )}
-        </div>
-      )}
 
-      {tab === "renderer" && (
-        <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
-          <RendererTraceTableBlock events={snapshot.rendererTraceEvents ?? []} />
+          {tab === "contracts" && (
+            <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
+              {snapshot.contractTestResults == null ? (
+                <div style={{ fontFamily: "monospace", fontSize: 10, color: "#888", marginTop: 8 }}>
+                  Run a layout dropdown interaction to see contract results.
+                </div>
+              ) : (
+                <div style={{ fontFamily: "monospace", fontSize: 10, whiteSpace: "pre-wrap" as const, marginTop: 8 }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 10 }}>
+                    <thead>
+                      <tr style={{ borderBottom: "1px solid #333" }}>
+                        <th style={{ textAlign: "left", padding: "4px 8px" }}>Step</th>
+                        <th style={{ textAlign: "left", padding: "4px 8px" }}>Result</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {snapshot.contractTestResults.results.map((r, i) => (
+                        <tr key={i} style={{ borderBottom: "1px solid #222" }}>
+                          <td style={{ padding: "4px 8px" }}>{r.step}</td>
+                          <td style={{ padding: "4px 8px", color: r.pass ? "#0f0" : "#f66" }}>
+                            {r.pass ? "PASS" : "FAIL"}
+                            {r.reason != null && !r.pass && ` — ${r.reason}`}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {snapshot.contractTestResults.failureReason != null && (
+                    <div style={{ marginTop: 8, padding: 8, background: "rgba(255,0,0,0.12)", border: "1px solid #f66", color: "#f66", borderRadius: 6 }}>
+                      <b>Failure:</b> {snapshot.contractTestResults.failureReason}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {tab === "renderer" && (
+            <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
+              <RendererTraceTableBlock events={snapshot.rendererTraceEvents ?? []} />
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -37,7 +37,7 @@
       "src/engine/runners",
   
       "src/lib",
-      "src/screens",
+      "src/apps-tsx",
       "src/scripts",
   
       "src/system",

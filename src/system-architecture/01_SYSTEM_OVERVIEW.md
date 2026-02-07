@@ -29,7 +29,7 @@ Flow: **JSON Screen → Engines → State → Layout → Renderer → DOM**
 
 - **Primary path:** Next.js `page.tsx` → loadScreen (TSX or JSON) → document prep (instance keys, organ expand, skin bindings, compose) → JsonRenderer → Registry → Section/LayoutMoleculeRenderer → DOM.
 - **Secondary paths:** renderFromSchema, GeneratedSiteViewer, SiteSkin — used for site/generated-websites or TSX/flow screens; not on main JSON screen path.
-- **Blueprint boundary:** Compiler produces app.json + content.manifest.json under `src/apps-offline/apps/<appPath>/`. No blueprint script in runtime; no runtime layout IDs from blueprint. Layout resolution is entirely runtime (override store → node.layout → template default).
+- **Blueprint boundary:** Compiler produces app.json + content.manifest.json under `src/apps-json/apps/<appPath>/`. No blueprint script in runtime; no runtime layout IDs from blueprint. Layout resolution is entirely runtime (override store → node.layout → template default).
 - **Scripts boundary:** Scripts under `src/scripts/` (blueprint, docs generators, reachability) are build-time or one-off. No script is imported by app/engine/state/layout at runtime.
 
 ---
@@ -46,8 +46,8 @@ Flow: **JSON Screen → Engines → State → Layout → Renderer → DOM**
 
 | What | Where |
 |------|--------|
-| Screens (JSON) | `src/apps-offline/apps/<category>/<folder>/` (app.json). Served via `/api/screens/*`. |
-| Screens (TSX) | `src/screens/`; loadScreen("tsx:...") returns descriptor, no fetch. |
+| Screens (JSON) | `src/apps-json/apps/<category>/<folder>/` (app.json). Served via `/api/screens/*`. |
+| Screens (TSX) | `src/apps-tsx/`; loadScreen("tsx:...") returns descriptor, no fetch. |
 | Skins | Skin JSON: loadSiteSkin (e.g. /api/sites/:domain/skins/:pageId). Compiled skins under `src/content/sites/*/compiled/skins/`. Shells: WebsiteShell, AppShell, LearningShell in `src/lib/site-skin/shells/`. |
 | Logic/behavior | behavior-listener, behavior-runner, state-store, state-resolver, runtime-verb-interpreter, action-runner, action-registry. |
 | Layout | layout/resolver, layout-store, section-layout-preset-store, organ-internal-layout-store; page-layouts, templates, component-layouts, compatibility. |

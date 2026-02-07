@@ -1,5 +1,5 @@
 /**
- * Compose offline (apps-offline) screen for JsonRenderer.
+ * Compose offline (apps-json) screen for JsonRenderer.
  * Applies role inference when nodes lack roles; skips inference when all already have roles.
  */
 

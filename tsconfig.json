@@ -27,7 +27,10 @@
       "@/config/*": ["src/config/*"],
       "@/content/*": ["src/content/*"],
       "@/app/*": ["src/app/*"],
-      "@/screens/*": ["src/screens/*"],
+      "@/apps-tsx": ["src/apps-tsx"],
+      "@/apps-tsx/*": ["src/apps-tsx/*"],
+      "@/apps-json": ["src/apps-json"],
+      "@/apps-json/*": ["src/apps-json/*"],
       "@/layout/*": ["src/layout/*"],
       "@/palettes/*": ["src/palettes/*"],
       "@/ui/*": ["src/ui/*"],
@@ -54,7 +57,7 @@
 
   "exclude": [
     "node_modules",
-    "src/screens/tsx-screens/generated/**/*"
+    "src/apps-tsx/tsx-screens/generated/**/*"
   ]
 }
 

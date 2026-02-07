@@ -6,7 +6,7 @@ import { buildRuntime } from "./live-map-builder";
 import { generateContent } from "./live-content-generator";
 
 
-const APPS_ROOT = path.resolve(process.cwd(), "src/app/apps-offline");
+const APPS_ROOT = path.resolve(process.cwd(), "src/apps-json");
 
 
 export function runMapEngine() {

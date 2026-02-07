@@ -18,7 +18,7 @@ const SPINE_STAGES: SpineStage[] = [
     stage: "JSON Screen",
     files: [
       { path: "src/app/page.tsx", role: "Entry; searchParams.get('screen')/('flow'); loadScreen(path); resolveLandingPage()" },
-      { path: "src/app/api/screens/[...path]/route.ts", role: "GET handler; serves JSON from apps-offline/apps or TSX marker from screens" },
+      { path: "src/app/api/screens/[...path]/route.ts", role: "GET handler; serves JSON from apps-json/apps or TSX marker from apps-tsx" },
       { path: "src/engine/core/screen-loader.ts", role: "loadScreen(path): TSX descriptor or fetch /api/screens; dispatchState state:currentView if json.state" },
     ],
   },

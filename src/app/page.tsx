@@ -55,15 +55,15 @@ import LearningShell from "@/lib/site-skin/shells/LearningShell";
 /* ============================================================
    TSX SCREEN LOADER (NO JSON-RENDERER INVOLVEMENT)
    - This is the ONLY place TSX screens are handled.
-   - Auto-discovers ALL files under /screens (all subfolders)
+   - Auto-discovers ALL files under /apps-tsx (all subfolders)
 ============================================================ */
 
 
 /* ------------------------------------------------------------
-   🔑 AUTO TSX MAP (UPDATED — SCANS ALL SCREENS FOLDERS)
+   🔑 AUTO TSX MAP — SCANS src/apps-tsx (TSX screens live here)
 ------------------------------------------------------------ */
 const tsxContext = (require as any).context(
-  "@/screens",
+  "../apps-tsx",
   true,
   /\.tsx$/
 );
@@ -78,7 +78,7 @@ const AUTO_TSX_MAP: Record<
 tsxContext.keys().forEach((key: string) => {
   const normalized = key.replace(/^.\//, "").replace(/\.tsx$/, "");
   AUTO_TSX_MAP[normalized] = () =>
-    import(`@/screens/${normalized}`);
+    import(`@/apps-tsx/${normalized}`);
 });
 
 

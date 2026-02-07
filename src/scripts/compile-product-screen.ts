@@ -4,7 +4,7 @@
  *
  * Reads product.graph.json (compiled or raw), runs the product-screen adapter,
  * optionally validates with blueprint contract, and writes to
- * src/apps-offline/apps/websites/<site>/products.json so /api/screens serves it.
+ * src/apps-json/apps/websites/<site>/products.json so /api/screens serves it.
  *
  * Usage:
  *   npx ts-node -r tsconfig-paths/register src/scripts/compile-product-screen.ts <domain>
@@ -16,7 +16,7 @@ import { compileProductDataToScreen } from "@/lib/product-screen-adapter";
 
 const COMPILED_SITES = path.join(process.cwd(), "content", "compiled", "sites");
 const RAW_SITES = path.join(process.cwd(), "src", "content", "sites", "raw");
-const APPS_WEBSITES = path.join(process.cwd(), "src", "apps-offline", "apps", "websites");
+const APPS_WEBSITES = path.join(process.cwd(), "src", "apps-json", "apps", "websites");
 
 function loadProductGraph(domain: string): { products: unknown[] } | null {
   const compiledPath = path.join(COMPILED_SITES, domain, "product.graph.json");

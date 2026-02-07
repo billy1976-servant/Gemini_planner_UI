@@ -171,10 +171,10 @@ I'm{
       ]
     },
     {
-      "./src/screens": [
-        "./src/screens/demo.json",
-        "./src/screens/diagnostics.json",
-        "./src/screens/morph-demo.json"
+      "./src/apps-tsx": [
+        "./src/apps-tsx/demo.json",
+        "./src/apps-tsx/diagnostics.json",
+        "./src/apps-tsx/morph-demo.json"
       ]
     },
     {

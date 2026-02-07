@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import { compileSite, siteExists } from "@/lib/siteCompiler";
 
-const SITES_ROOT = path.join(process.cwd(), "src", "apps-offline", "sites");
+const SITES_ROOT = path.join(process.cwd(), "src", "apps-json", "sites");
 
 export async function GET(
   _req: Request,
@@ -27,7 +27,7 @@ export async function GET(
       }
     }
 
-    // 2) Fallback: apps-offline/sites/{domain}/site.json (legacy site config)
+    // 2) Fallback: apps-json/sites/{domain}/site.json (legacy site config)
     const sitePath = path.join(SITES_ROOT, domain, "site.json");
     if (fs.existsSync(sitePath)) {
       const fileContent = fs.readFileSync(sitePath, "utf-8");

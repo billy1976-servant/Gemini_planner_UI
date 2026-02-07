@@ -23,7 +23,7 @@
 |------|------|--------|
 | **Screen loader** | `src/engine/core/screen-loader.ts` | `loadScreen(path)`: TSX → `{ __type: "tsx-screen", path }`; JSON → fetch `/api/screens/...`, apply default state, return JSON |
 | **Site loader** | `src/engine/core/site-loader.ts` | Site-level loading (if used) |
-| **API screens route** | `src/app/api/screens/[...path]/route.ts` | GET: resolves JSON from `src/apps-offline/apps`, or TSX marker from `src/screens`; returns JSON or `{ __tsx__: true, screen }` |
+| **API screens route** | `src/app/api/screens/[...path]/route.ts` | GET: resolves JSON from `src/apps-json/apps`, or TSX marker from `src/apps-tsx`; returns JSON or `{ __tsx__: true, screen }` |
 | **API screens list** | `src/app/api/screens/route.ts` | Screens list endpoint |
 
 ---

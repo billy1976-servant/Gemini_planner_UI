@@ -18,7 +18,7 @@ import TextAtom from "@/components/9-atoms/primitives/text";
 import SequenceAtom from "@/components/9-atoms/primitives/sequence";
 import CollectionAtom from "@/components/9-atoms/primitives/collection";
 import { resolveParams } from "@/engine/core/palette-resolver";
-import { resolveMoleculeLayout } from "@/lib/layout/molecule-layout-resolver";
+import { resolveMoleculeLayout } from "@/layout";
 
 
 function resolveWithDefaultLayout(

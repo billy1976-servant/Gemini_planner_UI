@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "validate:paths": "node scripts/validate-paths.js",
+    "prebuild": "npm run validate:paths",
     "dev": "node --max-old-space-size=4096 ./node_modules/next/dist/bin/next dev",
     "apps": "ts-node src/map/engine/map-engine.ts",
     "blueprint": "ts-node src/scripts/blueprint.ts",

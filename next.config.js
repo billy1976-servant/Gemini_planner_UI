@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const path = require("path");
+
 const nextConfig = {
   images: {
     remotePatterns: [
@@ -25,6 +27,8 @@ const nextConfig = {
     ],
   },
   webpack: (config) => {
+    // No @/apps-tsx override — Next resolves via tsconfig paths (src/apps-tsx).
+
     // Ignore .txt files - treat them as raw text assets
     // This prevents webpack from trying to parse them as JavaScript
     config.module.rules.push({

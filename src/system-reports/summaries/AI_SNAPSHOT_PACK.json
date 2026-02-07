@@ -12,7 +12,7 @@
         },
         {
           "path": "src/app/api/screens/[...path]/route.ts",
-          "role": "GET handler; serves JSON from apps-offline/apps or TSX marker from screens"
+          "role": "GET handler; serves JSON from apps-json/apps or TSX marker from apps-tsx"
         },
         {
           "path": "src/engine/core/screen-loader.ts",
@@ -240,7 +240,7 @@
       "score": 10
     },
     {
-      "path": "src/screens/tsx-screens/onboarding/cards/EducationCard.tsx",
+      "path": "src/apps-tsx/tsx-screens/onboarding/cards/EducationCard.tsx",
       "inDegree": 5,
       "outDegree": 9,
       "score": 9.5

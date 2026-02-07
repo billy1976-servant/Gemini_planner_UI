@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useSyncExternalStore } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { readEngineState, subscribeEngineState } from "@/logic/runtime/engine-bridge";
-import { EducationCard } from "@/screens/tsx-screens/onboarding/cards/EducationCard";
+import { EducationCard } from "@/apps-tsx/tsx-screens/onboarding/cards/EducationCard";
 import { loadFlow, getAvailableFlows, setCurrentEngine, setOverrideFlow, type EducationFlow } from "@/logic/flows/flow-loader";
 import { selectExecutionEngine } from "@/logic/engines/shared/engine-selector";
 import { getPresentation } from "@/logic/engine-system/engine-contract";

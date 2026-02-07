@@ -34,7 +34,7 @@ import type { EngineFlow } from "../engines/learning.engine";
 import type { PresentationModel } from "../engines/presentation-types";
 import type { ExecutionEngineContract, PresentationModelContract } from "@/contracts/SystemContract";
 
-export type EngineId = "learning" | "calculator" | "abc" | "decision" | "summary";
+export type EngineId = "learning" | "calculator" | "abc" | "decision" | "summary" | "system7";
 
 // Execution engines: participate in step routing and flow execution
 export type ExecutionEngineId = "learning" | "calculator" | "abc";
@@ -68,6 +68,20 @@ export const AFTERMATH_PROCESSOR_REGISTRY: Record<AftermathProcessorId, EngineFu
   summary: summaryEngine,
 };
 
+/** Dormant System 7 engine: identity transform (flow unchanged). Not in execution or aftermath registries. */
+function system7EngineStub(flow: EducationFlow): EngineFlow {
+  return flow;
+}
+
+/** Minimal presentation for System 7; satisfies getPresentation(flow, "system7"). */
+function system7Presentation(flow: EducationFlow): PresentationModel {
+  return {
+    engineId: "system7",
+    title: "System 7",
+    stepOrder: flow.steps.map((s) => s.id),
+  };
+}
+
 /**
  * LEGACY REGISTRY (for backward compatibility)
  * Contains all engines, but execution engines should be preferred for step routing
@@ -76,6 +90,7 @@ export const AFTERMATH_PROCESSOR_REGISTRY: Record<AftermathProcessorId, EngineFu
 export const ENGINE_REGISTRY: Record<EngineId, EngineFunction> = {
   ...EXECUTION_ENGINE_REGISTRY,
   ...AFTERMATH_PROCESSOR_REGISTRY,
+  system7: system7EngineStub,
 };
 
 /**
@@ -88,6 +103,7 @@ export const PRESENTATION_REGISTRY: Record<EngineId, PresentationFunction> = {
   abc: abcPresentation,
   decision: decisionPresentation,
   summary: summaryPresentation,
+  system7: system7Presentation,
 };
 
 /**
@@ -149,12 +165,17 @@ export function isAftermathProcessor(engineId: EngineId): engineId is AftermathP
  * Falls back to learning engine if transformation fails
  */
 export function applyEngine(flow: EducationFlow, engineId: EngineId): EngineFlow {
+  // Dormant System 7: registered but not applied; return flow unchanged
+  if (engineId === "system7") {
+    return flow;
+  }
+
   // Guard: Only execution engines can be applied for step routing
   if (isAftermathProcessor(engineId)) {
     console.warn(`[EngineRegistry] Attempted to apply aftermath processor "${engineId}" as execution engine. Aftermath processors do not execute steps. Falling back to learning.`);
     return EXECUTION_ENGINE_REGISTRY.learning(flow);
   }
-  
+
   try {
     const engine = getExecutionEngine(engineId as ExecutionEngineId);
     console.log(`[EngineRegistry] Applying execution engine: ${engineId}`, {

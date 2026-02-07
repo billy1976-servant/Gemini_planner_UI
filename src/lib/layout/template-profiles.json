@@ -1,0 +1,1964 @@
+[
+  {
+    "id": "modern-hero-centered",
+    "label": "Modern Hero Centered",
+    "defaultSectionLayoutId": "content-narrow",
+    "visualPreset": "default",
+    "containerWidth": "contained",
+    "widthByRole": {
+      "hero": "wide",
+      "content": "contained"
+    },
+    "spacingScale": "default",
+    "cardPreset": "soft",
+    "heroMode": "centered",
+    "sections": {
+      "nav": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center",
+          "wrap": "wrap"
+        }
+      },
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1.25rem",
+          "justify": "space-between",
+          "align": "center",
+          "wrap": "wrap"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2.5rem",
+          "padding": "3rem 0"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1.5rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "2rem"
+        }
+      }
+    }
+  },
+  {
+    "id": "startup-split-hero",
+    "label": "Startup Split Hero",
+    "defaultSectionLayoutId": "content-narrow",
+    "visualPreset": "prominent",
+    "containerWidth": "contained",
+    "spacingScale": "saas",
+    "cardPreset": "elevated",
+    "heroMode": "split",
+    "sectionBackgroundPattern": "alternate",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1.25rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "row",
+        "params": {
+          "justify": "space-between",
+          "gap": "3rem",
+          "align": "center"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2.5rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      }
+    }
+  },
+  {
+    "id": "editorial-story",
+    "label": "Editorial Story",
+    "visualPreset": "editorial",
+    "containerWidth": "narrow",
+    "spacingScale": "magazine",
+    "cardPreset": "borderless",
+    "heroMode": "centered",
+    "sections": {
+      "header": {
+        "type": "column",
+        "params": {
+          "gap": "0.5rem",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "3rem"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "2.5rem"
+        }
+      },
+      "features": {
+        "type": "column",
+        "params": {
+          "gap": "2.5rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "testimonials": {
+        "type": "column",
+        "params": {
+          "gap": "2.5rem"
+        }
+      },
+      "pricing": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      },
+      "products": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "footer": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      }
+    }
+  },
+  {
+    "id": "course-landing",
+    "label": "Course Landing",
+    "visualPreset": "editorial",
+    "containerWidth": "narrow",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "row",
+        "params": {
+          "justify": "space-between",
+          "gap": "2.5rem",
+          "align": "center"
+        }
+      },
+      "content": {
+        "type": "stack",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "features": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "testimonials": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "1.5rem"
+        }
+      },
+      "footer": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      }
+    }
+  },
+  {
+    "id": "product-grid",
+    "label": "Product Grid",
+    "visualPreset": "compact",
+    "containerWidth": "contained",
+    "spacingScale": "saas",
+    "cardPreset": "elevated",
+    "heroMode": "strip",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "0.75rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "gap": "1rem",
+          "align": "center"
+        }
+      },
+      "content": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "0.75rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "0.75rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1rem"
+        }
+      }
+    }
+  },
+  {
+    "id": "saas-dark",
+    "label": "SaaS Dark",
+    "visualPreset": "default",
+    "containerWidth": "contained",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2.5rem"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1.5rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "2rem"
+        }
+      }
+    }
+  },
+  {
+    "id": "agency-bold",
+    "label": "Agency Bold",
+    "visualPreset": "prominent",
+    "containerWidth": "contained",
+    "widthByRole": {
+      "hero": "edge-to-edge"
+    },
+    "spacingScale": "default",
+    "cardPreset": "elevated",
+    "heroMode": "overlay",
+    "sectionBackgroundPattern": "dark-bands",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1.5rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "row",
+        "params": {
+          "justify": "space-between",
+          "gap": "3rem",
+          "align": "center"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2.5rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2.5rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      }
+    }
+  },
+  {
+    "id": "minimalist",
+    "label": "Minimalist",
+    "visualPreset": "compact",
+    "containerWidth": "narrow",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "0.5rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1.5rem"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "1rem"
+        }
+      },
+      "features": {
+        "type": "column",
+        "params": {
+          "gap": "1rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "0.75rem"
+        }
+      },
+      "testimonials": {
+        "type": "column",
+        "params": {
+          "gap": "1rem"
+        }
+      },
+      "pricing": {
+        "type": "column",
+        "params": {
+          "gap": "1rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1rem"
+        }
+      },
+      "products": {
+        "type": "column",
+        "params": {
+          "gap": "1rem"
+        }
+      },
+      "footer": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1rem"
+        }
+      }
+    }
+  },
+  {
+    "id": "playful-cards",
+    "label": "Playful Cards",
+    "visualPreset": "prominent",
+    "containerWidth": "contained",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      },
+      "content": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "1.5rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1.5rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1.5rem"
+        }
+      }
+    }
+  },
+  {
+    "id": "luxury-spacious",
+    "label": "Luxury Spacious",
+    "visualPreset": "spacious",
+    "containerWidth": "contained",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "2rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "3rem"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "3rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "3rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "3rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "3rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "2.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2.5rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "3rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "3rem"
+        }
+      }
+    }
+  },
+  {
+    "id": "portfolio-showcase",
+    "label": "Portfolio Showcase",
+    "visualPreset": "editorial",
+    "containerWidth": "contained",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2.5rem"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "testimonials": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      }
+    }
+  },
+  {
+    "id": "restaurant-menu",
+    "label": "Restaurant Menu",
+    "visualPreset": "compact",
+    "containerWidth": "edge-to-edge",
+    "spacingScale": "saas",
+    "cardPreset": "dividers",
+    "heroMode": "centered",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1.5rem",
+          "padding": "2rem 0"
+        }
+      },
+      "content": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "1rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "1rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "0.75rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "1rem"
+        }
+      },
+      "pricing": {
+        "type": "column",
+        "params": {
+          "gap": "1rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "0.75rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "1rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "1rem"
+        }
+      }
+    }
+  },
+  {
+    "id": "blog-magazine",
+    "label": "Blog Magazine",
+    "visualPreset": "editorial",
+    "containerWidth": "contained",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "left",
+          "gap": "2rem"
+        }
+      },
+      "content": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "testimonials": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1.5rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "2rem"
+        }
+      }
+    }
+  },
+  {
+    "id": "fitness-gym",
+    "label": "Fitness Gym",
+    "visualPreset": "prominent",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2.5rem"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1.5rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1.5rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "2rem"
+        }
+      }
+    }
+  },
+  {
+    "id": "consulting-professional",
+    "label": "Consulting Professional",
+    "visualPreset": "default",
+    "containerWidth": "contained",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "row",
+        "params": {
+          "justify": "space-between",
+          "gap": "2.5rem",
+          "align": "center"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1.5rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "2rem"
+        }
+      }
+    }
+  },
+  {
+    "id": "info-page-simple",
+    "label": "Info Page Simple",
+    "visualPreset": "compact",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "left",
+          "gap": "1.5rem"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "1.5rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1rem"
+        }
+      },
+      "testimonials": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "1.5rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "1.5rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      }
+    }
+  },
+  {
+    "id": "tech-startup",
+    "label": "Tech Startup",
+    "visualPreset": "prominent",
+    "containerWidth": "contained",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2.5rem"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1.5rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "2rem"
+        }
+      }
+    }
+  },
+  {
+    "id": "e-commerce-store",
+    "label": "E-Commerce Store",
+    "visualPreset": "compact",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      },
+      "content": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1.5rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1.5rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 5,
+          "gap": "1rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1.5rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1.5rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1.5rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1.5rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 5,
+          "gap": "1.5rem"
+        }
+      }
+    }
+  },
+  {
+    "id": "real-estate-luxury",
+    "label": "Real Estate Luxury",
+    "visualPreset": "spacious",
+    "containerWidth": "contained",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "2rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "3.5rem"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "3rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "3rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "testimonials": {
+        "type": "column",
+        "params": {
+          "gap": "3rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "3rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "2.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "3rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "3rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "3rem"
+        }
+      }
+    }
+  },
+  {
+    "id": "nonprofit-community",
+    "label": "Nonprofit Community",
+    "visualPreset": "default",
+    "containerWidth": "contained",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1.5rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "2rem"
+        }
+      }
+    }
+  },
+  {
+    "id": "medical-clinic",
+    "label": "Medical Clinic",
+    "visualPreset": "compact",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1.5rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1.5rem"
+        }
+      }
+    }
+  },
+  {
+    "id": "law-firm-corporate",
+    "label": "Law Firm Corporate",
+    "visualPreset": "default",
+    "containerWidth": "contained",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1.5rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "row",
+        "params": {
+          "justify": "space-between",
+          "gap": "2.5rem",
+          "align": "center"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1.5rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "2rem"
+        }
+      }
+    }
+  },
+  {
+    "id": "wedding-events",
+    "label": "Wedding & Events",
+    "visualPreset": "spacious",
+    "containerWidth": "contained",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1.5rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "3rem"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "2.5rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2.5rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "testimonials": {
+        "type": "column",
+        "params": {
+          "gap": "2.5rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2.5rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2.5rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2.5rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2.5rem"
+        }
+      }
+    }
+  }
+]

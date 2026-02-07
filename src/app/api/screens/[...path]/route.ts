@@ -12,7 +12,7 @@ import path from "path";
 const SCREENS_ROOT = path.join(
   process.cwd(),
   "src",
-  "apps-offline",
+  "apps-json",
   "apps"
 );
 
@@ -27,7 +27,7 @@ const SCREENS_ROOT = path.join(
 const TSX_ROOT = path.join(
   process.cwd(),
   "src",
-  "screens"
+  "apps-tsx"
 );
 
 

@@ -2,9 +2,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useSyncExternalStore } from "react";
 import { readEngineState, subscribeEngineState } from "@/logic/runtime/engine-bridge";
-import { CalculatorCard } from "@/screens/tsx-screens/onboarding/cards/CalculatorCard";
-import { EducationCard } from "@/screens/tsx-screens/onboarding/cards/EducationCard";
-import { SummaryCard } from "@/screens/tsx-screens/onboarding/cards/SummaryCard";
+import { CalculatorCard } from "@/apps-tsx/tsx-screens/onboarding/cards/CalculatorCard";
+import { EducationCard } from "@/apps-tsx/tsx-screens/onboarding/cards/EducationCard";
+import { SummaryCard } from "@/apps-tsx/tsx-screens/onboarding/cards/SummaryCard";
 import WebsiteBlockRenderer, { WebsiteBlockType } from "@/engine/bridge/WebsiteBlockRenderer";
 import { getPresentation } from "@/logic/engine-system/engine-contract";
 import type { PresentationModel } from "@/logic/engines/presentation-types";
