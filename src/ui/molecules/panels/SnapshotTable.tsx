@@ -1,4 +1,4 @@
-import { Scan } from "../types";
+import type { Scan } from "./scan-types";
 
 
 export default function SnapshotTable({ events }: { events: Scan[] }) {

@@ -1,4 +1,4 @@
-import LineChart from "../charts/LineChart";
+import LineChart from "@/ui/molecules/charts/LineChart";
 
 
 export default function MomentumTimeline({ values }: { values: number[] }) {

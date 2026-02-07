@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "validate:paths": "node scripts/validate-paths.js",
+    "verify:atoms": "ts-node scripts/verify-atoms-manifest.ts",
+    "verify:compounds": "ts-node scripts/verify-compounds-manifest.ts",
+    "blocks:status": "ts-node scripts/scan-blocks-status.ts",
     "prebuild": "npm run validate:paths",
     "dev": "node --max-old-space-size=4096 ./node_modules/next/dist/bin/next dev",
     "apps": "ts-node src/map/engine/map-engine.ts",

@@ -3,7 +3,7 @@
  * Uses require.context so only existing files are bundled; missing paths return null.
  */
 
-// Relative path so require.context resolves at build; only existing JSON files are bundled.
+// From src/runtime/loaders: apps-json is at ../../apps-json
 const context = require.context(
   "../../apps-json/apps",
   true,

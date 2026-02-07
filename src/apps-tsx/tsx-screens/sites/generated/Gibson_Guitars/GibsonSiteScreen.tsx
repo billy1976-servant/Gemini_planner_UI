@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import ScreenRenderer from "@/apps-tsx/core/ScreenRenderer";
+import ScreenRenderer from "@/runtime/screens/ScreenRenderer";
 import type { CompiledSiteModel } from "@/lib/siteCompiler/types";
 
 export default function GibsonSiteScreen({ site }: { site: CompiledSiteModel }) {

@@ -1,5 +1,6 @@
+// Hook order stabilized — no conditional hooks allowed
 "use client";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
@@ -96,26 +97,34 @@ function normalizeTsxPath(path: string) {
 
 
 /* ------------------------------------------------------------
-   🔑 RESOLVER (UPDATED — TRIES MULTIPLE PATH FORMATS)
+   🔑 RESOLVER (FLEXIBLE 2-LEVEL OR 3-LEVEL)
+   Tries: exact → tsx-screens/ prefix → 2-level fallback (folder/file)
 ------------------------------------------------------------ */
 function resolveTsxScreen(path: string) {
-  // Try multiple path formats for backward compatibility
   const normalized = normalizeTsxPath(path);
-  
-  // Try exact match first
   let loader = AUTO_TSX_MAP[normalized];
-  
-  // If not found, try with tsx-screens prefix (for backward compatibility)
-  if (!loader && !normalized.startsWith("tsx-screens/")) {
+  if (loader) {
+    return dynamic(loader, { ssr: false });
+  }
+  if (!normalized.startsWith("tsx-screens/")) {
     loader = AUTO_TSX_MAP[`tsx-screens/${normalized}`];
   }
-  
-  // If still not found, try without any prefix
-  if (!loader && normalized.includes("/")) {
+  if (loader) {
+    return dynamic(loader, { ssr: false });
+  }
+  if (normalized.includes("/")) {
     const parts = normalized.split("/");
     loader = AUTO_TSX_MAP[parts.slice(1).join("/")];
   }
-  
+  if (loader) {
+    return dynamic(loader, { ssr: false });
+  }
+  // 2-level fallback: 3-segment path (folder/subfolder/file) → try folder/file
+  if (normalized.split("/").length === 3) {
+    const [folder, , file] = normalized.split("/");
+    const twoLevel = `${folder}/${file}`;
+    loader = AUTO_TSX_MAP[twoLevel] ?? AUTO_TSX_MAP[`tsx-screens/${twoLevel}`];
+  }
   if (loader) {
     return dynamic(loader, { ssr: false });
   }
@@ -126,6 +135,11 @@ function resolveTsxScreen(path: string) {
 export default function Page() {
   const searchParams = useSearchParams();
   const screen = searchParams.get("screen");
+
+  useEffect(() => {
+    console.log("[MOUNT]", "Page");
+    return () => console.log("[UNMOUNT]", "Page");
+  }, []);
 
   // 🔑 TOP-LEVEL LOGGING: Track URL, screen param, and remount status
   const currentUrl = typeof window !== "undefined" ? window.location.href : "SSR";
@@ -202,6 +216,67 @@ export default function Page() {
       organ: { ...(byScreen.organ ?? {}) },
     };
   };
+
+  // ——— All hooks below run unconditionally on every render (no early returns above). ———
+  const hashJson = (obj: any) => {
+    if (!obj) return "empty";
+    const str = JSON.stringify(obj);
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) hash = ((hash << 5) - hash) + str.charCodeAt(i) | 0;
+    return Math.abs(hash).toString(36);
+  };
+  const screenKey = screen ? screen.replace(/[^a-zA-Z0-9]/g, "-") : (json ? `screen-${hashJson(json)}` : "screen-loading");
+  const layoutFromState = useMemo(
+    () => getLayoutOverridesFromState(screenKey),
+    [screenKey, stateSnapshot?.layoutByScreen?.[screenKey]]
+  );
+  const sectionLayoutPresetFromState = layoutFromState.section;
+  const cardLayoutPresetFromState = layoutFromState.card;
+  const organInternalLayoutFromState = layoutFromState.organ;
+  const organInternalLayoutOverrides =
+    Object.keys(organInternalLayoutFromState).length > 0
+      ? organInternalLayoutFromState
+      : getOrganInternalLayoutOverridesForScreen(screenKey);
+
+  const effectiveTemplateId = templateIdFromState ?? (layoutSnapshot as { templateId?: string })?.templateId ?? "";
+  const effectiveLayoutMode = layoutModeFromState ?? (layoutSnapshot as { mode?: "template" | "custom" })?.mode ?? "template";
+  const experienceProfile = getExperienceProfile(experience);
+  const templateProfile = getTemplateProfile(effectiveTemplateId);
+  const effectiveProfile = useMemo(
+    () =>
+      templateProfile
+        ? {
+            ...experienceProfile,
+            id: templateProfile.id,
+            sections: templateProfile.sections,
+            defaultSectionLayoutId: templateProfile.defaultSectionLayoutId,
+            visualPreset: templateProfile.visualPreset,
+            containerWidth: templateProfile.containerWidth,
+            widthByRole: templateProfile.widthByRole,
+            spacingScale: templateProfile.spacingScale,
+            cardPreset: templateProfile.cardPreset,
+            heroMode: templateProfile.heroMode,
+            sectionBackgroundPattern: templateProfile.sectionBackgroundPattern,
+            mode: effectiveLayoutMode,
+          }
+        : { ...experienceProfile, mode: effectiveLayoutMode },
+    [experience, effectiveTemplateId, effectiveLayoutMode]
+  );
+
+  const sectionLayoutPresetOverrides = useMemo(
+    () =>
+      Object.keys(sectionLayoutPresetFromState).length > 0
+        ? sectionLayoutPresetFromState
+        : getOverridesForScreen(screenKey),
+    [screenKey, sectionLayoutPresetFromState]
+  );
+  const cardLayoutPresetOverrides = useMemo(
+    () =>
+      Object.keys(cardLayoutPresetFromState).length > 0
+        ? cardLayoutPresetFromState
+        : getCardOverridesForScreen(screenKey),
+    [screenKey, cardLayoutPresetFromState]
+  );
 
   /* --------------------------------------------------
      DEV PANEL HOST (UNCHANGED)
@@ -308,17 +383,18 @@ export default function Page() {
           timestamp: Date.now(),
         });
 
-        // ✅ TSX SCREEN BRANCH (UNCHANGED)
-        if (data?.__type === "tsx-screen" && typeof data.path === "string") {
-          const C = resolveTsxScreen(data.path);
+        // ✅ TSX SCREEN BRANCH (path from loader or API response)
+        const tsxPath = typeof data?.path === "string" ? data.path : data?.screen;
+        if (data?.__type === "tsx-screen" && typeof tsxPath === "string") {
+          const C = resolveTsxScreen(tsxPath);
           if (!C) {
-            setError(`TSX screen not found: ${data.path}`);
+            setError(`TSX screen not found: ${tsxPath}`);
             setTsxMeta(null);
             setTsxComponent(null);
             setJson(null);
             return;
           }
-          setTsxMeta({ path: data.path });
+          setTsxMeta({ path: tsxPath });
           setTsxComponent(() => C);
           setJson(null);
           setError(null);
@@ -378,24 +454,6 @@ export default function Page() {
 
   if (!json) return <div>Loading…</div>;
 
-  // Screen key for layout/organ overrides (must be stable before expand so organ overrides apply)
-  const hashJson = (obj: any) => {
-    if (!obj) return "empty";
-    const str = JSON.stringify(obj);
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) hash = ((hash << 5) - hash) + str.charCodeAt(i) | 0;
-    return Math.abs(hash).toString(36);
-  };
-  const screenKey = screen ? screen.replace(/[^a-zA-Z0-9]/g, "-") : `screen-${hashJson(json)}`;
-  const layoutFromState = getLayoutOverridesFromState(screenKey);
-  const sectionLayoutPresetFromState = layoutFromState.section;
-  const cardLayoutPresetFromState = layoutFromState.card;
-  const organInternalLayoutFromState = layoutFromState.organ;
-  const organInternalLayoutOverrides =
-    Object.keys(organInternalLayoutFromState).length > 0
-      ? organInternalLayoutFromState
-      : getOrganInternalLayoutOverridesForScreen(screenKey);
-
   // ✅ FIX: render the ACTUAL screen root, not the descriptor
   let renderNode =
     json?.root ??
@@ -414,26 +472,6 @@ export default function Page() {
   renderNode = { ...renderNode, children: finalChildren };
 
   // Apps-offline: compose with experience profile; template overrides sections + full visual architecture (from state with fallback to layout-store)
-  const effectiveTemplateId = templateIdFromState ?? (layoutSnapshot as { templateId?: string })?.templateId ?? "";
-  const effectiveLayoutMode = layoutModeFromState ?? (layoutSnapshot as { mode?: "template" | "custom" })?.mode ?? "template";
-  const experienceProfile = getExperienceProfile(experience);
-  const templateProfile = getTemplateProfile(effectiveTemplateId);
-  const effectiveProfile = templateProfile
-    ? {
-        ...experienceProfile,
-        id: templateProfile.id,
-        sections: templateProfile.sections,
-        defaultSectionLayoutId: templateProfile.defaultSectionLayoutId,
-        visualPreset: templateProfile.visualPreset,
-        containerWidth: templateProfile.containerWidth,
-        widthByRole: templateProfile.widthByRole,
-        spacingScale: templateProfile.spacingScale,
-        cardPreset: templateProfile.cardPreset,
-        heroMode: templateProfile.heroMode,
-        sectionBackgroundPattern: templateProfile.sectionBackgroundPattern,
-        mode: effectiveLayoutMode,
-      }
-    : { ...experienceProfile, mode: effectiveLayoutMode };
   const layoutStateForCompose = {
     ...layoutSnapshot,
     experience,
@@ -456,19 +494,10 @@ export default function Page() {
     treeForRender = collapseLayoutNodes(composed) as typeof composed;
   }
 
-  // ✅ screenKey computed earlier (before expand) for organ overrides
+  // ✅ STRUCTURE-ONLY KEY: screen + template. Never palette/theme/visual — prevents remount on palette change.
   const currentTemplateId = effectiveTemplateId;
-  const renderKey = `${screenKey}-t-${currentTemplateId || "default"}-p-${paletteName}`;
+  const screenContainerKey = `screen-${screenKey}-${currentTemplateId || "default"}`;
 
-  // Section/card layout presets: from state with fallback to legacy stores
-  const sectionLayoutPresetOverrides =
-    Object.keys(sectionLayoutPresetFromState).length > 0
-      ? sectionLayoutPresetFromState
-      : getOverridesForScreen(screenKey);
-  const cardLayoutPresetOverrides =
-    Object.keys(cardLayoutPresetFromState).length > 0
-      ? cardLayoutPresetFromState
-      : getCardOverridesForScreen(screenKey);
   if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
     const sectionFromState = sectionLayoutPresetFromState;
     const cardFromState = cardLayoutPresetFromState;
@@ -599,7 +628,7 @@ export default function Page() {
   });
   const jsonContent = (
     <JsonRenderer
-      key={renderKey}
+      key={screenContainerKey}
       node={treeForRender}
       defaultState={json?.state}
       profileOverride={effectiveProfile}

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 
 export default function LearningShell({
   header,
@@ -13,6 +13,11 @@ export default function LearningShell({
   actions?: React.ReactNode;
   footer?: React.ReactNode;
 }) {
+  useEffect(() => {
+    console.log("[MOUNT]", "LearningShell");
+    return () => console.log("[UNMOUNT]", "LearningShell");
+  }, []);
+
   return (
     <div style={{ minHeight: "100vh", background: "var(--color-surfaceVariant)" }}>
       <header

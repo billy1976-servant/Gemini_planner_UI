@@ -11,7 +11,7 @@ import { getSelectionReason } from "@/logic/engines/shared/engine-selector";
 import { readEngineState, subscribeEngineState } from "@/logic/runtime/engine-bridge";
 import type { EngineState } from "@/logic/runtime/engine-state";
 import { ENGINE_STATE_KEY } from "@/logic/runtime/engine-state";
-import { EducationCard } from "./cards/EducationCard";
+import { EducationCard } from "@/ui/molecules/cards";
 
 /**
  * Engine Viewer - Loads one card in isolation with flow switching

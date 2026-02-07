@@ -37,7 +37,9 @@
       "@/scans/*": ["src/scans/*"],
       "@/state/*": ["src/state/*"],
       "@/logic/*": ["src/logic/*"],
-      "@/registry/*": ["src/registry/*"]
+      "@/registry/*": ["src/registry/*"],
+      "@/runtime": ["src/runtime"],
+      "@/runtime/*": ["src/runtime/*"]
     },
 
 

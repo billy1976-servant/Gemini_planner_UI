@@ -1,11 +1,19 @@
 "use client";
 import React, { createContext, useContext } from "react";
 import palette from "@/registry/palettes.json";
-import atoms from "@/registry/atoms.json";
+import atomsCatalog from "@/registry/atoms.json";
 import molecules from "@/registry/molecules.json";
+import { USE_BLOCKS_AS_PRIMARY } from "@/blocks/blocks-runtime-config";
+import { getAtomDefinition } from "@/blocks/atom-defs-adapter";
 
-
-
+/* Atom definition: when USE_BLOCKS_AS_PRIMARY, manifest first then fallback to definitions JSON; else catalog only. */
+const atoms: Record<string, unknown> = {};
+for (const id of Object.keys(atomsCatalog as Record<string, unknown>)) {
+  const entry = (atomsCatalog as Record<string, unknown>)[id] as Record<string, unknown>;
+  atoms[id] = USE_BLOCKS_AS_PRIMARY
+    ? { ...entry, ...getAtomDefinition(id) }
+    : { ...entry };
+}
 
 /* -------------------------------------------------------
    CONTEXT

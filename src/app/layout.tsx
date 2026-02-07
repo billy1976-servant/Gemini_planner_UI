@@ -73,6 +73,7 @@ const EXPERIENCES: Record<string, any> = {
 
 type ScreensIndex = {
   category: string;
+  directFiles?: string[];
   folders: Record<string, string[]>;
 };
 
@@ -99,6 +100,11 @@ export default function RootLayout({ children }: any) {
 
   const [showSections, setShowSections] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    console.log("[MOUNT]", "RootLayout");
+    return () => console.log("[UNMOUNT]", "RootLayout");
+  }, []);
 
   /* Apply palette to document root so app-chrome + content both inherit */
   usePaletteCSS();
@@ -152,21 +158,33 @@ export default function RootLayout({ children }: any) {
   const categoryOptions = index.map(x => x.category);
   const selectedCategoryObj = index.find(x => x.category === selectedCategory);
 
+  const directFiles = selectedCategoryObj?.directFiles ?? [];
+  const subfolderNames = Object.keys(selectedCategoryObj?.folders ?? {});
 
-  const folderOptions = selectedCategoryObj
-    ? Object.keys(selectedCategoryObj.folders || {})
-    : [];
+  const level2Options: { name: string; kind: "file" | "folder" }[] = [
+    ...directFiles.map(name => ({ name, kind: "file" as const })),
+    ...subfolderNames.map(name => ({ name, kind: "folder" as const })),
+  ];
 
+  const selectedIsDirectFile =
+    selectedCategory &&
+    selectedFolder &&
+    directFiles.includes(selectedFolder);
 
+  const folderOptions = subfolderNames;
   const fileOptions =
-    selectedCategoryObj && selectedFolder
-      ? selectedCategoryObj.folders[selectedFolder] || []
-      : [];
+    selectedIsDirectFile || !selectedFolder
+      ? []
+      : (selectedCategoryObj?.folders?.[selectedFolder] ?? []);
 
-
-  const navigate = (category: string, folder: string, file: string) => {
-    const screenPath = `${category}/${folder}/${file}`;
-    router.replace(`/?screen=${encodeURIComponent(screenPath)}`);
+  const navigate = (category: string, folder: string, file?: string) => {
+    if (file === undefined) {
+      const screenPath = `${category}/${folder}`;
+      router.replace(`/?screen=${encodeURIComponent(screenPath)}`);
+    } else {
+      const screenPath = `${category}/${folder}/${file}`;
+      router.replace(`/?screen=${encodeURIComponent(screenPath)}`);
+    }
   };
 
   return (
@@ -180,6 +198,7 @@ export default function RootLayout({ children }: any) {
         />
       </head>
       <body className="app-body">
+        {/* Navigator: no key — identity stable; palette changes only update CSS, never remount. */}
         <div className="app-chrome">
           <b>HIclarify Navigator</b>
 
@@ -204,14 +223,19 @@ export default function RootLayout({ children }: any) {
             value={selectedFolder}
             disabled={!selectedCategory}
             onChange={e => {
-              setSelectedFolder(e.target.value);
+              const value = e.target.value;
+              setSelectedFolder(value);
               setSelectedFile("");
+              const option = level2Options.find(o => o.name === value);
+              if (option?.kind === "file" && selectedCategory && value) {
+                navigate(selectedCategory, value);
+              }
             }}
           >
-            <option value="">Select Folder…</option>
-            {folderOptions.map(f => (
-              <option key={f} value={f}>
-                {f}
+            <option value="">Select file or folder…</option>
+            {level2Options.map(o => (
+              <option key={o.name} value={o.name}>
+                {o.name}{o.kind === "folder" ? " (folder)" : ""}
               </option>
             ))}
           </select>
@@ -219,16 +243,16 @@ export default function RootLayout({ children }: any) {
 
           <select
             value={selectedFile}
-            disabled={!selectedCategory || !selectedFolder}
+            disabled={!selectedCategory || !selectedFolder || selectedIsDirectFile}
             onChange={e => {
               const file = e.target.value;
               setSelectedFile(file);
-              if (selectedCategory && selectedFolder && file) {
+              if (selectedCategory && selectedFolder && file && !directFiles.includes(selectedFolder)) {
                 navigate(selectedCategory, selectedFolder, file);
               }
             }}
           >
-            <option value="">Select App JSON…</option>
+            <option value="">Select file…</option>
             {fileOptions.map(f => (
               <option key={f} value={f}>
                 {f}

@@ -113,16 +113,31 @@ export async function GET(
 
 
     /* ===============================
-       2️⃣ TSX PATH (ADDITIVE)
-       NOTE:
-       - This does NOT load code
-       - It signals page.tsx to render TSX
+       2️⃣ TSX PATH (FLEXIBLE 2-LEVEL OR 3-LEVEL)
+       Try: folder/file.tsx, then folder/subfolder/file.tsx
+       Extension: .tsx (not .screen.tsx)
     =============================== */
-    const tsxPath = path.join(TSX_ROOT, ...params.path) + ".screen.tsx";
-    if (fs.existsSync(tsxPath)) {
+    const pathSegments = params.path as string[];
+    const withExt = (segments: string[]) =>
+      path.join(TSX_ROOT, ...segments) + ".tsx";
+    let tsxResolved: string | null = null;
+    if (pathSegments.length >= 2) {
+      if (fs.existsSync(withExt(pathSegments))) {
+        tsxResolved = pathSegments.join("/");
+      }
+      if (!tsxResolved && pathSegments.length === 3) {
+        const twoLevel = [pathSegments[0], pathSegments[2]];
+        if (fs.existsSync(withExt(twoLevel))) {
+          tsxResolved = twoLevel.join("/");
+        }
+      }
+    }
+    if (tsxResolved) {
       return NextResponse.json({
+        __type: "tsx-screen",
         __tsx__: true,
-        screen: requestedPath,
+        screen: tsxResolved,
+        path: tsxResolved,
       });
     }
 

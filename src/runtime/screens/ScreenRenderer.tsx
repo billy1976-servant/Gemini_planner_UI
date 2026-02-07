@@ -19,10 +19,10 @@ interface ScreenRendererProps {
 
 /**
  * ScreenRenderer - Renders screens from screen.json configs
- * 
+ *
  * Loads screen config from src/apps-tsx/config/{screenId}.screen.json
  * and renders sections using SiteRenderer components with provided context.
- * 
+ *
  * Subscribes to palette and layout stores so sections can react to changes.
  */
 export default function ScreenRenderer({ screenId, context = {} }: ScreenRendererProps) {
@@ -123,7 +123,7 @@ export default function ScreenRenderer({ screenId, context = {} }: ScreenRendere
 
 /**
  * SectionRenderer - Renders individual sections using SiteRenderer components
- * 
+ *
  * These components will re-render when palette/layout stores change
  * because ScreenRenderer subscribes to those stores.
  */
@@ -160,11 +160,11 @@ function resolvePath(context: Record<string, any>, path: string): any {
       const [, arrayKey, indexKey] = arrayMatch;
       const array = current[arrayKey];
       const index = context[indexKey];
-      
+
       if (!Array.isArray(array)) {
         throw new Error(`Expected array at ${arrayKey}, got ${typeof array}`);
       }
-      
+
       if (index === undefined) {
         throw new Error(`Index key ${indexKey} not found in context`);
       }
@@ -174,7 +174,7 @@ function resolvePath(context: Record<string, any>, path: string): any {
       if (!found) {
         throw new Error(`No item found with path: ${index}`);
       }
-      
+
       current = found;
       continue;
     }

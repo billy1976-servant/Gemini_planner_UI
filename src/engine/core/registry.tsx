@@ -21,6 +21,8 @@ import SelectAtom from "@/components/9-atoms/primitives/select";
 // =====================================================
 // UI MOLECULES (LOCKED, JSON-FACING — DO NOT ADD MORE)
 // =====================================================
+import { USE_BLOCKS_AS_PRIMARY } from "@/blocks/blocks-runtime-config";
+import { getCompoundComponent } from "@/blocks/compound-runtime-adapter";
 import Section from "@/compounds/ui/12-molecules/section.compound";
 import Button from "@/compounds/ui/12-molecules/button.compound";
 import Card from "@/compounds/ui/12-molecules/card.compound";
@@ -101,53 +103,53 @@ export const Registry = {
   Select: SelectAtom,
 
 
-  // 🔹 UI molecules
-  section: Section,
-  Section: Section,
+  // 🔹 UI molecules (blocks-first when USE_BLOCKS_AS_PRIMARY; fallback to direct import)
+  section: USE_BLOCKS_AS_PRIMARY ? (getCompoundComponent("section") ?? Section) : Section,
+  Section: USE_BLOCKS_AS_PRIMARY ? (getCompoundComponent("section") ?? Section) : Section,
 
 
-  button: Button,
-  Button: Button,
+  button: USE_BLOCKS_AS_PRIMARY ? (getCompoundComponent("button") ?? Button) : Button,
+  Button: USE_BLOCKS_AS_PRIMARY ? (getCompoundComponent("button") ?? Button) : Button,
 
 
-  card: Card,
-  Card: Card,
+  card: USE_BLOCKS_AS_PRIMARY ? (getCompoundComponent("card") ?? Card) : Card,
+  Card: USE_BLOCKS_AS_PRIMARY ? (getCompoundComponent("card") ?? Card) : Card,
 
 
-  avatar: Avatar,
-  Avatar: Avatar,
+  avatar: USE_BLOCKS_AS_PRIMARY ? (getCompoundComponent("avatar") ?? Avatar) : Avatar,
+  Avatar: USE_BLOCKS_AS_PRIMARY ? (getCompoundComponent("avatar") ?? Avatar) : Avatar,
 
 
-  chip: Chip,
-  Chip: Chip,
+  chip: USE_BLOCKS_AS_PRIMARY ? (getCompoundComponent("chip") ?? Chip) : Chip,
+  Chip: USE_BLOCKS_AS_PRIMARY ? (getCompoundComponent("chip") ?? Chip) : Chip,
 
 
-  field: Field,
-  Field: Field,
+  field: USE_BLOCKS_AS_PRIMARY ? (getCompoundComponent("field") ?? Field) : Field,
+  Field: USE_BLOCKS_AS_PRIMARY ? (getCompoundComponent("field") ?? Field) : Field,
 
 
-  footer: Footer,
-  Footer: Footer,
+  footer: USE_BLOCKS_AS_PRIMARY ? (getCompoundComponent("footer") ?? Footer) : Footer,
+  Footer: USE_BLOCKS_AS_PRIMARY ? (getCompoundComponent("footer") ?? Footer) : Footer,
 
 
-  list: List,
-  List: List,
+  list: USE_BLOCKS_AS_PRIMARY ? (getCompoundComponent("list") ?? List) : List,
+  List: USE_BLOCKS_AS_PRIMARY ? (getCompoundComponent("list") ?? List) : List,
 
 
-  modal: Modal,
-  Modal: Modal,
+  modal: USE_BLOCKS_AS_PRIMARY ? (getCompoundComponent("modal") ?? Modal) : Modal,
+  Modal: USE_BLOCKS_AS_PRIMARY ? (getCompoundComponent("modal") ?? Modal) : Modal,
 
 
-  stepper: Stepper,
-  Stepper: Stepper,
+  stepper: USE_BLOCKS_AS_PRIMARY ? (getCompoundComponent("stepper") ?? Stepper) : Stepper,
+  Stepper: USE_BLOCKS_AS_PRIMARY ? (getCompoundComponent("stepper") ?? Stepper) : Stepper,
 
 
-  toast: Toast,
-  Toast: Toast,
+  toast: USE_BLOCKS_AS_PRIMARY ? (getCompoundComponent("toast") ?? Toast) : Toast,
+  Toast: USE_BLOCKS_AS_PRIMARY ? (getCompoundComponent("toast") ?? Toast) : Toast,
 
 
-  toolbar: Toolbar,
-  Toolbar: Toolbar,
+  toolbar: USE_BLOCKS_AS_PRIMARY ? (getCompoundComponent("toolbar") ?? Toolbar) : Toolbar,
+  Toolbar: USE_BLOCKS_AS_PRIMARY ? (getCompoundComponent("toolbar") ?? Toolbar) : Toolbar,
 
 
   // 🔹 STATE-AWARE VIEWERS

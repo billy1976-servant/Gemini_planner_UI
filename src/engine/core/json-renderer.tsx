@@ -906,7 +906,12 @@ export default function JsonRenderer({
   // 🔑 Track if user has interacted (state changed from default) - use reactive state after interaction
   const hasInteracted = React.useRef(false);
   const lastDefaultState = React.useRef(defaultState?.currentView);
-  
+
+  React.useEffect(() => {
+    console.log("[MOUNT]", "JsonRenderer");
+    return () => console.log("[UNMOUNT]", "JsonRenderer");
+  }, []);
+
   // 🔑 LIFECYCLE: Log mount/unmount
   React.useEffect(() => {
     console.log("[JsonRenderer] ✅ MOUNTED", {

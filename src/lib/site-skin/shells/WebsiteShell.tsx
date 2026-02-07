@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 
 export default function WebsiteShell({
   header,
@@ -15,6 +15,11 @@ export default function WebsiteShell({
   products?: React.ReactNode;
   footer?: React.ReactNode;
 }) {
+  useEffect(() => {
+    console.log("[MOUNT]", "WebsiteShell");
+    return () => console.log("[UNMOUNT]", "WebsiteShell");
+  }, []);
+
   // Page passes full JSON tree as content; header/hero/footer are inside that tree
   const mainContent = content ?? (
     <>

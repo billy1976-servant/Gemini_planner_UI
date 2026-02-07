@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 
 export default function AppShell({
   nav,
@@ -17,6 +17,11 @@ export default function AppShell({
   actions?: React.ReactNode;
   footer?: React.ReactNode;
 }) {
+  useEffect(() => {
+    console.log("[MOUNT]", "AppShell");
+    return () => console.log("[UNMOUNT]", "AppShell");
+  }, []);
+
   return (
     <div
       style={{

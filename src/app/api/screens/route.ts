@@ -22,29 +22,39 @@ const TSX_BASE = path.join(
 
 
 /* ======================================================
-   TSX DISCOVERY — FINAL, CORRECT DEPTH
-   category = <group>
-   folder   = <app>
-   file     = <file>.tsx
+   TSX DISCOVERY — FLEXIBLE 2-LEVEL OR 3-LEVEL
+   Level 1 = category (folder under apps-tsx)
+   Level 2 = direct .tsx files in category OR subfolders
+   Level 3 = .tsx files inside selected subfolder
 ====================================================== */
-function collectTsxScreens() {
+function collectTsxScreens(): Array<{
+  category: string;
+  directFiles: string[];
+  folders: Record<string, string[]>;
+}> {
   if (!fs.existsSync(TSX_BASE)) return [];
-
 
   return fs
     .readdirSync(TSX_BASE, { withFileTypes: true })
     .filter(d => d.isDirectory())
     .map(group => {
       const groupPath = path.join(TSX_BASE, group.name);
+      const entries = fs.readdirSync(groupPath, { withFileTypes: true });
 
+      const directFiles = entries
+        .filter(
+          f =>
+            f.isFile() &&
+            f.name.endsWith(".tsx") &&
+            !f.name.endsWith(".d.ts") &&
+            !f.name.startsWith("_template")
+        )
+        .map(f => f.name.replace(/\.tsx$/, ""));
 
-      const folders = fs
-        .readdirSync(groupPath, { withFileTypes: true })
+      const folders = entries
         .filter(d => d.isDirectory())
         .reduce<Record<string, string[]>>((acc, app) => {
           const appPath = path.join(groupPath, app.name);
-
-
           const files = fs
             .readdirSync(appPath, { withFileTypes: true })
             .filter(
@@ -52,18 +62,16 @@ function collectTsxScreens() {
                 f.isFile() &&
                 f.name.endsWith(".tsx") &&
                 !f.name.endsWith(".d.ts") &&
-                !f.name.startsWith("_template") // Exclude template files
+                !f.name.startsWith("_template")
             )
             .map(f => f.name.replace(/\.tsx$/, ""));
-
-
           if (files.length) acc[app.name] = files;
           return acc;
         }, {});
 
-
       return {
         category: group.name,
+        directFiles,
         folders,
       };
     });
@@ -113,9 +121,10 @@ export async function GET() {
 
 
     return NextResponse.json([
-      ...jsonCategories,
+      ...jsonCategories.map(c => ({ ...c, directFiles: (c as any).directFiles ?? [] })),
       ...tsxCategories.map(c => ({
         category: `tsx:${c.category}`,
+        directFiles: c.directFiles,
         folders: c.folders,
       })),
     ]);

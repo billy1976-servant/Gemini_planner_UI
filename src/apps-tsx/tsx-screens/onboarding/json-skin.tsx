@@ -1,9 +1,8 @@
 "use client";
 import React, { useState, useMemo } from "react";
 import JsonRenderer from "@/engine/core/json-renderer";
-import { loadScreenJson } from "@/apps-tsx/utils/safe-json-loader";
-
-import screenManifest from "@/apps-tsx/screen-manifest.json";
+import { loadScreenJson } from "@/runtime/loaders/safe-json-loader";
+import screenManifest from "@/runtime/registry/screen-manifest.json";
 
 type ScreenKey = keyof typeof screenManifest;
 
