@@ -1,0 +1,46 @@
+{
+  "interactions": {
+    "tap": "interact.tap",
+    "double": "interact.double",
+    "long": "interact.long",
+    "drag": {
+      "horizontal": "interact.dragX",
+      "vertical": "interact.dragY",
+      "free": "interact.dragXY"
+    },
+    "scroll": {
+      "up": "interact.scrollUp",
+      "down": "interact.scrollDown"
+    },
+    "swipe": {
+      "left": "interact.swipeLeft",
+      "right": "interact.swipeRight",
+      "up": "interact.swipeUp",
+      "down": "interact.swipeDown"
+    }
+  },
+  "navigations": {
+    "go": {
+      "screen": "nav.goScreen",
+      "modal": "nav.goModal",
+      "flow": "nav.goFlow"
+    },
+    "back": {
+      "one": "nav.backOne",
+      "all": "nav.backAll",
+      "root": "nav.backRoot"
+    },
+    "open": {
+      "panel": "nav.openPanel",
+      "sheet": "nav.openSheet"
+    },
+    "close": {
+      "panel": "nav.closePanel",
+      "sheet": "nav.closeSheet"
+    },
+    "route": {
+      "internal": "nav.routeInternal",
+      "external": "nav.routeExternal"
+    }
+  }
+}

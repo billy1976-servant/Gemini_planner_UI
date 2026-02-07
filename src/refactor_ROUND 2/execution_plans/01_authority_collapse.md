@@ -66,3 +66,5 @@
 - JsonRenderer applyProfileToNode uses layout.getSectionLayoutId for section layout id; resolveLayout(layoutDefId) for definition unchanged.
 - No duplicate "which layout id" logic in engine/; single source in layout/section-layout-id.ts.
 - runtime-pipeline-contract and critical-path smoke pass: test run passed.
+
+**Execution Record (short)** — **Files touched:** Created `src/layout/section-layout-id.ts`. Modified `src/layout/index.ts`, `src/layout/resolver/index.ts`, `src/layout/resolver/layout-resolver.ts`, `src/engine/core/json-renderer.tsx`. **Tests run:** `npx playwright test tests/runtime-pipeline-contract.spec.ts` — 1 passed. **Confirmation:** getSectionLayoutId in layout/; JsonRenderer uses it; no duplicate layout-id logic; acceptance criteria met.

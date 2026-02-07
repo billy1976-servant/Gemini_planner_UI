@@ -116,3 +116,9 @@
 ---
 
 *End of ROUND2_EXECUTION_MASTER_PLAN.md — full ROUND 2 master execution plan; no code changes in this deliverable.*
+
+---
+
+## Execution Record
+
+Execution records (files touched, tests run, confirmation) are at the bottom of each phase doc: 01_authority_collapse.md through 10_integrity_pass.md. Phases 01–07 completed with records filled; phases 08–10 have placeholder records to fill at execution.

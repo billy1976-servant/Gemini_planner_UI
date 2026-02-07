@@ -70,6 +70,7 @@ import FlowB from "@/logic/content/flows/flow-b.json";
 import FlowC from "@/logic/content/flows/flow-c.json";
 import TestFlow from "@/logic/content/flows/test-flow.json";
 import FlowWithMeta from "@/logic/content/flows/flow-with-meta.json";
+import { applyEngine } from "@/logic/engine-system/engine-contract";
 
 // Flow registry - pre-registered flows
 const FLOWS: Record<string, EducationFlow> = {};
@@ -149,7 +150,6 @@ export async function loadFlow(flowId: string, engineId?: string, screenParam?: 
     const effectiveEngineId = engineId || currentEngineId;
     if (effectiveEngineId) {
       try {
-        const { applyEngine } = await import("../engine-system/engine-registry");
         const transformed = applyEngine(registeredFlow, effectiveEngineId as any);
         return structuredClone(transformed);
       } catch (error) {
@@ -167,7 +167,6 @@ export async function loadFlow(flowId: string, engineId?: string, screenParam?: 
     const effectiveEngineId = engineId || currentEngineId;
     if (effectiveEngineId) {
       try {
-        const { applyEngine } = await import("../engine-system/engine-registry");
         const transformed = applyEngine(overrideFlow, effectiveEngineId as any);
         return structuredClone(transformed);
       } catch (error) {
@@ -202,7 +201,6 @@ export async function loadFlow(flowId: string, engineId?: string, screenParam?: 
     // Apply engine transformation if engine is active
     if (effectiveEngineId) {
       try {
-        const { applyEngine } = await import("../engine-system/engine-registry");
         const transformed = applyEngine(baseFlow, effectiveEngineId as any);
         const cacheKey = `${flowId}:${effectiveEngineId}`;
         engineFlowCache[cacheKey] = transformed;
@@ -273,7 +271,6 @@ export async function loadFlow(flowId: string, engineId?: string, screenParam?: 
           // Apply engine transformation if engine is active
           if (effectiveEngineId) {
             try {
-              const { applyEngine } = await import("../engine-system/engine-registry");
               const transformed = applyEngine(flow, effectiveEngineId as any);
               const cacheKey = `${flowId}:${effectiveEngineId}`;
               engineFlowCache[cacheKey] = transformed;

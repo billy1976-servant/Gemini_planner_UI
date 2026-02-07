@@ -30,3 +30,11 @@
 ---
 
 *Planning only; execution later.*
+
+---
+
+## Execution Record
+
+**Files touched:** *(To be filled at execution.)*  
+**Tests run:** *(To be filled at execution.)*  
+**Confirmation:** *(To be filled at execution.)*

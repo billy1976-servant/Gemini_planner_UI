@@ -5,6 +5,45 @@
 
 ---
 
+## 0. NON-NEGOTIABLE ARCHITECTURE RULES (HARD)
+
+### 0.1 JsonRenderer boundary (hard rule)
+
+- **JsonRenderer is a coordinator ONLY.** It may not own layout, preset, or config resolution logic.
+- **Allowed imports only:**
+  - `@/layout` (section layout id, resolveLayout — via layout public API only)
+  - `@/state` (subscribeState, getState, dispatchState contract)
+  - Component registry (engine/core/registry)
+  - Behavior listener contract (install / event contract; no direct action-registry)
+- **Forbidden imports:**
+  - `@/lib/layout`
+  - Molecule-layout resolvers
+  - Preset resolvers (card, spacing, visual)
+  - Config readers (renderer-contract, ui-verb-map, etc.)
+
+**Freeze renderer scope:** JsonRenderer may coordinate, map node types to components, and call authorities. It may NOT: resolve layout definitions, resolve presets, or interpret config. All layout resolution flows through `@/layout` only.
+
+### 0.2 Layout authority (hard rule)
+
+- **ALL layout resolution must flow through `@/layout`.**
+- If `lib/layout` holds data or resolvers: **layout/** is the ONLY public API; **lib/layout** is internal implementation.
+- No direct imports to `lib/layout` from renderer or app. Only layout/ may import from lib/layout.
+
+### 0.3 Single authority verification (checklist)
+
+- Only one module may export: **deriveState** (state/state-resolver.ts).
+- Only one module may export: **getSectionLayoutId** (layout/).
+- Only one module may export: **resolveLayout** (layout/).
+- Only one module may export the **component registry map** (engine/core/registry.tsx).
+- **Contracts** must exist ONLY in **/contracts**. `system/contracts` must be re-export-only or removed.
+
+### 0.4 Engine entry facade (structural)
+
+- A single **engine contract facade** re-exports: action-registry and engine-registry.
+- No direct imports from app layer to both action-registry and engine-registry separately. Callers use the facade for "run engine" / "get action handler" semantics.
+
+---
+
 ## 1. Single runtime pipeline
 
 One path from request to DOM:

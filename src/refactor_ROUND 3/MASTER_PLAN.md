@@ -169,6 +169,13 @@ No schema changes except additive. Tests (runtime-pipeline-contract, critical-pa
 - Redundant glue removed or documented; engine-bridge and runtime-verb-interpreter remain the single bridge/interpreter for trunk.
 - Runtime contract frozen; tests pass; boundary checklist signed off.
 
+### 7.1 Non-negotiable acceptance (hard rules)
+
+- **JsonRenderer boundary:** JsonRenderer imports ONLY from @/layout, @/state, component registry, behavior listener contract. It must NOT import from @/lib/layout, molecule-layout resolvers, preset resolvers, or config readers. JsonRenderer may NOT resolve layout, resolve presets, or interpret config.
+- **Layout authority:** All layout resolution flows through @/layout; lib/layout is internal implementation only; no direct imports to lib/layout from renderer or app.
+- **Single authority checklist:** Exactly one exporter for deriveState, getSectionLayoutId, resolveLayout, component registry map; contracts only in /contracts (system/contracts re-export-only or removed).
+- **Engine facade:** Single engine contract facade re-exports action-registry and engine-registry; no app-layer direct imports to both separately.
+
 ---
 
 ## 8. OUT OF SCOPE (ROUND 3)

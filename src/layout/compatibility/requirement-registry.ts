@@ -1,11 +1,10 @@
 /**
  * Layout Requirement Registry: reads JSON requirement files and returns
  * required slots for a given layout ID. Used by the Compatibility Evaluator.
+ * Single source: layout/requirements/layout-requirements.json (section, card, organ).
  */
 
-import sectionRequirementsData from "@/layout/requirements/section-layout-requirements.json";
-import cardRequirementsData from "@/layout/requirements/card-layout-requirements.json";
-import organRequirementsData from "@/layout/requirements/organ-internal-layout-requirements.json";
+import requirementsData from "@/layout/requirements/layout-requirements.json";
 
 export type LayoutType = "section" | "card" | "organ";
 
@@ -14,9 +13,9 @@ type SectionRoot = { layoutRequirements?: LayoutRequirementsMap };
 type CardRoot = { layoutRequirements?: LayoutRequirementsMap };
 type OrganRoot = { organLayoutRequirements?: Record<string, Record<string, string[]>> };
 
-const sectionRoot = sectionRequirementsData as SectionRoot;
-const cardRoot = cardRequirementsData as CardRoot;
-const organRoot = organRequirementsData as OrganRoot;
+const sectionRoot = requirementsData.section as SectionRoot;
+const cardRoot = requirementsData.card as CardRoot;
+const organRoot = requirementsData.organ as OrganRoot;
 
 const sectionMap = sectionRoot?.layoutRequirements ?? {};
 const cardMap = cardRoot?.layoutRequirements ?? {};
@@ -60,7 +59,7 @@ export function getRequiredSlots(
 
 /**
  * Returns the required slot names for an organ's internal layout.
- * organId and internalLayoutId must match the organ-internal-layout-requirements.json structure.
+ * organId and internalLayoutId must match the layout-requirements.json organ.organLayoutRequirements structure.
  */
 export function getRequiredSlotsForOrgan(
   organId: string,

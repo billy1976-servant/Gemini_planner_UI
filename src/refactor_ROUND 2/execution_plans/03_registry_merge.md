@@ -60,3 +60,5 @@
 - Single module: calculator.registry.ts is the only import path for calculator calcs; action-runner/run-calculator and calc-resolver use it; implementation (registration) remains in calc-registry.ts.
 - No duplicate registration: only calc-registry.ts registers calcs.
 - Docs: 06_CONTRACTS_MASTER.md states Registry = component map; catalogs = definitions, organs, layout IDs, calculator.registry.
+
+**Execution Record (short)** — **Files touched:** `src/logic/registries/calculator.registry.ts`, `src/logic/runtime/calc-resolver.ts`, `src/system-architecture/06_CONTRACTS_MASTER.md`. **Tests run:** `npx playwright test tests/runtime-pipeline-contract.spec.ts` — 1 passed. **Confirmation:** Single calculator surface (calculator.registry); no duplicate registration; Registry vs catalogs documented; acceptance criteria met.

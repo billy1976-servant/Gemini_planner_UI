@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { loadFlow, getAvailableFlows, setEngineFlow, setCurrentEngine, type EducationFlow } from "@/logic/flows/flow-loader";
-import { getAvailableEngines, applyEngine, getPresentation, type EngineId, type ExecutionEngineId, isExecutionEngine } from "@/logic/engine-system/engine-registry";
+import { getAvailableEngines, applyEngine, getPresentation, type EngineId, type ExecutionEngineId, isExecutionEngine } from "@/logic/engine-system/engine-contract";
 import type { EngineExplainEvent } from "@/logic/engine-system/engine-explain";
 import type { PresentationModel } from "@/logic/engines/presentation-types";
 import type { NextStepReason } from "@/logic/engines/next-step-reason";

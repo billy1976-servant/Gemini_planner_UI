@@ -4,6 +4,8 @@
 
 **Single runtime entry spine:** One path for JSON screens: page.tsx → loadScreen → document prep (assignSectionInstanceKeys, expandOrgansInDocument, applySkinBindings, composeOfflineScreen) → setCurrentScreenTree → JsonRenderer → layout.getSectionLayoutId + resolveLayout (layout module) → Section / LayoutMoleculeRenderer → behavior-listener → state-resolver. No second renderer or layout-application entrypoint; JsonRenderer is the only renderer on the main JSON path and delegates section layout id to the layout module.
 
+**Trunk vs secondary (non-trunk):** The trunk is the path above. The following are explicitly **not trunk** and must not be used as a second main pipeline: GeneratedSiteViewer, SiteSkin, flow-loader, applyEngineOverlays. They may reuse JsonRenderer or a separate tree for secondary flows (e.g. TSX/flow screens). No alternate screen-load entry competes with page → loadScreen → JsonRenderer for primary JSON.
+
 ---
 
 ## 1. Request → Screen path resolution

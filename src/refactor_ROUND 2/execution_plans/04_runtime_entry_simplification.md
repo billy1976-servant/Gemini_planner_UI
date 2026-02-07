@@ -54,3 +54,5 @@
 - Spine unchanged: page.tsx, loadScreen, JsonRenderer, behavior-listener, state-resolver.
 - JsonRenderer uses layout.getSectionLayoutId and resolveLayout; section layout id logic lives in layout module.
 - 02_RUNTIME_PIPELINE.md updated with single runtime entry spine and layout resolution wording.
+
+**Execution Record (short)** — **Files touched:** `src/system-architecture/02_RUNTIME_PIPELINE.md`. **Tests run:** No code change; runtime-pipeline-contract already passing. **Confirmation:** No new entrypoints; JsonRenderer uses layout.getSectionLayoutId and resolveLayout; single runtime spine documented; acceptance criteria met.

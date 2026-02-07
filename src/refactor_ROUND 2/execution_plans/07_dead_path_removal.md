@@ -55,3 +55,5 @@
 - content/content-resolver: stubbed; no main-path import.
 - calc-resolver: documented optional/legacy; no main-path dependency.
 - Reachability and tests pass; no broken imports.
+
+**Execution Record (short)** — **Files touched:** None this phase (stub and calc-resolver docs done in Phase 02). **Tests run:** `npx playwright test tests/runtime-pipeline-contract.spec.ts` — 1 passed. **Confirmation:** content/content-resolver stubbed, no main-path import; calc-resolver documented optional; no broken imports; acceptance criteria met.

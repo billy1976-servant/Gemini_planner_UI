@@ -1,0 +1,38 @@
+{
+  "simpleHours": {
+    "type": "calculator",
+    "calculators": [
+      { "id": "cleanup_labor_monthly", "inputs": ["hours", "hourlyWage"], "formula": "hours * hourlyWage", "output": "total" }
+    ]
+  },
+  "profit": {
+    "type": "calculator",
+    "calculators": [
+      { "id": "effective_revenue", "inputs": ["monthlyRevenue", "monthlyCleanupLaborCost"], "formula": "monthlyRevenue - monthlyCleanupLaborCost", "output": "effectiveMonthlyRevenue" }
+    ]
+  },
+  "cleanupLabor": {
+    "calculators": [
+      { "id": "cleanup_labor_monthly", "inputs": ["crewSize", "cleanupMinutesPerDay", "hourlyWage"], "formula": "(crewSize * (cleanupMinutesPerDay / 60) * (hourlyWage * 1.5)) * 22", "output": "cleanupLaborMonthly" },
+      { "id": "morale_rework", "inputs": ["enjoysCleanup", "thorough", "callbacks"], "formula": "(enjoysCleanup ? 0 : 200) + (thorough ? 0 : 200) + (callbacks ? 200 : 0)", "output": "moraleLossMonthly" }
+    ]
+  },
+  "monthlyLosss": {
+    "type": "calculator",
+    "calculators": [
+      { "id": "monthly_loss", "inputs": ["monthlyRevenue", "cleanupLaborMonthly"], "formula": "monthlyRevenue - cleanupLaborMonthly", "output": "effectiveMonthlyRevenue" }
+    ]
+  },
+  "testCalculator": {
+    "type": "calculator",
+    "calculators": [
+      { "id": "cleanup_labor_monthly", "inputs": ["hours", "hourlyWage"], "formula": "hours * hourlyWage * 20", "output": "total", "type": "simple-hours" }
+    ]
+  },
+  "wageMultiplier": {
+    "type": "calculator",
+    "calculators": [
+      { "id": "cleanup_labor_monthly", "inputs": ["crewSize", "hourlyWage", "cleanupMinutesPerDay"], "formula": "(crewSize * hourlyWage * (cleanupMinutesPerDay / 60) * 22)", "output": "monthlyCleanupLaborCost" }
+    ]
+  }
+}

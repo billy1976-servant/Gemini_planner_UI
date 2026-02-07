@@ -1,9 +1,12 @@
 // src/logic/engines/calculator/calcs/calc-registry.ts
 // Single calculator/calc registration: JSON definitions + calculation functions
+// Calculator type definitions: single bundle logic/engines/calculator/calculator-types.json
 
 import type { CalcDefinition, CalcInput, CalcResult } from "./types";
-import simpleHours from "../calculator-types/simple-hours.json";
-import profit from "../calculator-types/profit.calculator.json";
+import calculatorTypes from "../calculator-types.json";
+
+const simpleHours = calculatorTypes.simpleHours;
+const profit = calculatorTypes.profit;
 
 /** Calculator JSON definitions (id → config). Canon lookup for run-calculator and calculator.module. */
 const CALCULATOR_REGISTRY: Record<string, unknown> = {

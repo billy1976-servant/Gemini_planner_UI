@@ -6,7 +6,7 @@ import { CalculatorCard } from "@/screens/tsx-screens/onboarding/cards/Calculato
 import { EducationCard } from "@/screens/tsx-screens/onboarding/cards/EducationCard";
 import { SummaryCard } from "@/screens/tsx-screens/onboarding/cards/SummaryCard";
 import WebsiteBlockRenderer, { WebsiteBlockType } from "@/engine/bridge/WebsiteBlockRenderer";
-import { getPresentation } from "@/logic/engine-system/engine-registry";
+import { getPresentation } from "@/logic/engine-system/engine-contract";
 import type { PresentationModel } from "@/logic/engines/presentation-types";
 import { loadFlow, type EducationFlow } from "@/logic/flows/flow-loader";
 

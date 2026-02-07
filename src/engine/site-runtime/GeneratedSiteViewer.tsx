@@ -14,7 +14,8 @@ import { useSearchParams } from "next/navigation";
 import { SitePage } from "@/types/siteSchema";
 import { NormalizedSite } from "@/lib/site-compiler/normalizeSiteData";
 import { renderLayoutBlocks } from "@/lib/site-renderer/renderFromSchema";
-import { useContainerLayout } from "@/lib/site-renderer/layout-bridge";
+import { resolveProfileLayout } from "@/lib/layout/profile-resolver";
+import { resolveScreenLayout } from "@/lib/layout/screen-layout-resolver";
 import { getLayout, subscribeLayout } from "@/engine/core/layout-store";
 import PageContainer from "@/components/site/PageContainer";
 import "@/styles/site-theme.css";
@@ -34,6 +35,26 @@ interface GeneratedSiteViewerProps {
   domain?: string;
 }
 
+function getContainerLayout(experience: "website" | "app" | "learning"): React.CSSProperties {
+  if (experience === "website") {
+    return {
+      maxWidth: "1200px",
+      margin: "0 auto",
+      padding: "clamp(16px, 3vw, 40px)",
+      width: "100%",
+    };
+  }
+  const profile = resolveProfileLayout(experience);
+  const containerType = profile?.container || "page";
+  const screenLayout = resolveScreenLayout(containerType, null, { maxWidth: profile?.maxWidth });
+  return {
+    maxWidth: screenLayout.maxWidth || profile?.maxWidth || "100%",
+    padding: screenLayout.padding || "2rem",
+    margin: "0 auto",
+    width: "100%",
+  };
+}
+
 export default function GeneratedSiteViewer({ domain: domainProp }: GeneratedSiteViewerProps = {}) {
   // Get experience from layout store reactively (reacts to layout dropdown changes)
   const layout = useSyncExternalStore(
@@ -42,7 +63,7 @@ export default function GeneratedSiteViewer({ domain: domainProp }: GeneratedSit
     () => ({ type: "column", preset: null }) // Fallback
   );
   const experience = ((layout as any)?.experience as "website" | "app" | "learning") || "website";
-  const containerStyles = useContainerLayout(experience);
+  const containerStyles = getContainerLayout(experience);
   
   const searchParams = useSearchParams();
   const [siteData, setSiteData] = useState<NormalizedSite | null>(null);

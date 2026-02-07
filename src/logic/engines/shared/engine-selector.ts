@@ -11,7 +11,7 @@
  */
 
 import type { EngineState } from "../../runtime/engine-state";
-import type { ExecutionEngineId } from "../../engine-system/engine-registry";
+import type { ExecutionEngineId } from "@/logic/engine-system/engine-contract";
 
 /**
  * Select the best-fit execution engine based on current EngineState

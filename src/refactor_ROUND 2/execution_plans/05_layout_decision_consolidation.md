@@ -55,3 +55,5 @@
 - Layout decision order documented (override → node → template role → template default → undefined) in RUNTIME_AUTHORITY_LADDER and 05_LAYOUT_SYSTEM.
 - getDefaultSectionLayoutId stays in layout/page; getSectionLayoutId uses it (option (b)).
 - No second authority: section layout id only in layout/getSectionLayoutId.
+
+**Execution Record (short)** — **Files touched:** `src/docs/ARCHITECTURE_AUTOGEN/RUNTIME_AUTHORITY_LADDER.md`, `src/system-architecture/05_LAYOUT_SYSTEM.md`. **Tests run:** No code change; tests unchanged. **Confirmation:** Layout ladder documented (override → node → template role → template default → undefined); getDefaultSectionLayoutId in layout/page, used by getSectionLayoutId; single authority in layout/; acceptance criteria met.

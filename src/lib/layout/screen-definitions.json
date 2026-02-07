@@ -1,0 +1,22 @@
+{
+  "row": {
+    "defaults": { "gap": "1rem", "align": "center", "justify": "flex-start" },
+    "presets": { "spaced": { "justify": "space-between" }, "centered": { "justify": "center" }, "tight": { "gap": "0.25rem" } }
+  },
+  "column": {
+    "defaults": { "gap": "1rem", "align": "stretch", "justify": "flex-start" },
+    "presets": { "centered": { "align": "center" }, "tight": { "gap": "0.5rem" }, "spacious": { "gap": "2rem" } }
+  },
+  "grid": {
+    "defaults": { "columns": 2, "gap": "1rem", "align": "stretch", "justify": "stretch" },
+    "presets": { "twoColumn": { "columns": 2 }, "threeColumn": { "columns": 3, "gap": "1.5rem" }, "wideGap": { "gap": "2rem" }, "responsive": { "columns": 2, "gap": "clamp(0.5rem, 2vw, 1.5rem)" } }
+  },
+  "stack": {
+    "defaults": { "align": "center", "justify": "center" },
+    "presets": { "topLeft": { "align": "flex-start", "justify": "flex-start" }, "bottomRight": { "align": "flex-end", "justify": "flex-end" } }
+  },
+  "page": {
+    "defaults": { "maxWidth": "900px", "padding": "2rem", "gap": "2rem" },
+    "presets": { "wide": { "maxWidth": "1200px" }, "narrow": { "maxWidth": "600px" }, "tight": { "gap": "1rem" } }
+  }
+}

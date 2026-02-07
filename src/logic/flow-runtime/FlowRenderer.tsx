@@ -6,7 +6,7 @@ import { readEngineState, subscribeEngineState } from "@/logic/runtime/engine-br
 import { EducationCard } from "@/screens/tsx-screens/onboarding/cards/EducationCard";
 import { loadFlow, getAvailableFlows, setCurrentEngine, setOverrideFlow, type EducationFlow } from "@/logic/flows/flow-loader";
 import { selectExecutionEngine } from "@/logic/engines/shared/engine-selector";
-import { getPresentation } from "@/logic/engine-system/engine-registry";
+import { getPresentation } from "@/logic/engine-system/engine-contract";
 import type { PresentationModel } from "@/logic/engines/presentation-types";
 import type { EngineState } from "@/logic/runtime/engine-state";
 import { EngineRuntimeProvider } from "@/logic/runtime/engine-runtime-provider";

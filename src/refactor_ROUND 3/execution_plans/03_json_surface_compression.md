@@ -6,7 +6,7 @@
 
 ## Objectives
 
-1. **Layout:** One layout-definitions (or page + component) file(s); one molecule-layouts; one presentation-profiles (if not done in R2). All under layout/data or lib/layout.
+1. **Layout:** One layout-definitions (or page + component) file(s); one molecule-layouts; one presentation-profiles (if not done in R2). All under layout/data or lib/layout. **Authority rule:** layout/ is the ONLY public API; lib/layout is internal implementation. No new direct imports to lib/layout from renderer or app. Loaders that read layout JSON are part of layout/ surface only.
 2. **Config:** One config.json or keep state-defaults, renderer-contract, ui-verb-map as three; document as "config surface."
 3. **Contract:** JSON_SCREEN_CONTRACT.json only; no duplicate schema files for trunk.
 4. **Palettes:** Single index or single bundle; palettes/index.ts already re-exports.
@@ -19,6 +19,7 @@
 - [ ] Core trunk JSON is a small, named set: layout-definitions, molecule-layouts, presentation-profiles, config (1–3 files), JSON_SCREEN_CONTRACT, palettes (1 or index).
 - [ ] No new JSON files added for trunk; only merges and re-exports.
 - [ ] Optional: compound-definitions and/or organs bundle completed or explicitly deferred.
+- [ ] No step adds layout/preset/config resolution into JsonRenderer; all such resolution remains via @/layout only (hard rule).
 
 ---
 

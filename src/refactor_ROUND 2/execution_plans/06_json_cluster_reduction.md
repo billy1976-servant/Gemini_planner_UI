@@ -61,3 +61,5 @@
 - Molecule layouts: one file (molecule-layouts.json); resolver already uses it.
 - Presentation and card presets: single files; profile-resolver and card-preset-resolver already use them.
 - No behavior change; documentation updated to match current paths.
+
+**Execution Record (short)** — **Files touched:** `src/system-architecture/05_LAYOUT_SYSTEM.md`. **Tests run:** No code change; runtime-pipeline-contract unchanged. **Confirmation:** Layout definitions, molecule layouts, presentation profiles, card presets already single-file; resolvers use layout-definitions.json, molecule-layouts.json, presentation-profiles.json, card-presets.json; doc updated; acceptance criteria met.

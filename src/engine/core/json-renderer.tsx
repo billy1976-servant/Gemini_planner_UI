@@ -2,12 +2,6 @@
 import React from "react";
 import Registry from "./registry";
 import { resolveParams } from "./palette-resolver";
-import {
-  getVisualPresetForMolecule,
-  getSpacingForScale,
-  getCardPreset,
-} from "@/lib/layout/preset-resolver";
-import { resolveMoleculeLayout } from "@/lib/layout/molecule-layout-resolver";
 import definitions from "@/compounds/ui/index";
 import {
   subscribePalette,
@@ -23,11 +17,17 @@ import {
 } from "@/state/state-store";
 import { useSyncExternalStore } from "react";
 import { JsonSkinEngine } from "@/logic/engines/json-skin.engine";
-import { getSectionLayoutId, evaluateCompatibility } from "@/layout";
-import { getCardLayoutPreset } from "@/lib/layout/card-layout-presets";
+import {
+  getSectionLayoutId,
+  evaluateCompatibility,
+  getVisualPresetForMolecule,
+  getSpacingForScale,
+  getCardPreset,
+  resolveMoleculeLayout,
+  getCardLayoutPreset,
+} from "@/layout";
 import { logRuntimeDecision } from "@/engine/devtools/runtime-decision-trace";
-import config from "@/config/config.json";
-const rendererContract = config.rendererContract;
+import { NON_ACTIONABLE_TYPES } from "@/contracts/renderer-contract";
 import { EXPECTED_PARAMS } from "@/contracts/expected-params";
 import { trace } from "@/devtools/interaction-tracer.store";
 import { PipelineDebugStore } from "@/devtools/pipeline-debug-store";
@@ -186,11 +186,8 @@ function MaybeDebugWrapper({ node, children }: any) {
 
 /* ======================================================
    BEHAVIOR CONTRACT (Packet 11) — strip invalid at runtime
-   Source: @/config/renderer-contract.json (single source)
+   Source: @/contracts/renderer-contract (single source)
 ====================================================== */
-const NON_ACTIONABLE_TYPES = new Set(
-  (rendererContract as { nonActionableTypes: string[] }).nonActionableTypes
-);
 
 function isCloseOnlyBehavior(behavior: any): boolean {
   if (!behavior || typeof behavior !== "object") return false;

@@ -70,9 +70,7 @@ Flow: **JSON Screen → Engines → State → Layout → Renderer → DOM**
 
 ---
 
-## Boundary separation (no cross-boundary writes)
-
-| Boundary | Scope | Primary locations |
+## Boundary separation (no cross-boundary writes)| Boundary | Scope | Primary locations |
 |----------|--------|-------------------|
 | Layout | Layout resolution, resolveLayout, LAYOUT_NODE_TYPES, collapse-layout-nodes | src/layout/, src/engine/core/collapse-layout-nodes.ts |
 | Logic | Runtime verbs, action-runner, action-registry, flows, engines, content resolution | src/logic/ |

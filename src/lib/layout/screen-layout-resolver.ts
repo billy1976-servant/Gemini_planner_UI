@@ -2,14 +2,8 @@
 // SCREEN LAYOUT RESOLVER (SCREEN-ONLY, LOCKED)
 // =====================================================
 
-
-// Screen layout definitions ONLY
-import row from "@/lib/layout/definitions-screen/row.json";
-import column from "@/lib/layout/definitions-screen/column.json";
-import grid from "@/lib/layout/definitions-screen/grid.json";
-import stack from "@/lib/layout/definitions-screen/stack.json";
-import page from "@/lib/layout/definitions-screen/page.json";
-
+// Screen layout definitions ONLY — single bundle: lib/layout/screen-definitions.json
+import screenDefinitions from "@/lib/layout/screen-definitions.json";
 
 /**
  * Screen layout registry
@@ -28,11 +22,11 @@ const SCREEN_LAYOUT_DEFINITIONS: Record<
     layout?: any;
   }
 > = {
-  row,
-  column,
-  grid,
-  stack,
-  page,
+  row: screenDefinitions.row,
+  column: screenDefinitions.column,
+  grid: screenDefinitions.grid,
+  stack: screenDefinitions.stack,
+  page: screenDefinitions.page,
 };
 
 

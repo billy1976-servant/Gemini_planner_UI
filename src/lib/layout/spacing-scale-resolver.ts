@@ -1,19 +1,16 @@
 /**
  * Spacing scale resolver — template-driven vertical rhythm.
  * Returns param overrides for Section (and optionally Card) by scale id.
+ * Single source: lib/layout/spacing-scales.json
  */
-import defaultScale from "./spacing-scales/default.json";
-import luxuryScale from "./spacing-scales/luxury.json";
-import saasScale from "./spacing-scales/saas.json";
-import magazineScale from "./spacing-scales/magazine.json";
-import courseScale from "./spacing-scales/course.json";
+import scalesBundle from "./spacing-scales.json";
 
 const SCALES: Record<string, Record<string, any>> = {
-  default: defaultScale as Record<string, any>,
-  luxury: luxuryScale as Record<string, any>,
-  saas: saasScale as Record<string, any>,
-  magazine: magazineScale as Record<string, any>,
-  course: courseScale as Record<string, any>,
+  default: scalesBundle.default as Record<string, any>,
+  luxury: scalesBundle.luxury as Record<string, any>,
+  saas: scalesBundle.saas as Record<string, any>,
+  magazine: scalesBundle.magazine as Record<string, any>,
+  course: scalesBundle.course as Record<string, any>,
 };
 
 export type SpacingScaleId = keyof typeof SCALES;

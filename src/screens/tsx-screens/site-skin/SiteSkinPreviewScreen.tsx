@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import SiteSkin from "@/lib/site-skin/SiteSkin";
 import type { NormalizedSite } from "@/lib/site-compiler/normalizeSiteData";
-import { buildSiteSkinDataBag } from "@/logic/bridges/engineToSkin.bridge";
+import { buildSiteSkinDataBag } from "@/logic/bridges/skinBindings.apply";
 
 export default function SiteSkinPreviewScreen() {
   const sp = useSearchParams();

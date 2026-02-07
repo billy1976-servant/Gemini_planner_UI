@@ -27,3 +27,8 @@ export type {
   GetAvailableSlotsOptions,
   LayoutType,
 } from "./compatibility";
+
+/** Layout authority: preset and molecule resolution via layout/ only. lib/layout is internal. */
+export { getVisualPresetForMolecule, getSpacingForScale, getCardPreset } from "../lib/layout/preset-resolver";
+export { resolveMoleculeLayout } from "../lib/layout/molecule-layout-resolver";
+export { getCardLayoutPreset } from "../lib/layout/card-layout-presets";

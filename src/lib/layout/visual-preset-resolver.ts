@@ -2,19 +2,16 @@
  * Visual Preset Resolver
  * Returns molecule-level param overrides for the Visual Preset Layer.
  * Merge order: visual preset (base) < variant < size < node.params
+ * Single source: lib/layout/visual-presets.json
  */
-import defaultPreset from "./visual-presets/default.json";
-import compactPreset from "./visual-presets/compact.json";
-import spaciousPreset from "./visual-presets/spacious.json";
-import prominentPreset from "./visual-presets/prominent.json";
-import editorialPreset from "./visual-presets/editorial.json";
+import presetsBundle from "./visual-presets.json";
 
 const PRESETS: Record<string, Record<string, any>> = {
-  default: defaultPreset as Record<string, any>,
-  compact: compactPreset as Record<string, any>,
-  spacious: spaciousPreset as Record<string, any>,
-  prominent: prominentPreset as Record<string, any>,
-  editorial: editorialPreset as Record<string, any>,
+  default: presetsBundle.default as Record<string, any>,
+  compact: presetsBundle.compact as Record<string, any>,
+  spacious: presetsBundle.spacious as Record<string, any>,
+  prominent: presetsBundle.prominent as Record<string, any>,
+  editorial: presetsBundle.editorial as Record<string, any>,
 };
 
 const EXPERIENCE_TO_PRESET: Record<string, string> = {

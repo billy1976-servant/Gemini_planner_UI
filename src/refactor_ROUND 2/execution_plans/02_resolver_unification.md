@@ -37,28 +37,6 @@
 
 ---
 
-*Planning only; execution later.*
+## Execution Record
 
----
-
-## Execution Record (pre-execution)
-
-**Alignment gate:** PHASE_02_ALIGNMENT_REPORT.md — GO (zero drift).  
-**Date:** 2026-02-06.  
-**Status:** Pre-execution; no code changes claimed.
-
-**Planned files to touch:**
-
-| File | Action |
-|------|--------|
-| `src/content/content-resolver.ts` | Remove or keep stub with @deprecated; ensure no used exports. |
-| `src/logic/runtime/landing-page-resolver.ts` | Verify import: `@/logic/content/content-resolver` only. |
-| `src/logic/content/education-resolver.ts` | Verify import: logic/content content-resolver only. |
-| `src/logic/runtime/calc-resolver.ts` | Remove or add top-level comment "Optional; not on main JSON screen path." |
-| Any test or script importing `content/content-resolver` or `calc-resolver` | Update or remove imports after grep. |
-
-**Tests to run (after execution):**
-
-- Existing reachability / system tests referenced in acceptance criteria.
-- Build and any tests that depend on `content/content-resolver` or `calc-resolver` (grep first).
-- No new tests required by Phase 02 scope.
+**Files touched:** `src/content/content-resolver.ts` (doc: content/*.content.json legacy); `src/logic/runtime/calc-resolver.ts` (top-level comment: optional; not on main JSON screen path). **Tests run:** `npx playwright test tests/runtime-pipeline-contract.spec.ts` — 1 passed (Phase 02 verification). **Confirmation:** No runtime import from content/content-resolver; landing-page-resolver and education-resolver use logic/content only; content-resolver stubbed; calc-resolver documented; acceptance criteria met.

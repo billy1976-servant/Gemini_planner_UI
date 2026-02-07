@@ -108,11 +108,11 @@ resolveProfileLayout("website", "hero")
    - Apply profile defaults to sections
 
 2. **Apply to PageContainer:**
-   - Use `useContainerLayout()` hook
-   - Gets maxWidth, padding from profile
+   - Container layout is implemented in `GeneratedSiteViewer` via `getContainerLayout(experience)` (formerly `layout-bridge`’s `useContainerLayout`).
+   - Gets maxWidth, padding from profile.
 
 3. **Apply to sections:**
-   - Use `useSectionLayout(sectionType)` hook
+   - For section-level layout styles, use profile resolver + molecule/screen layout resolvers directly (no dedicated hook; `useSectionLayout` was removed with layout-bridge).
    - Gets layout flow from profile defaults
    - Falls back to global layout store
 
@@ -145,13 +145,13 @@ resolveProfileLayout("website", "hero")
 
 **Update GeneratedSiteViewer:**
 ```typescript
-import { useContainerLayout } from "@/lib/site-renderer/layout-bridge";
+// Container layout: getContainerLayout(experience) in GeneratedSiteViewer (no separate bridge).
 import { getLayout } from "@/engine/core/layout-store";
 
 // Get experience from layout preset
 const layout = getLayout();
 const experience = layout.preset || "website";
-const containerStyles = useContainerLayout(experience);
+const containerStyles = getContainerLayout(experience); // local in GeneratedSiteViewer
 ```
 
 **Update PageContainer:**
@@ -172,10 +172,10 @@ export default function PageContainer({ children, containerStyles }) {
 
 **Update renderFromSchema:**
 ```typescript
-import { useSectionLayout } from "@/lib/site-renderer/layout-bridge";
+// Section layout: use resolveProfileLayout + resolveMoleculeLayout directly (layout-bridge removed).
 
 // For each section, apply layout
-const sectionStyles = useSectionLayout("hero", experience);
+const sectionStyles = resolveMoleculeLayout(flow, preset, params); // from profile + overrides
 <div style={sectionStyles}>
   {renderLayoutBlock(...)}
 </div>

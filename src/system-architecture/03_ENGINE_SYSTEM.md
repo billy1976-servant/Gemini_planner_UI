@@ -89,9 +89,7 @@
 
 ---
 
-## Skin application contract
-
-- **applySkinBindings(doc, data):** src/logic/bridges/skinBindings.apply.ts. Resolves type "slot" nodes via slotKey into data; getByPath(data, slot.slotKey); if value is array of nodes, use as replacement; else []. Returns doc with only renderable nodes (no slot nodes). No CSS/token injection here; visual tokens from profile, template, applyProfileToNode (visualPreset, spacingScale, cardPreset).
+## Skin application contract- **applySkinBindings(doc, data):** src/logic/bridges/skinBindings.apply.ts. Resolves type "slot" nodes via slotKey into data; getByPath(data, slot.slotKey); if value is array of nodes, use as replacement; else []. Returns doc with only renderable nodes (no slot nodes). No CSS/token injection here; visual tokens from profile, template, applyProfileToNode (visualPreset, spacingScale, cardPreset).
 - **Slot node contract:** type === "slot", slotKey string (dot path e.g. "products.featured", "nav.items"). Used in page.tsx: applySkinBindings(expandedDoc, json?.data ?? {}). SiteSkin and engineToSkin.bridge also call applySkinBindings.
 - **Theme / visual preset:** getExperienceProfile, getTemplateProfile; layout-store (templateId, experience, mode); applyProfileToNode merges profile, getVisualPresetForMolecule, getSpacingForScale, getCardPreset. Palette from palette-store/palette-resolver, not skinBindings.
 - **json-skin type:** Rendered by JsonSkinEngine; selectActiveChildren (when.state/equals); no separate skin resolver for json-skin.

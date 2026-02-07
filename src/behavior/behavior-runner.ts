@@ -2,8 +2,10 @@
 "use client";
 
 
-import interactions from "./behavior-interactions.json";
-import navigations from "./behavior-navigations.json";
+import behaviorData from "./behavior.json";
+
+const interactions = behaviorData.interactions;
+const navigations = behaviorData.navigations;
 import { BehaviorEngine } from "./behavior-engine";
 import { resolveBehaviorVerb } from "./behavior-verb-resolver";
 import { logRuntimeDecision } from "@/engine/devtools/runtime-decision-trace";

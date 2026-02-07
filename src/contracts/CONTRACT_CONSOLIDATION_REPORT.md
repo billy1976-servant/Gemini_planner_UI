@@ -3,6 +3,8 @@
 **Date:** 2026-02-06  
 **Purpose:** Phase-ready organization; Scan 1–5 can read all contracts from `src/contracts/`.
 
+**Runtime contract frozen as of ROUND 3.** Screen shape, layout API (getSectionLayoutId, resolveLayout), and state intents are additive-only; no breaking changes.
+
 ---
 
 ## 1) Files moved into `src/contracts/`

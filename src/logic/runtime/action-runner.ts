@@ -1,7 +1,7 @@
 // src/logic/runtime/action-runner.ts
 
 
-import { getActionHandler } from "./action-registry";
+import { getActionHandler } from "@/logic/engine-system/engine-contract";
 
 
 /**
