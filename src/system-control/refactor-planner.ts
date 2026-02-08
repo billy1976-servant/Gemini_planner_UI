@@ -67,7 +67,7 @@ export function getPrioritySuggestions(result: SystemScanResult): RefactorSugges
       impact: "medium",
       safety: "safe",
       safetyBadge: "SAFE",
-      affectedPaths,
+      affectedPaths: paths,
       estimatedScope: result.totals.legacyPathsDetected,
       affectedFilesCount: result.totals.legacyPathsDetected,
       category: "legacy",
@@ -231,7 +231,7 @@ export function getMiniRefactorPlans(result: SystemScanResult): MiniRefactorPlan
       affectedPaths: paths,
       scopeSize: result.blocks.definitionFilesCount,
       affectedFilesCount: paths.length,
-      steps: ["Audit compound-definitions.json.", "Match types to registry keys.", "Remove unused definitions or register missing."],
+      steps: ["Audit molecule-definitions.json.", "Match types to registry keys.", "Remove unused definitions or register missing."],
     });
   }
 

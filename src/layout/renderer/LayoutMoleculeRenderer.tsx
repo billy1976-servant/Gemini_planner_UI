@@ -1,10 +1,7 @@
 "use client";
 
 import React from "react";
-import SurfaceAtom from "@/components/9-atoms/primitives/surface";
-import TextAtom from "@/components/9-atoms/primitives/text";
-import SequenceAtom from "@/components/9-atoms/primitives/sequence";
-import CollectionAtom from "@/components/9-atoms/primitives/collection";
+import { SurfaceAtom, TextAtom, SequenceAtom, CollectionAtom } from "@/components/atoms";
 import { resolveParams } from "@/engine/core/palette-resolver";
 import { resolveMoleculeLayout } from "@/layout";
 import type { LayoutDefinition } from "@/layout/resolver";

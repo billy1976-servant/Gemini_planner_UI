@@ -17,7 +17,7 @@ import { getExperienceProfile } from "@/lib/layout/profile-resolver";
 import type { SiteSkinDocument, SiteSkinExperience, SiteSkinNode } from "@/lib/site-skin/siteSkin.types";
 import { loadSiteSkin } from "@/lib/site-skin/loadSiteSkin";
 import { applySkinBindings } from "@/logic/bridges/skinBindings.apply";
-import { expandOrgansInDocument, loadOrganVariant } from "@/organs";
+import { expandOrgansInDocument, loadOrganVariant } from "@/components/organs";
 import { composeScreen } from "@/lib/layout/layout-engine/composeScreen";
 import WebsiteShell from "@/lib/site-skin/shells/WebsiteShell";
 import AppShell from "@/lib/site-skin/shells/AppShell";

@@ -1,7 +1,7 @@
 /**
  * verify-atoms-manifest.ts
- * Loads src/blocks/atoms.manifest.json and src/components/9-atoms/definitions/*.json,
- * validates each manifest atom matches its source file by deep equality.
+ * Loads src/components/atoms/atoms.json (single source for 9 atoms).
+ * Validates atom keys and structure.
  * Outputs src/cursor/ATOMS_MANIFEST_VERIFICATION_REPORT.md
  * No runtime changes; script-only.
  */
@@ -10,8 +10,7 @@ import fs from "fs";
 import path from "path";
 
 const ROOT = process.cwd();
-const MANIFEST_PATH = path.join(ROOT, "src/blocks/atoms.manifest.json");
-const DEFINITIONS_DIR = path.join(ROOT, "src/components/9-atoms/definitions");
+const ATOMS_JSON_PATH = path.join(ROOT, "src/components/atoms/atoms.json");
 const REPORT_PATH = path.join(ROOT, "src/cursor/ATOMS_MANIFEST_VERIFICATION_REPORT.md");
 
 function loadJson(filePath: string): unknown {
@@ -67,49 +66,29 @@ function describeDiff(
   return lines;
 }
 
+const EXPECTED_ATOM_IDS = ["collection", "condition", "field", "media", "sequence", "shell", "surface", "text", "trigger"];
+
 function main() {
-  const manifest = loadJson(MANIFEST_PATH) as { atoms: Record<string, Record<string, unknown>> };
-  const atoms = manifest.atoms;
+  if (!fs.existsSync(ATOMS_JSON_PATH)) {
+    throw new Error(`atoms.json not found: ${ATOMS_JSON_PATH}`);
+  }
+  const data = loadJson(ATOMS_JSON_PATH) as { atoms: Record<string, unknown> };
+  const atoms = data?.atoms;
   if (!atoms || typeof atoms !== "object") {
-    throw new Error("atoms.manifest.json must have an 'atoms' object");
+    throw new Error("atoms.json must have an 'atoms' object");
   }
 
-  const definitionFiles = fs.readdirSync(DEFINITIONS_DIR).filter((f) => f.endsWith(".json"));
   const results: { id: string; status: "PASS" | "FAIL"; details: string[] }[] = [];
-
-  for (const file of definitionFiles.sort()) {
-    const id = path.basename(file, ".json");
-    const sourcePath = path.join(DEFINITIONS_DIR, file);
-    const sourceDef = loadJson(sourcePath) as Record<string, unknown>;
-    const manifestDef = atoms[id];
-
-    if (manifestDef === undefined) {
-      results.push({
-        id,
-        status: "FAIL",
-        details: ["Atom present in source but missing in manifest."],
-      });
-      continue;
-    }
-
-    if (deepEqual(manifestDef, sourceDef)) {
+  for (const id of EXPECTED_ATOM_IDS) {
+    if (atoms[id] !== undefined) {
       results.push({ id, status: "PASS", details: [] });
-      continue;
+    } else {
+      results.push({ id, status: "FAIL", details: ["Missing in atoms.json"] });
     }
-
-    const details = describeDiff(manifestDef as Record<string, unknown>, sourceDef);
-    results.push({ id, status: "FAIL", details });
   }
-
-  const manifestOnly = Object.keys(atoms).filter(
-    (k) => !definitionFiles.includes(`${k}.json`)
-  );
-  for (const id of manifestOnly) {
-    results.push({
-      id,
-      status: "FAIL",
-      details: ["Atom present in manifest but no source file in definitions."],
-    });
+  const extra = Object.keys(atoms).filter((k) => !EXPECTED_ATOM_IDS.includes(k));
+  for (const id of extra) {
+    results.push({ id, status: "FAIL", details: ["Not in contract (expected 9 atoms only)"] });
   }
 
   const reportLines: string[] = [
@@ -119,10 +98,8 @@ function main() {
     "",
     "## Summary",
     "",
-    `- Manifest: \`src/blocks/atoms.manifest.json\``,
-    `- Source: \`src/components/9-atoms/definitions/*.json\``,
-    `- Total atoms in manifest: ${Object.keys(atoms).length}`,
-    `- Total source files: ${definitionFiles.length}`,
+    `- Source: \`src/components/atoms/atoms.json\``,
+    `- Expected atoms: ${EXPECTED_ATOM_IDS.length}`,
     `- PASS: ${results.filter((r) => r.status === "PASS").length}`,
     `- FAIL: ${results.filter((r) => r.status === "FAIL").length}`,
     "",

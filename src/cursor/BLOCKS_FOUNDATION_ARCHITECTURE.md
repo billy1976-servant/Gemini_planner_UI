@@ -36,7 +36,7 @@ foundation/
 ## Atoms = primitives
 
 - **Definition:** Smallest UI units (text, media, surface, field, trigger, condition, collection, sequence, shell).
-- **Source:** `src/components/9-atoms/definitions/*.json` (unchanged).
+- **Source:** `src/blocks/atom-definitions/*.json`.
 - **Mirror:** `src/foundation/blocks/atoms.manifest.json` — single consolidated manifest for future use. Keys and parameters copied exactly; no behavior change.
 - **Runtime:** Primitives live in `src/components/9-atoms/primitives/*.tsx`; Registry maps type → these components.
 

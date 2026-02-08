@@ -1,6 +1,0 @@
-{
-  "id": "testimonials",
-  "label": "Testimonials",
-  "slotSchema": ["testimonials.items", "testimonials.title", "testimonials.featured"],
-  "variantIds": ["grid-3", "grid-2", "single-featured", "carousel-ready"]
-}

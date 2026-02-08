@@ -1,10 +1,8 @@
 /**
  * scan-blocks-status.ts
  * Generates src/cursor/BLOCKS_STATUS_REPORT.md with:
- * - Atom count from atoms.manifest
- * - Atom source count from src/components/9-atoms/definitions
- * - Compound count from compounds.manifest
- * - Compound runtime TSX count from src/compounds/ui/12-molecules
+ * - Atom count from src/components/atoms/atoms.json
+ * - Molecule (compound) runtime TSX count from src/components/molecules
  * - Registry drift: molecules.json paths checked for existence; list missing
  * No runtime changes.
  */
@@ -13,10 +11,8 @@ import fs from "fs";
 import path from "path";
 
 const ROOT = process.cwd();
-const ATOMS_MANIFEST_PATH = path.join(ROOT, "src/blocks/atoms.manifest.json");
-const ATOM_DEFINITIONS_DIR = path.join(ROOT, "src/components/9-atoms/definitions");
-const COMPOUNDS_MANIFEST_PATH = path.join(ROOT, "src/blocks/compounds.manifest.json");
-const COMPOUNDS_RUNTIME_DIR = path.join(ROOT, "src/compounds/ui/12-molecules");
+const ATOMS_JSON_PATH = path.join(ROOT, "src/components/atoms/atoms.json");
+const MOLECULES_DIR = path.join(ROOT, "src/components/molecules");
 const MOLECULES_REGISTRY_PATH = path.join(ROOT, "src/registry/molecules.json");
 const ENGINE_REGISTRY_PATH = path.join(ROOT, "src/engine/core/registry.tsx");
 const REPORT_PATH = path.join(ROOT, "src/cursor/BLOCKS_STATUS_REPORT.md");
@@ -56,58 +52,28 @@ function main() {
     "",
   ];
 
-  const atomsManifest = loadJson(ATOMS_MANIFEST_PATH) as { atoms: Record<string, unknown> };
-  const atomCount = atomsManifest?.atoms ? Object.keys(atomsManifest.atoms).length : 0;
-  const atomSourceFiles = fs.existsSync(ATOM_DEFINITIONS_DIR)
-    ? fs.readdirSync(ATOM_DEFINITIONS_DIR).filter((f) => f.endsWith(".json"))
-    : [];
-  lines.push(`- **atoms.manifest** (\`src/blocks/atoms.manifest.json\`): **${atomCount}** atoms`);
-  lines.push(`- **Atom source** (\`src/components/9-atoms/definitions/*.json\`): **${atomSourceFiles.length}** files`);
+  let atomCount = 0;
+  if (fs.existsSync(ATOMS_JSON_PATH)) {
+    const atomsData = loadJson(ATOMS_JSON_PATH) as { atoms: Record<string, unknown> };
+    atomCount = atomsData?.atoms ? Object.keys(atomsData.atoms).length : 0;
+  }
+  lines.push(`- **atoms** (\`src/components/atoms/atoms.json\`): **${atomCount}** atoms`);
   lines.push("");
 
-  lines.push("## Compound counts", "");
-  const compoundsManifest = loadJson(COMPOUNDS_MANIFEST_PATH) as {
-    compounds?: Record<string, unknown>;
-  };
-  const compoundIds = compoundsManifest?.compounds
-    ? Object.keys(compoundsManifest.compounds).sort()
+  lines.push("## Molecule (compound) counts", "");
+  const compoundTsxFiles = fs.existsSync(MOLECULES_DIR)
+    ? fs.readdirSync(MOLECULES_DIR).filter((f) => f.endsWith(".compound.tsx")).sort()
     : [];
-  const compoundCount = compoundIds.length;
-  const compoundTsxFiles = fs.existsSync(COMPOUNDS_RUNTIME_DIR)
-    ? fs.readdirSync(COMPOUNDS_RUNTIME_DIR).filter((f) => f.endsWith(".compound.tsx")).sort()
-    : [];
-  lines.push(`- **compounds.manifest** (\`src/blocks/compounds.manifest.json\`): **${compoundCount}** compounds`);
-  lines.push(`- **Compound runtime** (\`src/compounds/ui/12-molecules/*.compound.tsx\`): **${compoundTsxFiles.length}** files`);
+  lines.push(`- **Molecule runtime** (\`src/components/molecules/*.compound.tsx\`): **${compoundTsxFiles.length}** files`);
   lines.push("");
-  lines.push("### Compound ids (from manifest)", "");
-  lines.push(compoundIds.length ? compoundIds.join(", ") : "(none)");
-  lines.push("");
-  lines.push("### Compound TSX files (on disk)", "");
+  lines.push("### Molecule TSX files (on disk)", "");
   lines.push(compoundTsxFiles.length ? compoundTsxFiles.join(", ") : "(none)");
   lines.push("");
 
-  lines.push("## Registry (engine/core/registry.tsx) compound references", "");
-  let registryCompoundCount = 0;
-  const registryCompoundIds: string[] = [];
-  if (fs.existsSync(ENGINE_REGISTRY_PATH)) {
-    const registryContent = fs.readFileSync(ENGINE_REGISTRY_PATH, "utf-8");
-    const compoundImportRe = /from ["']@\/compounds\/ui\/12-molecules\/([a-z-]+)\.compound["']/g;
-    let m: RegExpExecArray | null;
-    while ((m = compoundImportRe.exec(registryContent)) !== null) {
-      registryCompoundIds.push(m[1]);
-    }
-    registryCompoundCount = registryCompoundIds.length;
-  }
-  lines.push(`- **Compound imports in registry.tsx:** **${registryCompoundCount}**`);
-  lines.push("");
-  lines.push("Referenced compound ids:", registryCompoundIds.length ? registryCompoundIds.sort().join(", ") : "(none)");
-  lines.push("");
-
-  lines.push("## Compound drift", "");
-  const inManifestNotRegistry = compoundIds.filter((id) => !registryCompoundIds.includes(id));
-  const inRegistryNotManifest = registryCompoundIds.filter((id) => !compoundIds.includes(id));
-  lines.push("- **In manifest but not in registry.tsx:** " + (inManifestNotRegistry.length ? inManifestNotRegistry.join(", ") : "none"));
-  lines.push("- **In registry.tsx but not in manifest:** " + (inRegistryNotManifest.length ? inRegistryNotManifest.join(", ") : "none"));
+  const moleculeIds = compoundTsxFiles.map((f) => f.replace(/\.compound\.tsx$/, ""));
+  lines.push("## Registry (engine/core/registry.tsx) molecule references", "");
+  lines.push("Molecules are resolved via getCompoundComponent from @/components/molecules.");
+  lines.push("Molecule ids (from TSX files):", moleculeIds.length ? moleculeIds.join(", ") : "(none)");
   lines.push("");
 
   lines.push("## Registry drift (src/registry/molecules.json)", "");

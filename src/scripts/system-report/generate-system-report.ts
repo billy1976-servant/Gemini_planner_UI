@@ -154,7 +154,7 @@ const PATH_CATEGORY_RULES: { prefix: string; category: string }[] = [
   { prefix: "src/layout/renderer/", category: "renderer" },
   { prefix: "src/compiler/", category: "compiler" },
   { prefix: "src/web2extractor/", category: "ingest_tools" },
-  { prefix: "src/components/9-atoms/", category: "primitives" },
+  { prefix: "src/components/atoms/", category: "primitives" },
   { prefix: "src/compounds/", category: "compounds" },
   { prefix: "src/contracts/", category: "contracts" },
   { prefix: "src/docs/ARCHITECTURE_AUTOGEN/", category: "auto_generated_docs" },

@@ -1,6 +1,0 @@
-{
-  "id": "header",
-  "label": "Header",
-  "slotSchema": ["header.logo", "header.cta"],
-  "variantIds": ["default", "sticky-split", "transparent", "minimal", "centered", "full-width", "mega-ready", "shrink-on-scroll", "with-announcement", "compact", "logo-center", "nav-left"]
-}

@@ -2,7 +2,7 @@
 import React from "react";
 import Registry from "./registry";
 import { resolveParams } from "./palette-resolver";
-import definitions from "@/compounds/ui/index";
+import definitions from "@/components/molecules/molecules.json";
 import {
   subscribePalette,
   getPaletteName,

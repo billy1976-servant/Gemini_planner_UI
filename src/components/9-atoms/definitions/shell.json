@@ -1,6 +1,0 @@
-{
-  "background": ["color.surface", "color.surfaceVariant"],
-  "padding": ["padding.sm", "padding.md", "padding.lg"],
-  "scrollable": [true, false],
-  "safeArea": [true, false]
-}

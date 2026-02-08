@@ -19,13 +19,9 @@
       "src/behavior/timecore",
   
       "src/components",
-      "src/components/9-atoms",
-      "src/components/definitions",
-  
-      "src/compounds",
-      "src/compounds/3-molecules",
-      "src/compounds/definitions",
-      "src/compounds/schema",
+      "src/components/atoms",
+      "src/components/molecules",
+      "src/components/organs",
   
       "src/content",
   

@@ -10,7 +10,7 @@
  */
 
 import contract from "./JSON_SCREEN_CONTRACT.json";
-import definitions from "@/compounds/ui/index";
+import definitions from "@/components/molecules/molecules.json";
 import { resolveParams } from "@/engine/core/palette-resolver";
 import { resolveToken } from "@/engine/core/palette-resolve-token";
 import { loadAppOfflineJson } from "./load-app-offline-json.node";

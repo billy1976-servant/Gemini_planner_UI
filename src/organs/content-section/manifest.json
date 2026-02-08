@@ -1,6 +1,0 @@
-{
-  "id": "content-section",
-  "label": "Content Section",
-  "slotSchema": ["content.title", "content.body", "content.media", "content.block1", "content.block2"],
-  "variantIds": ["text-only", "media-left", "media-right", "zigzag"]
-}

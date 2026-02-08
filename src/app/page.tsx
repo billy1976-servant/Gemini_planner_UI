@@ -22,8 +22,8 @@ import {
   expandOrgansInDocument,
   assignSectionInstanceKeys,
   loadOrganVariant,
-} from "@/organs";
-import OrganPanel from "@/organs/OrganPanel";
+} from "@/components/organs";
+import OrganPanel from "@/components/organs/OrganPanel";
 import {
   getSectionLayoutPresetOverrides,
   getOverridesForScreen,

@@ -1,6 +1,0 @@
-{
-  "id": "cta",
-  "label": "CTA",
-  "slotSchema": ["cta.primary", "cta.title", "cta.body", "cta.button"],
-  "variantIds": ["banner", "strip", "split", "full-width"]
-}

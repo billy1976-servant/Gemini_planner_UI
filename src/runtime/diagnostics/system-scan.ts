@@ -101,7 +101,7 @@ const REGISTRY_NAMES = [
   "molecules.json",
   "palettes.json",
   "screen-manifest.json",
-  "compound-definitions.json",
+  "molecule-definitions.json",
   "engine-registry",
   "action-registry",
   "calc-registry",
@@ -246,7 +246,7 @@ function detectEngines(srcDir: string): EngineEntry[] {
 }
 
 function scanBlocks(srcDir: string): BlockStats {
-  const atomsDir = path.join(srcDir, "components", "9-atoms");
+  const atomsDir = path.join(srcDir, "components", "atoms");
   const compoundsDir = path.join(srcDir, "compounds");
   const uiDir = path.join(srcDir, "ui");
 
@@ -328,7 +328,7 @@ function scanRuntime(srcDir: string): { path: string; fileCount: number; subfold
 
 function gatherPathHealth(srcDir: string, allFiles: string[]): PathHealthItem[] {
   const items: PathHealthItem[] = [];
-  const aliasRoots = ["@/apps-tsx", "@/runtime", "@/engine", "@/logic", "@/components", "@/compounds", "@/ui", "@/registry"];
+  const aliasRoots = ["@/apps-tsx", "@/runtime", "@/engine", "@/logic", "@/components", "@/components/atoms", "@/components/molecules", "@/components/organs", "@/ui", "@/registry"];
   for (const root of aliasRoots) {
     items.push({ kind: "alias", path: root, root: root.replace("@/", "src/") });
   }

@@ -4,8 +4,8 @@ import path from "path";
 import ts from "typescript";
 
 
-const ATOMS_DIR = path.join(process.cwd(), "src/components/9-atoms");
-const OUT_FILE = path.join(process.cwd(), "src/components/9-atoms/definitions/atom-schema.json");
+const ATOMS_DIR = path.join(process.cwd(), "src/components/atoms");
+const OUT_FILE = path.join(process.cwd(), "src/components/atoms/atom-schema.json");
 
 
 function extractPropsFromFile(filePath: string) {

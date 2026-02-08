@@ -1,39 +1,41 @@
 /**
- * Atom definitions adapter — read-through bridge for atom definition lookup.
+ * Atom definitions adapter — blocks-only authority for atom definition lookup.
  *
- * Primary source: src/blocks/atoms.manifest.json (via getBlockAtomDefs).
- * Fallback: src/components/9-atoms/definitions/{atomId}.json (only in Node; not in browser).
+ * Sources: src/blocks/atoms.manifest.json and src/blocks/atom-definitions/*.json.
+ * No fallback to components folder.
  *
  * Use getAtomDefinition(atomId) wherever atom definition content is needed.
  * Does not replace registry.tsx, json-renderer, or compound runtime.
  */
 
 import { getBlockAtomDefs } from "./blocks-registry";
+import collectionDef from "./atom-definitions/collection.json";
+import conditionDef from "./atom-definitions/condition.json";
+import fieldDef from "./atom-definitions/field.json";
+import mediaDef from "./atom-definitions/media.json";
+import sequenceDef from "./atom-definitions/sequence.json";
+import shellDef from "./atom-definitions/shell.json";
+import surfaceDef from "./atom-definitions/surface.json";
+import textDef from "./atom-definitions/text.json";
+import triggerDef from "./atom-definitions/trigger.json";
 
 export type AtomDefinition = Record<string, unknown>;
 
-/**
- * Load fallback definition from original JSON file (Node only).
- * In browser, returns undefined so the system continues to work without fallback.
- */
-function loadFallbackAtomDef(atomId: string): AtomDefinition | undefined {
-  if (typeof process === "undefined" || !process.versions?.node) return undefined;
-  try {
-    const path = require("path");
-    const fs = require("fs");
-    const root = process.cwd();
-    const filePath = path.join(root, "src/components/9-atoms/definitions", `${atomId}.json`);
-    const raw = fs.readFileSync(filePath, "utf-8");
-    return JSON.parse(raw) as AtomDefinition;
-  } catch {
-    return undefined;
-  }
-}
+const BLOCKS_DEFINITIONS: Record<string, AtomDefinition> = {
+  collection: collectionDef as AtomDefinition,
+  condition: conditionDef as AtomDefinition,
+  field: fieldDef as AtomDefinition,
+  media: mediaDef as AtomDefinition,
+  sequence: sequenceDef as AtomDefinition,
+  shell: shellDef as AtomDefinition,
+  surface: surfaceDef as AtomDefinition,
+  text: textDef as AtomDefinition,
+  trigger: triggerDef as AtomDefinition,
+};
 
 /**
  * Returns the definition object for an atom by id.
- * Uses atoms.manifest.json first; if not found, falls back to
- * src/components/9-atoms/definitions/{atomId}.json (Node only).
+ * Reads only from blocks: atoms.manifest.json first, then atom-definitions/*.json.
  */
 export function getAtomDefinition(atomId: string): AtomDefinition | undefined {
   const manifest = getBlockAtomDefs();
@@ -41,5 +43,5 @@ export function getAtomDefinition(atomId: string): AtomDefinition | undefined {
   if (fromManifest !== undefined) {
     return fromManifest as AtomDefinition;
   }
-  return loadFallbackAtomDef(atomId);
+  return BLOCKS_DEFINITIONS[atomId];
 }

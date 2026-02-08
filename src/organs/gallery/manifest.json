@@ -1,6 +1,0 @@
-{
-  "id": "gallery",
-  "label": "Gallery",
-  "slotSchema": ["gallery.items", "gallery.title", "gallery.images"],
-  "variantIds": ["grid-2", "grid-3", "grid-4", "carousel-ready"]
-}

@@ -1,6 +1,0 @@
-{
-  "direction": ["row", "column"],
-  "gap": ["gap.none", "gap.xs", "gap.sm", "gap.md", "gap.lg"],
-  "padding": ["padding.none", "padding.xs", "padding.sm", "padding.md"],
-  "scrollable": [true, false]
-}

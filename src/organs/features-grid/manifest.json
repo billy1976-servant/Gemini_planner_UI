@@ -1,6 +1,0 @@
-{
-  "id": "features-grid",
-  "label": "Features Grid",
-  "slotSchema": ["features.items", "features.title", "features.cards"],
-  "variantIds": ["2-col", "3-col", "4-col", "repeater"]
-}
