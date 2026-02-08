@@ -65,35 +65,35 @@ if (appsJson) {
   check("tsconfig: apps-json folder exists", fs.existsSync(dir) && fs.statSync(dir).isDirectory(), `directory does not exist: ${dir}`);
 }
 
-// 2) require.context roots
-// page.tsx: "../apps-tsx" from src/app/ → src/apps-tsx
+// 2) require.context roots (after 01-08 reorganization: apps live under 01_App)
+// page.tsx: "../01_App/apps-tsx" from src/app/ → src/01_App/apps-tsx
 const pageTsxPath = path.join(ROOT, "src", "app", "page.tsx");
 const pageContent = fs.existsSync(pageTsxPath) ? fs.readFileSync(pageTsxPath, "utf8") : "";
-const pageUsesCorrectContext = /(?:require\s+as\s+any\s*)?\.context\s*\(\s*["']\.\.\/apps-tsx["']/.test(pageContent);
+const pageUsesCorrectContext = /(?:require\s+as\s+any\s*)?\.context\s*\(\s*["']\.\.\/01_App\/apps-tsx["']/.test(pageContent);
 check(
-  "require.context: page.tsx uses ../apps-tsx",
+  "require.context: page.tsx uses ../01_App/apps-tsx",
   pageUsesCorrectContext,
-  "src/app/page.tsx must use require.context(\"../apps-tsx\", ...)"
+  "src/app/page.tsx must use require.context(\"../01_App/apps-tsx\", ...)"
 );
 check(
   "require.context: page.tsx target exists",
-  fs.existsSync(resolveDir("src", "apps-tsx")),
-  "src/apps-tsx must exist"
+  fs.existsSync(resolveDir("src", "01_App", "apps-tsx")),
+  "src/01_App/apps-tsx must exist"
 );
 
-// safe-json-loader: "../../apps-json/apps" from src/apps-tsx/utils/ → src/apps-json/apps
-const safeLoaderPath = path.join(ROOT, "src", "apps-tsx", "utils", "safe-json-loader.ts");
+// safe-json-loader: from 03_Runtime/runtime/loaders/ → 01_App/apps-json/apps
+const safeLoaderPath = path.join(ROOT, "src", "03_Runtime", "runtime", "loaders", "safe-json-loader.ts");
 const safeLoaderContent = fs.existsSync(safeLoaderPath) ? fs.readFileSync(safeLoaderPath, "utf8") : "";
-const safeLoaderUsesAppsJson = /require\.context\s*\(\s*["']\.\.\/\.\.\/apps-json\/apps["']/.test(safeLoaderContent);
+const safeLoaderUsesAppsJson = /(?:\(require\s+as\s+any\)\.|require\.)context\s*\(\s*["']\.\.\/\.\.\/\.\.\/01_App\/apps-json\/apps["']/.test(safeLoaderContent);
 check(
-  "require.context: safe-json-loader uses ../../apps-json/apps",
+  "require.context: safe-json-loader uses ../../../01_App/apps-json/apps",
   safeLoaderUsesAppsJson,
-  "safe-json-loader must use require.context(\"../../apps-json/apps\", ...)"
+  "safe-json-loader must use require.context(\"../../../01_App/apps-json/apps\", ...)"
 );
 check(
   "require.context: apps-json/apps exists",
-  fs.existsSync(resolveDir("src", "apps-json", "apps")),
-  "src/apps-json/apps must exist"
+  fs.existsSync(resolveDir("src", "01_App", "apps-json", "apps")),
+  "src/01_App/apps-json/apps must exist"
 );
 
 // 3) next.config.js: no @/apps-tsx override to a non-existent path

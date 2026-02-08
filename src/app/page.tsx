@@ -64,7 +64,7 @@ import LearningShell from "@/lib/site-skin/shells/LearningShell";
    🔑 AUTO TSX MAP — SCANS src/apps-tsx (TSX screens live here)
 ------------------------------------------------------------ */
 const tsxContext = (require as any).context(
-  "../apps-tsx",
+  "../01_App/apps-tsx",
   true,
   /\.tsx$/
 );
