@@ -1,0 +1,21 @@
+{
+  "id": "organ:header:minimal",
+  "type": "Section",
+  "role": "header",
+  "layout": {
+    "type": "row",
+    "params": {
+      "gap": "0.75rem",
+      "justify": "space-between",
+      "align": "center",
+      "wrap": "wrap"
+    }
+  },
+  "params": {
+    "sticky": true
+  },
+  "children": [
+    { "type": "slot", "slotKey": "header.logo" },
+    { "type": "slot", "slotKey": "header.cta" }
+  ]
+}

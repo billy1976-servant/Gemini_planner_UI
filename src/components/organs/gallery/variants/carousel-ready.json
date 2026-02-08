@@ -1,0 +1,33 @@
+{
+  "id": "organ:gallery:carousel-ready",
+  "type": "Section",
+  "role": "gallery",
+  "layout": {
+    "type": "row",
+    "params": {
+      "gap": "1rem",
+      "align": "stretch",
+      "wrap": "nowrap"
+    }
+  },
+  "params": {
+    "moleculeLayout": {
+      "type": "grid",
+      "preset": null,
+      "params": {
+        "columns": 3,
+        "gap": "1rem"
+      }
+    }
+  },
+  "children": [
+    {
+      "type": "slot",
+      "slotKey": "gallery.title"
+    },
+    {
+      "type": "slot",
+      "slotKey": "gallery.items"
+    }
+  ]
+}

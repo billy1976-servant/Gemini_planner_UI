@@ -1,0 +1,35 @@
+{
+  "id": "organ:header:mega-ready",
+  "type": "Section",
+  "role": "header",
+  "layout": {
+    "type": "column",
+    "params": {
+      "gap": "0.5rem",
+      "align": "stretch"
+    }
+  },
+  "params": {
+    "sticky": true,
+    "moleculeLayout": {
+      "type": "row",
+      "preset": null,
+      "params": {
+        "gap": "1rem",
+        "justify": "space-between",
+        "align": "center",
+        "wrap": "wrap"
+      }
+    }
+  },
+  "children": [
+    {
+      "type": "slot",
+      "slotKey": "header.logo"
+    },
+    {
+      "type": "slot",
+      "slotKey": "header.cta"
+    }
+  ]
+}

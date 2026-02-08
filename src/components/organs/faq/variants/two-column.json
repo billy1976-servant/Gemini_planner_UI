@@ -1,0 +1,32 @@
+{
+  "id": "organ:faq:two-column",
+  "type": "Section",
+  "role": "faq",
+  "layout": {
+    "type": "column",
+    "params": {
+      "gap": "1.5rem",
+      "align": "stretch"
+    }
+  },
+  "params": {
+    "moleculeLayout": {
+      "type": "grid",
+      "preset": null,
+      "params": {
+        "columns": 2,
+        "gap": "2rem"
+      }
+    }
+  },
+  "children": [
+    {
+      "type": "slot",
+      "slotKey": "faq.title"
+    },
+    {
+      "type": "slot",
+      "slotKey": "faq.primary"
+    }
+  ]
+}

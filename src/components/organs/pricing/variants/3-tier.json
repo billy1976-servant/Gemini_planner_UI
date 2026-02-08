@@ -1,0 +1,32 @@
+{
+  "id": "organ:pricing:3-tier",
+  "type": "Section",
+  "role": "pricing",
+  "layout": {
+    "type": "column",
+    "params": {
+      "gap": "1.5rem",
+      "align": "stretch"
+    }
+  },
+  "params": {
+    "moleculeLayout": {
+      "type": "grid",
+      "preset": null,
+      "params": {
+        "columns": 3,
+        "gap": "2rem"
+      }
+    }
+  },
+  "children": [
+    {
+      "type": "slot",
+      "slotKey": "pricing.title"
+    },
+    {
+      "type": "slot",
+      "slotKey": "pricing.primary"
+    }
+  ]
+}

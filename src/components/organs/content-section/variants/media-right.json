@@ -1,0 +1,38 @@
+{
+  "id": "organ:content-section:media-right",
+  "type": "Section",
+  "role": "content",
+  "layout": {
+    "type": "row",
+    "params": {
+      "gap": "2rem",
+      "justify": "space-between",
+      "align": "center",
+      "wrap": "wrap"
+    }
+  },
+  "params": {
+    "moleculeLayout": {
+      "type": "column",
+      "preset": null,
+      "params": {
+        "gap": "1rem",
+        "align": "stretch"
+      }
+    }
+  },
+  "children": [
+    {
+      "type": "slot",
+      "slotKey": "content.title"
+    },
+    {
+      "type": "slot",
+      "slotKey": "content.body"
+    },
+    {
+      "type": "slot",
+      "slotKey": "content.media"
+    }
+  ]
+}

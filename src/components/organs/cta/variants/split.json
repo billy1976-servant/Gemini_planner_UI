@@ -1,0 +1,19 @@
+{
+  "id": "organ:cta:split",
+  "type": "Section",
+  "role": "cta",
+  "layout": {
+    "type": "row",
+    "params": {
+      "gap": "2rem",
+      "justify": "space-between",
+      "align": "center",
+      "wrap": "wrap"
+    }
+  },
+  "params": {},
+  "children": [
+    { "type": "slot", "slotKey": "cta.title" },
+    { "type": "slot", "slotKey": "cta.button" }
+  ]
+}

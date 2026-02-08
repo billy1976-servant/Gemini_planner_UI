@@ -1,0 +1,18 @@
+{
+  "id": "organ:nav:centered-links",
+  "type": "Section",
+  "role": "nav",
+  "layout": {
+    "type": "row",
+    "params": {
+      "gap": "2rem",
+      "justify": "center",
+      "align": "center",
+      "wrap": "wrap"
+    }
+  },
+  "params": {},
+  "children": [
+    { "type": "slot", "slotKey": "nav.primary" }
+  ]
+}

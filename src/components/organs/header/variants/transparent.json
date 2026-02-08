@@ -1,0 +1,22 @@
+{
+  "id": "organ:header:transparent",
+  "type": "Section",
+  "role": "header",
+  "layout": {
+    "type": "row",
+    "params": {
+      "gap": "1rem",
+      "justify": "space-between",
+      "align": "center",
+      "wrap": "wrap"
+    }
+  },
+  "params": {
+    "sticky": true,
+    "transparent": true
+  },
+  "children": [
+    { "type": "slot", "slotKey": "header.logo" },
+    { "type": "slot", "slotKey": "header.cta" }
+  ]
+}

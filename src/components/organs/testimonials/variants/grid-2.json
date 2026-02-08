@@ -1,0 +1,32 @@
+{
+  "id": "organ:testimonials:grid-2",
+  "type": "Section",
+  "role": "testimonials",
+  "layout": {
+    "type": "column",
+    "params": {
+      "gap": "1.5rem",
+      "align": "stretch"
+    }
+  },
+  "params": {
+    "moleculeLayout": {
+      "type": "grid",
+      "preset": null,
+      "params": {
+        "columns": 2,
+        "gap": "2rem"
+      }
+    }
+  },
+  "children": [
+    {
+      "type": "slot",
+      "slotKey": "testimonials.title"
+    },
+    {
+      "type": "slot",
+      "slotKey": "testimonials.items"
+    }
+  ]
+}

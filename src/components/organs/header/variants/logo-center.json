@@ -1,0 +1,35 @@
+{
+  "id": "organ:header:logo-center",
+  "type": "Section",
+  "role": "header",
+  "layout": {
+    "type": "column",
+    "params": {
+      "gap": "1rem",
+      "align": "center"
+    }
+  },
+  "params": {
+    "sticky": true,
+    "moleculeLayout": {
+      "type": "row",
+      "preset": null,
+      "params": {
+        "gap": "2rem",
+        "justify": "center",
+        "align": "center",
+        "wrap": "wrap"
+      }
+    }
+  },
+  "children": [
+    {
+      "type": "slot",
+      "slotKey": "header.logo"
+    },
+    {
+      "type": "slot",
+      "slotKey": "header.cta"
+    }
+  ]
+}

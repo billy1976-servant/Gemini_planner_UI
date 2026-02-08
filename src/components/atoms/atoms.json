@@ -1,0 +1,13 @@
+{
+  "atoms": {
+    "text": {"fontFamily":["Roboto"],"size":["textSize.xs","textSize.sm","textSize.md","textSize.lg","textSize.xl"],"weight":["textWeight.regular","textWeight.medium","textWeight.bold"],"lineHeight":["lineHeight.tight","lineHeight.normal","lineHeight.relaxed"],"letterSpacing":["letterSpacing.tight","letterSpacing.normal","letterSpacing.loose"],"color":["color.primary","color.onPrimary","color.surface","color.onSurface","color.secondary","color.error"],"align":["left","center","right"],"truncate":[true,false],"wrap":["normal","nowrap","balance"]},
+    "media": {"size":["size.xs","size.sm","size.md","size.lg"],"aspectRatio":["1:1","16:9","4:3"],"objectFit":["cover","contain","fill"],"radius":["radius.none","radius.sm","radius.md","radius.lg"],"opacity":["opacity.full","opacity.dim","opacity.low"]},
+    "surface": {"background":["color.surface","color.surfaceVariant","color.primary","color.primaryVariant"],"borderColor":["color.none","color.outline","color.primary"],"borderWidth":["borderWidth.none","borderWidth.sm","borderWidth.md"],"radius":["radius.none","radius.sm","radius.md","radius.lg","radius.xl"],"shadow":["shadow.none","shadow.sm","shadow.md","shadow.lg"],"opacity":["opacity.full","opacity.dim","opacity.low"],"padding":["padding.xs","padding.sm","padding.md","padding.lg"]},
+    "field": {"background":["color.surface","color.surfaceVariant","color.error"],"borderColor":["color.outline","color.primary","color.error"],"borderWidth":["borderWidth.none","borderWidth.sm","borderWidth.md"],"radius":["radius.sm","radius.md","radius.lg"],"padding":["padding.sm","padding.md","padding.lg"],"labelSize":["textSize.sm","textSize.md"],"labelColor":["color.onSurface","color.secondary","color.error"]},
+    "trigger": {"hoverFeedback":["soft","medium","strong"],"pressFeedback":["light","medium","heavy"],"cursor":["pointer","default"],"disabledOpacity":"opacity.low"},
+    "condition": {},
+    "collection": {"direction":["row","column"],"gap":["gap.none","gap.xs","gap.sm","gap.md","gap.lg"],"padding":["padding.none","padding.xs","padding.sm","padding.md"],"scrollable":[true,false]},
+    "sequence": {"direction":["row","column"],"align":["start","center","end"],"justify":["start","center","end","space-between"],"gap":["gap.none","gap.xs","gap.sm","gap.md","gap.lg"],"padding":["padding.none","padding.sm","padding.md"],"wrap":[true,false],"scrollable":[true,false]},
+    "shell": {"background":["color.surface","color.surfaceVariant"],"padding":["padding.sm","padding.md","padding.lg"],"scrollable":[true,false],"safeArea":[true,false]}
+  }
+}

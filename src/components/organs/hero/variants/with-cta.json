@@ -1,0 +1,21 @@
+{
+  "id": "organ:hero:with-cta",
+  "type": "Section",
+  "role": "hero",
+  "layout": {
+    "type": "column",
+    "params": {
+      "gap": "1.5rem",
+      "align": "center",
+      "justify": "center"
+    }
+  },
+  "params": {
+    "textAlign": "center"
+  },
+  "children": [
+    { "type": "slot", "slotKey": "hero.title" },
+    { "type": "slot", "slotKey": "hero.subtitle" },
+    { "type": "slot", "slotKey": "hero.cta" }
+  ]
+}

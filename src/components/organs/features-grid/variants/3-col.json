@@ -1,0 +1,32 @@
+{
+  "id": "organ:features-grid:3-col",
+  "type": "Section",
+  "role": "features",
+  "layout": {
+    "type": "column",
+    "params": {
+      "gap": "1.5rem",
+      "align": "stretch"
+    }
+  },
+  "params": {
+    "moleculeLayout": {
+      "type": "grid",
+      "preset": null,
+      "params": {
+        "columns": 3,
+        "gap": "2rem"
+      }
+    }
+  },
+  "children": [
+    {
+      "type": "slot",
+      "slotKey": "features.title"
+    },
+    {
+      "type": "slot",
+      "slotKey": "features.items"
+    }
+  ]
+}

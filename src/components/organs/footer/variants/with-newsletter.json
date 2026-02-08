@@ -1,0 +1,37 @@
+{
+  "id": "organ:footer:with-newsletter",
+  "type": "Section",
+  "role": "footer",
+  "layout": {
+    "type": "column",
+    "params": {
+      "gap": "2rem",
+      "align": "stretch"
+    }
+  },
+  "params": {
+    "moleculeLayout": {
+      "type": "row",
+      "preset": null,
+      "params": {
+        "gap": "2rem",
+        "justify": "space-between",
+        "wrap": "wrap"
+      }
+    }
+  },
+  "children": [
+    {
+      "type": "slot",
+      "slotKey": "footer.columns"
+    },
+    {
+      "type": "slot",
+      "slotKey": "footer.newsletter"
+    },
+    {
+      "type": "slot",
+      "slotKey": "footer.copyright"
+    }
+  ]
+}
