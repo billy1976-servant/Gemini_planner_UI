@@ -197,6 +197,12 @@ No inference, renaming, collapsing, or expansion is allowed.
 
 ---
 
+### 1️⃣+ ORGAN CONTENT KEYS (DOTTED SLOTKEYS)
+
+For organ nodes, content keys use **dotted slotKeys** (e.g. `hero.title`, `header.logo`, `hero.cta`). Keys MUST match the slotKeys defined for that organ in the contract (e.g. ORGAN CONTENT BINDINGS or JSON_SCREEN_CONTRACT organs catalog). No extra keys are allowed for that organ instance.
+
+---
+
 ### 2️⃣ MOLECULE-SPECIFIC CONTENT BINDINGS (EXPLICIT)
 
 **Button**

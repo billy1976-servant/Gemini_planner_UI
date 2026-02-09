@@ -1,0 +1,18 @@
+{
+  "description": "Section layout ID → allowed card layout IDs. All sections allow all card presets - filtering is done by compatibility engine based on available slots, not section layout restrictions.",
+  "sectionToCardCapabilities": {
+    "": ["image-top", "image-left", "image-right", "image-bottom", "centered-card", "centered-image-left", "centered-image-right", "media-dominant-top", "media-dominant-left", "text-dominant-top", "text-dominant-left", "minimal"],
+    "hero-centered": ["image-top", "image-left", "image-right", "image-bottom", "centered-card", "centered-image-left", "centered-image-right", "media-dominant-top", "media-dominant-left", "text-dominant-top", "text-dominant-left", "minimal"],
+    "hero-split": ["image-top", "image-left", "image-right", "image-bottom", "centered-card", "centered-image-left", "centered-image-right", "media-dominant-top", "media-dominant-left", "text-dominant-top", "text-dominant-left", "minimal"],
+    "hero-split-image-right": ["image-top", "image-left", "image-right", "image-bottom", "centered-card", "centered-image-left", "centered-image-right", "media-dominant-top", "media-dominant-left", "text-dominant-top", "text-dominant-left", "minimal"],
+    "hero-split-image-left": ["image-top", "image-left", "image-right", "image-bottom", "centered-card", "centered-image-left", "centered-image-right", "media-dominant-top", "media-dominant-left", "text-dominant-top", "text-dominant-left", "minimal"],
+    "hero-full-bleed-image": ["image-top", "image-left", "image-right", "image-bottom", "centered-card", "centered-image-left", "centered-image-right", "media-dominant-top", "media-dominant-left", "text-dominant-top", "text-dominant-left", "minimal"],
+    "content-narrow": ["image-top", "image-left", "image-right", "image-bottom", "centered-card", "centered-image-left", "centered-image-right", "media-dominant-top", "media-dominant-left", "text-dominant-top", "text-dominant-left", "minimal"],
+    "content-stack": ["image-top", "image-left", "image-right", "image-bottom", "centered-card", "centered-image-left", "centered-image-right", "media-dominant-top", "media-dominant-left", "text-dominant-top", "text-dominant-left", "minimal"],
+    "image-left-text-right": ["image-top", "image-left", "image-right", "image-bottom", "centered-card", "centered-image-left", "centered-image-right", "media-dominant-top", "media-dominant-left", "text-dominant-top", "text-dominant-left", "minimal"],
+    "features-grid-3": ["image-top", "image-left", "image-right", "image-bottom", "centered-card", "centered-image-left", "centered-image-right", "media-dominant-top", "media-dominant-left", "text-dominant-top", "text-dominant-left", "minimal"],
+    "testimonial-band": ["image-top", "image-left", "image-right", "image-bottom", "centered-card", "centered-image-left", "centered-image-right", "media-dominant-top", "media-dominant-left", "text-dominant-top", "text-dominant-left", "minimal"],
+    "cta-centered": ["image-top", "image-left", "image-right", "image-bottom", "centered-card", "centered-image-left", "centered-image-right", "media-dominant-top", "media-dominant-left", "text-dominant-top", "text-dominant-left", "minimal"],
+    "test-extensible": ["image-top", "image-left", "image-right", "image-bottom", "centered-card", "centered-image-left", "centered-image-right", "media-dominant-top", "media-dominant-left", "text-dominant-top", "text-dominant-left", "minimal"]
+  }
+}

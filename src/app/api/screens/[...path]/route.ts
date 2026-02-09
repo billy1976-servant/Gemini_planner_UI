@@ -4,21 +4,23 @@ import path from "path";
 
 
 /**
- * CANONICAL SCREENS ROOT
+ * CANONICAL SCREENS ROOT (FIXED PATH)
  * ─────────────────────
  * All runtime screen loading resolves from here.
- * This MUST match your physical folder structure.
+ * Actual location: src/01_App/apps-json/apps
  */
 const SCREENS_ROOT = path.join(
   process.cwd(),
   "src",
+  "01_App",
   "apps-json",
   "apps"
 );
 
 
 /* ============================================================
-   🧩 TSX SCREEN ROOT (ADDITIVE)
+   🧩 TSX SCREEN ROOT (FIXED PATH)
+   Actual location: src/01_App/apps-tsx
    PURPOSE:
    - Allow runtime resolution of TSX screens
    - Uses same path semantics as JSON
@@ -27,6 +29,7 @@ const SCREENS_ROOT = path.join(
 const TSX_ROOT = path.join(
   process.cwd(),
   "src",
+  "01_App",
   "apps-tsx"
 );
 
@@ -36,6 +39,13 @@ export async function GET(
   { params }: { params: { path?: string[] } }
 ) {
   try {
+    // 🔑 LOG: Check if SCREENS_ROOT exists
+    console.log("[api/screens/[...path]] 📍 Checking SCREENS_ROOT", {
+      SCREENS_ROOT,
+      exists: fs.existsSync(SCREENS_ROOT),
+      cwd: process.cwd(),
+    });
+
     if (!params?.path?.length) {
       return NextResponse.json(
         { error: "No screen path provided" },
@@ -43,12 +53,10 @@ export async function GET(
       );
     }
 
-
     const requestedPath = params.path.join("/");
 
-
     /* ===============================
-       1️⃣ JSON PATH (UNCHANGED)
+       1️⃣ JSON PATH (FIXED)
        Try exact path, then path + .json if no extension
     =============================== */
     let jsonPath = path.join(SCREENS_ROOT, ...params.path);
@@ -58,12 +66,13 @@ export async function GET(
     }
 
     // 🔑 DEBUG: Log file resolution
-    console.log("[api/screens] File resolution", {
+    console.log("[api/screens/[...path]] 📂 File resolution", {
       requestedPath: requestedPath,
       paramsPath: params.path,
       jsonPath,
       exists: fs.existsSync(jsonPath),
       isJson: jsonPath.endsWith(".json"),
+      SCREENS_ROOT,
     });
 
     if (jsonPath.endsWith(".json") && fs.existsSync(jsonPath)) {
@@ -150,8 +159,15 @@ export async function GET(
       { status: 404 }
     );
   } catch (err: any) {
+    console.error("[api/screens/[...path]] ❌ Error in GET handler", {
+      error: err.message,
+      stack: err.stack,
+      requestedPath: params?.path?.join("/"),
+      SCREENS_ROOT,
+      TSX_ROOT,
+    });
     return NextResponse.json(
-      { error: err.message },
+      { error: err.message, path: params?.path?.join("/") },
       { status: 500 }
     );
   }

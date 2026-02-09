@@ -210,6 +210,13 @@
       "requiredLayoutParams": []
     }
   },
+  "organNode": {
+    "note": "Structural placeholder only; expanded at runtime. No layout/styling in screen JSON.",
+    "requiredKeys": ["type", "organId", "variant", "content", "children"],
+    "optionalKeys": ["id"],
+    "forbiddenKeys": ["layout", "params", "role", "style", "palette"],
+    "contentKeysRule": "Keys must match organs[organId].slots"
+  },
   "layoutPrimitives": "REMOVED — Layout (row/column/grid/stack/page) is owned by Layout Engine and Preset System at runtime. Screen JSON must not define or reference layout primitives.",
   "behaviorVerbs": {
     "interaction": {

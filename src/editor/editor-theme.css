@@ -1,0 +1,83 @@
+/**
+ * Editor Theme - Fixed Design Tokens for Control Dock
+ * 
+ * SYSTEM RULE:
+ * Control Dock is EDITOR UI.
+ * It must NEVER respond to:
+ * - Palette
+ * - Experience
+ * - Template
+ * - Preview styling
+ * 
+ * These tokens are permanently fixed and isolated from app surface styling.
+ */
+
+.editor-root {
+  /* Fixed Editor Color Tokens - NEVER change based on palette */
+  --editor-bg: #f6f7f9;
+  --editor-panel: #ffffff;
+  --editor-border: #e2e5ea;
+  --editor-text: #1f2937;
+  --editor-muted: #6b7280;
+  --editor-accent: #2563eb;
+  --editor-accent-bg: #eef2ff;
+  --editor-hover: #f3f4f6;
+  --editor-active: #eff6ff;
+  
+  /* Base styling */
+  background: var(--editor-bg);
+  color: var(--editor-text);
+}
+
+.editor-panel {
+  background: var(--editor-panel);
+  border-left: 1px solid var(--editor-border);
+}
+
+.editor-section {
+  border-bottom: 1px solid var(--editor-border);
+}
+
+.editor-button {
+  background: var(--editor-panel);
+  border: 1px solid var(--editor-border);
+  color: var(--editor-text);
+  transition: all 0.15s ease;
+}
+
+.editor-button:hover {
+  background: var(--editor-hover);
+}
+
+.editor-button.active {
+  border-color: var(--editor-accent);
+  background: var(--editor-accent-bg);
+  color: var(--editor-accent);
+}
+
+.editor-button-icon {
+  background: transparent;
+  border: 1px solid var(--editor-border);
+  color: var(--editor-text);
+  transition: all 0.15s ease;
+}
+
+.editor-button-icon:hover {
+  background: var(--editor-hover);
+}
+
+.editor-header {
+  border-bottom: 1px solid var(--editor-border);
+}
+
+.editor-text-primary {
+  color: var(--editor-text);
+}
+
+.editor-text-secondary {
+  color: var(--editor-muted);
+}
+
+.editor-text-muted {
+  color: var(--editor-muted);
+}

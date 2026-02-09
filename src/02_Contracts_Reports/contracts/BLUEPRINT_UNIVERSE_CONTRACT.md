@@ -495,6 +495,8 @@ PATTERN
 
 **Rule:** Indentation = hierarchy. Arrows include target ID + target NAME (no lookup required).
 
+Type may be a molecule/section name or an organ declaration `organ:organId` (see ORGAN OUTLINE ANNOTATION).
+
 ```
 APP: ExampleApp
 

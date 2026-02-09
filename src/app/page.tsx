@@ -2,14 +2,12 @@
 "use client";
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
 import { useSyncExternalStore } from "react";
 import JsonRenderer from "@/engine/core/json-renderer";
 import { recordStage } from "@/engine/debug/pipelineStageTrace";
 import { PipelineDebugStore } from "@/devtools/pipeline-debug-store";
 import { loadScreen } from "@/engine/core/screen-loader";
-import SectionLayoutDropdown from "@/dev/section-layout-dropdown";
 import { resolveLandingPage } from "@/logic/runtime/landing-page-resolver";
 import { getLayout, subscribeLayout } from "@/engine/core/layout-store";
 import { getPaletteName, subscribePalette } from "@/engine/core/palette-store";
@@ -424,21 +422,8 @@ export default function Page() {
   if (error) return <div style={{ color: "red" }}>{error}</div>;
 
 
-  const overlay =
-    host &&
-    createPortal(
-      <SectionLayoutDropdown
-        screenJson={
-          json ??
-          {
-            __type: "tsx-screen",
-            path: tsxMeta?.path ?? "",
-          }
-        }
-        onChange={setJson}
-      />,
-      host
-    );
+  // SectionLayoutDropdown removed - OrganPanel is now the single source of truth for layout controls
+  const overlay = null;
 
 
   // ✅ TSX SCREEN
@@ -668,20 +653,32 @@ export default function Page() {
           primary={
             <div style={{ display: "flex", width: "100%", minHeight: "100%" }}>
               <div ref={contentRef} style={{ flex: 1, minWidth: 0, overflowX: "hidden" }}>{jsonContent}</div>
-            <OrganPanel
-              sectionKeysForPreset={sectionKeysForPreset}
-              sectionLabels={sectionLabels}
-              sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
-              onSectionLayoutPresetOverride={handleSectionLayoutPresetOverride}
-              cardLayoutPresetOverrides={cardLayoutPresetOverrides}
-              onCardLayoutPresetOverride={handleCardLayoutPresetOverride}
-              sectionPresetOptions={sectionPresetOptions}
-              sectionHeights={sectionHeights}
-              organIdBySectionKey={organIdBySectionKey}
-              organInternalLayoutOverrides={organInternalLayoutOverridesProp}
-              onOrganInternalLayoutOverride={handleOrganInternalLayoutOverride}
-              sectionNodesByKey={sectionByKey}
-            />
+            <div
+              style={{
+                width: "var(--organ-panel-width, 320px)",
+                minWidth: "var(--organ-panel-width, 320px)",
+                flexShrink: 0,
+                background: "var(--color-bg-primary)",
+                borderLeft: "1px solid var(--color-border)",
+                overflowY: "auto",
+                marginRight: "60px",
+              }}
+            >
+              <OrganPanel
+                sectionKeysForPreset={sectionKeysForPreset}
+                sectionLabels={sectionLabels}
+                sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
+                onSectionLayoutPresetOverride={handleSectionLayoutPresetOverride}
+                cardLayoutPresetOverrides={cardLayoutPresetOverrides}
+                onCardLayoutPresetOverride={handleCardLayoutPresetOverride}
+                sectionPresetOptions={sectionPresetOptions}
+                sectionHeights={sectionHeights}
+                organIdBySectionKey={organIdBySectionKey}
+                organInternalLayoutOverrides={organInternalLayoutOverridesProp}
+                onOrganInternalLayoutOverride={handleOrganInternalLayoutOverride}
+                sectionNodesByKey={sectionByKey}
+              />
+            </div>
           </div>
         }
       />
@@ -703,20 +700,32 @@ export default function Page() {
         content={
           <div style={{ display: "flex", width: "100%", minHeight: "100vh" }}>
             <div ref={contentRef} style={{ flex: 1, minWidth: 0, overflowX: "hidden" }}>{wrappedContent}</div>
-            <OrganPanel
-              sectionKeysForPreset={sectionKeysForPreset}
-              sectionLabels={sectionLabels}
-              sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
-              onSectionLayoutPresetOverride={handleSectionLayoutPresetOverride}
-              cardLayoutPresetOverrides={cardLayoutPresetOverrides}
-              onCardLayoutPresetOverride={handleCardLayoutPresetOverride}
-              sectionPresetOptions={sectionPresetOptions}
-              sectionHeights={sectionHeights}
-              organIdBySectionKey={organIdBySectionKey}
-              organInternalLayoutOverrides={organInternalLayoutOverridesProp}
-              onOrganInternalLayoutOverride={handleOrganInternalLayoutOverride}
-              sectionNodesByKey={sectionByKey}
-            />
+            <div
+              style={{
+                width: "var(--organ-panel-width, 320px)",
+                minWidth: "var(--organ-panel-width, 320px)",
+                flexShrink: 0,
+                background: "var(--color-bg-primary)",
+                borderLeft: "1px solid var(--color-border)",
+                overflowY: "auto",
+                marginRight: "60px",
+              }}
+            >
+              <OrganPanel
+                sectionKeysForPreset={sectionKeysForPreset}
+                sectionLabels={sectionLabels}
+                sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
+                onSectionLayoutPresetOverride={handleSectionLayoutPresetOverride}
+                cardLayoutPresetOverrides={cardLayoutPresetOverrides}
+                onCardLayoutPresetOverride={handleCardLayoutPresetOverride}
+                sectionPresetOptions={sectionPresetOptions}
+                sectionHeights={sectionHeights}
+                organIdBySectionKey={organIdBySectionKey}
+                organInternalLayoutOverrides={organInternalLayoutOverridesProp}
+                onOrganInternalLayoutOverride={handleOrganInternalLayoutOverride}
+                sectionNodesByKey={sectionByKey}
+              />
+            </div>
           </div>
         }
       />
