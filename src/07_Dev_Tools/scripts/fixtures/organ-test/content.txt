@@ -1,0 +1,4 @@
+1.0
+hero.title: Welcome
+hero.subtitle: Built from blueprint
+hero.cta: Start Now

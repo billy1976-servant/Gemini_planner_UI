@@ -1,0 +1,21 @@
+{
+  "id": "screenRoot",
+  "type": "screen",
+  "state": {
+    "currentView": "|home"
+  },
+  "children": [
+    {
+      "id": "|HeroBlock",
+      "type": "organ",
+      "organId": "hero",
+      "variant": "centered",
+      "content": {
+        "hero.title": "Welcome",
+        "hero.subtitle": "Built from blueprint",
+        "hero.cta": "Start Now"
+      },
+      "children": []
+    }
+  ]
+}

@@ -24,6 +24,27 @@ import readline from "readline";
 const APPS_ROOT = path.resolve(process.cwd(), "src/apps-json");
 const SCREEN_ROOT_ID = "screenRoot";
 const DEFAULT_VIEW = "|home";
+const ORGAN_INDEX_PATH = path.resolve(process.cwd(), "src/07_Dev_Tools/scripts/organ-index.json");
+
+/** Organ index shape (read-only; loaded from external JSON). */
+type OrganIndex = {
+  organs: Record<
+    string,
+    { slots: string[]; variants: string[] }
+  >;
+};
+
+function loadOrganIndex(): OrganIndex | null {
+  try {
+    if (!fs.existsSync(ORGAN_INDEX_PATH)) return null;
+    const raw = fs.readFileSync(ORGAN_INDEX_PATH, "utf8");
+    const data = JSON.parse(raw) as OrganIndex;
+    if (!data?.organs || typeof data.organs !== "object") return null;
+    return data;
+  } catch {
+    return null;
+  }
+}
 
 /** Contract-derived: allowed content keys per molecule type (empty = no content slots). */
 const ALLOWED_CONTENT_KEYS: Record<string, string[]> = {
@@ -45,12 +66,23 @@ const ALLOWED_CONTENT_KEYS: Record<string, string[]> = {
 /* ============================================================
    CONTENT.MANIFEST GENERATOR + VALIDATION
 ============================================================ */
-function generateContentManifest(rawNodes: RawNode[], appPath: string): Record<string, Record<string, string>> {
+function generateContentManifest(
+  rawNodes: RawNode[],
+  appPath: string,
+  organIndex: OrganIndex | null
+): Record<string, Record<string, string>> {
   const manifest: Record<string, Record<string, string>> = {};
   for (const node of rawNodes) {
-    const keys = ALLOWED_CONTENT_KEYS[node.type.toLowerCase()];
-    if (keys?.length) {
-      manifest[node.rawId] = Object.fromEntries(keys.map((k) => [k, ""]));
+    if (node.type === "organ" && node.organId && organIndex?.organs[node.organId]) {
+      const slots = organIndex.organs[node.organId].slots ?? [];
+      if (slots.length) {
+        manifest[node.rawId] = Object.fromEntries(slots.map((k) => [k, ""]));
+      }
+    } else {
+      const keys = ALLOWED_CONTENT_KEYS[node.type.toLowerCase()];
+      if (keys?.length) {
+        manifest[node.rawId] = Object.fromEntries(keys.map((k) => [k, ""]));
+      }
     }
   }
   const manifestPath = path.join(appPath, "content.manifest.json");
@@ -79,6 +111,33 @@ function validateContentKeys(
           console.warn(`[content.manifest] Missing key "${k}" on node ${nodeId} (type: ${idToType[nodeId]})`);
         }
       }
+    }
+  }
+}
+
+/** Validate organ nodes: organId in index, slotKeys in definition, variant allowed. Fail or warn per contract. */
+function validateOrganNodes(rawNodes: RawNode[], organIndex: OrganIndex | null): void {
+  if (!organIndex) return;
+  for (const node of rawNodes) {
+    if (node.type !== "organ" || !node.organId) continue;
+    const organId = node.organId;
+    const def = organIndex.organs[organId];
+    if (!def) {
+      console.error(`[organ] Unknown organId "${organId}" at node ${node.rawId}; not in organ index.`);
+      continue;
+    }
+    const allowedSlots = new Set(def.slots ?? []);
+    const allowedVariants = new Set(def.variants ?? []);
+    if (node.slots?.length) {
+      for (const slot of node.slots) {
+        if (!allowedSlots.has(slot)) {
+          console.warn(`[organ] Slot "${slot}" on node ${node.rawId} (organ:${organId}) is not in organ definition; allowed: ${def.slots.join(", ")}`);
+        }
+      }
+    }
+    const variant = node.variant ?? "default";
+    if (!allowedVariants.has(variant)) {
+      console.warn(`[organ] Variant "${variant}" on node ${node.rawId} (organ:${organId}) is not in organ variants; allowed: ${def.variants.join(", ")}`);
     }
   }
 }
@@ -124,6 +183,10 @@ type RawNode = {
   state?: { type: string; key: string }[];
   logic?: { type: string; expr: string }[];
   role?: string;
+  /** Set when type === "organ" */
+  organId?: string;
+  /** Organ variant; default "default" */
+  variant?: string;
 };
 
 
@@ -162,6 +225,37 @@ function parseBlueprint(text: string): RawNode[] {
       continue;
     }
 
+    const variantMatch = line.trim().match(/^variant:\s*(\S+)$/);
+    if (variantMatch && last) {
+      last.variant = variantMatch[1].trim();
+      continue;
+    }
+
+    // Organ line: 1.0 | HeroBlock | organ:hero [hero.title, hero.subtitle, hero.cta]
+    const organMatch = line
+      .trim()
+      .match(/^([\d.]+)\s*\|\s*(.+?)\s*\|\s*organ:(\w+)(?:\s*\[([^\]]*)\])?$/);
+    if (organMatch) {
+      const [, rawId, name, organId, slotsRaw] = organMatch;
+      const slots =
+        typeof slotsRaw === "string" && slotsRaw.trim().length
+          ? slotsRaw
+              .split(",")
+              .map((s: string) => s.trim())
+              .filter(Boolean)
+          : undefined;
+      nodes.push({
+        indent,
+        rawId,
+        name,
+        type: "organ",
+        organId,
+        slots,
+        variant: "default",
+      });
+      last = nodes[nodes.length - 1];
+      continue;
+    }
 
     // Contract-style: `1.1 | Name | Type [slot,slot] (verb)`
     const match = line
@@ -211,22 +305,22 @@ function parseContent(text: string): Record<string, any> {
     if (!line) continue;
 
 
-    const header = line.match(/^([\d.]+)\s+/);
+    // Header: line starting with numeric id (e.g. "1.0" or "1.0 Section title")
+    const header = line.match(/^([\d.]+)\s*(.*)$/);
     if (header) {
       current = header[1];
-      content[current] = {};
+      content[current] = content[current] ?? {};
       continue;
     }
 
 
     if (!current) continue;
 
-
-    const kv = line.match(/^-+\s*([\w]+)\s*:\s*(.*)$/);
+    // Key may be dotted for organ slotKeys (e.g. hero.title); optional leading "- "
+    const kv = line.match(/^(-+\s*)?([\w.]+)\s*:\s*(.*)$/);
     if (!kv) continue;
 
-
-    content[current][kv[1]] = parseScalar(kv[2]);
+    content[current][kv[2]] = parseScalar(kv[3]);
   }
 
 
@@ -237,7 +331,11 @@ function parseContent(text: string): Record<string, any> {
 /* ============================================================
    TREE BUILDER (CANONICAL — NO AUTO-INSERTION)
 ============================================================ */
-function buildTree(nodes: RawNode[], contentMap: Record<string, any>) {
+function buildTree(
+  nodes: RawNode[],
+  contentMap: Record<string, any>,
+  organIndex: OrganIndex | null
+) {
   const stack: any[] = [];
   const rootChildren: any[] = [];
   const idMap: Record<string, string> = {};
@@ -251,6 +349,33 @@ function buildTree(nodes: RawNode[], contentMap: Record<string, any>) {
 
 
   for (const node of nodes) {
+    if (node.type === "organ") {
+      const organId = node.organId ?? "";
+      const variant = node.variant ?? "default";
+      const def = organIndex?.organs[organId];
+      const slotKeys = def?.slots ?? [];
+      const rawContent = contentMap[node.rawId] ?? {};
+      const content: Record<string, any> = {};
+      for (const key of slotKeys) {
+        if (key in rawContent) content[key] = rawContent[key];
+      }
+      const entry: any = {
+        id: idMap[node.rawId],
+        type: "organ",
+        organId,
+        variant,
+        content,
+        children: [],
+      };
+      while (stack.length && stack[stack.length - 1].indent >= node.indent) {
+        stack.pop();
+      }
+      const parent = stack[stack.length - 1]?.entry;
+      parent ? parent.children.push(entry) : rootChildren.push(entry);
+      stack.push({ indent: node.indent, entry });
+      continue;
+    }
+
     const entry: any = {
       id: idMap[node.rawId],
       type: node.type,
@@ -360,7 +485,9 @@ async function run() {
     const parts = relativePath.replace(/\\/g, "/").split("/");
     cat = parts[0] ?? "";
     app = parts[1] ?? "";
-    appPath = path.join(APPS_ROOT, relativePath);
+    appPath = path.isAbsolute(relativePath)
+      ? path.resolve(relativePath)
+      : path.join(APPS_ROOT, relativePath);
     if (!fs.existsSync(path.join(appPath, "blueprint.txt"))) {
       console.error("No blueprint.txt at", appPath);
       process.exit(1);
@@ -398,15 +525,17 @@ async function run() {
     ? fs.readFileSync(path.join(appPath, "content.txt"), "utf8")
     : "";
 
+  const organIndex = loadOrganIndex();
 
   const rawNodes = parseBlueprint(blueprintText);
+  validateOrganNodes(rawNodes, organIndex);
   const contentMap = parseContent(contentText);
 
   // Generate content.manifest and validate content keys (warn-only).
-  const manifest = generateContentManifest(rawNodes, appPath);
+  const manifest = generateContentManifest(rawNodes, appPath, organIndex);
   validateContentKeys(contentMap, manifest, rawNodes);
 
-  const children = buildTree(rawNodes, contentMap);
+  const children = buildTree(rawNodes, contentMap, organIndex);
 
 
   const output = {
