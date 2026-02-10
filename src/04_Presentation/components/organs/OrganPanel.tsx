@@ -1,10 +1,17 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { getOrganLabel } from "@/components/organs";
 import { getSectionLayoutIds, getAllowedCardPresetsForSectionPreset, evaluateCompatibility } from "@/layout";
 import { getInternalLayoutIds } from "@/layout-organ";
 import { PipelineDebugStore } from "@/devtools/pipeline-debug-store";
+import LayoutTilePicker from "@/app/ui/control-dock/layout/LayoutTilePicker";
+import type { LayoutTileOption } from "@/app/ui/control-dock/layout/LayoutTilePicker";
+import {
+  getSectionLayoutThumbnail,
+  getCardLayoutThumbnail,
+  getOrganLayoutThumbnail,
+} from "@/app/ui/control-dock/layout/layoutThumbnails";
 
 export type OrganPanelProps = {
   /** Section keys to show layout preset for (from collectSectionKeysAndNodes). */
@@ -36,37 +43,42 @@ export type OrganPanelProps = {
 const PANEL_STYLE: React.CSSProperties = {
   width: "var(--organ-panel-width)",
   minWidth: "var(--organ-panel-width)",
+  maxWidth: "100%",
   flexShrink: 0,
-  background: "var(--color-bg-secondary)",
-  borderLeft: "1px solid var(--color-border)",
-  padding: "var(--spacing-4)",
+  background: "linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)",
+  borderLeft: "none",
+  padding: "var(--spacing-5)",
   overflowY: "auto",
+  overflowX: "hidden",
   fontSize: "var(--font-size-sm)",
+  boxShadow: "-4px 0 16px rgba(0,0,0,0.04)",
+  boxSizing: "border-box",
 };
 
 const TITLE_STYLE: React.CSSProperties = {
   fontWeight: 600,
-  marginBottom: "var(--spacing-3)",
-  color: "var(--color-text-primary)",
+  marginBottom: "var(--spacing-4)",
+  color: "rgba(0,0,0,0.82)",
 };
 
 const ROW_STYLE: React.CSSProperties = {
-  marginBottom: "var(--spacing-3)",
+  marginBottom: "var(--spacing-4)",
 };
 
 const LABEL_STYLE: React.CSSProperties = {
   display: "block",
-  marginBottom: "var(--spacing-1)",
-  color: "var(--color-text-secondary)",
+  marginBottom: "var(--spacing-2)",
+  color: "rgba(0,0,0,0.6)",
 };
 
 const SELECT_STYLE: React.CSSProperties = {
   width: "100%",
-  padding: "var(--spacing-2)",
-  borderRadius: "var(--radius-md)",
-  border: "1px solid var(--color-border)",
-  background: "var(--color-bg-primary)",
+  padding: "var(--spacing-2) var(--spacing-3)",
+  borderRadius: "10px",
+  border: "1px solid rgba(0,0,0,0.08)",
+  background: "#ffffff",
   fontSize: "inherit",
+  boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
 };
 
 const MIN_ROW_HEIGHT = 80;
@@ -85,6 +97,7 @@ export default function OrganPanel({
   onOrganInternalLayoutOverride,
   sectionNodesByKey,
 }: OrganPanelProps) {
+  const [visualMode, setVisualMode] = useState(true);
   const rowIds = sectionKeysForPreset ?? [];
   const allSectionLayoutIds = getSectionLayoutIds();
 
@@ -92,19 +105,87 @@ export default function OrganPanel({
     return (
       <aside style={PANEL_STYLE} data-organ-panel>
         <div style={TITLE_STYLE}>Layout</div>
-        <p style={{ color: "var(--color-text-muted)", margin: 0 }}>
+        <p style={{ color: "rgba(0,0,0,0.5)", margin: 0 }}>
           No sections on this screen. Load a website-style app (e.g. demo-blueprint-site).
         </p>
       </aside>
     );
   }
 
+  const fireSectionChange = (sectionKey: string, value: string) => {
+    const target = `section-layout-preset-${sectionKey}`;
+    PipelineDebugStore.setLastEvent({ time: Date.now(), type: "change", target });
+    window.dispatchEvent(
+      new CustomEvent("action", {
+        detail: { type: "Action", params: { name: "state:update", key: `sectionLayoutPreset.${sectionKey}`, value } },
+      })
+    );
+    onSectionLayoutPresetOverride?.(sectionKey, value);
+  };
+  const fireCardChange = (sectionKey: string, value: string) => {
+    const target = `card-layout-preset-${sectionKey}`;
+    PipelineDebugStore.setLastEvent({ time: Date.now(), type: "change", target });
+    window.dispatchEvent(
+      new CustomEvent("action", {
+        detail: { type: "Action", params: { name: "state:update", key: `cardLayoutPreset.${sectionKey}`, value } },
+      })
+    );
+    onCardLayoutPresetOverride?.(sectionKey, value);
+  };
+  const fireOrganChange = (sectionKey: string, value: string) => {
+    const target = `organ-internal-layout-${sectionKey}`;
+    PipelineDebugStore.setLastEvent({ time: Date.now(), type: "change", target });
+    window.dispatchEvent(
+      new CustomEvent("action", {
+        detail: { type: "Action", params: { name: "state:update", key: `organInternalLayout.${sectionKey}`, value } },
+      })
+    );
+    onOrganInternalLayoutOverride?.(sectionKey, value);
+  };
+
   return (
     <aside style={PANEL_STYLE} data-organ-panel>
       <div style={TITLE_STYLE}>Layout controls</div>
-      <p style={{ color: "var(--color-text-muted)", marginBottom: "var(--spacing-3)", marginTop: 0, fontSize: "var(--font-size-xs)" }}>
+      <p style={{ color: "rgba(0,0,0,0.5)", marginBottom: "var(--spacing-4)", marginTop: 0, fontSize: "var(--font-size-xs)" }}>
         Section layout, card layout, and organ internal layout (dev). Applies to this screen only.
       </p>
+      <div style={{ marginBottom: "var(--spacing-4)", display: "flex", gap: "var(--spacing-2)", alignItems: "center" }}>
+        <span style={{ fontSize: "var(--font-size-xs)", color: "rgba(0,0,0,0.55)" }}>Mode:</span>
+        <button
+          type="button"
+          onClick={() => setVisualMode(true)}
+          style={{
+            padding: "6px 12px",
+            borderRadius: "8px",
+            border: "none",
+            background: visualMode ? "linear-gradient(180deg, #3b82f6 0%, #2563eb 100%)" : "rgba(255,255,255,0.9)",
+            color: visualMode ? "#fff" : "rgba(0,0,0,0.8)",
+            fontSize: "var(--font-size-xs)",
+            cursor: "pointer",
+            boxShadow: visualMode ? "0 2px 6px rgba(59, 130, 246, 0.35)" : "0 1px 3px rgba(0,0,0,0.06)",
+            transition: "background 0.2s ease, box-shadow 0.2s ease",
+          }}
+        >
+          Visual
+        </button>
+        <button
+          type="button"
+          onClick={() => setVisualMode(false)}
+          style={{
+            padding: "6px 12px",
+            borderRadius: "8px",
+            border: "none",
+            background: !visualMode ? "linear-gradient(180deg, #3b82f6 0%, #2563eb 100%)" : "rgba(255,255,255,0.9)",
+            color: !visualMode ? "#fff" : "rgba(0,0,0,0.8)",
+            fontSize: "var(--font-size-xs)",
+            cursor: "pointer",
+            boxShadow: !visualMode ? "0 2px 6px rgba(59, 130, 246, 0.35)" : "0 1px 3px rgba(0,0,0,0.06)",
+            transition: "background 0.2s ease, box-shadow 0.2s ease",
+          }}
+        >
+          Text
+        </button>
+      </div>
       {rowIds.map((sectionKey) => {
         const label = sectionLabels?.[sectionKey] ?? getOrganLabel(sectionKey);
         const sectionNode = sectionNodesByKey?.[sectionKey] ?? null;
@@ -163,128 +244,134 @@ export default function OrganPanel({
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-start",
-          paddingTop: "var(--spacing-2)",
-          paddingBottom: "var(--spacing-2)",
-          borderBottom: "1px solid var(--color-border)",
+          paddingTop: "var(--spacing-3)",
+          paddingBottom: "var(--spacing-3)",
+          borderBottom: "1px solid rgba(0,0,0,0.06)",
         };
+
+        const sectionTileOptions: LayoutTileOption[] = [
+          { id: "", label: "(default)" },
+          ...sectionOptionsFiltered.map((id) => ({
+            id,
+            label: id,
+            thumbnail: getSectionLayoutThumbnail(id),
+          })),
+        ];
+        const cardTileOptions: LayoutTileOption[] = [
+          { id: "", label: "(default)" },
+          ...cardOptionsFiltered.map((id) => ({
+            id,
+            label: id,
+            thumbnail: getCardLayoutThumbnail(id),
+          })),
+        ];
+        const organTileOptions: LayoutTileOption[] = [
+          { id: "", label: "(default)" },
+          ...organOptionsFiltered.map((id) => ({
+            id,
+            label: id,
+            thumbnail: getOrganLayoutThumbnail(id),
+          })),
+        ];
 
         return (
           <div key={sectionKey} style={rowBlockStyle}>
             <div style={{ ...LABEL_STYLE, fontWeight: 600 }}>{label}</div>
-            {onSectionLayoutPresetOverride && (
+            {visualMode ? (
               <>
-                <label style={{ ...LABEL_STYLE, marginTop: "var(--spacing-1)" }} htmlFor={`section-layout-preset-${sectionKey}`}>
-                  Section Layout
-                </label>
-                <select
-                  id={`section-layout-preset-${sectionKey}`}
-                  value={currentSectionPreset}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    const presetId = value;
-                    console.log("FLOW 1 — UI VALUE", {
-                      sectionId: sectionKey,
-                      selected: presetId,
-                    });
-                    const target = `section-layout-preset-${sectionKey}`;
-                    PipelineDebugStore.setLastEvent({ time: Date.now(), type: "change", target });
-                    window.dispatchEvent(
-                      new CustomEvent("action", {
-                        detail: {
-                          type: "Action",
-                          params: {
-                            name: "state:update",
-                            key: `sectionLayoutPreset.${sectionKey}`,
-                            value,
-                          },
-                        },
-                      })
-                    );
-                    onSectionLayoutPresetOverride?.(sectionKey, value);
-                  }}
-                  style={SELECT_STYLE}
-                >
-                  <option value="">(default)</option>
-                  {sectionOptionsFiltered.map((pid) => (
-                    <option key={pid} value={pid}>
-                      {pid}
-                    </option>
-                  ))}
-                </select>
+                {onSectionLayoutPresetOverride && (
+                  <LayoutTilePicker
+                    title="Section Layout"
+                    value={currentSectionPreset}
+                    options={sectionTileOptions}
+                    onChange={(id) => fireSectionChange(sectionKey, id)}
+                    mode="grid"
+                  />
+                )}
+                {onCardLayoutPresetOverride && (
+                  <LayoutTilePicker
+                    title="Card Layout"
+                    value={currentCardPreset}
+                    options={cardTileOptions}
+                    onChange={(id) => fireCardChange(sectionKey, id)}
+                    mode="grid"
+                  />
+                )}
+                {onOrganInternalLayoutOverride && organId && organTileOptions.length > 1 && (
+                  <LayoutTilePicker
+                    title="Internal layout (organ)"
+                    value={currentInternalLayout}
+                    options={organTileOptions}
+                    onChange={(id) => fireOrganChange(sectionKey, id)}
+                    mode="grid"
+                  />
+                )}
               </>
-            )}
-            {onCardLayoutPresetOverride && (
+            ) : (
               <>
-                <label style={{ ...LABEL_STYLE, marginTop: "var(--spacing-2)" }} htmlFor={`card-layout-preset-${sectionKey}`}>
-                  Card Layout
-                </label>
-                <select
-                  id={`card-layout-preset-${sectionKey}`}
-                  value={currentCardPreset}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    const target = `card-layout-preset-${sectionKey}`;
-                    PipelineDebugStore.setLastEvent({ time: Date.now(), type: "change", target });
-                    window.dispatchEvent(
-                      new CustomEvent("action", {
-                        detail: {
-                          type: "Action",
-                          params: {
-                            name: "state:update",
-                            key: `cardLayoutPreset.${sectionKey}`,
-                            value,
-                          },
-                        },
-                      })
-                    );
-                    onCardLayoutPresetOverride?.(sectionKey, value);
-                  }}
-                  style={SELECT_STYLE}
-                >
-                  <option value="">(default)</option>
-                  {cardOptionsFiltered.map((pid) => (
-                    <option key={pid} value={pid}>
-                      {pid}
-                    </option>
-                  ))}
-                </select>
-              </>
-            )}
-            {onOrganInternalLayoutOverride && organId && internalLayoutIds.length > 0 && (
-              <>
-                <label style={{ ...LABEL_STYLE, marginTop: "var(--spacing-2)" }} htmlFor={`organ-internal-layout-${sectionKey}`}>
-                  Internal layout (organ)
-                </label>
-                <select
-                  id={`organ-internal-layout-${sectionKey}`}
-                  value={currentInternalLayout}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    const target = `organ-internal-layout-${sectionKey}`;
-                    PipelineDebugStore.setLastEvent({ time: Date.now(), type: "change", target });
-                    window.dispatchEvent(
-                      new CustomEvent("action", {
-                        detail: {
-                          type: "Action",
-                          params: {
-                            name: "state:update",
-                            key: `organInternalLayout.${sectionKey}`,
-                            value,
-                          },
-                        },
-                      })
-                    );
-                    onOrganInternalLayoutOverride?.(sectionKey, value);
-                  }}
-                  style={SELECT_STYLE}
-                >
-                  <option value="">(default)</option>
-                  {organOptionsFiltered.map((lid) => (
-                    <option key={lid} value={lid}>
-                      {lid}
-                    </option>
-                  ))}
-                </select>
+                {onSectionLayoutPresetOverride && (
+                  <>
+                    <label style={{ ...LABEL_STYLE, marginTop: "var(--spacing-1)" }} htmlFor={`section-layout-preset-${sectionKey}`}>
+                      Section Layout
+                    </label>
+                    <select
+                      id={`section-layout-preset-${sectionKey}`}
+                      value={currentSectionPreset}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        fireSectionChange(sectionKey, value);
+                      }}
+                      style={SELECT_STYLE}
+                    >
+                      <option value="">(default)</option>
+                      {sectionOptionsFiltered.map((pid) => (
+                        <option key={pid} value={pid}>
+                          {pid}
+                        </option>
+                      ))}
+                    </select>
+                  </>
+                )}
+                {onCardLayoutPresetOverride && (
+                  <>
+                    <label style={{ ...LABEL_STYLE, marginTop: "var(--spacing-2)" }} htmlFor={`card-layout-preset-${sectionKey}`}>
+                      Card Layout
+                    </label>
+                    <select
+                      id={`card-layout-preset-${sectionKey}`}
+                      value={currentCardPreset}
+                      onChange={(e) => fireCardChange(sectionKey, e.target.value)}
+                      style={SELECT_STYLE}
+                    >
+                      <option value="">(default)</option>
+                      {cardOptionsFiltered.map((pid) => (
+                        <option key={pid} value={pid}>
+                          {pid}
+                        </option>
+                      ))}
+                    </select>
+                  </>
+                )}
+                {onOrganInternalLayoutOverride && organId && internalLayoutIds.length > 0 && (
+                  <>
+                    <label style={{ ...LABEL_STYLE, marginTop: "var(--spacing-2)" }} htmlFor={`organ-internal-layout-${sectionKey}`}>
+                      Internal layout (organ)
+                    </label>
+                    <select
+                      id={`organ-internal-layout-${sectionKey}`}
+                      value={currentInternalLayout}
+                      onChange={(e) => fireOrganChange(sectionKey, e.target.value)}
+                      style={SELECT_STYLE}
+                    >
+                      <option value="">(default)</option>
+                      {organOptionsFiltered.map((lid) => (
+                        <option key={lid} value={lid}>
+                          {lid}
+                        </option>
+                      ))}
+                    </select>
+                  </>
+                )}
               </>
             )}
           </div>

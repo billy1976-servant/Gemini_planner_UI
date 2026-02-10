@@ -7,6 +7,7 @@
 
 import React from "react";
 import type { DockPanelId } from "./dock-state";
+import { getSidebarIconPathOrWarn } from "@/ui/sidebarIconRegistry";
 
 const MODES = ["template", "custom"] as const;
 const STYLING_PRESETS = ["default", "clean", "minimal", "bold", "soft"];
@@ -20,82 +21,14 @@ const EXPERIENCES = [
 const DOCK_STRIP_WIDTH = 48;
 const EXPANDED_PANEL_WIDTH = 280;
 
-/* Icon components (compact, for pills) */
-function IconGlobe() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <circle cx="12" cy="12" r="10" />
-      <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-    </svg>
-  );
-}
-function IconGear() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <circle cx="12" cy="12" r="3" />
-      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-    </svg>
-  );
-}
-function IconPalette() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <circle cx="13.5" cy="6.5" r="0.5" fill="currentColor" />
-      <circle cx="17.5" cy="10.5" r="0.5" fill="currentColor" />
-      <circle cx="8.5" cy="7.5" r="0.5" fill="currentColor" />
-      <circle cx="6.5" cy="12.5" r="0.5" fill="currentColor" />
-      <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.7-.2 2.5-.5" />
-    </svg>
-  );
-}
-function IconStar() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-    </svg>
-  );
-}
-function IconLightning() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-    </svg>
-  );
-}
-function IconDocument() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-      <polyline points="14 2 14 8 20 8" />
-      <line x1="16" y1="13" x2="8" y2="13" />
-      <line x1="16" y1="17" x2="8" y2="17" />
-      <polyline points="10 9 9 9 8 9" />
-    </svg>
-  );
-}
-function IconLayout() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <rect x="3" y="3" width="7" height="7" rx="1" />
-      <rect x="14" y="3" width="7" height="7" rx="1" />
-      <rect x="3" y="14" width="7" height="7" rx="1" />
-      <rect x="14" y="14" width="7" height="7" rx="1" />
-    </svg>
-  );
-}
-
-const PILL_CONFIG: Array<{
-  id: DockPanelId;
-  label: string;
-  Icon: React.FC;
-}> = [
-  { id: "experience", label: "Experience", Icon: IconGlobe },
-  { id: "mode", label: "Mode", Icon: IconGear },
-  { id: "palette", label: "Palette", Icon: IconPalette },
-  { id: "template", label: "Template", Icon: IconDocument },
-  { id: "styling", label: "Styling", Icon: IconStar },
-  { id: "behavior", label: "Behavior", Icon: IconLightning },
-  { id: "layout", label: "Layout", Icon: IconLayout },
+const PILL_CONFIG: Array<{ id: DockPanelId; label: string }> = [
+  { id: "experience", label: "Experience" },
+  { id: "mode", label: "Mode" },
+  { id: "palette", label: "Palette" },
+  { id: "template", label: "Template" },
+  { id: "styling", label: "Styling" },
+  { id: "behavior", label: "Behavior" },
+  { id: "layout", label: "Layout" },
 ];
 
 export type RightSidebarDockContentProps = {
@@ -143,7 +76,7 @@ export default function RightSidebarDockContent(props: RightSidebarDockContentPr
         flexDirection: "row",
         height: "100%",
         minHeight: 0,
-        background: "var(--editor-dock-strip-bg, #252526)",
+        background: "transparent",
         overflow: "hidden",
       }}
     >
@@ -333,18 +266,21 @@ export default function RightSidebarDockContent(props: RightSidebarDockContentPr
           width: DOCK_STRIP_WIDTH,
           minWidth: DOCK_STRIP_WIDTH,
           flexShrink: 0,
-          background: "var(--editor-dock-strip-bg, #252526)",
-          borderLeft: "1px solid var(--editor-dock-strip-border, #3c3c3c)",
+          background: "rgba(255,255,255,0.72)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          boxShadow: "0 0 0 1px rgba(255,255,255,0.5) inset, -4px 0 16px rgba(0,0,0,0.04)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           paddingTop: "var(--spacing-2)",
           paddingBottom: "var(--spacing-2)",
-          gap: "var(--spacing-1)",
+          gap: "6px",
         }}
       >
-        {pills.map(({ id, label, Icon }) => {
+        {pills.map(({ id, label }) => {
           const isActive = isPanelOpen(id);
+          const iconPath = getSidebarIconPathOrWarn(id);
           return (
             <button
               key={id}
@@ -357,24 +293,30 @@ export default function RightSidebarDockContent(props: RightSidebarDockContentPr
               style={{
                 width: 40,
                 height: 40,
-                borderRadius: 20,
+                borderRadius: 10,
                 border: "none",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                color: "var(--editor-dock-pill-color, #cccccc)",
-                background: isActive ? "var(--editor-dock-pill-active-bg, #3c3c3c)" : "transparent",
-                transition: "background 0.15s ease, color 0.15s ease",
+                background: isActive ? "rgba(59, 130, 246, 0.14)" : "transparent",
+                boxShadow: isActive ? "0 0 0 1px rgba(59, 130, 246, 0.35), 0 0 24px rgba(59, 130, 246, 0.18)" : "none",
+                transition: "background 0.2s ease, box-shadow 0.2s ease",
               }}
               onMouseEnter={(e) => {
-                if (!isActive) e.currentTarget.style.background = "var(--editor-dock-pill-hover-bg, #3c3c3c)";
+                if (!isActive) {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.5)";
+                  e.currentTarget.style.boxShadow = "0 0 20px rgba(0,0,0,0.08)";
+                }
               }}
               onMouseLeave={(e) => {
-                if (!isActive) e.currentTarget.style.background = "transparent";
+                if (!isActive) {
+                  e.currentTarget.style.background = "transparent";
+                  e.currentTarget.style.boxShadow = "none";
+                }
               }}
             >
-              <Icon />
+              {iconPath ? <img src={iconPath} alt="" width={22} height={22} style={{ display: "block" }} /> : null}
             </button>
           );
         })}

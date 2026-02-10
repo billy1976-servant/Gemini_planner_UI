@@ -22,7 +22,7 @@ import {
   loadOrganVariant,
 } from "@/components/organs";
 import OrganPanel from "@/components/organs/OrganPanel";
-import RightFloatingSidebar from "@/app/ui/control-dock/RightFloatingSidebar";
+import RightFloatingSidebar, { SIDEBAR_TOTAL_WIDTH } from "@/app/ui/control-dock/RightFloatingSidebar";
 import {
   getSectionLayoutPresetOverrides,
   getOverridesForScreen,
@@ -43,6 +43,7 @@ import {
   getSectionLayoutIds,
   collectSectionKeysAndNodes,
   collectSectionLabels,
+  getAllowedCardPresetsForSectionPreset,
 } from "@/layout";
 import { getOrganLayoutOrganIds, getInternalLayoutIds } from "@/layout-organ";
 import { hasLayoutNodeType, collapseLayoutNodes } from "@/engine/core/collapse-layout-nodes";
@@ -542,6 +543,13 @@ export default function Page() {
   const handleSectionLayoutPresetOverride = (sectionKey: string, presetId: string) => {
     dispatchState("layout.override", { screenKey, type: "section", sectionId: sectionKey, presetId });
     setSectionLayoutPresetOverride(screenKey, sectionKey, presetId);
+    // When section layout changes, if current card is not allowed for the new section, auto-set to first allowed
+    const currentCard = getCardOverridesForScreen(screenKey)[sectionKey] ?? "";
+    const allowedCards = getAllowedCardPresetsForSectionPreset(presetId || null);
+    if (currentCard && allowedCards.length > 0 && !allowedCards.includes(currentCard)) {
+      setCardLayoutPresetOverride(screenKey, sectionKey, allowedCards[0]);
+      dispatchState("layout.override", { screenKey, type: "card", sectionId: sectionKey, presetId: allowedCards[0] });
+    }
   };
   const handleCardLayoutPresetOverride = (sectionKey: string, presetId: string) => {
     dispatchState("layout.override", { screenKey, type: "card", sectionId: sectionKey, presetId });
@@ -652,7 +660,7 @@ export default function Page() {
         {overlay}
         <AppShell
           primary={
-            <div ref={contentRef} style={{ width: "100%", minHeight: "100%", overflowX: "hidden" }}>
+            <div ref={contentRef} style={{ width: "100%", minHeight: "100%", overflowX: "hidden", paddingRight: SIDEBAR_TOTAL_WIDTH }}>
               {jsonContent}
             </div>
           }
@@ -682,7 +690,7 @@ export default function Page() {
     return (
       <>
         {overlay}
-        <LearningShell content={jsonContent} />
+        <LearningShell content={<div style={{ paddingRight: SIDEBAR_TOTAL_WIDTH }}>{jsonContent}</div>} />
         <RightFloatingSidebar />
       </>
     );
@@ -692,7 +700,7 @@ export default function Page() {
       {overlay}
       <WebsiteShell
         content={
-          <div ref={contentRef} style={{ width: "100%", minHeight: "100vh", overflowX: "hidden" }}>
+          <div ref={contentRef} style={{ width: "100%", minHeight: "100vh", overflowX: "hidden", paddingRight: SIDEBAR_TOTAL_WIDTH }}>
             {wrappedContent}
           </div>
         }
