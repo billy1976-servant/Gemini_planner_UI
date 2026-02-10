@@ -102,7 +102,32 @@ export async function GET() {
       return NextResponse.json([]);
     }
 
-    /* ---------------- JSON (FIXED PATH) ---------------- */
+    /* ---------------- JSON (FIXED PATH, RECURSIVE) ---------------- */
+    const collectJsonFolders = (categoryPath: string): Record<string, string[]> => {
+      const result: Record<string, string[]> = {};
+
+      const walk = (dir: string, prefix: string) => {
+        const entries = fs.readdirSync(dir, { withFileTypes: true });
+        const files: string[] = [];
+        for (const entry of entries) {
+          if (entry.isFile() && entry.name.endsWith(".json")) {
+            files.push(entry.name);
+          } else if (entry.isDirectory()) {
+            const nextDir = path.join(dir, entry.name);
+            const nextPrefix = prefix ? `${prefix}/${entry.name}` : entry.name;
+            walk(nextDir, nextPrefix);
+          }
+        }
+        if (files.length) {
+          const key = prefix || ".";
+          result[key] = files;
+        }
+      };
+
+      walk(categoryPath, "");
+      return result;
+    };
+
     const jsonCategories = fs
       .readdirSync(BASE, { withFileTypes: true })
       .filter(d => d.isDirectory())
@@ -115,20 +140,7 @@ export async function GET() {
           exists: fs.existsSync(categoryPath),
         });
 
-        const folders = fs
-          .readdirSync(categoryPath, { withFileTypes: true })
-          .filter(d => d.isDirectory())
-          .reduce<Record<string, string[]>>((acc, folder) => {
-            const folderPath = path.join(categoryPath, folder.name);
-
-            const files = fs
-              .readdirSync(folderPath, { withFileTypes: true })
-              .filter(f => f.isFile() && f.name.endsWith(".json"))
-              .map(f => f.name);
-
-            if (files.length) acc[folder.name] = files;
-            return acc;
-          }, {});
+        const folders = collectJsonFolders(categoryPath);
 
         return { category: category.name, folders };
       });

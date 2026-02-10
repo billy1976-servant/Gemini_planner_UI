@@ -9,11 +9,22 @@ type ScreensIndex = {
   folders: Record<string, string[]>;
 };
 
+/** Format screen path for pill: "File: journal_track/app-1.json" (readable, no clipping) */
+function formatScreenPillLabel(screen: string): string {
+  if (!screen.trim()) return "";
+  const normalized = screen.replace(/^tsx-screens\/|^tsx:/i, "").trim();
+  const hasExt = /\.(tsx|json)$/i.test(normalized);
+  const path = hasExt ? normalized : `${normalized}.json`;
+  return `File: ${path}`;
+}
+
 type CascadingScreenMenuProps = {
   index: ScreensIndex[];
+  /** Current screen path from URL (?screen=...) for pill label */
+  currentScreen?: string;
 };
 
-export default function CascadingScreenMenu({ index }: CascadingScreenMenuProps) {
+export default function CascadingScreenMenu({ index, currentScreen = "" }: CascadingScreenMenuProps) {
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
@@ -75,25 +86,22 @@ export default function CascadingScreenMenu({ index }: CascadingScreenMenuProps)
   const hasLevel2 = (cat: ScreensIndex) =>
     (cat.directFiles?.length ?? 0) > 0 || Object.keys(cat.folders ?? {}).length > 0;
 
-  const dropdownPanelStyle: React.CSSProperties = {
-    background: "#ffffff",
-    color: "#000000",
-    border: "1px solid #e5e7eb",
-    boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
-    zIndex: 9999,
-    position: "absolute",
-  };
+  const pillLabel = currentScreen ? formatScreenPillLabel(currentScreen) : "";
+  const triggerText = pillLabel ? `${pillLabel} ▾` : "Screens ▾";
 
-  const dropdownContentStyle: React.CSSProperties = {
-    ...dropdownPanelStyle,
-    pointerEvents: "auto",
+  /* Dropdown panel: solid white, above everything, no debug styles */
+  const panelStyle: React.CSSProperties = {
+    position: "relative",
+    background: "#ffffff",
+    color: "#111",
+    minWidth: 200,
   };
 
   return (
     <div
       ref={containerRef}
       className="cascading-screen-menu"
-      style={{ position: "relative", display: "inline-block" }}
+      style={{ position: "relative", zIndex: 60, display: "inline-block", overflow: "visible" }}
     >
       <button
         type="button"
@@ -101,8 +109,21 @@ export default function CascadingScreenMenu({ index }: CascadingScreenMenuProps)
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-haspopup="menu"
+        style={{
+          minWidth: pillLabel ? 180 : undefined,
+          maxWidth: 320,
+          overflow: "visible",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          color: "var(--chrome-text)",
+          background: "rgba(255,255,255,0.12)",
+          border: "1px solid rgba(255,255,255,0.2)",
+          borderRadius: "var(--radius-md)",
+          paddingLeft: "var(--spacing-2)",
+          paddingRight: "var(--spacing-3)",
+        }}
       >
-        Screens ▾
+        {triggerText}
       </button>
 
       {open && index.length > 0 && (
@@ -110,25 +131,29 @@ export default function CascadingScreenMenu({ index }: CascadingScreenMenuProps)
           className="cascading-screen-menu-panels"
           role="menu"
           style={{
-            ...dropdownContentStyle,
+            position: "absolute",
+            zIndex: 9999,
             top: "100%",
             left: 0,
-            marginTop: 0,
-            borderRadius: "var(--radius-md)",
+            marginTop: 4,
             display: "flex",
             minWidth: 200,
+            pointerEvents: "auto",
+            background: "#ffffff",
+            color: "#111",
+            boxShadow: "0 12px 28px rgba(0,0,0,0.25)",
+            borderRadius: 10,
           }}
         >
           {/* Level 1: Categories */}
           <div
             className="cascading-screen-menu-panel"
             style={{
-              ...dropdownPanelStyle,
               position: "relative",
+              background: "#ffffff",
               borderRight: "1px solid #e5e7eb",
               minWidth: 180,
-              borderRadius: 0,
-              boxShadow: "none",
+              borderRadius: "10px 0 0 10px",
             }}
           >
             {index.map((cat) => {
@@ -166,12 +191,8 @@ export default function CascadingScreenMenu({ index }: CascadingScreenMenuProps)
             <div
               className="cascading-screen-menu-panel"
               style={{
-                ...dropdownPanelStyle,
-                position: "relative",
+                ...panelStyle,
                 borderRight: hoveredFolder && folderObj?.length ? "1px solid #e5e7eb" : undefined,
-                minWidth: 200,
-                borderRadius: 0,
-                boxShadow: "none",
               }}
             >
               {directFiles.map((fileName) => (
@@ -225,13 +246,7 @@ export default function CascadingScreenMenu({ index }: CascadingScreenMenuProps)
           {hoveredFolder && folderObj && folderObj.length > 0 && (
             <div
               className="cascading-screen-menu-panel"
-              style={{
-                ...dropdownPanelStyle,
-                position: "relative",
-                minWidth: 200,
-                borderRadius: 0,
-                boxShadow: "none",
-              }}
+              style={{ ...panelStyle, borderRadius: "0 10px 10px 0" }}
             >
               {folderObj.map((fileName) => (
                 <div

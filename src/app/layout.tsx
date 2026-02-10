@@ -82,6 +82,7 @@ type ScreensIndex = {
 export default function RootLayout({ children }: any) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const currentScreen = searchParams.get("screen") ?? "";
 
   const [index, setIndex] = useState<ScreensIndex[]>([]);
 
@@ -165,13 +166,10 @@ export default function RootLayout({ children }: any) {
       </head>
       <body className="app-body">
         {/* Navigator: no key — identity stable; palette changes only update CSS, never remount. */}
-        <div
-          className="app-chrome"
-          style={{ background: "#000000", color: "#ffffff" }}
-        >
+        <div className="app-chrome">
           <b>HIclarify Navigator</b>
 
-          <CascadingScreenMenu index={index} />
+          <CascadingScreenMenu index={index} currentScreen={currentScreen} />
 
           <span className="app-chrome-spacer" aria-hidden="true" />
 

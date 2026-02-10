@@ -9,7 +9,7 @@ export type Option = { id: string; label: string; thumbnail?: unknown; descripti
 
 /**
  * Returns card layout options allowed for the given section layout.
- * If no mapping exists for sectionLayoutId, returns all options (safe fallback).
+ * Unknown section returns []. No fallback to full list (stability).
  */
 export function getAllowedCardLayouts(
   sectionLayoutId: string,
@@ -20,10 +20,10 @@ export function getAllowedCardLayouts(
   if (allowedIds.length === 0) return [];
   const set = new Set(allowedIds);
   const filtered = allCardLayouts.filter((o) => set.has(o.id));
-  if (filtered.length === 0 && allCardLayouts.length > 0 && process.env.NODE_ENV === "development") {
+  if (filtered.length === 0 && process.env.NODE_ENV === "development") {
     console.warn("[layoutDependencies] No card layouts match allowed ids for section:", id, "allowed:", allowedIds);
   }
-  return filtered.length > 0 ? filtered : allCardLayouts;
+  return filtered;
 }
 
 /**

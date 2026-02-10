@@ -441,6 +441,8 @@ export default function Page() {
 
   if (!json) return <div>Loading…</div>;
 
+  // 🔑 Currently loaded screen JSON: `json` state (set by loadScreen(screen) from URL ?screen=).
+  // The tree we pass to JsonRenderer and to OrganPanel for live thumbnails is `treeForRender` (derived below).
   // ✅ FIX: render the ACTUAL screen root, not the descriptor
   let renderNode =
     json?.root ??
@@ -540,18 +542,24 @@ export default function Page() {
   const cardLayoutPresetOverridesProp = { ...cardLayoutPresetOverrides };
 
   // Layout preset changes: write to state.layoutByScreen via layout.override; mirror to legacy store for fallback.
+  // Section dropdown → section only; when section changes, if current card invalid for new section, set card to first allowed.
+  // Card dropdown → card only; no section changes.
   const handleSectionLayoutPresetOverride = (sectionKey: string, presetId: string) => {
     dispatchState("layout.override", { screenKey, type: "section", sectionId: sectionKey, presetId });
     setSectionLayoutPresetOverride(screenKey, sectionKey, presetId);
-    // When section layout changes, if current card is not allowed for the new section, auto-set to first allowed
-    const currentCard = getCardOverridesForScreen(screenKey)[sectionKey] ?? "";
     const allowedCards = getAllowedCardPresetsForSectionPreset(presetId || null);
-    if (currentCard && allowedCards.length > 0 && !allowedCards.includes(currentCard)) {
-      setCardLayoutPresetOverride(screenKey, sectionKey, allowedCards[0]);
-      dispatchState("layout.override", { screenKey, type: "card", sectionId: sectionKey, presetId: allowedCards[0] });
+    if (allowedCards.length > 0) {
+      const currentCard = getCardOverridesForScreen(screenKey)[sectionKey] ?? "";
+      if (!currentCard || !allowedCards.includes(currentCard)) {
+        setCardLayoutPresetOverride(screenKey, sectionKey, allowedCards[0]);
+        dispatchState("layout.override", { screenKey, type: "card", sectionId: sectionKey, presetId: allowedCards[0] });
+      }
     }
   };
   const handleCardLayoutPresetOverride = (sectionKey: string, presetId: string) => {
+    if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
+      console.log("[page] handleCardLayoutPresetOverride", { screenKey, sectionKey, presetId });
+    }
     dispatchState("layout.override", { screenKey, type: "card", sectionId: sectionKey, presetId });
     setCardLayoutPresetOverride(screenKey, sectionKey, presetId);
   };
@@ -646,6 +654,7 @@ export default function Page() {
           gap: "var(--spacing-8)",
           width: "100%",
           overflowX: "hidden",
+          overflowY: "visible",
         }}
       >
         {jsonContent}
@@ -660,7 +669,7 @@ export default function Page() {
         {overlay}
         <AppShell
           primary={
-            <div ref={contentRef} style={{ width: "100%", minHeight: "100%", overflowX: "hidden", paddingRight: SIDEBAR_TOTAL_WIDTH }}>
+            <div ref={contentRef} style={{ width: "100%", minHeight: "100%", overflowX: "hidden", overflowY: "visible", paddingRight: SIDEBAR_TOTAL_WIDTH }}>
               {jsonContent}
             </div>
           }
@@ -680,6 +689,10 @@ export default function Page() {
               organInternalLayoutOverrides={organInternalLayoutOverridesProp}
               onOrganInternalLayoutOverride={handleOrganInternalLayoutOverride}
               sectionNodesByKey={sectionByKey}
+              screenModel={treeForRender}
+              defaultState={json?.state}
+              profileOverride={effectiveProfile}
+              screenKey={screenKey}
             />
           }
         />
@@ -700,7 +713,7 @@ export default function Page() {
       {overlay}
       <WebsiteShell
         content={
-          <div ref={contentRef} style={{ width: "100%", minHeight: "100vh", overflowX: "hidden", paddingRight: SIDEBAR_TOTAL_WIDTH }}>
+          <div ref={contentRef} style={{ width: "100%", minHeight: "100vh", overflowX: "hidden", overflowY: "visible", paddingRight: SIDEBAR_TOTAL_WIDTH }}>
             {wrappedContent}
           </div>
         }
@@ -720,6 +733,10 @@ export default function Page() {
             organInternalLayoutOverrides={organInternalLayoutOverridesProp}
             onOrganInternalLayoutOverride={handleOrganInternalLayoutOverride}
             sectionNodesByKey={sectionByKey}
+            screenModel={treeForRender}
+            defaultState={json?.state}
+            profileOverride={effectiveProfile}
+            screenKey={screenKey}
           />
         }
       />

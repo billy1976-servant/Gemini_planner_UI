@@ -7,6 +7,7 @@ const BASE = "/layout-thumbnails";
 
 /** Section layout id → thumbnail path */
 export const SECTION_LAYOUT_THUMBNAILS: Record<string, string> = {
+  default: `${BASE}/default.svg`,
   "hero-centered": `${BASE}/hero-centered.svg`,
   "hero-split": `${BASE}/hero-split.svg`,
   "hero-split-image-right": `${BASE}/hero-split.svg`,

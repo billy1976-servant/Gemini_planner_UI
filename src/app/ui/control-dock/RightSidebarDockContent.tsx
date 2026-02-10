@@ -7,7 +7,8 @@
 
 import React from "react";
 import type { DockPanelId } from "./dock-state";
-import { getSidebarIconPathOrWarn } from "@/app/ui/sidebarIconRegistry";
+import AppIcon, { getAppIconNameForPanel } from "@/04_Presentation/icons/AppIcon";
+import CreateNewInterfacePanel from "@/app/ui/control-dock/CreateNewInterfacePanel";
 
 const MODES = ["template", "custom"] as const;
 const STYLING_PRESETS = ["default", "clean", "minimal", "bold", "soft"];
@@ -18,7 +19,7 @@ const EXPERIENCES = [
   { id: "learning", label: "Learning" },
 ] as const;
 
-const DOCK_STRIP_WIDTH = 48;
+const DOCK_STRIP_WIDTH = 44;
 const EXPANDED_PANEL_WIDTH = 280;
 
 const PILL_CONFIG: Array<{ id: DockPanelId; label: string }> = [
@@ -29,6 +30,8 @@ const PILL_CONFIG: Array<{ id: DockPanelId; label: string }> = [
   { id: "styling", label: "Styling" },
   { id: "behavior", label: "Behavior" },
   { id: "layout", label: "Layout" },
+  { id: "newInterface", label: "New Interface" },
+  { id: "expand", label: "Expand" },
 ];
 
 export type RightSidebarDockContentProps = {
@@ -261,33 +264,39 @@ export default function RightSidebarDockContent(props: RightSidebarDockContentPr
                   </p>
                 )
               )}
+              {openPanel === "newInterface" && (
+                <CreateNewInterfacePanel />
+              )}
+              {openPanel === "expand" && (
+                <p style={{ margin: 0, fontSize: "var(--font-size-sm)", color: "var(--editor-text-muted)" }}>
+                  Use the floating sidebar Expand pill for the large overlay editor.
+                </p>
+              )}
             </div>
           </div>
         )}
       </div>
 
-      {/* Narrow dark strip with icon pills */}
+      {/* Icon rail — 44px width, 10px gap, 8px padding, centered */}
       <div
         className="right-sidebar-dock-strip"
         style={{
           width: DOCK_STRIP_WIDTH,
           minWidth: DOCK_STRIP_WIDTH,
           flexShrink: 0,
-          background: "rgba(255,255,255,0.72)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          boxShadow: "0 0 0 1px rgba(255,255,255,0.5) inset, -4px 0 16px rgba(0,0,0,0.04)",
+          background: "var(--editor-bg)",
+          borderLeft: "1px solid var(--editor-border)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          paddingTop: "var(--spacing-2)",
-          paddingBottom: "var(--spacing-2)",
+          justifyContent: "center",
+          padding: "8px 0",
           gap: "6px",
         }}
       >
         {pills.map(({ id, label }) => {
           const isActive = isPanelOpen(id);
-          const iconPath = getSidebarIconPathOrWarn(id);
+          const iconName = getAppIconNameForPanel(id);
           return (
             <button
               key={id}
@@ -298,32 +307,33 @@ export default function RightSidebarDockContent(props: RightSidebarDockContentPr
               aria-pressed={isActive}
               className="editor-dock-pill"
               style={{
-                width: 40,
-                height: 40,
-                borderRadius: 10,
+                width: 44,
+                height: 44,
+                borderRadius: 8,
                 border: "none",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                background: isActive ? "rgba(59, 130, 246, 0.14)" : "transparent",
-                boxShadow: isActive ? "0 0 0 1px rgba(59, 130, 246, 0.35), 0 0 24px rgba(59, 130, 246, 0.18)" : "none",
-                transition: "background 0.2s ease, box-shadow 0.2s ease",
+                color: "var(--editor-text-primary)",
+                background: isActive ? "rgba(255,255,255,0.10)" : "transparent",
+                boxShadow: isActive ? "inset 0 0 0 1px rgba(255,255,255,0.08)" : "none",
+                transition: "background 0.12s ease, transform 0.06s ease",
               }}
               onMouseEnter={(e) => {
                 if (!isActive) {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.5)";
-                  e.currentTarget.style.boxShadow = "0 0 20px rgba(0,0,0,0.08)";
+                  e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                  e.currentTarget.style.transform = "scale(1.04)";
                 }
               }}
               onMouseLeave={(e) => {
                 if (!isActive) {
                   e.currentTarget.style.background = "transparent";
-                  e.currentTarget.style.boxShadow = "none";
+                  e.currentTarget.style.transform = "scale(1)";
                 }
               }}
             >
-              {iconPath ? <img src={iconPath} alt="" width={22} height={22} style={{ display: "block" }} /> : null}
+              {iconName ? <AppIcon name={iconName} /> : null}
             </button>
           );
         })}

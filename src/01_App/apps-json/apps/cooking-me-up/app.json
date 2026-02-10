@@ -1,0 +1,312 @@
+{
+  "id": "screenRoot",
+  "type": "screen",
+  "state": {
+    "currentView": "|home"
+  },
+  "children": [
+    {
+      "id": "|TrackNav",
+      "type": "Stepper",
+      "children": [],
+      "content": {
+        "steps": ""
+      }
+    },
+    {
+      "id": "|ThinkSection",
+      "type": "Section",
+      "children": [
+        {
+          "id": "|ThinkPrompt",
+          "type": "Card",
+          "children": [],
+          "content": {
+            "body": "Read the Scripture carefully and consider what God is revealing about Himself, His will, and His truth."
+          }
+        },
+        {
+          "id": "|ThinkInput",
+          "type": "Field",
+          "children": [],
+          "content": {
+            "label": "What stands out to you from this passage?",
+            "input": ""
+          },
+          "state": {
+            "mode": "two-way",
+            "key": "journal.think"
+          },
+          "params": {
+            "field": {
+              "multiline": true,
+              "rows": 4,
+              "fieldKey": "journal.think"
+            }
+          }
+        },
+        {
+          "id": "|ThinkSave",
+          "type": "Button",
+          "children": [],
+          "content": {},
+          "behavior": {
+            "type": "Action",
+            "params": {
+              "name": "state:journal.add",
+              "track": "think",
+              "key": "entry",
+              "valueFrom": "input",
+              "fieldKey": "journal.think"
+            }
+          }
+        },
+        {
+          "id": "|ThinkViewer",
+          "type": "UserInputViewer",
+          "children": [],
+          "content": {}
+        }
+      ],
+      "content": {
+        "title": "Think About the Scriptures"
+      }
+    },
+    {
+      "id": "|RepentSection",
+      "type": "Section",
+      "children": [
+        {
+          "id": "|RepentPrompt",
+          "type": "Card",
+          "children": [],
+          "content": {
+            "body": "Ask the Lord to reveal any sin, disobedience, or wrong thinking exposed by this Scripture."
+          }
+        },
+        {
+          "id": "|RepentInput",
+          "type": "Field",
+          "children": [],
+          "content": {
+            "label": "What do you need to confess or turn away from?",
+            "input": ""
+          },
+          "state": {
+            "mode": "two-way",
+            "key": "journal.repent"
+          },
+          "params": {
+            "field": {
+              "multiline": true,
+              "rows": 4,
+              "fieldKey": "journal.repent"
+            }
+          }
+        },
+        {
+          "id": "|RepentSave",
+          "type": "Button",
+          "children": [],
+          "content": {},
+          "behavior": {
+            "type": "Action",
+            "params": {
+              "name": "state:journal.add",
+              "track": "repent",
+              "key": "entry",
+              "valueFrom": "input",
+              "fieldKey": "journal.repent"
+            }
+          }
+        },
+        {
+          "id": "|RepentViewer",
+          "type": "UserInputViewer",
+          "children": [],
+          "content": {}
+        }
+      ],
+      "content": {
+        "title": "Repent to God"
+      }
+    },
+    {
+      "id": "|AskSection",
+      "type": "Section",
+      "children": [
+        {
+          "id": "|AskPrompt",
+          "type": "Card",
+          "children": [],
+          "content": {
+            "body": "Pray for wisdom, understanding, and strength to walk in obedience to what you have read."
+          }
+        },
+        {
+          "id": "|AskInput",
+          "type": "Field",
+          "children": [],
+          "content": {
+            "label": "What are you asking God to help you understand or do?",
+            "input": ""
+          },
+          "state": {
+            "mode": "two-way",
+            "key": "journal.ask"
+          },
+          "params": {
+            "field": {
+              "multiline": true,
+              "rows": 4,
+              "fieldKey": "journal.ask"
+            }
+          }
+        },
+        {
+          "id": "|AskSave",
+          "type": "Button",
+          "children": [],
+          "content": {},
+          "behavior": {
+            "type": "Action",
+            "params": {
+              "name": "state:journal.add",
+              "track": "ask",
+              "key": "entry",
+              "valueFrom": "input",
+              "fieldKey": "journal.ask"
+            }
+          }
+        },
+        {
+          "id": "|AskViewer",
+          "type": "UserInputViewer",
+          "children": [],
+          "content": {}
+        }
+      ],
+      "content": {
+        "title": "Ask God for Wisdom"
+      }
+    },
+    {
+      "id": "|ConformSection",
+      "type": "Section",
+      "children": [
+        {
+          "id": "|ConformPrompt",
+          "type": "Card",
+          "children": [],
+          "content": {
+            "body": "Consider how your life, attitudes, and actions need to change to align with Christ."
+          }
+        },
+        {
+          "id": "|ConformInput",
+          "type": "Field",
+          "children": [],
+          "content": {
+            "label": "How will you live differently in response to this Scripture?",
+            "input": ""
+          },
+          "state": {
+            "mode": "two-way",
+            "key": "journal.conform"
+          },
+          "params": {
+            "field": {
+              "multiline": true,
+              "rows": 4,
+              "fieldKey": "journal.conform"
+            }
+          }
+        },
+        {
+          "id": "|ConformSave",
+          "type": "Button",
+          "children": [],
+          "content": {},
+          "behavior": {
+            "type": "Action",
+            "params": {
+              "name": "state:journal.add",
+              "track": "conform",
+              "key": "entry",
+              "valueFrom": "input",
+              "fieldKey": "journal.conform"
+            }
+          }
+        },
+        {
+          "id": "|ConformViewer",
+          "type": "UserInputViewer",
+          "children": [],
+          "content": {}
+        }
+      ],
+      "content": {
+        "title": "Conform to Christ"
+      }
+    },
+    {
+      "id": "|KeepSection",
+      "type": "Section",
+      "children": [
+        {
+          "id": "|KeepPrompt",
+          "type": "Card",
+          "children": [],
+          "content": {
+            "body": "Identify temptations, distractions, or dangers that could pull you away from obedience."
+          }
+        },
+        {
+          "id": "|KeepInput",
+          "type": "Field",
+          "children": [],
+          "content": {
+            "label": "What will you guard against, and how will you remain faithful?",
+            "input": ""
+          },
+          "state": {
+            "mode": "two-way",
+            "key": "journal.keep"
+          },
+          "params": {
+            "field": {
+              "multiline": true,
+              "rows": 4,
+              "fieldKey": "journal.keep"
+            }
+          }
+        },
+        {
+          "id": "|KeepSave",
+          "type": "Button",
+          "children": [],
+          "content": {},
+          "behavior": {
+            "type": "Action",
+            "params": {
+              "name": "state:journal.add",
+              "track": "keep",
+              "key": "entry",
+              "valueFrom": "input",
+              "fieldKey": "journal.keep"
+            }
+          }
+        },
+        {
+          "id": "|KeepViewer",
+          "type": "UserInputViewer",
+          "children": [],
+          "content": {}
+        }
+      ],
+      "content": {
+        "title": "Keep Your Heart"
+      }
+    }
+  ]
+}

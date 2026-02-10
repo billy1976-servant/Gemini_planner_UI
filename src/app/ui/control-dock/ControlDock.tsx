@@ -18,6 +18,7 @@ import "@/editor/editor-theme.css";
 import { useDockState, type DockPanelId } from "./dock-state";
 import DockPanel from "./DockPanel";
 import DockSection from "./DockSection";
+import AppIcon, { DOCK_ICON_NAMES } from "@/04_Presentation/icons/AppIcon";
 
 type ControlDockProps = {
   // Palette props
@@ -92,7 +93,7 @@ export default function ControlDock({
         right: 0,
         top: "var(--app-chrome-height, 48px)",
         bottom: 0,
-        width: openPanel ? "320px" : "60px",
+        width: openPanel ? "320px" : "44px",
         background: "var(--editor-bg)",
         borderLeft: "1px solid var(--editor-border)",
         boxShadow: openPanel ? "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)" : "none",
@@ -102,149 +103,63 @@ export default function ControlDock({
         transition: "width 0.3s ease",
       }}
     >
-      {/* Collapsed Icon Rail */}
+      {/* Collapsed Icon Rail — tight, centered, premium spacing */}
       {!openPanel && (
         <div
           style={{
+            flex: 1,
             display: "flex",
             flexDirection: "column",
-            padding: "var(--spacing-2)",
-            gap: "var(--spacing-1)",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "8px 0",
+            gap: "6px",
           }}
         >
-          <button
-            type="button"
-            onClick={() => togglePanel("experience")}
-            className="editor-button-icon"
-            style={{
-              width: "44px",
-              height: "44px",
-              padding: "var(--spacing-2)",
-              borderRadius: "4px",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "var(--font-size-lg)",
-            }}
-            title="Experience"
-          >
-            🌐
-          </button>
-          <button
-            type="button"
-            onClick={() => togglePanel("mode")}
-            className="editor-button-icon"
-            style={{
-              width: "44px",
-              height: "44px",
-              padding: "var(--spacing-2)",
-              borderRadius: "4px",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "var(--font-size-lg)",
-            }}
-            title="Mode"
-          >
-            ⚙️
-          </button>
-          <button
-            type="button"
-            onClick={() => togglePanel("palette")}
-            className="editor-button-icon"
-            style={{
-              width: "44px",
-              height: "44px",
-              padding: "var(--spacing-2)",
-              borderRadius: "4px",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "var(--font-size-lg)",
-            }}
-            title="Palette"
-          >
-            🎨
-          </button>
-          <button
-            type="button"
-            onClick={() => togglePanel("template")}
-            className="editor-button-icon"
-            style={{
-              width: "44px",
-              height: "44px",
-              padding: "var(--spacing-2)",
-              borderRadius: "4px",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "var(--font-size-lg)",
-            }}
-            title="Template"
-          >
-            📐
-          </button>
-          <button
-            type="button"
-            onClick={() => togglePanel("styling")}
-            className="editor-button-icon"
-            style={{
-              width: "44px",
-              height: "44px",
-              padding: "var(--spacing-2)",
-              borderRadius: "4px",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "var(--font-size-lg)",
-            }}
-            title="Styling"
-          >
-            ✨
-          </button>
-          <button
-            type="button"
-            onClick={() => togglePanel("behavior")}
-            className="editor-button-icon"
-            style={{
-              width: "44px",
-              height: "44px",
-              padding: "var(--spacing-2)",
-              borderRadius: "4px",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "var(--font-size-lg)",
-            }}
-            title="Behavior"
-          >
-            ⚡
-          </button>
-          <button
-            type="button"
-            onClick={() => togglePanel("layout")}
-            className="editor-button-icon"
-            style={{
-              width: "44px",
-              height: "44px",
-              padding: "var(--spacing-2)",
-              borderRadius: "4px",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "var(--font-size-lg)",
-            }}
-            title="Layout"
-          >
-            📊
-          </button>
+          {(["experience", "mode", "palette", "template", "styling", "behavior", "layout"] as DockPanelId[]).map((id) => {
+            const iconName = DOCK_ICON_NAMES[id];
+            const titles: Record<DockPanelId, string> = {
+              experience: "Experience",
+              mode: "Mode",
+              palette: "Palette",
+              template: "Template",
+              styling: "Styling",
+              behavior: "Behavior",
+              layout: "Layout",
+            };
+            return (
+              <button
+                key={id}
+                type="button"
+                onClick={() => togglePanel(id)}
+                className="editor-button-icon"
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 8,
+                  border: "none",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "var(--editor-text-primary)",
+                  background: "transparent",
+                  transition: "background 0.12s ease, transform 0.06s ease",
+                }}
+                title={titles[id]}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                  e.currentTarget.style.transform = "scale(1.04)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "transparent";
+                  e.currentTarget.style.transform = "scale(1)";
+                }}
+              >
+                {iconName ? <AppIcon name={iconName} /> : null}
+              </button>
+            );
+          })}
         </div>
       )}
 
@@ -304,7 +219,7 @@ export default function ControlDock({
             <DockPanel
               panelId="experience"
               title="Experience"
-              icon="🌐"
+              icon={<AppIcon name="Globe" size={18} strokeWidth={1.5} />}
               isOpen={openPanel === "experience"}
               onToggle={() => togglePanel("experience")}
             >
@@ -334,7 +249,7 @@ export default function ControlDock({
             <DockPanel
               panelId="mode"
               title="Mode"
-              icon="⚙️"
+              icon={<AppIcon name="Settings" size={18} strokeWidth={1.5} />}
               isOpen={openPanel === "mode"}
               onToggle={() => togglePanel("mode")}
             >
@@ -364,7 +279,7 @@ export default function ControlDock({
             <DockPanel
               panelId="palette"
               title="Palette"
-              icon="🎨"
+              icon={<AppIcon name="Palette" size={18} strokeWidth={1.5} />}
               isOpen={openPanel === "palette"}
               onToggle={() => togglePanel("palette")}
             >
@@ -400,7 +315,7 @@ export default function ControlDock({
             <DockPanel
               panelId="template"
               title="Template"
-              icon="📐"
+              icon={<AppIcon name="LayoutTemplate" size={18} strokeWidth={1.5} />}
               isOpen={openPanel === "template"}
               onToggle={() => togglePanel("template")}
             >
@@ -443,7 +358,7 @@ export default function ControlDock({
             <DockPanel
               panelId="styling"
               title="Styling Preset"
-              icon="✨"
+              icon={<AppIcon name="Sparkles" size={18} strokeWidth={1.5} />}
               isOpen={openPanel === "styling"}
               onToggle={() => togglePanel("styling")}
             >
@@ -480,7 +395,7 @@ export default function ControlDock({
             <DockPanel
               panelId="behavior"
               title="Behavior Profile"
-              icon="⚡"
+              icon={<AppIcon name="Zap" size={18} strokeWidth={1.5} />}
               isOpen={openPanel === "behavior"}
               onToggle={() => togglePanel("behavior")}
             >
@@ -517,7 +432,7 @@ export default function ControlDock({
             <DockPanel
               panelId="layout"
               title="Layout"
-              icon="📊"
+              icon={<AppIcon name="LayoutGrid" size={18} strokeWidth={1.6} />}
               isOpen={openPanel === "layout"}
               onToggle={() => togglePanel("layout")}
             >

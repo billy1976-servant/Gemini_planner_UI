@@ -15,6 +15,8 @@ export const SIDEBAR_ICON_REGISTRY: Record<DockPanelId, string> = {
   styling: `${BASE}/star.svg`,
   behavior: `${BASE}/lightning.svg`,
   layout: `${BASE}/layout.svg`,
+  newInterface: `${BASE}/content.svg`,
+  expand: `${BASE}/layout.svg`,
 };
 
 export function getSidebarIconPath(id: DockPanelId): string | undefined {

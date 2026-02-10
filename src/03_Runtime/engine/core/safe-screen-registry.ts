@@ -11,7 +11,7 @@ export type ScreenRef =
   | { id: string; kind: "json"; path: string }
   | { id: string; kind: "tsx"; component: ComponentType<any> };
 
-/** Known JSON screens (paths relative to apps-json/apps). Do not enumerate filesystem at runtime. */
+/** Known JSON screens (paths relative to apps-json/apps or apps-json/generated for generated/). Do not enumerate filesystem at runtime. */
 const JSON_SCREEN_PATHS: { id: string; path: string }[] = [
   // behavior-tests
   { id: "behavior-tests/A-to-B", path: "behavior-tests/A-to-B.json" },
@@ -27,6 +27,9 @@ const JSON_SCREEN_PATHS: { id: string; path: string }[] = [
   { id: "journal_track/app-1", path: "journal_track/app-1.json" },
   { id: "behavior-tests/A-to-D-Test", path: "behavior-tests/A-to-D-Test.json" },
   { id: "new-blueprint-test/app-1", path: "new-blueprint-test/app-1.json" },
+  // Module-system generated (apps-json/generated/<slug>/app.json)
+  { id: "generated/dentist-smith/app", path: "generated/dentist-smith/app.json" },
+  { id: "generated/contractor-jones/app", path: "generated/contractor-jones/app.json" },
 ];
 
 const REGISTRY: ScreenRef[] = [

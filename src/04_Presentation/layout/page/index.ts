@@ -15,4 +15,5 @@ export {
   getAllowedCardPresetsForSectionPreset,
   getDefaultCardPresetForSectionPreset,
   SECTION_TO_CARD_CAPABILITIES,
+  SAFE_DEFAULT_CARD_PRESET_ID,
 } from "./capabilities";

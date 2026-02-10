@@ -21,7 +21,14 @@ import readline from "readline";
 /* ============================================================
    CONSTANTS
 ============================================================ */
-const APPS_ROOT = path.resolve(process.cwd(), "src/apps-json");
+// TXT-only apps live under: src/01_App/apps-json/apps
+const APPS_ROOT = path.resolve(
+  process.cwd(),
+  "src",
+  "01_App",
+  "apps-json",
+  "apps"
+);
 const SCREEN_ROOT_ID = "screenRoot";
 const DEFAULT_VIEW = "|home";
 const ORGAN_INDEX_PATH = path.resolve(process.cwd(), "src/07_Dev_Tools/scripts/organ-index.json");
@@ -472,7 +479,41 @@ function buildTree(
 
 
 /* ============================================================
-   MAIN
+   COMPILE APP (EXPORTED — ADDITIVE)
+   Call this from module-system or API to compile an app folder.
+   appPath: absolute path to folder containing blueprint.txt + content.txt.
+============================================================ */
+export function compileApp(appPath: string): void {
+  const blueprintPath = path.join(appPath, "blueprint.txt");
+  if (!fs.existsSync(blueprintPath)) {
+    throw new Error(`No blueprint.txt at ${appPath}`);
+  }
+  const blueprintText = fs.readFileSync(blueprintPath, "utf8");
+  const contentPath = path.join(appPath, "content.txt");
+  const contentText = fs.existsSync(contentPath)
+    ? fs.readFileSync(contentPath, "utf8")
+    : "";
+
+  const organIndex = loadOrganIndex();
+  const rawNodes = parseBlueprint(blueprintText);
+  validateOrganNodes(rawNodes, organIndex);
+  const contentMap = parseContent(contentText);
+  const manifest = generateContentManifest(rawNodes, appPath, organIndex);
+  validateContentKeys(contentMap, manifest, rawNodes);
+  const children = buildTree(rawNodes, contentMap, organIndex);
+
+  const output = {
+    id: SCREEN_ROOT_ID,
+    type: "screen",
+    state: { currentView: DEFAULT_VIEW },
+    children,
+  };
+
+  fs.writeFileSync(path.join(appPath, "app.json"), JSON.stringify(output, null, 2));
+}
+
+/* ============================================================
+   MAIN (CLI)
 ============================================================ */
 async function run() {
   let appPath: string;
@@ -518,37 +559,11 @@ async function run() {
 
     appPath = path.join(catPath, app);
   }
-  const blueprintText = fs.readFileSync(path.join(appPath, "blueprint.txt"), "utf8");
 
-
-  const contentText = fs.existsSync(path.join(appPath, "content.txt"))
-    ? fs.readFileSync(path.join(appPath, "content.txt"), "utf8")
-    : "";
-
-  const organIndex = loadOrganIndex();
-
-  const rawNodes = parseBlueprint(blueprintText);
-  validateOrganNodes(rawNodes, organIndex);
-  const contentMap = parseContent(contentText);
-
-  // Generate content.manifest and validate content keys (warn-only).
-  const manifest = generateContentManifest(rawNodes, appPath, organIndex);
-  validateContentKeys(contentMap, manifest, rawNodes);
-
-  const children = buildTree(rawNodes, contentMap, organIndex);
-
-
-  const output = {
-    id: SCREEN_ROOT_ID,
-    type: "screen",
-    state: { currentView: DEFAULT_VIEW },
-    children,
-  };
-
-  fs.writeFileSync(path.join(appPath, "app.json"), JSON.stringify(output, null, 2));
+  compileApp(appPath);
   console.log("✅ app.json generated (Blueprint-only structure)");
 }
 
-
-run();
+const isMain = typeof require !== "undefined" && require.main === module;
+if (isMain) run();
 

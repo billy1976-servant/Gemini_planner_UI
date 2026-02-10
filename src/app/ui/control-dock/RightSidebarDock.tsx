@@ -6,7 +6,7 @@
 
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useSyncExternalStore } from "react";
 import "@/editor/editor-theme.css";
 import { useDockState } from "./dock-state";
@@ -25,7 +25,8 @@ export type RightSidebarDockProps = {
 };
 
 export default function RightSidebarDock({ layoutPanelContent }: RightSidebarDockProps) {
-  const { openPanel, togglePanel } = useDockState();
+  const { openPanel, togglePanel, closePanel } = useDockState();
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
   useSyncExternalStore(subscribePalette, getPaletteName, () => "default");
 
@@ -53,9 +54,25 @@ export default function RightSidebarDock({ layoutPanelContent }: RightSidebarDoc
 
   const dockWidth = openPanel ? 328 : 48;
 
+  useEffect(() => {
+    if (!openPanel) return;
+    const handleClickOutside = (event: MouseEvent) => {
+      const node = containerRef.current;
+      if (!node) return;
+      if (!node.contains(event.target as Node)) {
+        closePanel();
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [openPanel, closePanel]);
+
   return React.createElement(
     "div",
     {
+      ref: containerRef,
       style: {
         width: dockWidth,
         minWidth: 48,
@@ -68,19 +85,19 @@ export default function RightSidebarDock({ layoutPanelContent }: RightSidebarDoc
       },
     },
     React.createElement(RightSidebarDockContent, {
-    experience,
-    layoutMode,
-    templateId,
-    paletteName,
-    stylingPreset,
-    behaviorProfile,
-    templateList,
-    isPanelOpen,
-    setPanelOpen,
-    setValue,
-    handlePaletteChange,
-    layoutPanelContent,
-    paletteNames: PALETTE_NAMES,
-  })
+      experience,
+      layoutMode,
+      templateId,
+      paletteName,
+      stylingPreset,
+      behaviorProfile,
+      templateList,
+      isPanelOpen,
+      setPanelOpen,
+      setValue,
+      handlePaletteChange,
+      layoutPanelContent,
+      paletteNames: PALETTE_NAMES,
+    })
   );
 }

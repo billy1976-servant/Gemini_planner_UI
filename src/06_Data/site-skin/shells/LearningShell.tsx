@@ -26,7 +26,7 @@ export default function LearningShell({
           background: "var(--color-bg-primary)",
           position: "sticky",
           top: 0,
-          zIndex: 20,
+          zIndex: 0 /* TEMP: neutralized to isolate nav dropdown blocker */,
         }}
       >
         <div style={{ maxWidth: 820, margin: "0 auto", padding: "16px 16px" }}>{header}</div>

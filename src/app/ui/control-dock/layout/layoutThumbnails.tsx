@@ -1,37 +1,27 @@
 "use client";
 
 import React from "react";
-import {
-  getSectionThumbnailPathOrWarn,
-  getCardThumbnailPathOrWarn,
-  getOrganThumbnailPathOrWarn,
-} from "@/app/ui/layoutThumbnailRegistry";
+import LayoutThumbnail from "./LayoutThumbnail";
 
 /**
- * Layout thumbnails: registry first (/public/layout-thumbnails), then diagram SVG.
- * No gray blocks. No two-letter fallbacks.
+ * Layout thumbnails: Semantic SVG components with consistent visual grammar.
+ * No gray blocks. No two-letter fallbacks. Each layout has a distinct silhouette.
  */
 
 export type LayoutThumbnailResult = string | React.ReactNode;
 
-/** Section layout: image path if in registry, else diagram SVG */
+/** Section layout: semantic SVG thumbnail */
 export function getSectionLayoutThumbnail(id: string): LayoutThumbnailResult {
-  const path = getSectionThumbnailPathOrWarn(id);
-  if (path) return path;
-  return <DiagramSvgSection id={id} />;
+  return <LayoutThumbnail layoutId={id} />;
 }
 
-/** Card layout: image path if in registry, else diagram SVG */
+/** Card layout: diagram SVG */
 export function getCardLayoutThumbnail(id: string): LayoutThumbnailResult {
-  const path = getCardThumbnailPathOrWarn(id);
-  if (path) return path;
   return <DiagramSvgCard id={id} />;
 }
 
-/** Organ internal layout: image path if in registry, else diagram SVG by id */
+/** Organ internal layout: diagram SVG by id */
 export function getOrganLayoutThumbnail(id: string): LayoutThumbnailResult {
-  const path = getOrganThumbnailPathOrWarn(id);
-  if (path) return path;
   return <DiagramSvgOrgan id={id} />;
 }
 

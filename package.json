@@ -11,7 +11,7 @@
     "prebuild": "npm run validate:paths",
     "dev": "node --max-old-space-size=4096 ./node_modules/next/dist/bin/next dev",
     "apps": "ts-node src/map/engine/map-engine.ts",
-    "blueprint": "ts-node src/scripts/blueprint.ts",
+    "blueprint": "ts-node -r tsconfig-paths/register src/07_Dev_Tools/scripts/blueprint.ts",
     "contract:validate": "ts-node src/scripts/contract-validate.ts",
     "contract:report": "ts-node src/scripts/contract-report.ts",
     "pipeline:proof": "ts-node -r tsconfig-paths/register src/scripts/pipeline-proof.ts",
@@ -56,6 +56,7 @@
     "@types/chalk": "^0.4.31",
     "chalk": "^5.6.2",
     "google-ads-api": "^22.0.0",
+    "lucide-react": "^0.563.0",
     "next": "14.2.3",
     "react": "18.2.0",
     "react-dom": "18.2.0"

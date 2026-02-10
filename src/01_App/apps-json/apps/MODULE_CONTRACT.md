@@ -1,14 +1,17 @@
 # Canonical Module Contract — Blueprint + Content Only
 
-**Single true exporter:** `apps/<category>/<module>/` with `blueprint.txt` + `content.txt` → `compileApp()` → `app.json` + `content.manifest.json`.
+**Single true exporter:** `apps/<category>/<module>/` or `generated/<slug>/` (apps-json/generated) with `blueprint.txt` + `content.txt` → `compileApp()` → `app.json` + `content.manifest.json`.
 
 No alternate pipelines. No alternate filenames. No inferred structures.
+
+- **Apps (curated):** `src/01_App/apps-json/apps/**`
+- **Generated (module-system):** `src/01_App/apps-json/generated/**` — created by create-from-module or generate-app; not under `apps/`.
 
 ---
 
 ## Valid module shape (ONLY)
 
-Inside `src/01_App/apps-json/apps/**` each compilable module folder must have:
+Inside `src/01_App/apps-json/apps/**` or `src/01_App/apps-json/generated/**` each compilable module folder must have:
 
 | File          | Purpose                          |
 |---------------|----------------------------------|
@@ -40,9 +43,14 @@ Inside `src/01_App/apps-json/apps/**` each compilable module folder must have:
 
 ## New app workflow
 
+**Curated apps (under apps/):**
 1. Copy a template folder (e.g. `templates/doctor`) under `apps/<category>/<name>/`
 2. Ensure `blueprint.txt` and `content.txt` are present
 3. Edit content as needed
 4. Run: `npm run blueprint <category>/<name>` or POST to `/api/compile-app` with `{ "action": "compile", "appPath": "<category>/<name>" }`
+
+**Generated apps (apps-json/generated/):**
+- Created via `/api/create-from-module` or module-system `generate-app`; path for compile: `generated/<slug>`.
+- Screen path for URL: `generated/<slug>/app`.
 
 Nothing else involved.

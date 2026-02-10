@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 90" width="120" height="90">
   <rect width="120" height="90" fill="#f8fafc" rx="6"/>
-  <!-- Centered CTA: headline + text + button -->
-  <rect x="24" y="24" width="72" height="10" rx="2" fill="#334155"/>
-  <rect x="24" y="38" width="72" height="5" rx="1" fill="#94a3b8"/>
-  <rect x="24" y="46" width="72" height="5" rx="1" fill="#94a3b8"/>
-  <rect x="44" y="58" width="32" height="10" rx="5" fill="#3b82f6" opacity="0.9"/>
+  <!-- Centered CTA card -->
+  <rect x="20" y="22" width="80" height="46" rx="4" fill="#e2e8f0" stroke="rgba(0,0,0,0.06)" stroke-width="0.5"/>
+  <rect x="28" y="32" width="64" height="10" rx="1" fill="#94a3b8" opacity="0.8"/>
+  <rect x="36" y="46" width="48" height="4" rx="1" fill="#94a3b8" opacity="0.8"/>
+  <rect x="42" y="56" width="36" height="10" rx="5" fill="#3b82f6" opacity="0.9"/>
 </svg>

@@ -7,7 +7,7 @@ type DockSectionProps = {
   children: React.ReactNode;
   isOpen?: boolean;
   onToggle?: () => void;
-  icon?: string;
+  icon?: React.ReactNode;
 };
 
 export default function DockSection({
@@ -47,7 +47,7 @@ export default function DockSection({
           }
         }}
       >
-        {icon && <span style={{ fontSize: "var(--font-size-lg)" }}>{icon}</span>}
+        {icon && <span style={{ display: "inline-flex", alignItems: "center" }}>{icon}</span>}
         <span style={{ flex: 1, textAlign: "left" }}>{title}</span>
         <span style={{ fontSize: "var(--font-size-xs)", opacity: 0.6 }}>
           {isOpen ? "▾" : "▸"}

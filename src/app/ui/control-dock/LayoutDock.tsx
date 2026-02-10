@@ -3,6 +3,7 @@
 import React from "react";
 import OrganPanel, { type OrganPanelProps } from "@/components/organs/OrganPanel";
 import DockSection from "./DockSection";
+import AppIcon from "@/04_Presentation/icons/AppIcon";
 
 type LayoutDockProps = {
   isOpen: boolean;
@@ -21,7 +22,7 @@ export default function LayoutDock({
   return (
     <DockSection
       title="Layout Controls"
-      icon="📊"
+      icon={<AppIcon name="LayoutGrid" size={18} strokeWidth={1.6} />}
       isOpen={isOpen}
       onToggle={onToggle}
     >

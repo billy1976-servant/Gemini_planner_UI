@@ -22,7 +22,7 @@
 | **apps/generated/** | Compiled apps from module-system or copy | **YES** | Contains: contractor-jones, dentist-smith, my-interface, sieburg-design. Each has blueprint.txt, content.txt, app.json, content.manifest.json. |
 | **apps/journal_track/** | Hand-maintained TXT app | **YES** | blueprint.txt + content.txt + app.json. No content.manifest.json on disk (created on compile). |
 | **apps/templates/doctor/** | Single “template” folder | **LEGACY** | Only `content.manifest.txt` (old format). No blueprint.txt, no content.txt. **Breaks** blueprint contract (templates must be copy sources with blueprint + content). |
-| **src/08_Blueprints/** | Intended “master” blueprint holding area | **UNUSED** | README + master.blueprint.txt placeholder. No compiler or API reads from here. |
+| **src/08_Modules/** | Intended “master” blueprint holding area | **COPY SOURCE** | Vertical templates (contractors, medical, legal). Not used by compiler or API; manual copy into apps/ then compile. |
 | **src/module-system/** | TS trees → blueprint/content generator | **ALTERNATIVE PATH** | Generates blueprint.txt + content.txt from TS trees (business.tree.ts, etc.), then caller runs compileApp(). Does **not** copy from TXT templates. |
 | **src/07_Dev_Tools/scripts/blueprint.ts** | **Existing exporter (compiler)** | **AUTHORITATIVE** | Reads blueprint.txt + content.txt from a folder, writes app.json + content.manifest.json. Used by CLI and /api/compile-app. **Do not modify.** |
 | **Right sidebar / CreateNewInterfacePanel** | “Create new interface” UI | **PARTIAL** | Uses duplicate-app (copy folder) + compile-app. Template dropdown **hardcoded** to `journal_track`. Writes to `apps/<slug>` and navigates to `apps/<slug>/app` (not under `generated/`). |
@@ -102,7 +102,7 @@ templates/
 
 | Item | Classification | Action (plan only) |
 |------|----------------|--------------------|
-| **src/08_Blueprints/** | Redundant with canonical templates | **Archive** after `templates/` is populated. Move README + master.blueprint.txt into docs or archive; optionally copy useful content into `templates/` then remove folder. |
+| **src/08_Modules/** | Master blueprint templates (reference only) | **KEEP** | Replaces former 08_Blueprints. Manual copy source for blueprint.txt + content.txt; no compiler reads. |
 | **apps/templates/doctor/** | Legacy; wrong format | **Archive** or remove. If doctor content is to be kept, convert to `templates/business/physician.content.txt` (+ business blueprint.txt) and then remove this folder. |
 | **content.manifest.txt** (any) | Legacy; compiler uses .json only | **Do not use as source.** Compiler generates content.manifest.json. Remove or archive .txt references; update CONTENT_DERIVATION_CONTRACT.md to say “content.manifest.json (generated)”. |
 | **module-system tree generators** | Alternative to TXT templates | **Keep** but treat as optional path. Do not duplicate: either templates are TXT copy sources OR tree generates; for “template wiring” we wire **TXT copy + compile** only. Trees can remain for scripts/dev; sidebar flow uses only templates. |
@@ -111,7 +111,7 @@ templates/
 
 ### 3.2 Safe cleanup summary
 
-- **Archive:** 08_Blueprints (after templates exist), apps/templates/doctor (after migration if needed).
+- **Archive:** apps/templates/doctor (after migration if needed). 08_Blueprints removed; superseded by 08_Modules (reference-only copy source).
 - **Remain:** apps/, apps/generated/, apps/journal_track/, apps/behavior-tests/, blueprint.ts, compile-app API, duplicate-app API, module-system (as optional), screens API, screen-loader.
 - **Move:** None required for compiler. For canonical structure: **add** `apps-json/templates/` with business/, schools/, government/ and per-type content files; **populate** from existing generated examples or module-system output if desired (no change to compiler).
 
@@ -161,7 +161,7 @@ No new compiler, no new generator. Only copy + existing compile.
 
 | Item | Proposal |
 |------|----------|
-| **src/08_Blueprints** | Remove or merge: after `templates/` is in place, move any useful content into `templates/` or docs, then delete folder or leave as a single README pointing to `apps-json/templates/`. |
+| **src/08_Modules** | Master blueprint templates (reference only). Replaces former 08_Blueprints. No compiler or API reads; manual copy into apps/ then compile. |
 | **content.manifest.txt as source** | Everywhere: stop treating as source. Compiler generates content.manifest.json. Update docs; remove or rename apps/templates/doctor/content.manifest.txt when migrating. |
 | **module-system tree generators** | Do not remove. They can stay for scripted generation (e.g. generate-dentist-and-contractor). Sidebar “template” flow uses only TXT copy + compile; no requirement to use trees in the UI. |
 | **apps/templates/** | Replace with `apps-json/templates/` (sibling to apps). Migrate doctor content to templates/business/physician if needed; then remove apps/templates/. |
@@ -207,13 +207,13 @@ src/01_App/apps-json/
 3. **Wire** sidebar: “Generate Business Site” → type → copy from templates to `apps/generated/<slug>` → call compile-app → open `apps/generated/<slug>/app`.
 4. **Fix** CreateNewInterfacePanel and duplicate-app (or new endpoint) so new apps are created under `generated/<slug>` and screen path is `apps/generated/<slug>/app`.
 5. **Optional:** Add “Create from template” API that copies from `templates/<group>/` into `apps/generated/<slug>/` then compiles.
-6. **Later:** Archive 08_Blueprints; migrate or remove apps/templates/doctor; doc updates for content.manifest.
+6. **Later:** Migrate or remove apps/templates/doctor; doc updates for content.manifest. (08_Blueprints removed; 08_Modules is the reference-only template source.)
 
 ### What to move / keep / archive
 
-- **Move:** Nothing from compiler. Add new `templates/` tree and optionally move “master” idea from 08_Blueprints into README under templates.
+- **Move:** Nothing from compiler. Add new `templates/` tree. “master” template source is src/08_Modules (see 08_Modules/README.md).
 - **Keep:** blueprint.ts, compile-app API, duplicate-app API, apps/generated/, apps/journal_track/, apps/behavior-tests/, module-system (optional path), screens API, screen-loader, safe-screen-registry (update if we add dynamic generated list).
-- **Archive:** 08_Blueprints (after templates exist); apps/templates/doctor (after migration).
+- **Archive:** apps/templates/doctor (after migration). 08_Blueprints removed; 08_Modules is the reference-only template source.
 
 ### Sidebar wiring flow (confirmation)
 

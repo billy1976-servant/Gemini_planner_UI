@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { getOrganLabel } from "@/components/organs";
-import { getSectionLayoutIds, getAllowedCardPresetsForSectionPreset, evaluateCompatibility } from "@/layout";
+import { getSectionLayoutIds, getAllowedCardPresetsForSectionPreset, evaluateCompatibility, getAvailableSlots } from "@/layout";
 import { getInternalLayoutIds } from "@/layout-organ";
 import { PipelineDebugStore } from "@/devtools/pipeline-debug-store";
 import LayoutTilePicker from "@/app/ui/control-dock/layout/LayoutTilePicker";
 import type { LayoutTileOption } from "@/app/ui/control-dock/layout/LayoutTilePicker";
 import LayoutLivePreview from "@/app/ui/control-dock/layout/LayoutLivePreview";
+import PreviewRender from "@/app/ui/control-dock/layout/PreviewRender";
 import {
   getSectionLayoutThumbnail,
   getCardLayoutThumbnail,
@@ -15,6 +16,7 @@ import {
 } from "@/app/ui/control-dock/layout/layoutThumbnails";
 
 type LayoutViewMode = "text" | "visual" | "live";
+type LayoutMode = "section" | "internal";
 
 export type OrganPanelProps = {
   /** Section keys to show layout preset for (from collectSectionKeysAndNodes). */
@@ -41,6 +43,17 @@ export type OrganPanelProps = {
   onOrganInternalLayoutOverride?: (sectionKey: string, internalLayoutId: string) => void;
   /** Section key -> section node; used for compatibility evaluation only (read-only). */
   sectionNodesByKey?: Record<string, any>;
+  /**
+   * Currently loaded screen root (same object passed to main JsonRenderer).
+   * When set, live mode uses PreviewRender with this model for section/card thumbnails.
+   */
+  screenModel?: any;
+  /** Default state for the loaded screen (e.g. json?.state). */
+  defaultState?: any;
+  /** Experience/template profile for the loaded screen. */
+  profileOverride?: any;
+  /** Screen key for the loaded screen (e.g. from URL ?screen=). */
+  screenKey?: string;
 };
 
 const PANEL_STYLE: React.CSSProperties = {
@@ -99,10 +112,85 @@ export default function OrganPanel({
   organInternalLayoutOverrides = {},
   onOrganInternalLayoutOverride,
   sectionNodesByKey,
+  screenModel,
+  defaultState,
+  profileOverride,
+  screenKey: screenKeyProp,
 }: OrganPanelProps) {
   const [layoutViewMode, setLayoutViewMode] = useState<LayoutViewMode>("visual");
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>("section");
+  const panelScrollRef = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    if (panelScrollRef.current) panelScrollRef.current.scrollTop = 0;
+  }, [layoutMode]);
   const rowIds = sectionKeysForPreset ?? [];
   const allSectionLayoutIds = getSectionLayoutIds();
+
+  /** Section layout display order (UI only). Default first, then spec order, then any remaining. */
+  const SECTION_LAYOUT_ORDER = [
+    "",
+    "content-narrow",
+    "content-stack",
+    "feature-grid-3",
+    "features-grid-3",
+    "hero-full-bleed-image",
+    "hero-split",
+    "hero-split-image-right",
+    "hero-split-image-left",
+    "hero-centered",
+    "cta-centered",
+    "image-left-text-right",
+    "testimonial-band",
+    "test-extensible",
+  ];
+  /** Internal layout display order (UI only). */
+  const INTERNAL_LAYOUT_ORDER = ["", "banner", "strip", "split", "full-width"];
+
+  function orderSectionOptions(ids: string[]): string[] {
+    const seen = new Set<string>();
+    const ordered: string[] = [];
+    for (const id of SECTION_LAYOUT_ORDER) {
+      if (ids.includes(id) && !seen.has(id)) {
+        seen.add(id);
+        ordered.push(id);
+      }
+    }
+    for (const id of ids) {
+      if (!seen.has(id)) {
+        seen.add(id);
+        ordered.push(id);
+      }
+    }
+    return ordered;
+  }
+
+  function orderInternalOptions(ids: string[]): string[] {
+    const seen = new Set<string>();
+    const ordered: string[] = [];
+    for (const id of INTERNAL_LAYOUT_ORDER) {
+      if (ids.includes(id) && !seen.has(id)) {
+        seen.add(id);
+        ordered.push(id);
+      }
+    }
+    for (const id of ids) {
+      if (!seen.has(id)) {
+        seen.add(id);
+        ordered.push(id);
+      }
+    }
+    return ordered;
+  }
+
+  /** Deduplicate options by id (keep first). */
+  function dedupeOptions<T extends { id: string }>(options: T[]): T[] {
+    const seen = new Set<string>();
+    return options.filter((o) => {
+      if (seen.has(o.id)) return false;
+      seen.add(o.id);
+      return true;
+    });
+  }
 
   if (rowIds.length === 0) {
     return (
@@ -147,7 +235,7 @@ export default function OrganPanel({
   };
 
   return (
-    <aside style={PANEL_STYLE} data-organ-panel>
+    <aside ref={panelScrollRef} style={PANEL_STYLE} data-organ-panel>
       <div style={TITLE_STYLE}>Layout controls</div>
       <p style={{ color: "rgba(0,0,0,0.5)", marginBottom: "var(--spacing-4)", marginTop: 0, fontSize: "var(--font-size-xs)" }}>
         Section layout, card layout, and organ internal layout (dev). Applies to this screen only.
@@ -173,6 +261,29 @@ export default function OrganPanel({
             }}
           >
             {mode === "live" ? "Live" : mode === "visual" ? "Visual" : "Text"}
+          </button>
+        ))}
+      </div>
+      <div style={{ marginBottom: "var(--spacing-4)", display: "flex", gap: 0, alignItems: "stretch", border: "1px solid rgba(0,0,0,0.08)", borderRadius: "10px", overflow: "hidden", background: "rgba(255,255,255,0.6)" }}>
+        {(["section", "internal"] as const).map((mode) => (
+          <button
+            key={mode}
+            type="button"
+            onClick={() => setLayoutMode(mode)}
+            style={{
+              flex: 1,
+              padding: "8px 12px",
+              border: "none",
+              background: layoutMode === mode ? "linear-gradient(180deg, #3b82f6 0%, #2563eb 100%)" : "transparent",
+              color: layoutMode === mode ? "#fff" : "rgba(0,0,0,0.7)",
+              fontSize: "var(--font-size-xs)",
+              fontWeight: 600,
+              cursor: "pointer",
+              transition: "background 0.2s ease, color 0.2s ease",
+              textTransform: "capitalize",
+            }}
+          >
+            {mode === "section" ? "Sections" : "Internal"}
           </button>
         ))}
       </div>
@@ -227,6 +338,26 @@ export default function OrganPanel({
               )
             : internalLayoutIds;
 
+        const availableSlots = sectionNode != null ? getAvailableSlots(sectionNode) : [];
+        const hasCardSlot = availableSlots.includes("card_list");
+
+        // Dev-only: card pipeline diagnostics (plan step 2)
+        if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
+          const cardTileOptionsLength = 1 + cardOptionsFiltered.length;
+          const cardUIOnlyDefault = onCardLayoutPresetOverride != null && cardTileOptionsLength === 1;
+          console.log("[OrganPanel] card pipeline", {
+            sectionKey,
+            currentSectionPreset: currentSectionPreset || "(empty)",
+            allowedCardPresets,
+            cardOptionsFiltered,
+            organId: organId ?? "(none)",
+            hasCardSlot,
+            availableSlots,
+            cardUIOnlyDefault,
+            onCardLayoutPresetOverridePresent: !!onCardLayoutPresetOverride,
+          });
+        }
+
         const rowHeight = sectionHeights[sectionKey];
         const rowBlockStyle: React.CSSProperties = {
           ...ROW_STYLE,
@@ -239,81 +370,150 @@ export default function OrganPanel({
           borderBottom: "1px solid rgba(0,0,0,0.06)",
         };
 
-        const sectionTileOptions: LayoutTileOption[] = [
+        const useLivePreview = layoutViewMode === "live" && screenModel != null;
+        const pickerMode = useLivePreview ? "stack" : "grid";
+        const sectionOptionsOrdered = orderSectionOptions(sectionOptionsFiltered);
+        const sectionTileOptions: LayoutTileOption[] = dedupeOptions([
           {
             id: "",
             label: "(default)",
             thumbnail:
               layoutViewMode === "live" ? (
-                <LayoutLivePreview layoutId="" width={160} height={120} />
+                useLivePreview ? (
+                  <PreviewRender
+                    screenModel={screenModel}
+                    previewType="sectionLayout"
+                    previewValue=""
+                    sectionKey={sectionKey}
+                    currentSectionPreset={currentSectionPreset}
+                    defaultState={defaultState}
+                    profileOverride={profileOverride}
+                    screenKey={screenKeyProp}
+                  />
+                ) : (
+                  <LayoutLivePreview layoutId="" width={160} height={120} />
+                )
               ) : (
                 getSectionLayoutThumbnail("")
               ),
           },
-          ...sectionOptionsFiltered.map((id) => ({
+          ...sectionOptionsOrdered.map((id) => ({
             id,
             label: id,
             thumbnail:
               layoutViewMode === "live" ? (
-                <LayoutLivePreview key={id} layoutId={id} width={160} height={120} />
+                useLivePreview ? (
+                  <PreviewRender
+                    key={id}
+                    screenModel={screenModel}
+                    previewType="sectionLayout"
+                    previewValue={id}
+                    sectionKey={sectionKey}
+                    currentSectionPreset={currentSectionPreset}
+                    defaultState={defaultState}
+                    profileOverride={profileOverride}
+                    screenKey={screenKeyProp}
+                  />
+                ) : (
+                  <LayoutLivePreview key={id} layoutId={id} width={160} height={120} />
+                )
               ) : (
                 getSectionLayoutThumbnail(id)
               ),
           })),
-        ];
+        ]);
         const cardTileOptions: LayoutTileOption[] = [
-          { id: "", label: "(default)" },
+          {
+            id: "",
+            label: "(default)",
+            thumbnail:
+              useLivePreview ? (
+                <PreviewRender
+                  screenModel={screenModel}
+                  previewType="cardLayout"
+                  previewValue=""
+                  sectionKey={sectionKey}
+                  currentSectionPreset={currentSectionPreset}
+                  defaultState={defaultState}
+                  profileOverride={profileOverride}
+                  screenKey={screenKeyProp}
+                />
+              ) : (
+                getCardLayoutThumbnail("")
+              ),
+          },
           ...cardOptionsFiltered.map((id) => ({
             id,
             label: id,
-            thumbnail: getCardLayoutThumbnail(id),
+            thumbnail: useLivePreview ? (
+              <PreviewRender
+                key={id}
+                screenModel={screenModel}
+                previewType="cardLayout"
+                previewValue={id}
+                sectionKey={sectionKey}
+                currentSectionPreset={currentSectionPreset}
+                defaultState={defaultState}
+                profileOverride={profileOverride}
+                screenKey={screenKeyProp}
+              />
+            ) : (
+              getCardLayoutThumbnail(id)
+            ),
           })),
         ];
-        const organTileOptions: LayoutTileOption[] = [
+        const organOptionsOrdered = orderInternalOptions(organOptionsFiltered);
+        const organTileOptions: LayoutTileOption[] = dedupeOptions([
           { id: "", label: "(default)" },
-          ...organOptionsFiltered.map((id) => ({
+          ...organOptionsOrdered.map((id) => ({
             id,
             label: id,
             thumbnail: getOrganLayoutThumbnail(id),
           })),
-        ];
+        ]);
 
         return (
           <div key={sectionKey} style={rowBlockStyle}>
             <div style={{ ...LABEL_STYLE, fontWeight: 600 }}>{label}</div>
             {layoutViewMode !== "text" ? (
               <>
-                {onSectionLayoutPresetOverride && (
-                  <LayoutTilePicker
-                    title="Section Layout"
-                    value={currentSectionPreset}
-                    options={sectionTileOptions}
-                    onChange={(id) => fireSectionChange(sectionKey, id)}
-                    mode="grid"
-                  />
+                {layoutMode === "section" && (
+                  <>
+                    {onSectionLayoutPresetOverride && (
+                      <LayoutTilePicker
+                        title="Section Layout"
+                        value={currentSectionPreset}
+                        options={sectionTileOptions}
+                        onChange={(id) => fireSectionChange(sectionKey, id)}
+                        mode={pickerMode}
+                        variant="section"
+                      />
+                    )}
+                    {onCardLayoutPresetOverride && hasCardSlot && (
+                      <LayoutTilePicker
+                        title="Card Layout"
+                        value={currentCardPreset}
+                        options={cardTileOptions}
+                        onChange={(id) => fireCardChange(sectionKey, id)}
+                        mode={pickerMode}
+                      />
+                    )}
+                  </>
                 )}
-                {onCardLayoutPresetOverride && (
-                  <LayoutTilePicker
-                    title="Card Layout"
-                    value={currentCardPreset}
-                    options={cardTileOptions}
-                    onChange={(id) => fireCardChange(sectionKey, id)}
-                    mode="grid"
-                  />
-                )}
-                {onOrganInternalLayoutOverride && organId && organTileOptions.length > 1 && (
+                {layoutMode === "internal" && onOrganInternalLayoutOverride && organId && organTileOptions.length > 1 && (
                   <LayoutTilePicker
                     title="Internal layout (organ)"
                     value={currentInternalLayout}
                     options={organTileOptions}
                     onChange={(id) => fireOrganChange(sectionKey, id)}
                     mode="grid"
+                    variant="internal"
                   />
                 )}
               </>
             ) : layoutViewMode === "text" ? (
               <>
-                {onSectionLayoutPresetOverride && (
+                {layoutMode === "section" && onSectionLayoutPresetOverride && (
                   <>
                     <label style={{ ...LABEL_STYLE, marginTop: "var(--spacing-1)" }} htmlFor={`section-layout-preset-${sectionKey}`}>
                       Section Layout
@@ -328,7 +528,7 @@ export default function OrganPanel({
                       style={SELECT_STYLE}
                     >
                       <option value="">(default)</option>
-                      {sectionOptionsFiltered.map((pid) => (
+                      {orderSectionOptions(sectionOptionsFiltered).map((pid) => (
                         <option key={pid} value={pid}>
                           {pid}
                         </option>
@@ -336,7 +536,7 @@ export default function OrganPanel({
                     </select>
                   </>
                 )}
-                {onCardLayoutPresetOverride && (
+                {layoutMode === "section" && onCardLayoutPresetOverride && hasCardSlot && (
                   <>
                     <label style={{ ...LABEL_STYLE, marginTop: "var(--spacing-2)" }} htmlFor={`card-layout-preset-${sectionKey}`}>
                       Card Layout
@@ -356,7 +556,7 @@ export default function OrganPanel({
                     </select>
                   </>
                 )}
-                {onOrganInternalLayoutOverride && organId && internalLayoutIds.length > 0 && (
+                {layoutMode === "internal" && onOrganInternalLayoutOverride && organId && organOptionsOrdered.length > 0 && (
                   <>
                     <label style={{ ...LABEL_STYLE, marginTop: "var(--spacing-2)" }} htmlFor={`organ-internal-layout-${sectionKey}`}>
                       Internal layout (organ)
@@ -368,7 +568,7 @@ export default function OrganPanel({
                       style={SELECT_STYLE}
                     >
                       <option value="">(default)</option>
-                      {organOptionsFiltered.map((lid) => (
+                      {organOptionsOrdered.map((lid) => (
                         <option key={lid} value={lid}>
                           {lid}
                         </option>

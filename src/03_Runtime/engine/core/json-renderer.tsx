@@ -25,6 +25,8 @@ import {
   getCardPreset,
   resolveMoleculeLayout,
   getCardLayoutPreset,
+  getDefaultCardPresetForSectionPreset,
+  SAFE_DEFAULT_CARD_PRESET_ID,
 } from "@/layout";
 import { logRuntimeDecision } from "@/engine/devtools/runtime-decision-trace";
 import { NON_ACTIONABLE_TYPES } from "@/contracts/renderer-contract";
@@ -335,6 +337,7 @@ function applyProfileToNode(
   sectionLayoutPresetOverrides?: Record<string, string>,
   cardLayoutPresetOverrides?: Record<string, string>,
   parentSectionKey?: string | null,
+  parentSectionLayoutId?: string | null,
   organInternalLayoutOverrides?: Record<string, string>
 ): any {
   if (!node || !profile) return node;
@@ -503,16 +506,34 @@ function applyProfileToNode(
     }
   }
 
-  // Per-section card layout preset: merge mediaPosition, contentAlign into Card children only.
-  if (isCard && parentSectionKey && cardLayoutPresetOverrides?.[parentSectionKey]) {
-    const cardPresetId = cardLayoutPresetOverrides[parentSectionKey];
+  // Per-section card layout preset: override → first allowed for section → safe default. Single source.
+  if (isCard && parentSectionKey) {
+    const overrideId = cardLayoutPresetOverrides?.[parentSectionKey] ?? null;
+    const defaultForSection =
+      parentSectionLayoutId != null ? getDefaultCardPresetForSectionPreset(parentSectionLayoutId) : null;
+    const cardPresetId = overrideId ?? defaultForSection ?? SAFE_DEFAULT_CARD_PRESET_ID;
     const cardPreset = getCardLayoutPreset(cardPresetId);
+    const layoutBefore = typeof node.layout === "string" ? node.layout : "(none)";
+    if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
+      console.log("[JsonRenderer] card layout chain", {
+        sectionKey: parentSectionKey,
+        parentSectionLayoutId: parentSectionLayoutId ?? "(null)",
+        cardOverridesSectionKey: cardLayoutPresetOverrides?.[parentSectionKey] ?? "(none)",
+        overrideId: overrideId ?? "(none)",
+        defaultForSection: defaultForSection ?? "(none)",
+        resolvedCardPresetId: cardPresetId,
+        nodeType: node.type,
+        layoutBefore,
+        layoutAfter: cardPresetId,
+      });
+    }
     if (cardPreset) {
       next.params = {
         ...(next.params ?? {}),
         ...(cardPreset.mediaPosition != null ? { mediaPosition: cardPreset.mediaPosition } : {}),
         ...(cardPreset.contentAlign != null ? { contentAlign: cardPreset.contentAlign } : {}),
       };
+      next.layout = cardPresetId;
       if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
         console.log("[JsonRenderer] Card preset applied", {
           sectionKey: parentSectionKey,
@@ -529,13 +550,15 @@ function applyProfileToNode(
           FINAL: "card preset applied",
         });
       }
+    } else {
+      next.layout = cardPresetId;
     }
   }
 
   if (Array.isArray(node.children)) {
     const sectionKey = isSection ? ((node.id ?? node.role) ?? "") : parentSectionKey ?? null;
     next.children = node.children.map((child) =>
-      applyProfileToNode(child, profile, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, sectionKey, organInternalLayoutOverrides)
+      applyProfileToNode(child, profile, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, sectionKey, next.layout ?? null, organInternalLayoutOverrides)
     );
   }
 
@@ -569,7 +592,7 @@ export function renderNode(
   if (!shouldRenderNode(node, stateSnapshot, defaultState)) return null;
 
   const profiledNode = profile
-    ? applyProfileToNode(node, profile, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, null, organInternalLayoutOverrides)
+    ? applyProfileToNode(node, profile, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, null, null, organInternalLayoutOverrides)
     : node;
 
 
@@ -705,10 +728,24 @@ export function renderNode(
       (resolvedNode.type?.toLowerCase?.() === "section")
         ? ((resolvedNode.id ?? resolvedNode.role) ?? "")
         : "";
-    const cardPresetId = parentSectionKey && cardLayoutPresetOverrides?.[parentSectionKey]
-      ? cardLayoutPresetOverrides[parentSectionKey]
+    const sectionLayoutId = resolvedNode.layout ?? null;
+    const overrideId = parentSectionKey ? (cardLayoutPresetOverrides?.[parentSectionKey] ?? null) : null;
+    const defaultForSection = sectionLayoutId != null ? getDefaultCardPresetForSectionPreset(sectionLayoutId) : null;
+    const cardPresetId = parentSectionKey
+      ? (overrideId ?? defaultForSection ?? SAFE_DEFAULT_CARD_PRESET_ID)
       : null;
     const cardPreset = cardPresetId ? getCardLayoutPreset(cardPresetId) : null;
+    if (typeof process !== "undefined" && process.env.NODE_ENV === "development" && parentSectionKey) {
+      console.log("[JsonRenderer] repeater card layout chain", {
+        sectionKey: parentSectionKey,
+        parentSectionLayoutId: sectionLayoutId ?? "(null)",
+        cardOverridesSectionKey: cardLayoutPresetOverrides?.[parentSectionKey] ?? "(none)",
+        overrideId: overrideId ?? "(none)",
+        defaultForSection: defaultForSection ?? "(none)",
+        resolvedCardPresetId: cardPresetId,
+        nodeType: "section(items)",
+      });
+    }
 
     renderedChildren = resolvedNode.items.map((item: any, i: number) => {
       let itemParams = item.params || {};
@@ -719,7 +756,7 @@ export function renderNode(
           ...(cardPreset.contentAlign != null ? { contentAlign: cardPreset.contentAlign } : {}),
         };
       }
-      const itemNode = {
+      const itemNode: any = {
         type: itemType === "feature-card" ? "Card" : "Card",
         id: item.id || `item-${i}`,
         content: {
@@ -729,6 +766,7 @@ export function renderNode(
         },
         params: itemParams,
       };
+      if (cardPresetId) itemNode.layout = cardPresetId;
 
       const uniqueKey = item.id || `item-${i}`;
       return renderNode({ ...itemNode, key: uniqueKey }, profile, stateSnapshot, defaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides);

@@ -50,7 +50,7 @@ export default function AppShell({
           style={{
             position: "sticky",
             top: 0,
-            zIndex: 10,
+            zIndex: 0 /* TEMP: neutralized to isolate nav dropdown blocker */,
             borderBottom: "1px solid var(--color-border)",
             background: "var(--color-bg-primary)",
             padding: "8px 16px",

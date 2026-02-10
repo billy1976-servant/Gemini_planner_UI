@@ -1,18 +1,14 @@
 /**
  * POST /api/compile-app
- * Additive: Generate and/or compile app from module tree.
- * Body: { action: "generate" | "compile", ... }
- * - generate: { moduleId, slug, placeholders?, contentMode? } → writes blueprint + content, then compiles
+ * TXT-only compiler endpoint.
+ *
+ * Body: { action: "compile", appPath }
  * - compile: { appPath } → compiles existing folder (appPath relative to apps-json/apps or absolute)
+ * - blueprint.txt and content.txt MUST already exist in the target folder.
  */
 
 import { NextResponse } from "next/server";
 import path from "path";
-import type { ModuleId } from "@/module-system/module-registry";
-import {
-  generateFiles,
-  getGeneratedScreenPath,
-} from "@/module-system/generate-app";
 
 const APPS_JSON_APPS = path.join(
   process.cwd(),
@@ -22,53 +18,31 @@ const APPS_JSON_APPS = path.join(
   "apps"
 );
 
-type GenerateBody = {
-  action: "generate";
-  moduleId: ModuleId;
-  slug: string;
-  placeholders?: Record<string, string>;
-  contentMode?: "auto" | "manual";
-};
+/** Generated apps: src/01_App/apps-json/generated */
+const APPS_JSON_GENERATED = path.join(
+  process.cwd(),
+  "src",
+  "01_App",
+  "apps-json",
+  "generated"
+);
 
 type CompileBody = {
   action: "compile";
-  /** Relative to apps-json/apps (e.g. "generated/dentist-smith") or absolute path */
+  /** Relative to apps-json/apps (e.g. "journal_track") or apps-json/generated (e.g. "generated/dentist-smith") or absolute path */
   appPath: string;
 };
 
 export async function POST(req: Request) {
   try {
-    const body = (await req.json()) as GenerateBody | CompileBody;
-
-    if (body.action === "generate") {
-      const { moduleId, slug, placeholders, contentMode } = body;
-      if (!moduleId || !slug) {
-        return NextResponse.json(
-          { error: "moduleId and slug required" },
-          { status: 400 }
-        );
-      }
-      const appDir = generateFiles({
-        moduleId,
-        slug,
-        placeholders,
-        contentMode,
-      });
-      const { compileApp } = await import(
-        "../../../07_Dev_Tools/scripts/blueprint"
-      );
-      compileApp(appDir);
-      return NextResponse.json({
-        ok: true,
-        appDir,
-        screenPath: getGeneratedScreenPath(slug),
-      });
-    }
+    const body = (await req.json()) as CompileBody;
 
     if (body.action === "compile") {
       let appPath: string;
       if (path.isAbsolute(body.appPath)) {
         appPath = body.appPath;
+      } else if (body.appPath.startsWith("generated/")) {
+        appPath = path.join(APPS_JSON_GENERATED, body.appPath.slice("generated/".length));
       } else {
         appPath = path.join(APPS_JSON_APPS, body.appPath);
       }
@@ -83,7 +57,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json(
-      { error: "action must be 'generate' or 'compile'" },
+      { error: "action must be 'compile'" },
       { status: 400 }
     );
   } catch (err: unknown) {

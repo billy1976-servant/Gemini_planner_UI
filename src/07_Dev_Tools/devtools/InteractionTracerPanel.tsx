@@ -1099,7 +1099,7 @@ export default function InteractionTracerPanel() {
         bottom: 0,
         left: 0,
         right: 0,
-        zIndex: 9999,
+        zIndex: 0 /* TEMP: neutralized to isolate nav dropdown blocker */,
         height: expanded ? "60vh" : "42px",
         maxHeight: "65vh",
         overflow: "hidden",

@@ -70,6 +70,20 @@ export function evaluateCompatibility(args: EvaluateCompatibilityArgs): Compatib
     for (const s of cardRequired) {
       if (!availableSet.has(s)) missing.push(s);
     }
+    // Dev-only: diagnose over-aggressive card filtering (plan step 4)
+    if (
+      typeof process !== "undefined" &&
+      process.env.NODE_ENV === "development" &&
+      cardRequired.length > 0
+    ) {
+      const availableSlots = Array.from(availableSet);
+      console.log("[compatibility-evaluator] cardValid false", {
+        cardLayoutId: cardLayoutId ?? "(empty)",
+        cardRequired,
+        availableSlots,
+        missing: cardRequired.filter((s) => !availableSet.has(s)),
+      });
+    }
   }
 
   const hasOrgan = organId != null && String(organId).trim() !== "";

@@ -1,25 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 90" width="120" height="90">
   <rect width="120" height="90" fill="#f8fafc" rx="6"/>
-  <!-- 3 columns: each = small image/icon + header + text -->
-  <!-- Col 1 -->
-  <rect x="12" y="10" width="28" height="22" rx="3" fill="#e0f2fe" stroke="#0ea5e9" stroke-width="1"/>
-  <circle cx="26" cy="18" r="4" fill="none" stroke="#0284c7" stroke-width="0.8"/>
-  <path d="M23 24 L26 21 L29 24 L26 27 Z" fill="#0284c7" opacity="0.8"/>
-  <rect x="12" y="34" width="28" height="5" rx="1" fill="#334155"/>
-  <rect x="12" y="41" width="28" height="3" rx="0.5" fill="#94a3b8"/>
-  <rect x="12" y="45" width="28" height="3" rx="0.5" fill="#94a3b8"/>
-  <!-- Col 2 -->
-  <rect x="44" y="10" width="28" height="22" rx="3" fill="#e0f2fe" stroke="#0ea5e9" stroke-width="1"/>
-  <circle cx="58" cy="18" r="4" fill="none" stroke="#0284c7" stroke-width="0.8"/>
-  <path d="M55 24 L58 21 L61 24 L58 27 Z" fill="#0284c7" opacity="0.8"/>
-  <rect x="44" y="34" width="28" height="5" rx="1" fill="#334155"/>
-  <rect x="44" y="41" width="28" height="3" rx="0.5" fill="#94a3b8"/>
-  <rect x="44" y="45" width="28" height="3" rx="0.5" fill="#94a3b8"/>
-  <!-- Col 3 -->
-  <rect x="76" y="10" width="28" height="22" rx="3" fill="#e0f2fe" stroke="#0ea5e9" stroke-width="1"/>
-  <circle cx="90" cy="18" r="4" fill="none" stroke="#0284c7" stroke-width="0.8"/>
-  <path d="M87 24 L90 21 L93 24 L90 27 Z" fill="#0284c7" opacity="0.8"/>
-  <rect x="76" y="34" width="28" height="5" rx="1" fill="#334155"/>
-  <rect x="76" y="41" width="28" height="3" rx="0.5" fill="#94a3b8"/>
-  <rect x="76" y="45" width="28" height="3" rx="0.5" fill="#94a3b8"/>
+  <!-- Top row: 3 feature cards -->
+  <rect x="8" y="12" width="32" height="30" rx="4" fill="#e2e8f0" stroke="rgba(0,0,0,0.06)" stroke-width="0.5"/>
+  <circle cx="24" cy="22" r="4" fill="#3b82f6" opacity="0.3"/>
+  <rect x="12" y="30" width="24" height="6" rx="1" fill="#94a3b8" opacity="0.8"/>
+  <rect x="12" y="38" width="24" height="3" rx="1" fill="#94a3b8" opacity="0.8"/>
+  
+  <rect x="44" y="12" width="32" height="30" rx="4" fill="#e2e8f0" stroke="rgba(0,0,0,0.06)" stroke-width="0.5"/>
+  <circle cx="60" cy="22" r="4" fill="#3b82f6" opacity="0.3"/>
+  <rect x="48" y="30" width="24" height="6" rx="1" fill="#94a3b8" opacity="0.8"/>
+  <rect x="48" y="38" width="24" height="3" rx="1" fill="#94a3b8" opacity="0.8"/>
+  
+  <rect x="80" y="12" width="32" height="30" rx="4" fill="#e2e8f0" stroke="rgba(0,0,0,0.06)" stroke-width="0.5"/>
+  <circle cx="96" cy="22" r="4" fill="#3b82f6" opacity="0.3"/>
+  <rect x="84" y="30" width="24" height="6" rx="1" fill="#94a3b8" opacity="0.8"/>
+  <rect x="84" y="38" width="24" height="3" rx="1" fill="#94a3b8" opacity="0.8"/>
+  
+  <!-- Bottom row: 3 feature cards -->
+  <rect x="8" y="48" width="32" height="30" rx="4" fill="#e2e8f0" stroke="rgba(0,0,0,0.06)" stroke-width="0.5"/>
+  <circle cx="24" cy="58" r="4" fill="#3b82f6" opacity="0.3"/>
+  <rect x="12" y="66" width="24" height="6" rx="1" fill="#94a3b8" opacity="0.8"/>
+  
+  <rect x="44" y="48" width="32" height="30" rx="4" fill="#e2e8f0" stroke="rgba(0,0,0,0.06)" stroke-width="0.5"/>
+  <circle cx="60" cy="58" r="4" fill="#3b82f6" opacity="0.3"/>
+  <rect x="48" y="66" width="24" height="6" rx="1" fill="#94a3b8" opacity="0.8"/>
+  
+  <rect x="80" y="48" width="32" height="30" rx="4" fill="#e2e8f0" stroke="rgba(0,0,0,0.06)" stroke-width="0.5"/>
+  <circle cx="96" cy="58" r="4" fill="#3b82f6" opacity="0.3"/>
+  <rect x="84" y="66" width="24" height="6" rx="1" fill="#94a3b8" opacity="0.8"/>
 </svg>

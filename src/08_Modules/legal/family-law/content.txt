@@ -1,0 +1,69 @@
+1.0 RootSection (Section)
+- title: "[Firm Name] - Root Section"
+
+1.0.1 NavStepper (Stepper)
+- steps: "Step 1 → Step 2 → Step 3"
+
+1.0.2 HeroSection (Section)
+- title: "[Firm Name] - Hero Section"
+
+1.0.2.1 HeroCard (Card)
+- body: "Experienced family law representation. Divorce, custody, support, and adoption—we guide you with care and expertise."
+- media: ""
+
+1.0.2.2 HeroCta (Button)
+- label: "Our Practice Areas"
+
+1.0.3 AboutSection (Section)
+- title: "About Our Firm"
+
+1.0.3.1 AboutCard (Card)
+- body: "We are committed to protecting our clients' interests in family matters with integrity and expertise. Confidential consultations available."
+
+1.0.4 ServicesSection (Section)
+- title: "Practice Areas"
+
+1.0.4.1 ServicesCard (Card)
+- body: "We provide focused representation in family law. Schedule a consultation to discuss your case."
+
+1.0.4.2 ServicesList (Card)
+- body: "Divorce • Child custody & support • Spousal support • Adoption • Prenuptial agreements • Modifications"
+
+1.0.5 ContactSection (Section)
+- title: "Contact Us"
+
+1.0.5.1 ContactName (Field)
+- label: "Your Name"
+- input: ""
+
+1.0.5.2 ContactEmail (Field)
+- label: "Email"
+- input: ""
+
+1.0.5.3 ContactMessage (Field)
+- label: "How can we help?"
+- input: ""
+
+1.0.5.4 ContactSubmit (Button)
+- label: "Send Message"
+
+1.0.6 BookingSection (Section)
+- title: "Schedule a Consultation"
+
+1.0.6.1 BookingPrompt (Card)
+- body: "Request a confidential consultation. We will respond promptly to discuss your situation."
+
+1.0.6.2 BookingDate (Field)
+- label: "Preferred Date"
+- input: ""
+
+1.0.6.3 BookingNotes (Field)
+- label: "Brief Description"
+- input: ""
+
+1.0.6.4 BookingSubmit (Button)
+- label: "Request Consultation"
+
+1.0.7 FooterBlock (Footer)
+- left: "[Firm Name]"
+- right: "© [Firm Name]"

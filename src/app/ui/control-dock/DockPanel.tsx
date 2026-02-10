@@ -6,7 +6,7 @@ import DockSection from "./DockSection";
 type DockPanelProps = {
   panelId: string;
   title: string;
-  icon: string;
+  icon: React.ReactNode;
   isOpen: boolean;
   onToggle: () => void;
   children: React.ReactNode;

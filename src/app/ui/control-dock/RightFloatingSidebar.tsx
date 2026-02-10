@@ -15,9 +15,10 @@ import { getState, subscribeState, dispatchState } from "@/state/state-store";
 import { getPaletteName, setPalette, subscribePalette } from "@/engine/core/palette-store";
 import { palettes } from "@/palettes";
 import { getTemplateList } from "@/lib/layout/template-profiles";
-import { getSidebarIconPathOrWarn } from "@/app/ui/sidebarIconRegistry";
+import AppIcon, { getAppIconNameForPanel } from "@/04_Presentation/icons/AppIcon";
 import PaletteLivePreview from "@/app/ui/control-dock/PaletteLivePreview";
 import StylingLivePreview from "@/app/ui/control-dock/StylingLivePreview";
+import CreateNewInterfacePanel from "@/app/ui/control-dock/CreateNewInterfacePanel";
 
 const PALETTE_NAMES = Object.keys(palettes) as string[];
 const MODES = ["template", "custom"] as const;
@@ -30,7 +31,7 @@ const EXPERIENCES = [
 ] as const;
 
 const FLOATING_PANEL_WIDTH = 280;
-const RAIL_WIDTH = 56;
+const RAIL_WIDTH = 44;
 /** Total width when panel is open (panel + rail). Use for main content padding-right. */
 export const SIDEBAR_TOTAL_WIDTH = FLOATING_PANEL_WIDTH + RAIL_WIDTH;
 
@@ -42,6 +43,8 @@ const PILL_CONFIG: Array<{ id: DockPanelId; label: string }> = [
   { id: "styling", label: "Styling" },
   { id: "behavior", label: "Behavior" },
   { id: "layout", label: "Layout" },
+  { id: "newInterface", label: "New Interface" },
+  { id: "expand", label: "Expand" },
 ];
 
 /* Google-style: Material surface, blue primary, gray hierarchy */
@@ -69,22 +72,23 @@ const RAIL_STYLE: React.CSSProperties = {
   borderLeft: `1px solid ${GOOGLE.border}`,
   display: "flex",
   flexDirection: "column",
-  gap: "4px",
+  justifyContent: "center",
+  gap: "6px",
   alignItems: "center",
   boxShadow: GOOGLE.shadow,
 };
 
-const ICON_BUTTON_STYLE: React.CSSProperties = {
-  width: 40,
-  height: 40,
+const ICON_BUTTON_BASE: React.CSSProperties = {
+  width: 44,
+  height: 44,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  borderRadius: GOOGLE.radiusFull,
+  borderRadius: 8,
   cursor: "pointer",
   background: "transparent",
   border: "none",
-  transition: "background 0.15s ease",
+  transition: "background 0.12s ease, transform 0.06s ease",
 };
 
 export type RightFloatingSidebarProps = {
@@ -95,6 +99,7 @@ export type RightFloatingSidebarProps = {
 function RightFloatingSidebarInner({ layoutPanelContent }: RightFloatingSidebarProps) {
   const { openPanel, togglePanel } = useDockState();
   const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
+  const currentHref = typeof window !== "undefined" ? window.location.href : "";
   useSyncExternalStore(subscribePalette, getPaletteName, () => "default");
 
   const experience = (stateSnapshot?.values?.experience ?? "website") as string;
@@ -119,17 +124,18 @@ function RightFloatingSidebarInner({ layoutPanelContent }: RightFloatingSidebarP
 
   const activeLabel = openPanel ? PILL_CONFIG.find((p) => p.id === openPanel)?.label : null;
 
+  const headerHeight = 56;
   return (
     <div
       style={{
         position: "fixed",
         right: 0,
-        top: 0,
-        height: "100vh",
+        top: headerHeight,
+        height: `calc(100vh - ${headerHeight}px)`,
         width: openPanel ? FLOATING_PANEL_WIDTH + RAIL_WIDTH : RAIL_WIDTH,
         display: "flex",
         flexDirection: "row",
-        zIndex: 999,
+        zIndex: 900,
         transition: "width 0.2s ease",
       }}
     >
@@ -386,16 +392,77 @@ function RightFloatingSidebarInner({ layoutPanelContent }: RightFloatingSidebarP
                 </div>
               )
             )}
+            {openPanel === "newInterface" && (
+              <CreateNewInterfacePanel />
+            )}
+            {openPanel === "expand" && (
+              <div style={{ fontSize: 14, color: GOOGLE.textSecondary }}>
+                Large overlay opens above. Click Expand again to close.
+              </div>
+            )}
             </div>
           </>
         )}
       </div>
 
-      {/* Icon rail — Google-style: white surface, circular active state */}
+      {/* Expand overlay: fullscreen iframe with same screen (same state bindings, no new state) */}
+      {openPanel === "expand" && currentHref && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 10000,
+            background: GOOGLE.surface,
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <div
+            style={{
+              flexShrink: 0,
+              padding: "8px 16px",
+              borderBottom: `1px solid ${GOOGLE.border}`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              background: GOOGLE.surface,
+            }}
+          >
+            <span style={{ fontSize: 14, color: GOOGLE.textPrimary, fontWeight: 500 }}>Expanded view (same screen)</span>
+            <button
+              type="button"
+              onClick={() => togglePanel("expand")}
+              style={{
+                padding: "8px 16px",
+                borderRadius: GOOGLE.radius,
+                border: "none",
+                background: GOOGLE.primary,
+                color: "#fff",
+                fontSize: 14,
+                cursor: "pointer",
+              }}
+            >
+              Close
+            </button>
+          </div>
+          <iframe
+            title="Expanded editor"
+            src={currentHref}
+            style={{
+              flex: 1,
+              width: "100%",
+              border: "none",
+              minHeight: 0,
+            }}
+          />
+        </div>
+      )}
+
+      {/* Icon rail — 44px, 10px gap, subtle hover/active */}
       <div style={RAIL_STYLE}>
         {pills.map(({ id, label }) => {
           const isActive = isPanelOpen(id);
-          const iconPath = getSidebarIconPathOrWarn(id);
+          const iconName = getAppIconNameForPanel(id);
           return (
             <button
               key={id}
@@ -405,26 +472,25 @@ function RightFloatingSidebarInner({ layoutPanelContent }: RightFloatingSidebarP
               aria-label={label}
               aria-pressed={isActive}
               style={{
-                ...ICON_BUTTON_STYLE,
-                background: isActive ? GOOGLE.primaryBg : "transparent",
-                color: isActive ? GOOGLE.primary : GOOGLE.textSecondary,
+                ...ICON_BUTTON_BASE,
+                background: isActive ? "rgba(255,255,255,0.10)" : "transparent",
+                boxShadow: isActive ? "inset 0 0 0 1px rgba(255,255,255,0.08)" : "none",
+                color: GOOGLE.textSecondary,
               }}
               onMouseEnter={(e) => {
-                if (!isActive) e.currentTarget.style.background = GOOGLE.surfaceHover;
+                if (!isActive) {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                  e.currentTarget.style.transform = "scale(1.04)";
+                }
               }}
               onMouseLeave={(e) => {
-                if (!isActive) e.currentTarget.style.background = "transparent";
+                if (!isActive) {
+                  e.currentTarget.style.background = "transparent";
+                  e.currentTarget.style.transform = "scale(1)";
+                }
               }}
             >
-              {iconPath ? (
-                <img
-                  src={iconPath}
-                  alt=""
-                  width={20}
-                  height={20}
-                  style={{ display: "block", opacity: isActive ? 1 : 0.7 }}
-                />
-              ) : null}
+              {iconName ? <AppIcon name={iconName} color={GOOGLE.textSecondary} /> : null}
             </button>
           );
         })}
