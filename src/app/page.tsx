@@ -22,6 +22,7 @@ import {
   loadOrganVariant,
 } from "@/components/organs";
 import OrganPanel from "@/components/organs/OrganPanel";
+import RightFloatingSidebar from "@/app/ui/control-dock/RightFloatingSidebar";
 import {
   getSectionLayoutPresetOverrides,
   getOverridesForScreen,
@@ -651,45 +652,38 @@ export default function Page() {
         {overlay}
         <AppShell
           primary={
-            <div style={{ display: "flex", width: "100%", minHeight: "100%" }}>
-              <div ref={contentRef} style={{ flex: 1, minWidth: 0, overflowX: "hidden" }}>{jsonContent}</div>
-            <div
-              style={{
-                width: "var(--organ-panel-width, 320px)",
-                minWidth: "var(--organ-panel-width, 320px)",
-                flexShrink: 0,
-                background: "var(--color-bg-primary)",
-                borderLeft: "1px solid var(--color-border)",
-                overflowY: "auto",
-                marginRight: "60px",
-              }}
-            >
-              <OrganPanel
-                sectionKeysForPreset={sectionKeysForPreset}
-                sectionLabels={sectionLabels}
-                sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
-                onSectionLayoutPresetOverride={handleSectionLayoutPresetOverride}
-                cardLayoutPresetOverrides={cardLayoutPresetOverrides}
-                onCardLayoutPresetOverride={handleCardLayoutPresetOverride}
-                sectionPresetOptions={sectionPresetOptions}
-                sectionHeights={sectionHeights}
-                organIdBySectionKey={organIdBySectionKey}
-                organInternalLayoutOverrides={organInternalLayoutOverridesProp}
-                onOrganInternalLayoutOverride={handleOrganInternalLayoutOverride}
-                sectionNodesByKey={sectionByKey}
-              />
+            <div ref={contentRef} style={{ width: "100%", minHeight: "100%", overflowX: "hidden" }}>
+              {jsonContent}
             </div>
-          </div>
-        }
-      />
-    </>
-  );
-}
+          }
+        />
+        <RightFloatingSidebar
+          layoutPanelContent={
+            <OrganPanel
+              sectionKeysForPreset={sectionKeysForPreset}
+              sectionLabels={sectionLabels}
+              sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
+              onSectionLayoutPresetOverride={handleSectionLayoutPresetOverride}
+              cardLayoutPresetOverrides={cardLayoutPresetOverrides}
+              onCardLayoutPresetOverride={handleCardLayoutPresetOverride}
+              sectionPresetOptions={sectionPresetOptions}
+              sectionHeights={sectionHeights}
+              organIdBySectionKey={organIdBySectionKey}
+              organInternalLayoutOverrides={organInternalLayoutOverridesProp}
+              onOrganInternalLayoutOverride={handleOrganInternalLayoutOverride}
+              sectionNodesByKey={sectionByKey}
+            />
+          }
+        />
+      </>
+    );
+  }
   if (experience === "learning") {
     return (
       <>
         {overlay}
         <LearningShell content={jsonContent} />
+        <RightFloatingSidebar />
       </>
     );
   }
@@ -698,35 +692,27 @@ export default function Page() {
       {overlay}
       <WebsiteShell
         content={
-          <div style={{ display: "flex", width: "100%", minHeight: "100vh" }}>
-            <div ref={contentRef} style={{ flex: 1, minWidth: 0, overflowX: "hidden" }}>{wrappedContent}</div>
-            <div
-              style={{
-                width: "var(--organ-panel-width, 320px)",
-                minWidth: "var(--organ-panel-width, 320px)",
-                flexShrink: 0,
-                background: "var(--color-bg-primary)",
-                borderLeft: "1px solid var(--color-border)",
-                overflowY: "auto",
-                marginRight: "60px",
-              }}
-            >
-              <OrganPanel
-                sectionKeysForPreset={sectionKeysForPreset}
-                sectionLabels={sectionLabels}
-                sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
-                onSectionLayoutPresetOverride={handleSectionLayoutPresetOverride}
-                cardLayoutPresetOverrides={cardLayoutPresetOverrides}
-                onCardLayoutPresetOverride={handleCardLayoutPresetOverride}
-                sectionPresetOptions={sectionPresetOptions}
-                sectionHeights={sectionHeights}
-                organIdBySectionKey={organIdBySectionKey}
-                organInternalLayoutOverrides={organInternalLayoutOverridesProp}
-                onOrganInternalLayoutOverride={handleOrganInternalLayoutOverride}
-                sectionNodesByKey={sectionByKey}
-              />
-            </div>
+          <div ref={contentRef} style={{ width: "100%", minHeight: "100vh", overflowX: "hidden" }}>
+            {wrappedContent}
           </div>
+        }
+      />
+      <RightFloatingSidebar
+        layoutPanelContent={
+          <OrganPanel
+            sectionKeysForPreset={sectionKeysForPreset}
+            sectionLabels={sectionLabels}
+            sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
+            onSectionLayoutPresetOverride={handleSectionLayoutPresetOverride}
+            cardLayoutPresetOverrides={cardLayoutPresetOverrides}
+            onCardLayoutPresetOverride={handleCardLayoutPresetOverride}
+            sectionPresetOptions={sectionPresetOptions}
+            sectionHeights={sectionHeights}
+            organIdBySectionKey={organIdBySectionKey}
+            organInternalLayoutOverrides={organInternalLayoutOverridesProp}
+            onOrganInternalLayoutOverride={handleOrganInternalLayoutOverride}
+            sectionNodesByKey={sectionByKey}
+          />
         }
       />
     </>

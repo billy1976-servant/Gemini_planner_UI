@@ -46,6 +46,7 @@ import { installBehaviorListener } from "@/engine/core/behavior-listener";
    📐 EXPERIENCE PROFILES (single JSON authority)
 ============================================================ */
 import presentationProfiles from "@/lib/layout/presentation-profiles.json";
+import CascadingScreenMenu from "@/app/components/CascadingScreenMenu";
 
 
 /* ============================================================
@@ -83,9 +84,6 @@ export default function RootLayout({ children }: any) {
   const searchParams = useSearchParams();
 
   const [index, setIndex] = useState<ScreensIndex[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedFolder, setSelectedFolder] = useState("");
-  const [selectedFile, setSelectedFile] = useState("");
 
 
   const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
@@ -155,38 +153,6 @@ export default function RootLayout({ children }: any) {
   }, []);
 
 
-  const categoryOptions = index.map(x => x.category);
-  const selectedCategoryObj = index.find(x => x.category === selectedCategory);
-
-  const directFiles = selectedCategoryObj?.directFiles ?? [];
-  const subfolderNames = Object.keys(selectedCategoryObj?.folders ?? {});
-
-  const level2Options: { name: string; kind: "file" | "folder" }[] = [
-    ...directFiles.map(name => ({ name, kind: "file" as const })),
-    ...subfolderNames.map(name => ({ name, kind: "folder" as const })),
-  ];
-
-  const selectedIsDirectFile =
-    selectedCategory &&
-    selectedFolder &&
-    directFiles.includes(selectedFolder);
-
-  const folderOptions = subfolderNames;
-  const fileOptions =
-    selectedIsDirectFile || !selectedFolder
-      ? []
-      : (selectedCategoryObj?.folders?.[selectedFolder] ?? []);
-
-  const navigate = (category: string, folder: string, file?: string) => {
-    if (file === undefined) {
-      const screenPath = `${category}/${folder}`;
-      router.replace(`/?screen=${encodeURIComponent(screenPath)}`);
-    } else {
-      const screenPath = `${category}/${folder}/${file}`;
-      router.replace(`/?screen=${encodeURIComponent(screenPath)}`);
-    }
-  };
-
   return (
     <html>
       <head>
@@ -199,133 +165,15 @@ export default function RootLayout({ children }: any) {
       </head>
       <body className="app-body">
         {/* Navigator: no key — identity stable; palette changes only update CSS, never remount. */}
-        <div className="app-chrome">
+        <div
+          className="app-chrome"
+          style={{ background: "#000000", color: "#ffffff" }}
+        >
           <b>HIclarify Navigator</b>
 
-          <select
-            value={selectedCategory}
-            onChange={e => {
-              setSelectedCategory(e.target.value);
-              setSelectedFolder("");
-              setSelectedFile("");
-            }}
-          >
-            <option value="">Select Category…</option>
-            {categoryOptions.map(c => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-
-
-          <select
-            value={selectedFolder}
-            disabled={!selectedCategory}
-            onChange={e => {
-              const value = e.target.value;
-              setSelectedFolder(value);
-              setSelectedFile("");
-              const option = level2Options.find(o => o.name === value);
-              if (option?.kind === "file" && selectedCategory && value) {
-                navigate(selectedCategory, value);
-              }
-            }}
-          >
-            <option value="">Select file or folder…</option>
-            {level2Options.map(o => (
-              <option key={o.name} value={o.name}>
-                {o.name}{o.kind === "folder" ? " (folder)" : ""}
-              </option>
-            ))}
-          </select>
-
-
-          <select
-            value={selectedFile}
-            disabled={!selectedCategory || !selectedFolder || selectedIsDirectFile}
-            onChange={e => {
-              const file = e.target.value;
-              setSelectedFile(file);
-              if (selectedCategory && selectedFolder && file && !directFiles.includes(selectedFolder)) {
-                navigate(selectedCategory, selectedFolder, file);
-              }
-            }}
-          >
-            <option value="">Select file…</option>
-            {fileOptions.map(f => (
-              <option key={f} value={f}>
-                {f}
-              </option>
-            ))}
-          </select>
-
+          <CascadingScreenMenu index={index} />
 
           <span className="app-chrome-spacer" aria-hidden="true" />
-
-          <select
-            value={experience}
-            onChange={e => {
-              const value = e.target.value as "website" | "app" | "learning";
-              window.dispatchEvent(
-                new CustomEvent("action", {
-                  detail: {
-                    type: "Action",
-                    params: { name: "state:update", key: "experience", value },
-                  },
-                })
-              );
-            }}
-          >
-            <option value="website">Experience: Website</option>
-            <option value="app">Experience: App</option>
-            <option value="learning">Experience: Learning</option>
-          </select>
-
-
-          <select
-            value={layoutMode}
-            onChange={e => {
-              const value = e.target.value as LayoutMode;
-              window.dispatchEvent(
-                new CustomEvent("action", {
-                  detail: {
-                    type: "Action",
-                    params: { name: "state:update", key: "layoutMode", value },
-                  },
-                })
-              );
-            }}
-            title="Template = defaults (organs override). Custom = no template section layout."
-          >
-            <option value="template">Mode: Template</option>
-            <option value="custom">Mode: Custom</option>
-          </select>
-
-          <select
-            value={templateId}
-            onChange={e => {
-              const value = e.target.value;
-              window.dispatchEvent(
-                new CustomEvent("action", {
-                  detail: {
-                    type: "Action",
-                    params: { name: "state:update", key: "templateId", value },
-                  },
-                })
-              );
-            }}
-            style={{ minWidth: 180 }}
-            title="Template: section layout (row/column/grid) + density. Change to see gaps and structure update."
-          >
-            <option value="">Template: (experience only)</option>
-            {templateList.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.label}
-              </option>
-            ))}
-          </select>
-
 
           <button
             type="button"
@@ -351,31 +199,9 @@ export default function RootLayout({ children }: any) {
             Save Layout
           </button>
 
-          <span className="app-chrome-hint" title="Header & Nav: change in right panel." aria-hidden="true">
-            Header &amp; Nav: right panel
+          <span className="app-chrome-hint" title="Experience, Palette, Template: right sidebar pills." aria-hidden="true">
+            Right sidebar: Experience, Palette, Template
           </span>
-
-          <select
-            value={paletteName}
-            onChange={e => {
-              const value = e.target.value;
-              window.dispatchEvent(
-                new CustomEvent("action", {
-                  detail: {
-                    type: "Action",
-                    params: { name: "state:update", key: "paletteName", value },
-                  },
-                })
-              );
-            }}
-          >
-            {PALETTES.map(p => (
-              <option key={p} value={p}>
-                Palette: {p}
-              </option>
-            ))}
-          </select>
-
 
           <button type="button" onClick={() => setShowSections(v => !v)}>
             Sections ▾

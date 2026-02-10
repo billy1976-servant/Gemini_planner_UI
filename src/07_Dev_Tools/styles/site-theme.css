@@ -573,6 +573,28 @@
   white-space: nowrap;
 }
 
+.app-chrome .cascading-screen-menu-trigger {
+  background: var(--chrome-button-bg);
+  color: var(--chrome-text);
+  border: 1px solid var(--chrome-input-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-2) var(--spacing-3);
+  cursor: pointer;
+  font-size: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.app-chrome .cascading-screen-menu-trigger:hover {
+  background: var(--chrome-button-hover-bg);
+  border-color: var(--chrome-button-hover-border);
+}
+
+.app-chrome .cascading-screen-menu-item:hover {
+  background-color: var(--chrome-input-hover-bg);
+}
+
 .app-section-layout-panel {
   position: sticky;
   top: var(--spacing-12);
