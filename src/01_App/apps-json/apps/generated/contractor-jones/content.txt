@@ -1,0 +1,68 @@
+1.0 RootSection (Section)
+- title: "Jones Construction - Root Section"
+
+1.0.1 NavStepper (Stepper)
+- steps: "Step 1 → Step 2 → Step 3"
+
+1.0.2 HeroSection (Section)
+- title: "Jones Construction - Hero Section"
+
+1.0.2.1 HeroCard (Card)
+- body: "Content for HeroCard. Customize as needed."
+
+1.0.2.2 HeroCta (Button)
+- label: "Hero Cta"
+
+1.0.3 AboutSection (Section)
+- title: "Jones Construction - About Section"
+
+1.0.3.1 AboutCard (Card)
+- body: "Content for AboutCard. Customize as needed."
+
+1.0.4 ServicesSection (Section)
+- title: "Jones Construction - Services Section"
+
+1.0.4.1 ServicesCard (Card)
+- body: "Content for ServicesCard. Customize as needed."
+
+1.0.4.2 ServicesList (Card)
+- body: "Content for ServicesList. Customize as needed."
+
+1.0.5 ContactSection (Section)
+- title: "Jones Construction - Contact Section"
+
+1.0.5.1 ContactName (Field)
+- label: "Contact Name"
+- input: ""
+
+1.0.5.2 ContactEmail (Field)
+- label: "Contact Email"
+- input: ""
+
+1.0.5.3 ContactMessage (Field)
+- label: "Contact Message"
+- input: ""
+
+1.0.5.4 ContactSubmit (Button)
+- label: "Contact Submit"
+
+1.0.6 BookingSection (Section)
+- title: "Jones Construction - Booking Section"
+
+1.0.6.1 BookingPrompt (Card)
+- body: "Content for BookingPrompt. Customize as needed."
+
+1.0.6.2 BookingDate (Field)
+- label: "Booking Date"
+- input: ""
+
+1.0.6.3 BookingNotes (Field)
+- label: "Booking Notes"
+- input: ""
+
+1.0.6.4 BookingSubmit (Button)
+- label: "Booking Submit"
+
+1.0.7 FooterBlock (Footer)
+- left: "Jones Construction"
+- right: "© Jones Construction"

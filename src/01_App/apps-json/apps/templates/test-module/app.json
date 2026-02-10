@@ -1,0 +1,34 @@
+{
+  "id": "screenRoot",
+  "type": "screen",
+  "state": {
+    "currentView": "|home"
+  },
+  "children": [
+    {
+      "id": "|Root",
+      "type": "Section",
+      "children": [
+        {
+          "id": "|Action",
+          "type": "Button",
+          "children": [],
+          "content": {
+            "label": "Go"
+          }
+        }
+      ],
+      "content": {
+        "title": "Test"
+      }
+    },
+    {
+      "id": "|Next",
+      "type": "Section",
+      "children": [],
+      "content": {
+        "title": "Next"
+      }
+    }
+  ]
+}

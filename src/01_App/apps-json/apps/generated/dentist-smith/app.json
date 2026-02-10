@@ -1,0 +1,249 @@
+{
+  "id": "screenRoot",
+  "type": "screen",
+  "state": {
+    "currentView": "|home"
+  },
+  "children": [
+    {
+      "id": "|RootSection",
+      "type": "Section",
+      "children": [
+        {
+          "id": "|NavStepper",
+          "type": "Stepper",
+          "children": [],
+          "content": {
+            "steps": "Step 1 → Step 2 → Step 3"
+          }
+        },
+        {
+          "id": "|HeroSection",
+          "type": "Section",
+          "children": [
+            {
+              "id": "|HeroCard",
+              "type": "Card",
+              "children": [],
+              "content": {
+                "body": "Content for HeroCard. Customize as needed."
+              }
+            },
+            {
+              "id": "|HeroCta",
+              "type": "Button",
+              "children": [],
+              "content": {
+                "label": "Hero Cta"
+              },
+              "behavior": {
+                "type": "Navigation",
+                "params": {
+                  "verb": "go",
+                  "variant": "screen",
+                  "screenId": "|ServicesSection",
+                  "to": "|ServicesSection"
+                }
+              }
+            }
+          ],
+          "content": {
+            "title": "Smile Dental - Hero Section"
+          }
+        },
+        {
+          "id": "|AboutSection",
+          "type": "Section",
+          "children": [
+            {
+              "id": "|AboutCard",
+              "type": "Card",
+              "children": [],
+              "content": {
+                "body": "Content for AboutCard. Customize as needed."
+              }
+            }
+          ],
+          "content": {
+            "title": "Smile Dental - About Section"
+          }
+        },
+        {
+          "id": "|ServicesSection",
+          "type": "Section",
+          "children": [
+            {
+              "id": "|ServicesCard",
+              "type": "Card",
+              "children": [],
+              "content": {
+                "body": "Content for ServicesCard. Customize as needed."
+              }
+            },
+            {
+              "id": "|ServicesList",
+              "type": "Card",
+              "children": [],
+              "content": {
+                "body": "Content for ServicesList. Customize as needed."
+              }
+            }
+          ],
+          "content": {
+            "title": "Smile Dental - Services Section"
+          }
+        },
+        {
+          "id": "|ContactSection",
+          "type": "Section",
+          "children": [
+            {
+              "id": "|ContactName",
+              "type": "Field",
+              "children": [],
+              "content": {
+                "label": "Contact Name",
+                "input": ""
+              },
+              "state": {
+                "mode": "two-way",
+                "key": "contact.name"
+              },
+              "params": {
+                "field": {
+                  "multiline": true,
+                  "rows": 4,
+                  "fieldKey": "contact.name"
+                }
+              }
+            },
+            {
+              "id": "|ContactEmail",
+              "type": "Field",
+              "children": [],
+              "content": {
+                "label": "Contact Email",
+                "input": ""
+              },
+              "state": {
+                "mode": "two-way",
+                "key": "contact.email"
+              },
+              "params": {
+                "field": {
+                  "multiline": true,
+                  "rows": 4,
+                  "fieldKey": "contact.email"
+                }
+              }
+            },
+            {
+              "id": "|ContactMessage",
+              "type": "Field",
+              "children": [],
+              "content": {
+                "label": "Contact Message",
+                "input": ""
+              },
+              "state": {
+                "mode": "two-way",
+                "key": "contact.message"
+              },
+              "params": {
+                "field": {
+                  "multiline": true,
+                  "rows": 4,
+                  "fieldKey": "contact.message"
+                }
+              },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "state:contact.submit"
+                }
+              }
+            }
+          ],
+          "content": {
+            "title": "Smile Dental - Contact Section"
+          }
+        },
+        {
+          "id": "|BookingSection",
+          "type": "Section",
+          "children": [
+            {
+              "id": "|BookingPrompt",
+              "type": "Card",
+              "children": [],
+              "content": {
+                "body": "Content for BookingPrompt. Customize as needed."
+              }
+            },
+            {
+              "id": "|BookingDate",
+              "type": "Field",
+              "children": [],
+              "content": {
+                "label": "Booking Date",
+                "input": ""
+              },
+              "state": {
+                "mode": "two-way",
+                "key": "booking.date"
+              },
+              "params": {
+                "field": {
+                  "multiline": true,
+                  "rows": 4,
+                  "fieldKey": "booking.date"
+                }
+              }
+            },
+            {
+              "id": "|BookingNotes",
+              "type": "Field",
+              "children": [],
+              "content": {
+                "label": "Booking Notes",
+                "input": ""
+              },
+              "state": {
+                "mode": "two-way",
+                "key": "booking.notes"
+              },
+              "params": {
+                "field": {
+                  "multiline": true,
+                  "rows": 4,
+                  "fieldKey": "booking.notes"
+                }
+              },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "state:booking.submit"
+                }
+              }
+            }
+          ],
+          "content": {
+            "title": "Smile Dental - Booking Section"
+          }
+        },
+        {
+          "id": "|FooterBlock",
+          "type": "Footer",
+          "children": [],
+          "content": {
+            "left": "Smile Dental",
+            "right": "© Smile Dental"
+          }
+        }
+      ],
+      "content": {
+        "title": "Smile Dental - Root Section"
+      }
+    }
+  ]
+}
