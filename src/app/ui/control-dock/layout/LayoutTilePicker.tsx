@@ -48,14 +48,15 @@ const TILE_ACTIVE_STYLE: React.CSSProperties = {
   background: "linear-gradient(180deg, " + CARD_PALETTE.selectedFill + " 0%, rgba(255,255,255,0.95) 100%)",
 };
 
-/** Section variant: full-width, no card, subtle border, selection glow. */
+/** Section variant: full-width, no card, no fixed height, image-driven. */
 const SECTION_TILE_BASE: React.CSSProperties = {
   width: "100%",
+  display: "block",
+  marginBottom: "10px",
   padding: 0,
   border: "1px solid rgba(0,0,0,0.06)",
-  borderRadius: "8px",
-  overflow: "hidden",
-  background: "#fff",
+  borderRadius: "6px",
+  background: "transparent",
   cursor: "pointer",
   transition: "border-color 0.2s ease, box-shadow 0.2s ease",
 };
@@ -103,15 +104,10 @@ const THUMB_BOX_STACK_STYLE: React.CSSProperties = {
   boxShadow: "inset 0 1px 2px rgba(255,255,255,0.5), 0 1px 3px rgba(0,0,0,0.06)",
 };
 
-/** Section variant: full width, aspect ratio, edge-to-edge (label overlays). */
+/** Section variant: full width, natural height, no frame, no clipping (label overlays). */
 const THUMB_BOX_SECTION_STYLE: React.CSSProperties = {
   width: "100%",
-  aspectRatio: "4/3",
-  background: "linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 100%)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  overflow: "hidden",
+  display: "block",
   position: "relative",
 };
 
@@ -139,27 +135,31 @@ export default function LayoutTilePicker({
   const isInternal = variant === "internal";
 
   const gridStyle: React.CSSProperties = isSection
-    ? { display: "flex", flexDirection: "column", gap: "10px", width: "100%" }
+    ? { display: "flex", flexDirection: "column", width: "100%", minWidth: 0 }
     : isInternal
       ? {
           display: "grid",
-          gridTemplateColumns: "repeat(2, 1fr)",
+          gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
           gap: "8px",
           width: "100%",
+          minWidth: 0,
         }
       : mode === "stack"
-        ? { display: "flex", flexDirection: "column", gap: "12px", width: "100%" }
+        ? { display: "flex", flexDirection: "column", gap: "12px", width: "100%", minWidth: 0 }
         : mode === "row"
-          ? { display: "flex", flexDirection: "row", flexWrap: "wrap", gap: "8px" }
+          ? { display: "flex", flexDirection: "row", flexWrap: "wrap", gap: "8px", width: "100%", minWidth: 0 }
           : {
               display: "grid",
               gridTemplateColumns: "repeat(auto-fill, minmax(72px, 1fr))",
               gap: "8px",
+              width: "100%",
+              minWidth: 0,
             };
 
   const wrapperStyle: React.CSSProperties = isSection
-    ? { marginBottom: "var(--spacing-3)", minWidth: 0, maxWidth: "100%", overflow: "hidden" }
+    ? { width: "100%", marginBottom: "var(--spacing-3)", minWidth: 0, maxWidth: "100%", overflow: "hidden" }
     : {
+        width: "100%",
         marginBottom: "var(--spacing-3)",
         padding: "var(--spacing-3)",
         background: "linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)",
@@ -252,16 +252,27 @@ function LayoutTile({
       : {
           ...TILE_CONTAINER_STYLE,
           ...(isActive ? TILE_ACTIVE_STYLE : {}),
-          minWidth: mode === "row" ? 72 : undefined,
-          flex: mode === "row" ? "0 0 auto" : mode === "stack" ? "0 0 auto" : undefined,
+          minWidth: mode === "row" ? 72 : 0,
+          flex: mode === "row" ? "0 0 auto" : mode === "stack" ? "1 1 auto" : undefined,
           width: mode === "stack" ? "100%" : undefined,
+          maxWidth: "100%",
           ...(hover && !isActive ? { boxShadow: CARD_PALETTE.shadowMedium, background: "rgba(255,255,255,0.98)" } : {}),
         };
 
   const thumbContent =
     opt.thumbnail != null ? (
       typeof opt.thumbnail === "string" ? (
-        <img src={opt.thumbnail} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        <img
+          src={opt.thumbnail}
+          alt=""
+          style={
+            isSection
+              ? { width: "100%", height: "auto", objectFit: "contain", display: "block" }
+              : { width: "100%", height: "100%", objectFit: "cover" }
+          }
+        />
+      ) : isSection ? (
+        <div style={{ width: "100%", display: "block" }}>{opt.thumbnail}</div>
       ) : (
         opt.thumbnail
       )
@@ -278,7 +289,11 @@ function LayoutTile({
         <img
           src="/layout-thumbnails/default.svg"
           alt=""
-          style={{ width: "100%", height: "100%", objectFit: "contain" }}
+          style={
+            isSection
+              ? { width: "100%", height: "auto", objectFit: "contain", display: "block" }
+              : { width: "100%", height: "100%", objectFit: "contain" }
+          }
         />
       </>
     );

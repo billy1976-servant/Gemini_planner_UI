@@ -1,8 +1,7 @@
 /**
  * POST /api/create-from-module
- * Copies a single blueprint from 08_Modules into apps/generated/<slug>/.
- * Writes blueprint.txt (from the selected subtype) and an empty content.txt.
- * Does NOT compile. Used when user selects a module template and clicks "Duplicate template & open".
+ * Copies from 08_Modules: vertical/master/blueprint.txt + vertical/<subtype>/content.txt
+ * into apps-json/generated/<slug>/, then compiles so app.json exists before redirect.
  */
 
 import { NextResponse } from "next/server";
@@ -10,7 +9,6 @@ import fs from "fs";
 import path from "path";
 
 const MODULES_ROOT = path.join(process.cwd(), "src", "08_Modules");
-/** Generated apps: src/01_App/apps-json/generated (not under apps/) */
 const GENERATED_APPS_ROOT = path.join(process.cwd(), "src", "01_App", "apps-json", "generated");
 
 type Body = {
@@ -41,12 +39,19 @@ export async function POST(req: Request) {
 
     const vertical = moduleTemplate.slice(0, underscoreIdx);
     const subtype = moduleTemplate.slice(underscoreIdx + 1);
-    const blueprintFileName = `${subtype}.blueprint.txt`;
-    const blueprintPath = path.join(MODULES_ROOT, vertical, blueprintFileName);
 
-    if (!fs.existsSync(blueprintPath)) {
+    const masterBlueprintPath = path.join(MODULES_ROOT, vertical, "master", "blueprint.txt");
+    if (!fs.existsSync(masterBlueprintPath)) {
       return NextResponse.json(
-        { error: `Blueprint not found: ${vertical}/${blueprintFileName}` },
+        { error: `Master blueprint not found: ${vertical}/master/blueprint.txt` },
+        { status: 404 }
+      );
+    }
+
+    const subtypeContentPath = path.join(MODULES_ROOT, vertical, subtype, "content.txt");
+    if (!fs.existsSync(subtypeContentPath)) {
+      return NextResponse.json(
+        { error: `Subtype content not found: ${vertical}/${subtype}/content.txt` },
         { status: 404 }
       );
     }
@@ -60,9 +65,16 @@ export async function POST(req: Request) {
     }
 
     fs.mkdirSync(destDir, { recursive: true });
-    const blueprintContent = fs.readFileSync(blueprintPath, "utf8");
+
+    const blueprintContent = fs.readFileSync(masterBlueprintPath, "utf8");
+    const contentContent = fs.readFileSync(subtypeContentPath, "utf8");
     fs.writeFileSync(path.join(destDir, "blueprint.txt"), blueprintContent, "utf8");
-    fs.writeFileSync(path.join(destDir, "content.txt"), "", "utf8");
+    fs.writeFileSync(path.join(destDir, "content.txt"), contentContent, "utf8");
+
+    const { compileApp } = await import(
+      "../../../07_Dev_Tools/scripts/blueprint"
+    );
+    compileApp(destDir);
 
     return NextResponse.json({
       ok: true,

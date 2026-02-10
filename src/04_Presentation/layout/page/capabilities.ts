@@ -38,7 +38,6 @@ export const SECTION_TO_CARD_CAPABILITIES: Record<string, string[]> = {
     "centered-image-left",
     "centered-image-right",
   ],
-  "feature-grid-3": [...ALL_CARD_PRESETS],
   "features-grid-3": [...ALL_CARD_PRESETS],
   "testimonial-band": [...ALL_CARD_PRESETS],
   "cta-centered": ["centered-card"],

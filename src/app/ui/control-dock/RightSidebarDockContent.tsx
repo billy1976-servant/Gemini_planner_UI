@@ -97,7 +97,19 @@ export default function RightSidebarDockContent(props: RightSidebarDockContentPr
         }}
       >
         {openPanel && (
-          <div style={{ width: EXPANDED_PANEL_WIDTH, flex: 1, minHeight: 0, overflowY: "auto", display: "flex", flexDirection: "column" }}>
+          <div
+            style={{
+              width: "100%",
+              maxWidth: "100%",
+              flex: 1,
+              minHeight: 0,
+              minWidth: 0,
+              overflowY: "auto",
+              overflowX: "hidden",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
             <div
               className="editor-header"
               style={{
@@ -110,7 +122,7 @@ export default function RightSidebarDockContent(props: RightSidebarDockContentPr
                 {PILL_CONFIG.find((p) => p.id === openPanel)?.label ?? openPanel}
               </h3>
             </div>
-            <div style={{ padding: "var(--spacing-3)", flex: 1 }}>
+            <div style={{ padding: "var(--spacing-3)", flex: 1, minWidth: 0, width: "100%", maxWidth: "100%", overflowX: "hidden", display: "flex", flexDirection: "column" }}>
               {openPanel === "experience" && (
                 <div style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-2)" }}>
                   {EXPERIENCES.map((exp) => (
@@ -257,7 +269,9 @@ export default function RightSidebarDockContent(props: RightSidebarDockContentPr
               )}
               {openPanel === "layout" && (
                 layoutPanelContent != null ? (
-                  <div>{layoutPanelContent}</div>
+                  <div style={{ width: "100%", maxWidth: "100%", minWidth: 0, flex: 1, overflowX: "hidden", display: "flex", flexDirection: "column" }}>
+                    {layoutPanelContent}
+                  </div>
                 ) : (
                   <p style={{ margin: 0, fontSize: "var(--font-size-sm)", color: "var(--editor-text-muted)" }}>
                     Layout controls appear when a website-style screen is loaded.

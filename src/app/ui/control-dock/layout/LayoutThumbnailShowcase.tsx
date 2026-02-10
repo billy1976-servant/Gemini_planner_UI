@@ -19,7 +19,6 @@ const ALL_LAYOUT_IDS = [
   "content-stack",
   "image-left-text-right",
   "features-grid-3",
-  "feature-grid-3",
   "testimonial-band",
   "cta-centered",
   "test-extensible",

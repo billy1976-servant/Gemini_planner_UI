@@ -107,7 +107,6 @@ Each layout has a unique blueprint defining its visual structure:
 ### Feature Layouts
 
 - **`features-grid-3`**: 3×2 grid of feature cards with icons
-- **`feature-grid-3`**: 3 tall feature cards with icons
 
 ### Other Layouts
 

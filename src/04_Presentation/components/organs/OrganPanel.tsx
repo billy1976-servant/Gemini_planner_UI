@@ -57,10 +57,10 @@ export type OrganPanelProps = {
 };
 
 const PANEL_STYLE: React.CSSProperties = {
-  width: "var(--organ-panel-width)",
-  minWidth: "var(--organ-panel-width)",
+  width: "100%",
   maxWidth: "100%",
-  flexShrink: 0,
+  minWidth: 0,
+  flex: "1 1 auto",
   background: "linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)",
   borderLeft: "none",
   padding: "var(--spacing-5)",
@@ -131,7 +131,6 @@ export default function OrganPanel({
     "",
     "content-narrow",
     "content-stack",
-    "feature-grid-3",
     "features-grid-3",
     "hero-full-bleed-image",
     "hero-split",
@@ -182,8 +181,18 @@ export default function OrganPanel({
     return ordered;
   }
 
-  /** Deduplicate options by id (keep first). */
-  function dedupeOptions<T extends { id: string }>(options: T[]): T[] {
+  /** Dedupe section options by id only (per-type; section variant). Keeps first occurrence so section layouts don't hide component layouts. */
+  function dedupeSectionOptions<T extends { id: string }>(options: T[]): T[] {
+    const seen = new Set<string>();
+    return options.filter((o) => {
+      if (seen.has(o.id)) return false;
+      seen.add(o.id);
+      return true;
+    });
+  }
+
+  /** Dedupe internal (organ) options by id only (per-type; internal variant). Runs separately from section dedupe. */
+  function dedupeInternalOptions<T extends { id: string }>(options: T[]): T[] {
     const seen = new Set<string>();
     return options.filter((o) => {
       if (seen.has(o.id)) return false;
@@ -361,6 +370,8 @@ export default function OrganPanel({
         const rowHeight = sectionHeights[sectionKey];
         const rowBlockStyle: React.CSSProperties = {
           ...ROW_STYLE,
+          width: "100%",
+          minWidth: 0,
           minHeight: rowHeight != null && rowHeight > 0 ? rowHeight : MIN_ROW_HEIGHT,
           display: "flex",
           flexDirection: "column",
@@ -373,7 +384,7 @@ export default function OrganPanel({
         const useLivePreview = layoutViewMode === "live" && screenModel != null;
         const pickerMode = useLivePreview ? "stack" : "grid";
         const sectionOptionsOrdered = orderSectionOptions(sectionOptionsFiltered);
-        const sectionTileOptions: LayoutTileOption[] = dedupeOptions([
+        const sectionTileOptions: LayoutTileOption[] = dedupeSectionOptions([
           {
             id: "",
             label: "(default)",
@@ -463,7 +474,7 @@ export default function OrganPanel({
           })),
         ];
         const organOptionsOrdered = orderInternalOptions(organOptionsFiltered);
-        const organTileOptions: LayoutTileOption[] = dedupeOptions([
+        const organTileOptions: LayoutTileOption[] = dedupeInternalOptions([
           { id: "", label: "(default)" },
           ...organOptionsOrdered.map((id) => ({
             id,
@@ -477,6 +488,17 @@ export default function OrganPanel({
             <div style={{ ...LABEL_STYLE, fontWeight: 600 }}>{label}</div>
             {layoutViewMode !== "text" ? (
               <>
+                {/* Component (internal) layout above each section: show when this section is an organ, regardless of layoutMode so internal options are never suppressed. */}
+                {onOrganInternalLayoutOverride && organId && organTileOptions.length > 1 && (
+                  <LayoutTilePicker
+                    title="Internal layout (organ)"
+                    value={currentInternalLayout}
+                    options={organTileOptions}
+                    onChange={(id) => fireOrganChange(sectionKey, id)}
+                    mode="grid"
+                    variant="internal"
+                  />
+                )}
                 {layoutMode === "section" && (
                   <>
                     {onSectionLayoutPresetOverride && (
@@ -500,22 +522,33 @@ export default function OrganPanel({
                     )}
                   </>
                 )}
-                {layoutMode === "internal" && onOrganInternalLayoutOverride && organId && organTileOptions.length > 1 && (
-                  <LayoutTilePicker
-                    title="Internal layout (organ)"
-                    value={currentInternalLayout}
-                    options={organTileOptions}
-                    onChange={(id) => fireOrganChange(sectionKey, id)}
-                    mode="grid"
-                    variant="internal"
-                  />
-                )}
               </>
             ) : layoutViewMode === "text" ? (
               <>
+                {/* Internal layout (organ) above each section — not gated by layoutMode. */}
+                {onOrganInternalLayoutOverride && organId && organOptionsOrdered.length > 0 && (
+                  <>
+                    <label style={{ ...LABEL_STYLE, marginTop: "var(--spacing-1)" }} htmlFor={`organ-internal-layout-${sectionKey}`}>
+                      Internal layout (organ)
+                    </label>
+                    <select
+                      id={`organ-internal-layout-${sectionKey}`}
+                      value={currentInternalLayout}
+                      onChange={(e) => fireOrganChange(sectionKey, e.target.value)}
+                      style={SELECT_STYLE}
+                    >
+                      <option value="">(default)</option>
+                      {organOptionsOrdered.map((lid) => (
+                        <option key={lid} value={lid}>
+                          {lid}
+                        </option>
+                      ))}
+                    </select>
+                  </>
+                )}
                 {layoutMode === "section" && onSectionLayoutPresetOverride && (
                   <>
-                    <label style={{ ...LABEL_STYLE, marginTop: "var(--spacing-1)" }} htmlFor={`section-layout-preset-${sectionKey}`}>
+                    <label style={{ ...LABEL_STYLE, marginTop: "var(--spacing-2)" }} htmlFor={`section-layout-preset-${sectionKey}`}>
                       Section Layout
                     </label>
                     <select
@@ -551,26 +584,6 @@ export default function OrganPanel({
                       {cardOptionsFiltered.map((pid) => (
                         <option key={pid} value={pid}>
                           {pid}
-                        </option>
-                      ))}
-                    </select>
-                  </>
-                )}
-                {layoutMode === "internal" && onOrganInternalLayoutOverride && organId && organOptionsOrdered.length > 0 && (
-                  <>
-                    <label style={{ ...LABEL_STYLE, marginTop: "var(--spacing-2)" }} htmlFor={`organ-internal-layout-${sectionKey}`}>
-                      Internal layout (organ)
-                    </label>
-                    <select
-                      id={`organ-internal-layout-${sectionKey}`}
-                      value={currentInternalLayout}
-                      onChange={(e) => fireOrganChange(sectionKey, e.target.value)}
-                      style={SELECT_STYLE}
-                    >
-                      <option value="">(default)</option>
-                      {organOptionsOrdered.map((lid) => (
-                        <option key={lid} value={lid}>
-                          {lid}
                         </option>
                       ))}
                     </select>

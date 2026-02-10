@@ -141,21 +141,6 @@ Visual guide to all layout thumbnails in the system.
 
 ---
 
-### `feature-grid-3`
-```
-┌─────────────────────────┐
-│ ┌──────┐ ┌──────┐ ┌───┐ │
-│ │  ●  │ │  ●  │ │  ●│ │
-│ │ TEXT │ │ TEXT │ │TEX│ │
-│ │ ──── │ │ ──── │ │──│ │
-│ │ ──── │ │ ──── │ │──│ │
-│ └──────┘ └──────┘ └───┘ │
-└─────────────────────────┘
-```
-**Use**: 3 tall feature columns with icons
-
----
-
 ## Testimonial & CTA Layouts
 
 ### `testimonial-band`
@@ -243,7 +228,7 @@ Visual guide to all layout thumbnails in the system.
 | **Hero with image** | `hero-split` or `hero-full-bleed-image` |
 | **Centered content** | `hero-centered` or `content-narrow` |
 | **Multiple sections** | `content-stack` |
-| **Feature showcase** | `features-grid-3` or `feature-grid-3` |
+| **Feature showcase** | `features-grid-3` |
 | **Social proof** | `testimonial-band` |
 | **Call to action** | `cta-centered` |
 | **Generic** | `default` |

@@ -9,7 +9,7 @@ import {
   type ResolutionChainEntry,
 } from "./pipeline-debug-store";
 import { getLayout } from "@/engine/core/layout-store";
-import { getState } from "@/state/state-store";
+import { getState, subscribeState } from "@/state/state-store";
 import { getOverridesForScreen, getCardOverridesForScreen } from "@/state/section-layout-preset-store";
 import { getOrganInternalLayoutOverridesForScreen } from "@/state/organ-internal-layout-store";
 import { getLastPipelineTrace, getPipelineTrace, recordStage } from "@/engine/debug/pipelineStageTrace";
@@ -659,12 +659,34 @@ function DeadInteractionBanner({ details }: { details: { interaction: LastIntera
   );
 }
 
+/** DEV ONLY: Active Controls from state.values (no new state, no store changes). */
+function ActiveControlsBlock() {
+  const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
+  const values = stateSnapshot?.values ?? {};
+  return (
+    <div style={{ marginBottom: 8, padding: 6, background: "rgba(0,0,0,0.06)", borderRadius: 4 }}>
+      <div style={{ fontSize: 10, fontWeight: 600, marginBottom: 4 }}>Active Controls</div>
+      <table style={{ width: "100%", fontSize: 10, borderCollapse: "collapse" }}>
+        <tbody>
+          {["experience", "templateId", "layoutMode", "stylingPreset", "behaviorProfile", "paletteName"].map((key) => (
+            <tr key={key}>
+              <td style={{ padding: "2px 6px 2px 0", verticalAlign: "top" }}>{key}</td>
+              <td style={{ padding: "2px 0" }}>{String(values[key as keyof typeof values] ?? "—")}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 function LiveStateView({ snapshot }: { snapshot: PipelineDebugSnapshot }) {
   return (
     <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
       {snapshot.deadInteractionDetected && snapshot.deadInteractionDetails && (
         <DeadInteractionBanner details={snapshot.deadInteractionDetails} />
       )}
+      <ActiveControlsBlock />
       <PipelineStageTraceBlock snapshot={snapshot} />
       <StateDiffBlock snapshot={snapshot} />
       <LayoutInputSourcesBlock snapshot={snapshot} />

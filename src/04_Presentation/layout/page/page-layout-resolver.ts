@@ -63,9 +63,9 @@ export function getPageLayoutId(
   return null;
 }
 
-/** All page layout ids (for dropdowns). */
+/** All page layout ids (for dropdowns). Unique by id only. */
 export function getPageLayoutIds(): string[] {
-  return Object.keys(pageLayouts);
+  return [...new Set(Object.keys(pageLayouts))];
 }
 
 /** Default page layout id when no override and no explicit node.layout. From template JSON only; no fallback. */

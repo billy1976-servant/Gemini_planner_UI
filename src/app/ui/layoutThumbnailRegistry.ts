@@ -17,7 +17,6 @@ export const SECTION_LAYOUT_THUMBNAILS: Record<string, string> = {
   "content-stack": `${BASE}/content-stack.svg`,
   "image-left-text-right": `${BASE}/content-left.svg`,
   "features-grid-3": `${BASE}/features-grid.svg`,
-  "feature-grid-3": `${BASE}/features-grid.svg`,
   "testimonial-band": `${BASE}/testimonials.svg`,
   "cta-centered": `${BASE}/cta-centered.svg`,
   "test-extensible": `${BASE}/default.svg`,

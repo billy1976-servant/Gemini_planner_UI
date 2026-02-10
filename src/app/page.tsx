@@ -242,25 +242,37 @@ export default function Page() {
   const effectiveLayoutMode = layoutModeFromState ?? (layoutSnapshot as { mode?: "template" | "custom" })?.mode ?? "template";
   const experienceProfile = getExperienceProfile(experience);
   const templateProfile = getTemplateProfile(effectiveTemplateId);
+
+  /* --- DEV ONLY: state.values.stylingPreset / behaviorProfile trace ---
+   * Written: RightFloatingSidebar, RightSidebarDockContent, ControlDock via setValue(key, value) → dispatchState("state.update", { key, value }).
+   * Read (UI only): Same files — for active button state and panel display.
+   * Should be read at runtime: (1) page.tsx here — effectiveProfile.visualPreset override from stylingPreset;
+   * (2) json-renderer root — applyProfileToNode path for visualPreset; behaviorProfile as data-behavior-profile / class on wrapper.
+   * --- */
+
+  const stylingOverride = stateSnapshot?.values?.stylingPreset as string | undefined;
   const effectiveProfile = useMemo(
-    () =>
-      templateProfile
-        ? {
-            ...experienceProfile,
-            id: templateProfile.id,
-            sections: templateProfile.sections,
-            defaultSectionLayoutId: templateProfile.defaultSectionLayoutId,
-            visualPreset: templateProfile.visualPreset,
-            containerWidth: templateProfile.containerWidth,
-            widthByRole: templateProfile.widthByRole,
-            spacingScale: templateProfile.spacingScale,
-            cardPreset: templateProfile.cardPreset,
-            heroMode: templateProfile.heroMode,
-            sectionBackgroundPattern: templateProfile.sectionBackgroundPattern,
-            mode: effectiveLayoutMode,
-          }
-        : { ...experienceProfile, mode: effectiveLayoutMode },
-    [experience, effectiveTemplateId, effectiveLayoutMode]
+    () => {
+      if (!templateProfile) return { ...experienceProfile, mode: effectiveLayoutMode };
+      const base = {
+        ...experienceProfile,
+        id: templateProfile.id,
+        sections: templateProfile.sections,
+        defaultSectionLayoutId: templateProfile.defaultSectionLayoutId,
+        visualPreset: templateProfile.visualPreset,
+        containerWidth: templateProfile.containerWidth,
+        widthByRole: templateProfile.widthByRole,
+        spacingScale: templateProfile.spacingScale,
+        cardPreset: templateProfile.cardPreset,
+        heroMode: templateProfile.heroMode,
+        sectionBackgroundPattern: templateProfile.sectionBackgroundPattern,
+        mode: effectiveLayoutMode,
+      };
+      // Styling panel soft override: state.values.stylingPreset overrides visualPreset only.
+      base.visualPreset = stylingOverride ?? templateProfile.visualPreset;
+      return base;
+    },
+    [experience, effectiveTemplateId, effectiveLayoutMode, experienceProfile, templateProfile, stylingOverride]
   );
 
   const sectionLayoutPresetOverrides = useMemo(
@@ -455,7 +467,25 @@ export default function Page() {
   const children = assignSectionInstanceKeys(rawChildren);
   const docForOrgans = { meta: { domain: "offline", pageId: "screen", version: 1 }, nodes: children };
   const expandedDoc = expandOrgansInDocument(docForOrgans as any, loadOrganVariant, organInternalLayoutOverrides);
+  // DEV: Template content misfire trace — (1) slotKeys present after expandOrgans
+  if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
+    const slotKeysAfterExpand: string[] = [];
+    function collectSlotKeys(nodes: any[]): void {
+      if (!Array.isArray(nodes)) return;
+      for (const n of nodes) {
+        if (n && typeof n === "object" && (n as any).type === "slot" && typeof (n as any).slotKey === "string") slotKeysAfterExpand.push((n as any).slotKey);
+        if (Array.isArray((n as any)?.children)) collectSlotKeys((n as any).children);
+      }
+    }
+    if (Array.isArray((expandedDoc as any)?.nodes)) collectSlotKeys((expandedDoc as any).nodes);
+    if (Array.isArray((expandedDoc as any)?.regions)) (expandedDoc as any).regions.forEach((r: any) => collectSlotKeys(r?.nodes ?? []));
+    console.log("[page] DEV after expandOrgansInDocument — slotKeys present", slotKeysAfterExpand);
+  }
   const data = json?.data ?? {};
+  // DEV: (2) keys of json.data before applySkinBindings
+  if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
+    console.log("[page] DEV before applySkinBindings — keys of json.data", Object.keys(data));
+  }
   const boundDoc = applySkinBindings(expandedDoc as any, data);
   const finalChildren = (boundDoc as any).nodes ?? children;
   renderNode = { ...renderNode, children: finalChildren };
@@ -628,6 +658,7 @@ export default function Page() {
     screenKey,
     sectionOverrides: sectionLayoutPresetOverrides,
   });
+  const behaviorProfile = (stateSnapshot?.values?.behaviorProfile ?? "default") as string;
   const jsonContent = (
     <JsonRenderer
       key={screenContainerKey}
@@ -638,6 +669,7 @@ export default function Page() {
       cardLayoutPresetOverrides={cardLayoutPresetOverrides}
       organInternalLayoutOverrides={organInternalLayoutOverrides}
       screenId={screenKey}
+      behaviorProfile={behaviorProfile}
     />
   );
 

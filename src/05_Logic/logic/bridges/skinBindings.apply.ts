@@ -19,14 +19,20 @@ function isSlotNode(n: SiteSkinNode): n is SlotNode {
 
 function resolveSlotNode(slot: SlotNode, data: Record<string, any>): any[] {
   const value = getByPath(data, slot.slotKey);
-
-  // Allow engines/mappers to directly supply molecule nodes
-  if (Array.isArray(value) && value.every((x) => x && typeof x === "object" && typeof (x as any).type === "string")) {
-    return value as any[];
+  const hasData = value !== undefined;
+  const resolved = (() => {
+    // Allow engines/mappers to directly supply molecule nodes
+    if (Array.isArray(value) && value.every((x) => x && typeof x === "object" && typeof (x as any).type === "string")) {
+      return value as any[];
+    }
+    // Default: unresolved slot renders nothing (deterministic, safe)
+    return [];
+  })();
+  // DEV: Template content misfire trace (3) — per slot: slotKey, whether data exists, resolved length
+  if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
+    console.log("[applySkinBindings] DEV slot", { slotKey: slot.slotKey, dataExists: hasData, resolvedLength: resolved.length });
   }
-
-  // Default: unresolved slot renders nothing (deterministic, safe)
-  return [];
+  return resolved;
 }
 
 function resolveNodes(nodes: SiteSkinNode[], data: Record<string, any>): any[] {

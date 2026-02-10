@@ -1,8 +1,8 @@
 /**
  * GET /api/module-templates
- * Returns blueprint options from src/08_Modules (contractors, medical, legal).
- * Only lists *.blueprint.txt files; ignores _master.blueprint.txt.
- * Used by the Template app dropdown in CreateNewInterfacePanel.
+ * Discovers templates from 08_Modules/<vertical>/<subtype>/content.txt.
+ * Blueprint source is vertical/master/blueprint.txt (same for all subtypes in that vertical).
+ * Returns value: "vertical_subtype" for use by create-from-module.
  */
 
 import { NextResponse } from "next/server";
@@ -27,17 +27,21 @@ export async function GET() {
     }
 
     for (const vertical of VERTICALS) {
-      const dir = path.join(MODULES_ROOT, vertical);
-      if (!fs.existsSync(dir) || !fs.statSync(dir).isDirectory()) continue;
+      const verticalDir = path.join(MODULES_ROOT, vertical);
+      if (!fs.existsSync(verticalDir) || !fs.statSync(verticalDir).isDirectory()) continue;
 
-      const files = fs.readdirSync(dir);
-      for (const file of files) {
-        if (!file.endsWith(".blueprint.txt")) continue;
-        if (file.startsWith("_master")) continue;
+      const masterBlueprint = path.join(verticalDir, "master", "blueprint.txt");
+      if (!fs.existsSync(masterBlueprint)) continue;
 
-        const base = file.replace(/\.blueprint\.txt$/, "");
-        const value = `${vertical}_${base}`;
-        const label = `${vertical} / ${base.replace(/-/g, " ")}`;
+      const entries = fs.readdirSync(verticalDir, { withFileTypes: true });
+      for (const entry of entries) {
+        if (!entry.isDirectory() || entry.name === "master") continue;
+        const subtype = entry.name;
+        const contentPath = path.join(verticalDir, subtype, "content.txt");
+        if (!fs.existsSync(contentPath) || !fs.statSync(contentPath).isFile()) continue;
+
+        const value = `${vertical}_${subtype}`;
+        const label = `${vertical} / ${subtype.replace(/-/g, " ")}`;
         templates.push({ value, label });
       }
     }

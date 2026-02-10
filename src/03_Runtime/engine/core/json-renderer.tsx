@@ -404,6 +404,13 @@ function applyProfileToNode(
       PipelineDebugStore.mark("json-renderer", "applyProfileToNode.section", {
         sectionKey,
         layoutId: layoutId ?? null,
+        ruleApplied,
+      });
+      // Duplicate layout diagnosis: trace sectionKey + resolved layoutId + ruleApplied (expected: multiple sections can share same layout; detect duplicate keys / override collision).
+      PipelineDebugStore.mark("json-renderer", "section-layout-diagnosis", {
+        sectionKey,
+        resolvedLayoutId: layoutId ?? null,
+        ruleApplied,
       });
     }
     const resolvedSectionKey = (sectionKey && sectionKey.trim()) ? sectionKey : (node?.id ?? node?.role ?? "anonymous");
@@ -916,6 +923,13 @@ export function renderNode(
 /* ======================================================
    ROOT — REACTIVE SNAPSHOT
 ====================================================== */
+/** Map behavior profile to transition hint for optional CSS (calm=longer, fast=shorter, default=normal). */
+function getBehaviorTransitionHint(profile: string): string {
+  if (profile === "calm") return "calm";
+  if (profile === "fast") return "fast";
+  return "default";
+}
+
 export default function JsonRenderer({
   node,
   defaultState,
@@ -924,6 +938,7 @@ export default function JsonRenderer({
   cardLayoutPresetOverrides,
   organInternalLayoutOverrides,
   screenId,
+  behaviorProfile: behaviorProfileProp,
 }: {
   node: any;
   defaultState?: any;
@@ -940,6 +955,8 @@ export default function JsonRenderer({
   organInternalLayoutOverrides?: Record<string, string>;
   /** Screen key for this render (e.g. for override lookup). */
   screenId?: string;
+  /** Behavior profile from state.values.behaviorProfile (calm/fast/default etc). Applied as attr + class on root wrapper only. */
+  behaviorProfile?: string;
 }) {
   // 🔑 Track if user has interacted (state changed from default) - use reactive state after interaction
   const hasInteracted = React.useRef(false);
@@ -1091,11 +1108,24 @@ export default function JsonRenderer({
   trace({ time: Date.now(), type: "render", label: node?.type ?? "unknown" });
   PipelineDebugStore.setLastRenderRoot(node?.id ?? "unknown");
 
+  // Behavior profile: prop from page or state.values.behaviorProfile; applied only as attr/class on root wrapper.
+  const behaviorProfile = behaviorProfileProp ?? (rawState?.values?.behaviorProfile as string) ?? "default";
+  const behaviorTransition = getBehaviorTransitionHint(behaviorProfile);
+
   PipelineDebugStore.startRenderPass();
   const result = renderNode(node, profile, stateSnapshot, effectiveDefaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides);
   PipelineDebugStore.endRenderPass();
   recordStage("render", "pass", "Render cycle completed");
-  return result;
+
+  return (
+    <div
+      data-behavior-profile={behaviorProfile}
+      data-behavior-transition={behaviorTransition}
+      className={`behavior-${behaviorProfile}`}
+    >
+      {result}
+    </div>
+  );
 }
 
 

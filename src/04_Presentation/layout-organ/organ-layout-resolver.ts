@@ -31,11 +31,12 @@ export function getOrganLayoutProfile(organId: string): OrganProfile | null {
 }
 
 /**
- * Return valid internal layout IDs for the given organ type. Empty if unknown.
+ * Return valid internal layout IDs for the given organ type. Empty if unknown. Unique by id only.
  */
 export function getInternalLayoutIds(organId: string): string[] {
   const profile = getOrganLayoutProfile(organId);
-  return profile?.internalLayoutIds ?? [];
+  const ids = profile?.internalLayoutIds ?? [];
+  return [...new Set(ids)];
 }
 
 /**

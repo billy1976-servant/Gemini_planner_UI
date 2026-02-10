@@ -16,9 +16,9 @@ const GOOGLE = {
   radius: 8,
 };
 
-type ModuleTemplateEntry = { value: string; label: string };
+type TemplateEntry = { value: string; label: string };
 
-const APP_TEMPLATES: ModuleTemplateEntry[] = [
+const FALLBACK_APP_TEMPLATES: TemplateEntry[] = [
   { value: "journal_track", label: "journal_track" },
 ];
 
@@ -26,9 +26,25 @@ export default function CreateNewInterfacePanel() {
   const router = useRouter();
   const [template, setTemplate] = useState("journal_track");
   const [appName, setAppName] = useState("");
-  const [moduleTemplates, setModuleTemplates] = useState<ModuleTemplateEntry[]>([]);
+  const [appTemplates, setAppTemplates] = useState<TemplateEntry[]>(FALLBACK_APP_TEMPLATES);
+  const [moduleTemplates, setModuleTemplates] = useState<TemplateEntry[]>([]);
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    fetch("/api/app-templates")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data.templates) && data.templates.length > 0) {
+          setAppTemplates(data.templates);
+          setTemplate((prev) => {
+            const exists = data.templates.some((t: TemplateEntry) => t.value === prev);
+            return exists ? prev : data.templates[0].value;
+          });
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     fetch("/api/module-templates")
@@ -52,7 +68,7 @@ export default function CreateNewInterfacePanel() {
     setMessage("");
     try {
       if (isModuleTemplate) {
-        // Create from 08_Modules: copy blueprint + empty content to apps-json/generated/<slug>; do not compile
+        // Create from 08_Modules: copy master blueprint + subtype content to generated/<slug>, then compile
         const createRes = await fetch("/api/create-from-module", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -67,6 +83,7 @@ export default function CreateNewInterfacePanel() {
           setMessage(createData.error || createRes.statusText);
           return;
         }
+        // create-from-module now compiles; redirect only on success (app.json exists)
         setStatus("ok");
         setMessage("Created. Opening…");
         const screenPath = `generated/${slug}/app`;
@@ -135,7 +152,7 @@ export default function CreateNewInterfacePanel() {
           }}
         >
           <optgroup label="App templates">
-            {APP_TEMPLATES.map((t) => (
+            {appTemplates.map((t) => (
               <option key={t.value} value={t.value}>
                 {t.label}
               </option>
@@ -174,7 +191,7 @@ export default function CreateNewInterfacePanel() {
         />
         {slug && (
           <div style={{ fontSize: 11, color: GOOGLE.textSecondary, marginTop: "4px" }}>
-            Folder: apps/{isModuleTemplate ? `generated/${slug}` : slug}
+            Folder: {isModuleTemplate ? `generated/${slug}` : `apps/${slug}`}
           </div>
         )}
       </div>

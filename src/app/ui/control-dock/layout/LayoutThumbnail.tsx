@@ -148,27 +148,7 @@ const LAYOUT_BLUEPRINTS: Record<string, Primitive[]> = {
     { type: "icon", cx: 96, cy: 58, r: 4 },
     { type: "text", x: 84, y: 66, width: 24, height: 6 },
   ],
-  
-  "feature-grid-3": [
-    { type: "card", x: 8, y: 20, width: 32, height: 50, color: COLORS.content },
-    { type: "icon", cx: 24, cy: 32, r: 5 },
-    { type: "text", x: 12, y: 42, width: 24, height: 6 },
-    { type: "text", x: 12, y: 50, width: 24, height: 3 },
-    { type: "text", x: 12, y: 56, width: 24, height: 3 },
-    
-    { type: "card", x: 44, y: 20, width: 32, height: 50, color: COLORS.content },
-    { type: "icon", cx: 60, cy: 32, r: 5 },
-    { type: "text", x: 48, y: 42, width: 24, height: 6 },
-    { type: "text", x: 48, y: 50, width: 24, height: 3 },
-    { type: "text", x: 48, y: 56, width: 24, height: 3 },
-    
-    { type: "card", x: 80, y: 20, width: 32, height: 50, color: COLORS.content },
-    { type: "icon", cx: 96, cy: 32, r: 5 },
-    { type: "text", x: 84, y: 42, width: 24, height: 6 },
-    { type: "text", x: 84, y: 50, width: 24, height: 3 },
-    { type: "text", x: 84, y: 56, width: 24, height: 3 },
-  ],
-  
+
   "testimonial-band": [
     { type: "card", x: 8, y: 16, width: 32, height: 58, color: COLORS.content },
     { type: "quote", x: 14, y: 22, size: 6 },

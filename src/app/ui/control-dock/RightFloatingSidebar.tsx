@@ -385,7 +385,9 @@ function RightFloatingSidebarInner({ layoutPanelContent }: RightFloatingSidebarP
             )}
             {openPanel === "layout" && (
               layoutPanelContent != null ? (
-                <div>{layoutPanelContent}</div>
+                <div style={{ width: "100%", maxWidth: "100%", minWidth: 0, overflowX: "hidden", display: "flex", flexDirection: "column" }}>
+                  {layoutPanelContent}
+                </div>
               ) : (
                 <div style={{ padding: "16px 0", fontSize: 14, color: GOOGLE.textSecondary, lineHeight: 1.5 }}>
                   Layout controls appear when a website-style screen is loaded.

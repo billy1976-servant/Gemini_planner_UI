@@ -29,9 +29,9 @@ export function resolveComponentLayout(layoutId: string | null | undefined): Com
   return def && typeof def === "object" ? def : null;
 }
 
-/** All component layout ids that have section-inner definitions (for dropdowns / validation). */
+/** All component layout ids that have section-inner definitions (for dropdowns / validation). Unique by id only. */
 export function getComponentLayoutIds(): string[] {
-  return Object.keys(componentLayouts);
+  return [...new Set(Object.keys(componentLayouts))];
 }
 
 export default resolveComponentLayout;
