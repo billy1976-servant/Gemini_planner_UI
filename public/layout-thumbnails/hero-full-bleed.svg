@@ -1,8 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 90" width="120" height="90">
-  <defs>
-    <linearGradient id="hf1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#67e8f9"/><stop offset="1" stop-color="#22d3ee"/></linearGradient>
-  </defs>
-  <rect width="120" height="90" fill="#0e7490" rx="6"/>
-  <rect x="0" y="0" width="120" height="90" rx="6" fill="url(#hf1)" opacity="0.85"/>
-  <rect x="36" y="32" width="48" height="26" rx="4" fill="rgba(255,255,255,0.3)"/>
+  <rect width="120" height="90" fill="#f8fafc" rx="6"/>
+  <!-- Full-bleed image (picture icon in center) -->
+  <rect x="0" y="0" width="120" height="90" rx="6" fill="#0ea5e9" opacity="0.25"/>
+  <rect x="8" y="8" width="104" height="54" rx="2" fill="#e0f2fe" stroke="#0284c7" stroke-width="1"/>
+  <circle cx="60" cy="28" r="12" fill="none" stroke="#0369a1" stroke-width="1.5"/>
+  <path d="M52 48 L60 38 L68 48 L60 58 Z" fill="#0369a1" opacity="0.9"/>
+  <!-- Overlay: headline + text -->
+  <rect x="20" y="68" width="80" height="8" rx="2" fill="#334155"/>
+  <rect x="20" y="78" width="60" height="4" rx="1" fill="#94a3b8"/>
 </svg>

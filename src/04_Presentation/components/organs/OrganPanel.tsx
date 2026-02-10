@@ -7,11 +7,14 @@ import { getInternalLayoutIds } from "@/layout-organ";
 import { PipelineDebugStore } from "@/devtools/pipeline-debug-store";
 import LayoutTilePicker from "@/app/ui/control-dock/layout/LayoutTilePicker";
 import type { LayoutTileOption } from "@/app/ui/control-dock/layout/LayoutTilePicker";
+import LayoutLivePreview from "@/app/ui/control-dock/layout/LayoutLivePreview";
 import {
   getSectionLayoutThumbnail,
   getCardLayoutThumbnail,
   getOrganLayoutThumbnail,
 } from "@/app/ui/control-dock/layout/layoutThumbnails";
+
+type LayoutViewMode = "text" | "visual" | "live";
 
 export type OrganPanelProps = {
   /** Section keys to show layout preset for (from collectSectionKeysAndNodes). */
@@ -97,7 +100,7 @@ export default function OrganPanel({
   onOrganInternalLayoutOverride,
   sectionNodesByKey,
 }: OrganPanelProps) {
-  const [visualMode, setVisualMode] = useState(true);
+  const [layoutViewMode, setLayoutViewMode] = useState<LayoutViewMode>("visual");
   const rowIds = sectionKeysForPreset ?? [];
   const allSectionLayoutIds = getSectionLayoutIds();
 
@@ -149,42 +152,29 @@ export default function OrganPanel({
       <p style={{ color: "rgba(0,0,0,0.5)", marginBottom: "var(--spacing-4)", marginTop: 0, fontSize: "var(--font-size-xs)" }}>
         Section layout, card layout, and organ internal layout (dev). Applies to this screen only.
       </p>
-      <div style={{ marginBottom: "var(--spacing-4)", display: "flex", gap: "var(--spacing-2)", alignItems: "center" }}>
+      <div style={{ marginBottom: "var(--spacing-4)", display: "flex", gap: "var(--spacing-2)", alignItems: "center", flexWrap: "wrap" }}>
         <span style={{ fontSize: "var(--font-size-xs)", color: "rgba(0,0,0,0.55)" }}>Mode:</span>
-        <button
-          type="button"
-          onClick={() => setVisualMode(true)}
-          style={{
-            padding: "6px 12px",
-            borderRadius: "8px",
-            border: "none",
-            background: visualMode ? "linear-gradient(180deg, #3b82f6 0%, #2563eb 100%)" : "rgba(255,255,255,0.9)",
-            color: visualMode ? "#fff" : "rgba(0,0,0,0.8)",
-            fontSize: "var(--font-size-xs)",
-            cursor: "pointer",
-            boxShadow: visualMode ? "0 2px 6px rgba(59, 130, 246, 0.35)" : "0 1px 3px rgba(0,0,0,0.06)",
-            transition: "background 0.2s ease, box-shadow 0.2s ease",
-          }}
-        >
-          Visual
-        </button>
-        <button
-          type="button"
-          onClick={() => setVisualMode(false)}
-          style={{
-            padding: "6px 12px",
-            borderRadius: "8px",
-            border: "none",
-            background: !visualMode ? "linear-gradient(180deg, #3b82f6 0%, #2563eb 100%)" : "rgba(255,255,255,0.9)",
-            color: !visualMode ? "#fff" : "rgba(0,0,0,0.8)",
-            fontSize: "var(--font-size-xs)",
-            cursor: "pointer",
-            boxShadow: !visualMode ? "0 2px 6px rgba(59, 130, 246, 0.35)" : "0 1px 3px rgba(0,0,0,0.06)",
-            transition: "background 0.2s ease, box-shadow 0.2s ease",
-          }}
-        >
-          Text
-        </button>
+        {(["visual", "live", "text"] as const).map((mode) => (
+          <button
+            key={mode}
+            type="button"
+            onClick={() => setLayoutViewMode(mode)}
+            style={{
+              padding: "6px 12px",
+              borderRadius: "8px",
+              border: "none",
+              background: layoutViewMode === mode ? "linear-gradient(180deg, #3b82f6 0%, #2563eb 100%)" : "rgba(255,255,255,0.9)",
+              color: layoutViewMode === mode ? "#fff" : "rgba(0,0,0,0.8)",
+              fontSize: "var(--font-size-xs)",
+              cursor: "pointer",
+              boxShadow: layoutViewMode === mode ? "0 2px 6px rgba(59, 130, 246, 0.35)" : "0 1px 3px rgba(0,0,0,0.06)",
+              transition: "background 0.2s ease, box-shadow 0.2s ease",
+              textTransform: "capitalize",
+            }}
+          >
+            {mode === "live" ? "Live" : mode === "visual" ? "Visual" : "Text"}
+          </button>
+        ))}
       </div>
       {rowIds.map((sectionKey) => {
         const label = sectionLabels?.[sectionKey] ?? getOrganLabel(sectionKey);
@@ -250,11 +240,25 @@ export default function OrganPanel({
         };
 
         const sectionTileOptions: LayoutTileOption[] = [
-          { id: "", label: "(default)" },
+          {
+            id: "",
+            label: "(default)",
+            thumbnail:
+              layoutViewMode === "live" ? (
+                <LayoutLivePreview layoutId="" width={160} height={120} />
+              ) : (
+                getSectionLayoutThumbnail("")
+              ),
+          },
           ...sectionOptionsFiltered.map((id) => ({
             id,
             label: id,
-            thumbnail: getSectionLayoutThumbnail(id),
+            thumbnail:
+              layoutViewMode === "live" ? (
+                <LayoutLivePreview key={id} layoutId={id} width={160} height={120} />
+              ) : (
+                getSectionLayoutThumbnail(id)
+              ),
           })),
         ];
         const cardTileOptions: LayoutTileOption[] = [
@@ -277,7 +281,7 @@ export default function OrganPanel({
         return (
           <div key={sectionKey} style={rowBlockStyle}>
             <div style={{ ...LABEL_STYLE, fontWeight: 600 }}>{label}</div>
-            {visualMode ? (
+            {layoutViewMode !== "text" ? (
               <>
                 {onSectionLayoutPresetOverride && (
                   <LayoutTilePicker
@@ -307,7 +311,7 @@ export default function OrganPanel({
                   />
                 )}
               </>
-            ) : (
+            ) : layoutViewMode === "text" ? (
               <>
                 {onSectionLayoutPresetOverride && (
                   <>
@@ -373,7 +377,7 @@ export default function OrganPanel({
                   </>
                 )}
               </>
-            )}
+            ) : null}
           </div>
         );
       })}

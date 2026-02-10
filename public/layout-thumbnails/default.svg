@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 90" width="120" height="90">
-  <defs>
-    <linearGradient id="df1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#cbd5e1"/><stop offset="1" stop-color="#94a3b8"/></linearGradient>
-  </defs>
   <rect width="120" height="90" fill="#f8fafc" rx="6"/>
-  <rect x="12" y="12" width="48" height="66" rx="4" fill="url(#df1)" opacity="0.8"/>
-  <rect x="60" y="12" width="48" height="66" rx="4" fill="url(#df1)" opacity="0.65"/>
+  <!-- Generic: header + text (default block) -->
+  <rect x="14" y="18" width="92" height="8" rx="2" fill="#334155"/>
+  <rect x="14" y="30" width="92" height="5" rx="1" fill="#94a3b8"/>
+  <rect x="14" y="38" width="92" height="5" rx="1" fill="#94a3b8"/>
+  <rect x="14" y="46" width="92" height="5" rx="1" fill="#94a3b8"/>
 </svg>

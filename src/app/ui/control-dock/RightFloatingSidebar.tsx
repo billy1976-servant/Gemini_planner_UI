@@ -15,7 +15,9 @@ import { getState, subscribeState, dispatchState } from "@/state/state-store";
 import { getPaletteName, setPalette, subscribePalette } from "@/engine/core/palette-store";
 import { palettes } from "@/palettes";
 import { getTemplateList } from "@/lib/layout/template-profiles";
-import { getSidebarIconPathOrWarn } from "@/ui/sidebarIconRegistry";
+import { getSidebarIconPathOrWarn } from "@/app/ui/sidebarIconRegistry";
+import PaletteLivePreview from "@/app/ui/control-dock/PaletteLivePreview";
+import StylingLivePreview from "@/app/ui/control-dock/StylingLivePreview";
 
 const PALETTE_NAMES = Object.keys(palettes) as string[];
 const MODES = ["template", "custom"] as const;
@@ -42,47 +44,47 @@ const PILL_CONFIG: Array<{ id: DockPanelId; label: string }> = [
   { id: "layout", label: "Layout" },
 ];
 
-/* Premium palette — glassy, soft glow, no hard borders */
-const PALETTE = {
-  softBlue: "#3b82f6",
-  softBlueFill: "rgba(59, 130, 246, 0.14)",
-  softBlueGlow: "rgba(59, 130, 246, 0.4)",
-  neutralBg: "#f8fafc",
-  neutralBgElevated: "#ffffff",
-  neutralBorder: "rgba(255,255,255,0.5)",
-  textPrimary: "rgba(0,0,0,0.82)",
-  textMuted: "rgba(0,0,0,0.5)",
-  hoverTint: "rgba(255,255,255,0.4)",
-  shadowSoft: "0 4px 12px rgba(0,0,0,0.06)",
-  shadowGlow: "0 0 24px rgba(59, 130, 246, 0.18)",
+/* Google-style: Material surface, blue primary, gray hierarchy */
+const GOOGLE = {
+  primary: "#1a73e8",
+  primaryHover: "#1765cc",
+  primaryBg: "#e8f0fe",
+  surface: "#ffffff",
+  surfaceHover: "#f1f3f4",
+  border: "#dadce0",
+  textPrimary: "#202124",
+  textSecondary: "#5f6368",
+  textCaption: "#80868b",
+  fontFamily: "'Google Sans', 'Roboto', system-ui, sans-serif",
+  radius: 8,
+  radiusFull: 20,
+  shadow: "0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15)",
 };
 
 const RAIL_STYLE: React.CSSProperties = {
   width: RAIL_WIDTH,
   flexShrink: 0,
-  padding: "10px 6px",
-  background: "rgba(255,255,255,0.72)",
-  backdropFilter: "blur(20px)",
-  WebkitBackdropFilter: "blur(20px)",
-  borderLeft: "1px solid rgba(0,0,0,0.06)",
-  boxShadow: "0 0 0 1px rgba(255,255,255,0.6) inset",
+  padding: "8px 0",
+  background: GOOGLE.surface,
+  borderLeft: `1px solid ${GOOGLE.border}`,
   display: "flex",
   flexDirection: "column",
-  gap: "8px",
+  gap: "4px",
   alignItems: "center",
+  boxShadow: GOOGLE.shadow,
 };
 
 const ICON_BUTTON_STYLE: React.CSSProperties = {
-  width: "44px",
-  height: "44px",
+  width: 40,
+  height: 40,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  borderRadius: "12px",
+  borderRadius: GOOGLE.radiusFull,
   cursor: "pointer",
   background: "transparent",
   border: "none",
-  transition: "background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease",
+  transition: "background 0.15s ease",
 };
 
 export type RightFloatingSidebarProps = {
@@ -113,8 +115,7 @@ function RightFloatingSidebarInner({ layoutPanelContent }: RightFloatingSidebarP
   };
 
   const isPanelOpen = (id: DockPanelId) => openPanel === id;
-  const hasLayout = layoutPanelContent != null;
-  const pills = hasLayout ? PILL_CONFIG : PILL_CONFIG.filter((p) => p.id !== "layout");
+  const pills = PILL_CONFIG;
 
   const activeLabel = openPanel ? PILL_CONFIG.find((p) => p.id === openPanel)?.label : null;
 
@@ -139,22 +140,22 @@ function RightFloatingSidebarInner({ layoutPanelContent }: RightFloatingSidebarP
           overflow: "hidden",
           display: "flex",
           flexDirection: "column",
-          background: PALETTE.neutralBgElevated,
-          borderLeft: "1px solid " + PALETTE.neutralBorder,
-          boxShadow: "2px 0 24px rgba(0,0,0,0.06)",
+          background: GOOGLE.surface,
+          borderLeft: `1px solid ${GOOGLE.border}`,
+          boxShadow: GOOGLE.shadow,
           transition: "width 0.2s ease",
         }}
       >
         {openPanel && (
           <>
-            <div style={{ padding: "16px 18px", borderBottom: "1px solid " + PALETTE.neutralBorder, flexShrink: 0, background: "rgba(248,250,252,0.8)" }}>
-              <h3 style={{ margin: 0, fontSize: "15px", fontWeight: 600, color: PALETTE.textPrimary }}>
+            <div style={{ padding: "16px 20px", borderBottom: `1px solid ${GOOGLE.border}`, flexShrink: 0, background: GOOGLE.surface }}>
+              <h3 style={{ margin: 0, fontSize: 14, fontWeight: 500, color: GOOGLE.textPrimary, fontFamily: GOOGLE.fontFamily }}>
                 {activeLabel}
               </h3>
             </div>
-            <div style={{ padding: "18px", overflowY: "auto", overflowX: "hidden", height: "100%", flex: 1, minHeight: 0, minWidth: 0 }}>
+            <div style={{ padding: "12px 16px", overflowY: "auto", overflowX: "hidden", height: "100%", flex: 1, minHeight: 0, minWidth: 0, fontFamily: GOOGLE.fontFamily }}>
             {openPanel === "experience" && (
-              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
                 {EXPERIENCES.map((exp) => {
                   const isActive = experience === exp.id;
                   return (
@@ -162,18 +163,20 @@ function RightFloatingSidebarInner({ layoutPanelContent }: RightFloatingSidebarP
                       key={exp.id}
                       type="button"
                       onClick={() => setValue("experience", exp.id)}
-                      className={experience === exp.id ? "editor-button active" : "editor-button"}
+                      onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = GOOGLE.surfaceHover; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = isActive ? GOOGLE.primaryBg : "transparent"; }}
                       style={{
-                        padding: "10px 14px",
-                        borderRadius: "10px",
+                        minHeight: 48,
+                        padding: "0 12px",
+                        borderRadius: GOOGLE.radius,
                         cursor: "pointer",
                         textAlign: "left",
-                        fontSize: "13px",
+                        fontSize: 14,
                         border: "none",
-                        background: isActive ? PALETTE.softBlueFill : "transparent",
-                        color: isActive ? PALETTE.softBlue : PALETTE.textPrimary,
-                        fontWeight: isActive ? 600 : 400,
-                        transition: "background 0.2s ease, color 0.2s ease",
+                        background: isActive ? GOOGLE.primaryBg : "transparent",
+                        color: isActive ? GOOGLE.primary : GOOGLE.textPrimary,
+                        fontWeight: isActive ? 500 : 400,
+                        transition: "background 0.15s ease",
                       }}
                     >
                       {exp.label}
@@ -183,7 +186,7 @@ function RightFloatingSidebarInner({ layoutPanelContent }: RightFloatingSidebarP
               </div>
             )}
             {openPanel === "mode" && (
-              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
                 {MODES.map((mode) => {
                   const isActive = layoutMode === mode;
                   return (
@@ -191,19 +194,21 @@ function RightFloatingSidebarInner({ layoutPanelContent }: RightFloatingSidebarP
                       key={mode}
                       type="button"
                       onClick={() => setValue("layoutMode", mode)}
-                      className={layoutMode === mode ? "editor-button active" : "editor-button"}
+                      onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = GOOGLE.surfaceHover; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = isActive ? GOOGLE.primaryBg : "transparent"; }}
                       style={{
-                        padding: "10px 14px",
-                        borderRadius: "10px",
+                        minHeight: 48,
+                        padding: "0 12px",
+                        borderRadius: GOOGLE.radius,
                         cursor: "pointer",
                         textAlign: "left",
-                        fontSize: "13px",
+                        fontSize: 14,
                         textTransform: "capitalize",
                         border: "none",
-                        background: isActive ? PALETTE.softBlueFill : "transparent",
-                        color: isActive ? PALETTE.softBlue : PALETTE.textPrimary,
-                        fontWeight: isActive ? 600 : 400,
-                        transition: "background 0.2s ease, color 0.2s ease",
+                        background: isActive ? GOOGLE.primaryBg : "transparent",
+                        color: isActive ? GOOGLE.primary : GOOGLE.textPrimary,
+                        fontWeight: isActive ? 500 : 400,
+                        transition: "background 0.15s ease",
                       }}
                     >
                       {mode}
@@ -213,51 +218,62 @@ function RightFloatingSidebarInner({ layoutPanelContent }: RightFloatingSidebarP
               </div>
             )}
             {openPanel === "palette" && (
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px" }}>
-                {PALETTE_NAMES.map((name) => {
-                  const isActive = paletteName === name;
-                  return (
-                    <button
-                      key={name}
-                      type="button"
-                      onClick={() => handlePaletteChange(name)}
-                      className={paletteName === name ? "editor-button active" : "editor-button"}
-                      style={{
-                        padding: "12px",
-                        borderRadius: "10px",
-                        cursor: "pointer",
-                        fontSize: "13px",
-                        fontWeight: isActive ? 600 : 400,
-                        textTransform: "capitalize",
-                        border: "none",
-                        background: isActive ? PALETTE.softBlueFill : "transparent",
-                        color: isActive ? PALETTE.softBlue : PALETTE.textPrimary,
-                        transition: "background 0.2s ease, color 0.2s ease",
-                      }}
-                    >
-                      {name}
-                    </button>
-                  );
-                })}
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <div style={{ fontSize: 12, color: GOOGLE.textSecondary, marginBottom: "4px", fontWeight: 500 }}>
+                  Live preview
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "8px" }}>
+                  {PALETTE_NAMES.map((name) => {
+                    const isActive = paletteName === name;
+                    return (
+                      <button
+                        key={name}
+                        type="button"
+                        onClick={() => handlePaletteChange(name)}
+                        style={{
+                          padding: "12px",
+                          borderRadius: GOOGLE.radius,
+                          cursor: "pointer",
+                          fontSize: 13,
+                          fontWeight: isActive ? 500 : 400,
+                          textTransform: "capitalize",
+                          border: `1px solid ${isActive ? GOOGLE.primary : GOOGLE.border}`,
+                          background: isActive ? GOOGLE.primaryBg : GOOGLE.surface,
+                          color: isActive ? GOOGLE.primary : GOOGLE.textPrimary,
+                          transition: "background 0.15s ease, border-color 0.15s ease",
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          gap: "6px",
+                        }}
+                      >
+                        <PaletteLivePreview paletteName={name} size={64} />
+                        {name}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             )}
             {openPanel === "template" && (
-              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
                 <button
                   type="button"
                   onClick={() => setValue("templateId", "")}
-                  className={templateId === "" ? "editor-button active" : "editor-button"}
+                  onMouseEnter={(e) => { if (templateId !== "") e.currentTarget.style.background = GOOGLE.surfaceHover; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = templateId === "" ? GOOGLE.primaryBg : "transparent"; }}
                   style={{
-                    padding: "10px 14px",
-                    borderRadius: "10px",
+                    minHeight: 48,
+                    padding: "0 12px",
+                    borderRadius: GOOGLE.radius,
                     cursor: "pointer",
                     textAlign: "left",
-                    fontSize: "13px",
+                    fontSize: 14,
                     border: "none",
-                    background: templateId === "" ? PALETTE.softBlueFill : "transparent",
-                    color: templateId === "" ? PALETTE.softBlue : PALETTE.textPrimary,
-                    fontWeight: templateId === "" ? 600 : 400,
-                    transition: "background 0.2s ease, color 0.2s ease",
+                    background: templateId === "" ? GOOGLE.primaryBg : "transparent",
+                    color: templateId === "" ? GOOGLE.primary : GOOGLE.textPrimary,
+                    fontWeight: templateId === "" ? 500 : 400,
+                    transition: "background 0.15s ease",
                   }}
                 >
                   (experience only)
@@ -269,18 +285,20 @@ function RightFloatingSidebarInner({ layoutPanelContent }: RightFloatingSidebarP
                       key={t.id}
                       type="button"
                       onClick={() => setValue("templateId", t.id)}
-                      className={templateId === t.id ? "editor-button active" : "editor-button"}
+                      onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = GOOGLE.surfaceHover; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = isActive ? GOOGLE.primaryBg : "transparent"; }}
                       style={{
-                        padding: "10px 14px",
-                        borderRadius: "10px",
+                        minHeight: 48,
+                        padding: "0 12px",
+                        borderRadius: GOOGLE.radius,
                         cursor: "pointer",
                         textAlign: "left",
-                        fontSize: "13px",
+                        fontSize: 14,
                         border: "none",
-                        background: isActive ? PALETTE.softBlueFill : "transparent",
-                        color: isActive ? PALETTE.softBlue : PALETTE.textPrimary,
-                        fontWeight: isActive ? 600 : 400,
-                        transition: "background 0.2s ease, color 0.2s ease",
+                        background: isActive ? GOOGLE.primaryBg : "transparent",
+                        color: isActive ? GOOGLE.primary : GOOGLE.textPrimary,
+                        fontWeight: isActive ? 500 : 400,
+                        transition: "background 0.15s ease",
                       }}
                     >
                       {t.label}
@@ -290,37 +308,45 @@ function RightFloatingSidebarInner({ layoutPanelContent }: RightFloatingSidebarP
               </div>
             )}
             {openPanel === "styling" && (
-              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                {STYLING_PRESETS.map((preset) => {
-                  const isActive = stylingPreset === preset;
-                  return (
-                    <button
-                      key={preset}
-                      type="button"
-                      onClick={() => setValue("stylingPreset", preset)}
-                      className={stylingPreset === preset ? "editor-button active" : "editor-button"}
-                      style={{
-                        padding: "10px 14px",
-                        borderRadius: "10px",
-                        cursor: "pointer",
-                        textAlign: "left",
-                        fontSize: "13px",
-                        textTransform: "capitalize",
-                        border: "none",
-                        background: isActive ? PALETTE.softBlueFill : "transparent",
-                        color: isActive ? PALETTE.softBlue : PALETTE.textPrimary,
-                        fontWeight: isActive ? 600 : 400,
-                        transition: "background 0.2s ease, color 0.2s ease",
-                      }}
-                    >
-                      {preset}
-                    </button>
-                  );
-                })}
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <div style={{ fontSize: 12, color: GOOGLE.textSecondary, marginBottom: "4px", fontWeight: 500 }}>
+                  Live preview
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "8px" }}>
+                  {STYLING_PRESETS.map((preset) => {
+                    const isActive = stylingPreset === preset;
+                    return (
+                      <button
+                        key={preset}
+                        type="button"
+                        onClick={() => setValue("stylingPreset", preset)}
+                        style={{
+                          padding: "12px",
+                          borderRadius: GOOGLE.radius,
+                          cursor: "pointer",
+                          fontSize: 13,
+                          textTransform: "capitalize",
+                          border: `1px solid ${isActive ? GOOGLE.primary : GOOGLE.border}`,
+                          background: isActive ? GOOGLE.primaryBg : GOOGLE.surface,
+                          color: isActive ? GOOGLE.primary : GOOGLE.textPrimary,
+                          fontWeight: isActive ? 500 : 400,
+                          transition: "background 0.15s ease, border-color 0.15s ease",
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          gap: "6px",
+                        }}
+                      >
+                        <StylingLivePreview presetName={preset} size={64} />
+                        {preset}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             )}
             {openPanel === "behavior" && (
-              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
                 {BEHAVIOR_PROFILES.map((profile) => {
                   const isActive = behaviorProfile === profile;
                   return (
@@ -328,19 +354,21 @@ function RightFloatingSidebarInner({ layoutPanelContent }: RightFloatingSidebarP
                       key={profile}
                       type="button"
                       onClick={() => setValue("behaviorProfile", profile)}
-                      className={behaviorProfile === profile ? "editor-button active" : "editor-button"}
+                      onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = GOOGLE.surfaceHover; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = isActive ? GOOGLE.primaryBg : "transparent"; }}
                       style={{
-                        padding: "10px 14px",
-                        borderRadius: "10px",
+                        minHeight: 48,
+                        padding: "0 12px",
+                        borderRadius: GOOGLE.radius,
                         cursor: "pointer",
                         textAlign: "left",
-                        fontSize: "13px",
+                        fontSize: 14,
                         textTransform: "capitalize",
                         border: "none",
-                        background: isActive ? PALETTE.softBlueFill : "transparent",
-                        color: isActive ? PALETTE.softBlue : PALETTE.textPrimary,
-                        fontWeight: isActive ? 600 : 400,
-                        transition: "background 0.2s ease, color 0.2s ease",
+                        background: isActive ? GOOGLE.primaryBg : "transparent",
+                        color: isActive ? GOOGLE.primary : GOOGLE.textPrimary,
+                        fontWeight: isActive ? 500 : 400,
+                        transition: "background 0.15s ease",
                       }}
                     >
                       {profile}
@@ -349,13 +377,21 @@ function RightFloatingSidebarInner({ layoutPanelContent }: RightFloatingSidebarP
                 })}
               </div>
             )}
-            {openPanel === "layout" && layoutPanelContent != null && <div>{layoutPanelContent}</div>}
+            {openPanel === "layout" && (
+              layoutPanelContent != null ? (
+                <div>{layoutPanelContent}</div>
+              ) : (
+                <div style={{ padding: "16px 0", fontSize: 14, color: GOOGLE.textSecondary, lineHeight: 1.5 }}>
+                  Layout controls appear when a website-style screen is loaded.
+                </div>
+              )
+            )}
             </div>
           </>
         )}
       </div>
 
-      {/* Icon rail — docked to right edge */}
+      {/* Icon rail — Google-style: white surface, circular active state */}
       <div style={RAIL_STYLE}>
         {pills.map(({ id, label }) => {
           const isActive = isPanelOpen(id);
@@ -370,19 +406,25 @@ function RightFloatingSidebarInner({ layoutPanelContent }: RightFloatingSidebarP
               aria-pressed={isActive}
               style={{
                 ...ICON_BUTTON_STYLE,
-                background: isActive ? PALETTE.softBlueFill : "transparent",
-                boxShadow: isActive ? `0 0 0 1px ${PALETTE.softBlueGlow}, ${PALETTE.shadowGlow}` : "none",
+                background: isActive ? GOOGLE.primaryBg : "transparent",
+                color: isActive ? GOOGLE.primary : GOOGLE.textSecondary,
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = isActive ? PALETTE.softBlueFill : PALETTE.hoverTint;
-                e.currentTarget.style.boxShadow = isActive ? `0 0 0 1px ${PALETTE.softBlueGlow}, ${PALETTE.shadowGlow}` : "0 0 20px rgba(0,0,0,0.08)";
+                if (!isActive) e.currentTarget.style.background = GOOGLE.surfaceHover;
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = isActive ? PALETTE.softBlueFill : "transparent";
-                e.currentTarget.style.boxShadow = isActive ? `0 0 0 1px ${PALETTE.softBlueGlow}, ${PALETTE.shadowGlow}` : "none";
+                if (!isActive) e.currentTarget.style.background = "transparent";
               }}
             >
-              {iconPath ? <img src={iconPath} alt="" width={22} height={22} style={{ display: "block" }} /> : null}
+              {iconPath ? (
+                <img
+                  src={iconPath}
+                  alt=""
+                  width={20}
+                  height={20}
+                  style={{ display: "block", opacity: isActive ? 1 : 0.7 }}
+                />
+              ) : null}
             </button>
           );
         })}

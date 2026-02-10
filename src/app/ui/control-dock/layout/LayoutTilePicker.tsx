@@ -45,6 +45,8 @@ const TILE_ACTIVE_STYLE: React.CSSProperties = {
   background: "linear-gradient(180deg, " + CARD_PALETTE.selectedFill + " 0%, rgba(255,255,255,0.95) 100%)",
 };
 
+const _warnedMissingThumb = new Set<string>();
+
 const THUMB_BOX_STYLE: React.CSSProperties = {
   width: "100%",
   aspectRatio: "4/3",
@@ -155,15 +157,21 @@ function LayoutTile({
                     opt.thumbnail
                   )
                 ) : (
-                  <span
-                    style={{
-                      fontSize: "10px",
-                      color: "rgba(0,0,0,0.45)",
-                      padding: "4px",
-                    }}
-                  >
-                    {opt.label.slice(0, 2)}
-                  </span>
+                  <>
+                    {typeof process !== "undefined" &&
+                      process.env?.NODE_ENV === "development" &&
+                      !_warnedMissingThumb.has(opt.id) &&
+                      (() => {
+                        _warnedMissingThumb.add(opt.id);
+                        console.warn("[LayoutTilePicker] Missing thumbnail for option id:", opt.id);
+                        return null;
+                      })()}
+                    <img
+                      src="/layout-thumbnails/default.svg"
+                      alt=""
+                      style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                    />
+                  </>
                 )}
               </div>
               <div

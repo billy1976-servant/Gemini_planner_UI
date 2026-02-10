@@ -7,7 +7,7 @@
 
 import React from "react";
 import type { DockPanelId } from "./dock-state";
-import { getSidebarIconPathOrWarn } from "@/ui/sidebarIconRegistry";
+import { getSidebarIconPathOrWarn } from "@/app/ui/sidebarIconRegistry";
 
 const MODES = ["template", "custom"] as const;
 const STYLING_PRESETS = ["default", "clean", "minimal", "bold", "soft"];
@@ -65,8 +65,7 @@ export default function RightSidebarDockContent(props: RightSidebarDockContentPr
   } = props;
 
   const openPanel = PILL_CONFIG.map((p) => p.id).find((id) => isPanelOpen(id)) ?? null;
-  const hasLayout = layoutPanelContent != null;
-  const pills = hasLayout ? PILL_CONFIG : PILL_CONFIG.filter((p) => p.id !== "layout");
+  const pills = PILL_CONFIG;
 
   return (
     <div
@@ -253,7 +252,15 @@ export default function RightSidebarDockContent(props: RightSidebarDockContentPr
                   ))}
                 </div>
               )}
-              {openPanel === "layout" && layoutPanelContent != null && <div>{layoutPanelContent}</div>}
+              {openPanel === "layout" && (
+                layoutPanelContent != null ? (
+                  <div>{layoutPanelContent}</div>
+                ) : (
+                  <p style={{ margin: 0, fontSize: "var(--font-size-sm)", color: "var(--editor-text-muted)" }}>
+                    Layout controls appear when a website-style screen is loaded.
+                  </p>
+                )
+              )}
             </div>
           </div>
         )}
