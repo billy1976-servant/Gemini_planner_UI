@@ -7,6 +7,7 @@
  */
 
 import { useState } from "react";
+import { usePreviewTile } from "@/04_Presentation/contexts/PreviewTileContext";
 
 export type MediaAtomProps = {
   params?: {
@@ -29,13 +30,15 @@ export default function MediaAtom({
   alt,
   caption,
 }: MediaAtomProps) {
+  const { isPreviewTile } = usePreviewTile();
   const {
     aspectRatio,
-    objectFit = "cover",
+    objectFit: objectFitParam = "cover",
     radius = "0",
     placeholder,
     placeholderColor,
   } = params;
+  const objectFit = isPreviewTile ? "contain" : objectFitParam;
   const placeholderBg = placeholderColor ?? "var(--media-placeholder-bg)";
   const placeholderText = "var(--media-placeholder-text)";
   const emojiSize = "var(--media-emoji-size)";
@@ -108,6 +111,9 @@ export default function MediaAtom({
     );
   }
 
+  const wrapperAspectRatio = isPreviewTile ? "auto" : (aspectRatio || "auto");
+  const imgHeight = isPreviewTile ? "auto" : "100%";
+
   return (
     <div
       style={{
@@ -117,13 +123,13 @@ export default function MediaAtom({
         overflow: "hidden",
       }}
     >
-      {/* Aspect ratio wrapper — hard containment so media never escapes column */}
+      {/* Aspect ratio wrapper — in preview tile use auto so image can size naturally */}
       <div
         style={{
           position: "relative",
           width: "100%",
           maxWidth: "100%",
-          aspectRatio: aspectRatio || "auto",
+          aspectRatio: wrapperAspectRatio,
           borderRadius: radius,
           overflow: "hidden",
           background: loaded ? "transparent" : placeholderBg,
@@ -149,7 +155,7 @@ export default function MediaAtom({
           </div>
         )}
 
-        {/* Image — constrained to column (maxWidth: 100%); never viewport */}
+        {/* Image — in preview tile: contain + height auto to avoid crop/stretch */}
         <img
           src={src}
           alt={alt || ""}
@@ -158,7 +164,7 @@ export default function MediaAtom({
           style={{
             width: "100%",
             maxWidth: "100%",
-            height: "100%",
+            height: imgHeight,
             display: loaded ? "block" : "none",
             objectFit,
           }}

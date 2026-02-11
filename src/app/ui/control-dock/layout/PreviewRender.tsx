@@ -3,6 +3,10 @@
 import React, { memo, useMemo, useRef, useLayoutEffect, useState } from "react";
 import JsonRenderer from "@/engine/core/json-renderer";
 import { getDefaultCardPresetForSectionPreset, SAFE_DEFAULT_CARD_PRESET_ID } from "@/layout";
+import { PreviewTileProvider } from "@/04_Presentation/contexts/PreviewTileContext";
+
+// STRICT PREVIEW MODE: If true, NO fallback values allowed. Preview must obey JSON 100%.
+const STRICT_PREVIEW = true;
 
 /** Content is rendered at this width, then scaled to container width. Height grows naturally. */
 const BASE_RENDER_WIDTH = 1200;
@@ -102,8 +106,13 @@ function PreviewRenderInner({
 
   const content = useMemo(() => {
     if (!screenModel) return null;
-    const sectionNode = findSectionByKey(screenModel, sectionKey);
-    const previewRoot = sectionNode ?? screenModel;
+    // PREVIEW ISOLATION: deep clone so each tile has an isolated tree (no shared reference).
+    const isolatedModel =
+      typeof structuredClone === "function"
+        ? structuredClone(screenModel)
+        : JSON.parse(JSON.stringify(screenModel));
+    const sectionNode = findSectionByKey(isolatedModel, sectionKey);
+    const previewRoot = sectionNode ?? isolatedModel;
     if (!sectionNode && typeof process !== "undefined" && process.env.NODE_ENV === "development") {
       console.log("[PreviewRender] using full screenModel (section not found)", { sectionKey });
     }
@@ -111,14 +120,29 @@ function PreviewRenderInner({
     let cardOverrides: Record<string, string>;
     if (previewType === "sectionLayout") {
       sectionOverrides = { [sectionKey]: previewValue };
-      const defaultCard = getDefaultCardPresetForSectionPreset(previewValue || null) ?? SAFE_DEFAULT_CARD_PRESET_ID;
-      cardOverrides = { [sectionKey]: defaultCard };
+      const defaultCard = getDefaultCardPresetForSectionPreset(previewValue || null);
+      if (!defaultCard && STRICT_PREVIEW) {
+        console.warn("[PREVIEW FALLBACK BLOCKED]", { propName: "defaultCardPreset" });
+      }
+      cardOverrides = { [sectionKey]: defaultCard ?? (STRICT_PREVIEW ? undefined : SAFE_DEFAULT_CARD_PRESET_ID) };
     } else {
       sectionOverrides = currentSectionPreset ? { [sectionKey]: currentSectionPreset } : {};
       cardOverrides = { [sectionKey]: previewValue };
     }
+    // PREVIEW ISOLATION: trace model refs — if modelRef is identical across tiles, React was reusing the same tree.
+    console.log("PREVIEW MODEL ID", {
+      previewValue,
+      modelRef: screenModel,
+      clonedRef: isolatedModel,
+    });
+    console.log("LIVE PREVIEW TILE", {
+      previewValue,
+      sectionKey,
+      sectionOverrides,
+    });
     return (
       <JsonRenderer
+        key={previewValue}
         node={previewRoot}
         defaultState={defaultState}
         profileOverride={profileOverride}
@@ -126,6 +150,7 @@ function PreviewRenderInner({
         cardLayoutPresetOverrides={cardOverrides}
         organInternalLayoutOverrides={{}}
         screenId={screenKey}
+        forceCardCompatibility={previewType === "cardLayout"}
       />
     );
   }, [
@@ -140,13 +165,25 @@ function PreviewRenderInner({
   ]);
 
   if (!screenModel) {
+    const noScreenWidth = undefined;
+    const noScreenMinHeight = undefined;
+    const noScreenBackground = undefined;
+    const noScreenBorderRadius = undefined;
+    
+    if (STRICT_PREVIEW) {
+      if (noScreenWidth === undefined) console.warn("[PREVIEW FALLBACK BLOCKED]", { propName: "width" });
+      if (noScreenMinHeight === undefined) console.warn("[PREVIEW FALLBACK BLOCKED]", { propName: "minHeight" });
+      if (noScreenBackground === undefined) console.warn("[PREVIEW FALLBACK BLOCKED]", { propName: "background" });
+      if (noScreenBorderRadius === undefined) console.warn("[PREVIEW FALLBACK BLOCKED]", { propName: "borderRadius" });
+    }
+    
     return (
       <div
         style={{
-          width: "100%",
-          minHeight: 80,
-          background: "#f1f5f9",
-          borderRadius: 8,
+          width: STRICT_PREVIEW ? noScreenWidth : (noScreenWidth ?? "100%"),
+          minHeight: STRICT_PREVIEW ? noScreenMinHeight : (noScreenMinHeight ?? 80),
+          background: STRICT_PREVIEW ? noScreenBackground : (noScreenBackground ?? "#f1f5f9"),
+          borderRadius: STRICT_PREVIEW ? noScreenBorderRadius : (noScreenBorderRadius ?? 8),
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -161,30 +198,77 @@ function PreviewRenderInner({
 
   const scale = containerWidth > 0 ? containerWidth / BASE_RENDER_WIDTH : 1;
 
+  // DEBUG: Log preview size information
+  useLayoutEffect(() => {
+    const bounding = containerRef.current?.getBoundingClientRect?.();
+    console.log("PREVIEW SIZE CHECK", {
+      layoutId: previewValue,
+      containerWidthApplied: containerWidth,
+      bounding,
+    });
+  }, [previewValue, containerWidth]);
+
+  // STRICT: Only apply styles if explicitly provided (no fallbacks in strict mode)
+  const containerStyle: React.CSSProperties = {
+    // Height follows scaled content so tile auto-adjusts vertically (no clip, no excess space)
+    height: scaledHeight != null ? scaledHeight : "auto",
+    minHeight: scaledHeight != null ? undefined : (STRICT_PREVIEW ? undefined : 120),
+    position: "relative",
+    width: "100%",
+    maxWidth: "none",
+    flex: "0 0 auto", // Don't grow/shrink; height is content-driven
+    overflow: "hidden",
+  };
+
+  // These should come from JSON/props - currently undefined means no fallback in strict mode
+  const minHeightProp = undefined; // Should come from JSON
+  const borderRadiusProp = undefined; // Should come from JSON
+  const backgroundProp = undefined; // Should come from JSON
+  const boxShadowProp = undefined; // Should come from JSON
+  const paddingProp = undefined; // Should come from JSON
+  const marginProp = undefined; // Should come from JSON
+
+  if (STRICT_PREVIEW) {
+    if (minHeightProp === undefined) console.warn("[PREVIEW FALLBACK BLOCKED]", { propName: "minHeight" });
+    if (borderRadiusProp === undefined) console.warn("[PREVIEW FALLBACK BLOCKED]", { propName: "borderRadius" });
+    if (backgroundProp === undefined) console.warn("[PREVIEW FALLBACK BLOCKED]", { propName: "background" });
+    if (boxShadowProp === undefined) console.warn("[PREVIEW FALLBACK BLOCKED]", { propName: "boxShadow" });
+    if (paddingProp === undefined) console.warn("[PREVIEW FALLBACK BLOCKED]", { propName: "padding" });
+    if (marginProp === undefined) console.warn("[PREVIEW FALLBACK BLOCKED]", { propName: "margin" });
+  }
+
+  // Only apply styles if defined, or use fallback if not in strict mode (skip minHeight when height is set from scaledHeight)
+  if (scaledHeight == null) {
+    containerStyle.minHeight = STRICT_PREVIEW ? minHeightProp : (minHeightProp ?? "280px");
+  }
+  containerStyle.borderRadius = STRICT_PREVIEW ? borderRadiusProp : (borderRadiusProp ?? 8);
+  containerStyle.background = STRICT_PREVIEW ? backgroundProp : (backgroundProp ?? "#f8fafc");
+  containerStyle.boxShadow = STRICT_PREVIEW ? boxShadowProp : (boxShadowProp ?? "0 1px 3px rgba(0,0,0,0.08)");
+  if (paddingProp !== undefined || !STRICT_PREVIEW) {
+    containerStyle.padding = STRICT_PREVIEW ? paddingProp : (paddingProp ?? undefined);
+  }
+  if (marginProp !== undefined || !STRICT_PREVIEW) {
+    containerStyle.margin = STRICT_PREVIEW ? marginProp : (marginProp ?? undefined);
+  }
+
   return (
     <div
+      key={`${previewValue}-${sectionKey}`}
       ref={containerRef}
-      style={{
-        width: "100%",
-        height: scaledHeight ?? "auto",
-        minHeight: scaledHeight ?? 120,
-        position: "relative",
-        overflow: "hidden",
-        borderRadius: 8,
-        background: "#f8fafc",
-        boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
-      }}
+      style={containerStyle}
     >
       <div
         ref={innerRef}
         style={{
-          width: BASE_RENDER_WIDTH,
+          width: `${BASE_RENDER_WIDTH}px`,
+          height: "auto",
           transform: `scale(${scale})`,
           transformOrigin: "top left",
-          overflow: "hidden",
+          overflow: "visible",
+          display: "block",
         }}
       >
-        {content}
+        <PreviewTileProvider>{content}</PreviewTileProvider>
       </div>
     </div>
   );
@@ -192,13 +276,25 @@ function PreviewRenderInner({
 
 /** Fallback when preview render throws (e.g. heavy or broken tree). */
 function PreviewFallback() {
+  const fallbackWidth = undefined;
+  const fallbackMinHeight = undefined;
+  const fallbackBackground = undefined;
+  const fallbackBorderRadius = undefined;
+  
+  if (STRICT_PREVIEW) {
+    if (fallbackWidth === undefined) console.warn("[PREVIEW FALLBACK BLOCKED]", { propName: "width" });
+    if (fallbackMinHeight === undefined) console.warn("[PREVIEW FALLBACK BLOCKED]", { propName: "minHeight" });
+    if (fallbackBackground === undefined) console.warn("[PREVIEW FALLBACK BLOCKED]", { propName: "background" });
+    if (fallbackBorderRadius === undefined) console.warn("[PREVIEW FALLBACK BLOCKED]", { propName: "borderRadius" });
+  }
+  
   return (
     <div
       style={{
-        width: "100%",
-        minHeight: 80,
-        background: "#f1f5f9",
-        borderRadius: 8,
+        width: STRICT_PREVIEW ? fallbackWidth : (fallbackWidth ?? "100%"),
+        minHeight: STRICT_PREVIEW ? fallbackMinHeight : (fallbackMinHeight ?? 80),
+        background: STRICT_PREVIEW ? fallbackBackground : (fallbackBackground ?? "#f1f5f9"),
+        borderRadius: STRICT_PREVIEW ? fallbackBorderRadius : (fallbackBorderRadius ?? 8),
         display: "flex",
         alignItems: "center",
         justifyContent: "center",

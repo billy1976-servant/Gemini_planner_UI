@@ -24,6 +24,7 @@
       "@/app/*": ["src/app/*"],
       "@/engine/*": ["src/03_Runtime/engine/*"],
       "@/engine/debug/*": ["src/07_Dev_Tools/engine-debug/*"],
+      "@/03_Runtime/debug/*": ["src/03_Runtime/debug/*"],
       "@/engine/devtools/*": ["src/07_Dev_Tools/engine-devtools/*"],
       "@/engine/core/diagnostics/*": ["src/07_Dev_Tools/engine-diagnostics/*"],
       "@/components/*": ["src/04_Presentation/components/*"],

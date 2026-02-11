@@ -8,6 +8,16 @@ import {
   type SectionRenderRow,
   type ResolutionChainEntry,
 } from "./pipeline-debug-store";
+import {
+  getTrace as getRuntimeTrace,
+  getTraceBySystem,
+  subscribeTrace as subscribeRuntimeTraceStore,
+  clearTrace,
+  setPersistTraces,
+  getPersistTraces,
+  type RuntimeTraceEvent,
+  type TraceSystem,
+} from "./runtime-trace-store";
 import { getLayout } from "@/engine/core/layout-store";
 import { getState, subscribeState } from "@/state/state-store";
 import { getOverridesForScreen, getCardOverridesForScreen } from "@/state/section-layout-preset-store";
@@ -17,14 +27,229 @@ import type { LastInteraction } from "./pipeline-debug-store";
 import { subscribeRendererTrace } from "@/engine/debug/renderer-trace";
 import type { RendererTraceEvent } from "@/engine/debug/renderer-trace";
 import { exportFocusedPipelineSnapshot } from "@/debug/exportFocusedPipelineSnapshot";
+import { getRuntimeDecisionLog } from "@/engine/devtools/runtime-decision-trace";
 import {
   buildBeforeSnapshot,
   capturePipelineSnapshot,
   runLayoutContractTest,
 } from "@/debug/pipelineContractTester";
+import { startPipelineCapture, stopPipelineCapture, isCaptureActive } from "./pipeline-capture";
+import {
+  startInteraction,
+  endInteraction,
+  getInteractions,
+  getCurrentInteraction,
+  clearInteractions,
+  type ConsolidatedInteraction,
+} from "@/03_Runtime/debug/pipeline-trace-aggregator";
 
 const EVENT_CAP = 100;
 const PANEL_ATTR = "data-devtools-panel";
+
+type GroupedTraceEvent = {
+  key: string;
+  system: TraceSystem;
+  action: string;
+  sectionId?: string;
+  nodeId?: string;
+  count: number;
+  firstTimestamp: number;
+  lastTimestamp: number;
+  events: RuntimeTraceEvent[];
+  latestEvent: RuntimeTraceEvent;
+};
+
+/**
+ * Group similar runtime trace events together (UI-style consolidation).
+ * Groups by: system + action + sectionId + nodeId
+ */
+function groupTraceEvents(events: RuntimeTraceEvent[]): GroupedTraceEvent[] {
+  const groups = new Map<string, GroupedEvent & { latestEvent: RuntimeTraceEvent }>();
+  
+  for (const event of events) {
+    // Create a key based on system, action, sectionId, and nodeId
+    const key = `${event.system}:${event.action}:${event.sectionId || ""}:${event.nodeId || ""}`;
+    
+    if (groups.has(key)) {
+      const group = groups.get(key)!;
+      group.count++;
+      group.lastTimestamp = event.timestamp;
+      group.events.push(event);
+      // Keep the most recent event as latestEvent
+      if (event.timestamp > group.latestEvent.timestamp) {
+        group.latestEvent = event;
+      }
+    } else {
+      groups.set(key, {
+        key,
+        system: event.system,
+        action: event.action,
+        sectionId: event.sectionId,
+        nodeId: event.nodeId,
+        count: 1,
+        firstTimestamp: event.timestamp,
+        lastTimestamp: event.timestamp,
+        events: [event],
+        latestEvent: event,
+      });
+    }
+  }
+  
+  return Array.from(groups.values()).sort((a, b) => b.lastTimestamp - a.lastTimestamp);
+}
+
+/**
+ * Group similar pipeline stage records together.
+ */
+function groupPipelineStages(stages: Array<{ stage: string; status: string; message: unknown }>) {
+  const groups = new Map<string, {
+    key: string;
+    stage: string;
+    status: string;
+    count: number;
+    latestMessage: unknown;
+    messages: unknown[];
+    indices: number[];
+  }>();
+  
+  for (let i = 0; i < stages.length; i++) {
+    const stage = stages[i];
+    const key = `${stage.stage}:${stage.status}`;
+    
+    if (groups.has(key)) {
+      const group = groups.get(key)!;
+      group.count++;
+      group.messages.push(stage.message);
+      group.indices.push(i);
+      // Keep the most recent message (last in array)
+      group.latestMessage = stage.message;
+    } else {
+      groups.set(key, {
+        key,
+        stage: stage.stage,
+        status: stage.status,
+        count: 1,
+        latestMessage: stage.message,
+        messages: [stage.message],
+        indices: [i],
+      });
+    }
+  }
+  
+  // Sort by last occurrence (highest index)
+  return Array.from(groups.values()).sort((a, b) => {
+    const aLastIndex = Math.max(...a.indices);
+    const bLastIndex = Math.max(...b.indices);
+    return bLastIndex - aLastIndex;
+  });
+}
+
+/**
+ * Group similar runtime decisions together.
+ */
+function groupRuntimeDecisions(decisions: Array<{
+  timestamp: string | number;
+  engineId: string;
+  decisionType: string;
+  inputsSeen: Record<string, unknown>;
+  ruleApplied: string | Record<string, unknown>;
+  decisionMade: unknown;
+  downstreamEffect?: string | Record<string, unknown>;
+}>) {
+  const groups = new Map<string, {
+    key: string;
+    engineId: string;
+    decisionType: string;
+    count: number;
+    firstTimestamp: number;
+    lastTimestamp: number;
+    latestDecision: typeof decisions[0];
+    decisions: typeof decisions;
+  }>();
+  
+  for (const decision of decisions) {
+    const key = `${decision.engineId}:${decision.decisionType}`;
+    const timestamp = typeof decision.timestamp === "number" ? decision.timestamp : Date.parse(decision.timestamp);
+    
+    if (groups.has(key)) {
+      const group = groups.get(key)!;
+      group.count++;
+      group.lastTimestamp = timestamp;
+      group.decisions.push(decision);
+      if (timestamp > (typeof group.latestDecision.timestamp === "number" ? group.latestDecision.timestamp : Date.parse(group.latestDecision.timestamp))) {
+        group.latestDecision = decision;
+      }
+    } else {
+      groups.set(key, {
+        key,
+        engineId: decision.engineId,
+        decisionType: decision.decisionType,
+        count: 1,
+        firstTimestamp: timestamp,
+        lastTimestamp: timestamp,
+        latestDecision: decision,
+        decisions: [decision],
+      });
+    }
+  }
+  
+  return Array.from(groups.values()).sort((a, b) => b.lastTimestamp - a.lastTimestamp);
+}
+
+/**
+ * Build full pipeline snapshot with consolidated events (UI-style grouping).
+ * Similar events are grouped together with counts to reduce size and improve readability.
+ * Includes everything: trace events, runtime decisions, pipeline stages, renderer traces, state, layout.
+ */
+function buildFullPipelineSnapshot() {
+  const rawTraceEvents = getRuntimeTrace();
+  const rawRuntimeDecisions = getRuntimeDecisionLog();
+  const rawPipelineStages = getPipelineTrace();
+  
+  return {
+    timestamp: Date.now(),
+    exportedAt: new Date().toISOString(),
+
+    // Consolidated runtime trace events (grouped by system + action + sectionId + nodeId)
+    traceEvents: (() => {
+      const grouped = groupTraceEvents(rawTraceEvents);
+      return {
+        consolidated: grouped,
+        totalCount: rawTraceEvents.length,
+        uniqueGroups: grouped.length,
+      };
+    })(),
+
+    // Consolidated runtime decisions (grouped by engineId + decisionType)
+    runtimeDecisions: (() => {
+      const grouped = groupRuntimeDecisions(rawRuntimeDecisions);
+      return {
+        consolidated: grouped,
+        totalCount: rawRuntimeDecisions.length,
+        uniqueGroups: grouped.length,
+      };
+    })(),
+
+    // Consolidated pipeline stage trace (grouped by stage + status)
+    pipelineStageTrace: (() => {
+      const grouped = groupPipelineStages(rawPipelineStages);
+      return {
+        consolidated: grouped,
+        totalCount: rawPipelineStages.length,
+        uniqueGroups: grouped.length,
+      };
+    })(),
+
+    // Pipeline debug store (full snapshot including renderer traces, section rows, layout maps, etc.)
+    pipeline: PipelineDebugStore.getSnapshot(),
+
+    // Current engine state (full derived state)
+    engineState: getState(),
+
+    // Layout state (active layout configuration)
+    layoutState: getLayout(),
+  };
+}
 
 /** Build layout state for one screen from flat keys prefix.screenKey.sectionId. If screenId is null, returns {}. */
 function getLayoutStateForScreen(
@@ -680,6 +905,331 @@ function ActiveControlsBlock() {
   );
 }
 
+type GroupedEvent = {
+  key: string;
+  system: TraceSystem;
+  action: string;
+  sectionId?: string;
+  nodeId?: string;
+  count: number;
+  firstTimestamp: number;
+  lastTimestamp: number;
+  events: RuntimeTraceEvent[];
+};
+
+function RuntimeTimelineBlock({ 
+  systemFilter, 
+  onInteractionCapture 
+}: { 
+  systemFilter?: TraceSystem;
+  onInteractionCapture?: (events: RuntimeTraceEvent[]) => void;
+}) {
+  const [traceEvents, setTraceEvents] = useState<RuntimeTraceEvent[]>([]);
+  const [expandedEvents, setExpandedEvents] = useState<Set<string>>(new Set());
+  const [consolidateEvents, setConsolidateEvents] = useState(true);
+
+  useEffect(() => {
+    const updateTrace = () => {
+      const events = systemFilter ? getTraceBySystem(systemFilter) : getRuntimeTrace();
+      setTraceEvents(events);
+    };
+    updateTrace();
+    return subscribeRuntimeTraceStore(updateTrace);
+  }, [systemFilter]);
+
+  const formatTimestamp = (ts: number) => {
+    const date = new Date(ts);
+    return date.toLocaleTimeString() + "." + date.getMilliseconds().toString().padStart(3, "0");
+  };
+
+  const formatValue = (val: unknown): string => {
+    if (val === null) return "null";
+    if (val === undefined) return "—";
+    if (typeof val === "string") return val;
+    if (typeof val === "object") {
+      try {
+        return JSON.stringify(val, null, 2);
+      } catch {
+        return String(val);
+      }
+    }
+    return String(val);
+  };
+
+  const toggleExpand = (key: string) => {
+    const newExpanded = new Set(expandedEvents);
+    if (newExpanded.has(key)) {
+      newExpanded.delete(key);
+    } else {
+      newExpanded.add(key);
+    }
+    setExpandedEvents(newExpanded);
+  };
+
+  // Group similar events together
+  const groupEvents = (events: RuntimeTraceEvent[]): GroupedEvent[] => {
+    const groups = new Map<string, GroupedEvent>();
+    
+    for (const event of events) {
+      // Create a key based on system, action, sectionId, and nodeId
+      const key = `${event.system}:${event.action}:${event.sectionId || ""}:${event.nodeId || ""}`;
+      
+      if (groups.has(key)) {
+        const group = groups.get(key)!;
+        group.count++;
+        group.lastTimestamp = event.timestamp;
+        group.events.push(event);
+      } else {
+        groups.set(key, {
+          key,
+          system: event.system,
+          action: event.action,
+          sectionId: event.sectionId,
+          nodeId: event.nodeId,
+          count: 1,
+          firstTimestamp: event.timestamp,
+          lastTimestamp: event.timestamp,
+          events: [event],
+        });
+      }
+    }
+    
+    return Array.from(groups.values()).sort((a, b) => b.lastTimestamp - a.lastTimestamp);
+  };
+
+  const groupedEvents = consolidateEvents ? groupEvents(traceEvents) : null;
+
+  const preStyle = {
+    margin: "2px 0",
+    fontFamily: "monospace",
+    fontSize: 9,
+    whiteSpace: "pre-wrap" as const,
+    color: "#ccc",
+  };
+
+  const systemColors: Record<TraceSystem, string> = {
+    layout: "#00ff88",
+    state: "#88aaff",
+    behavior: "#ffaa00",
+    renderer: "#ff88ff",
+    contracts: "#ff6666",
+  };
+
+  return (
+    <div style={{ marginTop: 8, paddingTop: 6, borderTop: "1px solid #333", display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6, flexWrap: "wrap", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <b>RUNTIME TIMELINE ({traceEvents.length} events)</b>
+          {consolidateEvents && groupedEvents && (
+            <span style={{ fontSize: 9, color: "#888" }}>
+              ({groupedEvents.length} unique)
+            </span>
+          )}
+        </div>
+        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 4, cursor: "pointer", fontSize: 9 }}>
+            <input
+              type="checkbox"
+              checked={consolidateEvents}
+              onChange={(e) => setConsolidateEvents(e.target.checked)}
+            />
+            <span>Group similar</span>
+          </label>
+          <button
+            type="button"
+            onClick={() => {
+              clearTrace();
+              setTraceEvents([]);
+            }}
+            style={{
+              padding: "2px 6px",
+              fontSize: 9,
+              background: "#222",
+              color: "#0f0",
+              border: "1px solid #0f0",
+              cursor: "pointer",
+            }}
+          >
+            CLEAR
+          </button>
+        </div>
+      </div>
+      <div style={{ overflow: "auto", flex: 1, minHeight: 0 }}>
+        {traceEvents.length === 0 ? (
+          <div style={{ ...preStyle, padding: 20, textAlign: "center", color: "#666" }}>
+            <div style={{ marginBottom: 8 }}>— No trace events yet</div>
+            <div style={{ fontSize: 8, color: "#555" }}>
+              Interact with the app (click buttons, change layouts, trigger behaviors) to see runtime traces appear here.
+            </div>
+          </div>
+        ) : consolidateEvents && groupedEvents ? (
+          // Render grouped events
+          groupedEvents.map((group) => {
+            const isExpanded = expandedEvents.has(group.key);
+            const systemColor = systemColors[group.system] || "#0f0";
+            const latestEvent = group.events[0]; // Most recent event
+            return (
+              <div
+                key={group.key}
+                style={{
+                  marginBottom: 4,
+                  padding: 6,
+                  background: "rgba(0,0,0,0.3)",
+                  border: `1px solid ${systemColor}`,
+                  borderRadius: 4,
+                  cursor: "pointer",
+                }}
+                onClick={() => toggleExpand(group.key)}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 9 }}>
+                  <span style={{ color: "#888", minWidth: 80 }}>
+                    {formatTimestamp(group.lastTimestamp)}
+                    {group.count > 1 && (
+                      <span style={{ color: "#666", fontSize: 8 }}> (last)</span>
+                    )}
+                  </span>
+                  <span style={{ color: systemColor, fontWeight: 600, minWidth: 80 }}>
+                    {group.system.toUpperCase()}
+                  </span>
+                  <span style={{ color: "#fff" }}>{group.action}</span>
+                  {group.sectionId && (
+                    <span style={{ color: "#888", fontSize: 8 }}>section:{group.sectionId}</span>
+                  )}
+                  {group.nodeId && (
+                    <span style={{ color: "#888", fontSize: 8 }}>node:{group.nodeId}</span>
+                  )}
+                  {group.count > 1 && (
+                    <span
+                      style={{
+                        marginLeft: "auto",
+                        padding: "1px 6px",
+                        background: systemColor,
+                        color: "#000",
+                        borderRadius: 3,
+                        fontSize: 8,
+                        fontWeight: 600,
+                      }}
+                    >
+                      ×{group.count}
+                    </span>
+                  )}
+                </div>
+                {isExpanded && (
+                  <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${systemColor}33` }}>
+                    {group.count > 1 && (
+                      <div style={{ ...preStyle, marginBottom: 8, padding: 6, background: "rgba(0,0,0,0.2)", borderRadius: 3 }}>
+                        <div style={{ color: systemColor, fontSize: 8, marginBottom: 4 }}>
+                          {group.count} similar events ({formatTimestamp(group.firstTimestamp)} → {formatTimestamp(group.lastTimestamp)})
+                        </div>
+                      </div>
+                    )}
+                    <div style={preStyle}>
+                      <div style={{ color: systemColor, marginBottom: 4 }}>→ input:</div>
+                      <div style={{ marginLeft: 12 }}>{formatValue(latestEvent.input)}</div>
+                    </div>
+                    {latestEvent.decision !== undefined && (
+                      <div style={preStyle}>
+                        <div style={{ color: systemColor, marginBottom: 4 }}>→ decision:</div>
+                        <div style={{ marginLeft: 12 }}>{formatValue(latestEvent.decision)}</div>
+                      </div>
+                    )}
+                    {latestEvent.override && (
+                      <div style={preStyle}>
+                        <div style={{ color: "#fa0", marginBottom: 4 }}>→ override:</div>
+                        <div style={{ marginLeft: 12 }}>{latestEvent.override}</div>
+                      </div>
+                    )}
+                    <div style={preStyle}>
+                      <div style={{ color: systemColor, marginBottom: 4 }}>→ final:</div>
+                      <div style={{ marginLeft: 12 }}>{formatValue(latestEvent.final)}</div>
+                    </div>
+                    {group.count > 1 && (
+                      <details style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${systemColor}33` }}>
+                        <summary style={{ cursor: "pointer", fontSize: 8, color: "#888", marginBottom: 4 }}>
+                          Show all {group.count} events
+                        </summary>
+                        <div style={{ marginTop: 4, maxHeight: 200, overflow: "auto" }}>
+                          {group.events.map((event, idx) => (
+                            <div key={idx} style={{ marginBottom: 4, padding: 4, background: "rgba(0,0,0,0.2)", borderRadius: 2 }}>
+                              <div style={{ fontSize: 8, color: "#888", marginBottom: 2 }}>
+                                {formatTimestamp(event.timestamp)}
+                              </div>
+                              <div style={{ fontSize: 8, color: "#aaa" }}>
+                                final: {formatValue(event.final)}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </details>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })
+        ) : (
+          // Render individual events (when consolidation is off)
+          traceEvents.map((event, index) => {
+            const eventKey = `event-${index}`;
+            const isExpanded = expandedEvents.has(eventKey);
+            const systemColor = systemColors[event.system] || "#0f0";
+            return (
+              <div
+                key={index}
+                style={{
+                  marginBottom: 4,
+                  padding: 6,
+                  background: "rgba(0,0,0,0.3)",
+                  border: `1px solid ${systemColor}`,
+                  borderRadius: 4,
+                  cursor: "pointer",
+                }}
+                onClick={() => toggleExpand(eventKey)}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 9 }}>
+                  <span style={{ color: "#888", minWidth: 80 }}>{formatTimestamp(event.timestamp)}</span>
+                  <span style={{ color: systemColor, fontWeight: 600, minWidth: 80 }}>{event.system.toUpperCase()}</span>
+                  <span style={{ color: "#fff" }}>{event.action}</span>
+                  {event.sectionId && (
+                    <span style={{ color: "#888", fontSize: 8 }}>section:{event.sectionId}</span>
+                  )}
+                  {event.nodeId && (
+                    <span style={{ color: "#888", fontSize: 8 }}>node:{event.nodeId}</span>
+                  )}
+                </div>
+                {isExpanded && (
+                  <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${systemColor}33` }}>
+                    <div style={preStyle}>
+                      <div style={{ color: systemColor, marginBottom: 4 }}>→ input:</div>
+                      <div style={{ marginLeft: 12 }}>{formatValue(event.input)}</div>
+                    </div>
+                    {event.decision !== undefined && (
+                      <div style={preStyle}>
+                        <div style={{ color: systemColor, marginBottom: 4 }}>→ decision:</div>
+                        <div style={{ marginLeft: 12 }}>{formatValue(event.decision)}</div>
+                      </div>
+                    )}
+                    {event.override && (
+                      <div style={preStyle}>
+                        <div style={{ color: "#fa0", marginBottom: 4 }}>→ override:</div>
+                        <div style={{ marginLeft: 12 }}>{event.override}</div>
+                      </div>
+                    )}
+                    <div style={preStyle}>
+                      <div style={{ color: systemColor, marginBottom: 4 }}>→ final:</div>
+                      <div style={{ marginLeft: 12 }}>{formatValue(event.final)}</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
+}
+
 function LiveStateView({ snapshot }: { snapshot: PipelineDebugSnapshot }) {
   return (
     <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
@@ -687,6 +1237,7 @@ function LiveStateView({ snapshot }: { snapshot: PipelineDebugSnapshot }) {
         <DeadInteractionBanner details={snapshot.deadInteractionDetails} />
       )}
       <ActiveControlsBlock />
+      {/* Pipeline Stage Trace kept for backward compatibility */}
       <PipelineStageTraceBlock snapshot={snapshot} />
       <StateDiffBlock snapshot={snapshot} />
       <LayoutInputSourcesBlock snapshot={snapshot} />
@@ -702,13 +1253,23 @@ function LiveStateView({ snapshot }: { snapshot: PipelineDebugSnapshot }) {
 export default function InteractionTracerPanel() {
   const [events, setEvents] = useState<TraceEvent[]>([]);
   const [expanded, setExpanded] = useState(false);
+  const [panelHeight, setPanelHeight] = useState(60); // Percentage of viewport height
+  const [isResizing, setIsResizing] = useState(false);
   const [mode, setMode] = useState<"live" | "log">("live");
   const [hiddenFilters, setHiddenFilters] = useState<Set<FilterKey>>(new Set());
-  const [tab, setTab] = useState<"trace" | "state" | "layout" | "sections" | "tests" | "contracts" | "renderer">("trace");
+  const [tab, setTab] = useState<"trace" | "runtime" | "consolidated" | "state" | "layout" | "sections" | "tests" | "contracts" | "renderer">("consolidated");
+  const [consolidatedInteractions, setConsolidatedInteractions] = useState<ConsolidatedInteraction[]>([]);
+  const [expandedInteractions, setExpandedInteractions] = useState<Set<string>>(new Set());
   const [testResults, setTestResults] = useState<
     { name: string; pass: boolean; reason: string }[] | null
   >(null);
   const [exportCopied, setExportCopied] = useState(false);
+  const [captureActive, setCaptureActive] = useState(false);
+  const [runtimeTraceTab, setRuntimeTraceTab] = useState<"all" | TraceSystem>("all");
+  const [persistTraces, setPersistTracesState] = useState(false);
+  const [interactionCaptureActive, setInteractionCaptureActive] = useState(false);
+  const [capturedInteractionEvents, setCapturedInteractionEvents] = useState<RuntimeTraceEvent[]>([]);
+  const [interactionSessions, setInteractionSessions] = useState<Array<{ id: number; events: RuntimeTraceEvent[] }>>([]);
 
   const snapshot = useSyncExternalStore(
     PipelineDebugStore.subscribe,
@@ -723,12 +1284,86 @@ export default function InteractionTracerPanel() {
   }, []);
 
   useEffect(() => {
+    if (interactionCaptureActive) {
+      const startCount = getRuntimeTrace().length;
+      const unsubscribe = subscribeRuntimeTraceStore(() => {
+        const allEvents = getRuntimeTrace();
+        const newCount = allEvents.length;
+        // Capture next 20 events from when capture started
+        if (newCount >= startCount + 20) {
+          const newEvents = allEvents.slice(0, 20);
+          setCapturedInteractionEvents(newEvents);
+          setInteractionCaptureActive(false);
+          // Save as interaction session
+          setInteractionSessions((prev) => [
+            { id: Date.now(), events: newEvents },
+            ...prev,
+          ]);
+          setCapturedInteractionEvents([]);
+        } else {
+          setCapturedInteractionEvents(allEvents.slice(0, Math.min(20, newCount)));
+        }
+      });
+      return unsubscribe;
+    }
+  }, [interactionCaptureActive]);
+
+  useEffect(() => {
+    setPersistTracesState(getPersistTraces());
+  }, []);
+
+  // Update consolidated interactions
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "development") return;
+    const updateInteractions = () => {
+      setConsolidatedInteractions(getInteractions());
+    };
+    updateInteractions();
+    const interval = setInterval(updateInteractions, 500);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    // Sync capture active state
+    const checkCapture = () => {
+      setCaptureActive(isCaptureActive());
+    };
+    const interval = setInterval(checkCapture, 500);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
     if (process.env.NODE_ENV !== "development") return;
     (window as any).__PIPELINE_DEBUGGER_ENABLED__ = true;
     return subscribeRendererTrace((ev) => {
       PipelineDebugStore.addRendererTraceEvent(ev);
     });
   }, []);
+
+  // Resize handler
+  useEffect(() => {
+    if (!isResizing) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const viewportHeight = window.innerHeight;
+      const newHeight = ((viewportHeight - e.clientY) / viewportHeight) * 100;
+      // Clamp between 10% and 90% of viewport
+      const clampedHeight = Math.max(10, Math.min(90, newHeight));
+      setPanelHeight(clampedHeight);
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isResizing]);
 
   useEffect(() => {
     if (process.env.NODE_ENV !== "development") return;
@@ -738,6 +1373,20 @@ export default function InteractionTracerPanel() {
       if (target?.closest?.(`[${PANEL_ATTR}]`)) return;
 
       const nodeId = (e.target as HTMLElement)?.dataset?.nodeId ?? getComponentId(e.target) ?? "unknown";
+      
+      // Start new interaction for clicks, dropdown changes, layout button presses
+      const isInteractionTrigger = 
+        e.type === "click" ||
+        (e.type === "change" && (e.target as HTMLElement)?.tagName === "SELECT") ||
+        nodeId.includes("layout-preset-") ||
+        nodeId.includes("section-layout-") ||
+        nodeId.includes("card-layout-") ||
+        nodeId.includes("organ-internal-layout-");
+      
+      if (isInteractionTrigger) {
+        startInteraction(`interaction-${Date.now()}`);
+      }
+      
       PipelineDebugStore.setLastEvent({ time: Date.now(), type: e.type, target: nodeId });
       if (process.env.NODE_ENV === "development") {
         recordStage("interaction", "pass", { type: e.type, targetId: nodeId, ts: Date.now() });
@@ -1122,17 +1771,48 @@ export default function InteractionTracerPanel() {
         left: 0,
         right: 0,
         zIndex: 0 /* TEMP: neutralized to isolate nav dropdown blocker */,
-        height: expanded ? "60vh" : "42px",
-        maxHeight: "65vh",
+        height: expanded ? `${panelHeight}vh` : "42px",
+        maxHeight: "90vh",
         overflow: "hidden",
         background: "rgba(0,0,0,0.92)",
         borderTop: "2px solid #00ff88",
-        transition: "height 0.18s ease",
+        transition: isResizing ? "none" : "height 0.18s ease",
         display: "flex",
         flexDirection: "column",
         pointerEvents: "auto",
       }}
     >
+      {/* Resize grip */}
+      {expanded && (
+        <div
+          onMouseDown={(e) => {
+            e.preventDefault();
+            setIsResizing(true);
+          }}
+          style={{
+            height: 8,
+            cursor: "ns-resize",
+            background: "rgba(0,255,136,0.2)",
+            borderTop: "1px solid #00ff88",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            userSelect: "none",
+          }}
+          title="Drag to resize panel height"
+        >
+          <div
+            style={{
+              width: 40,
+              height: 3,
+              background: "#00ff88",
+              borderRadius: 2,
+              opacity: 0.6,
+            }}
+          />
+        </div>
+      )}
       <div
         onClick={() => setExpanded(!expanded)}
         style={{
@@ -1171,7 +1851,7 @@ export default function InteractionTracerPanel() {
         <div
           style={{
             overflowY: "auto",
-            height: "calc(60vh - 42px)",
+            height: `calc(${panelHeight}vh - 42px)`,
             minHeight: 0,
             padding: 8,
             color: "#0f0",
@@ -1223,7 +1903,18 @@ export default function InteractionTracerPanel() {
             </button>
             <button
               type="button"
-              onClick={() => exportFocusedPipelineSnapshot()}
+              onClick={async () => {
+                const snapshot = buildFullPipelineSnapshot();
+                const text = JSON.stringify(snapshot, null, 2);
+                try {
+                  await navigator.clipboard.writeText(text);
+                  console.log("📋 Full Pipeline Snapshot copied to clipboard", snapshot);
+                  setExportCopied(true);
+                  setTimeout(() => setExportCopied(false), 2000);
+                } catch (err) {
+                  console.error("Failed to copy snapshot:", err);
+                }
+              }}
               style={{
                 padding: "2px 8px",
                 cursor: "pointer",
@@ -1231,10 +1922,71 @@ export default function InteractionTracerPanel() {
                 color: "#0f0",
                 border: "1px solid #0f0",
               }}
-              title="Copy focused dropdown→layout pipeline (layout state + section diff + render row + stage status only)"
+              title="Copy FULL expanded interaction state (all events, all traces, all decisions) to clipboard as structured JSON"
             >
               COPY PIPELINE SNAPSHOT
             </button>
+            {!captureActive ? (
+              <button
+                type="button"
+                onClick={() => {
+                  startPipelineCapture();
+                  setCaptureActive(true);
+                }}
+                style={{
+                  padding: "2px 8px",
+                  cursor: "pointer",
+                  background: "#0f0",
+                  color: "#000",
+                  border: "1px solid #0f0",
+                }}
+                title="Start capturing all pipeline events (interaction → action → behavior → state → layout → renderer)"
+              >
+                START CAPTURE
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  const events = stopPipelineCapture();
+                  setCaptureActive(false);
+                  // Export as downloadable JSON file
+                  const captureData = {
+                    type: "live-layout-session",
+                    screenKey: snapshot.jsonRendererPropsSnapshot?.screenId ?? "unknown",
+                    startTime: events[0]?.timestamp ?? Date.now(),
+                    endTime: Date.now(),
+                    events,
+                    snapshot: PipelineDebugStore.getSnapshot(),
+                  };
+                  const blob = new Blob([JSON.stringify(captureData, null, 2)], { type: "application/json" });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  const now = new Date();
+                  const date = now.toISOString().slice(0, 10);
+                  const time = now.toTimeString().slice(0, 8).replace(/:/g, "-");
+                  const screenKey = (snapshot.jsonRendererPropsSnapshot?.screenId ?? "unknown").replace(/[^a-zA-Z0-9-_]/g, "_");
+                  a.href = url;
+                  a.download = `${date}_${time}_layout-session_${screenKey}.json`;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  URL.revokeObjectURL(url);
+                  setExportCopied(true);
+                  setTimeout(() => setExportCopied(false), 2000);
+                }}
+                style={{
+                  padding: "2px 8px",
+                  cursor: "pointer",
+                  background: "#f00",
+                  color: "#fff",
+                  border: "1px solid #f00",
+                }}
+                title="Stop capture and download all captured events as JSON"
+              >
+                STOP + EXPORT
+              </button>
+            )}
           </div>
 
           {/* Active node snapshot strip (always visible, above tabs) */}
@@ -1242,7 +1994,7 @@ export default function InteractionTracerPanel() {
 
           {/* Tab bar */}
           <div style={{ display: "flex", gap: 6, marginBottom: 6, flexWrap: "wrap" }}>
-            {(["trace", "state", "layout", "sections", "tests", "contracts", "renderer"] as const).map((name) => (
+            {(["trace", "runtime", "consolidated", "state", "layout", "sections", "tests", "contracts", "renderer"] as const).map((name) => (
               <button
                 key={name}
                 type="button"
@@ -1259,6 +2011,322 @@ export default function InteractionTracerPanel() {
               </button>
             ))}
           </div>
+
+          {/* Consolidated Interactions tab */}
+          {tab === "consolidated" && (
+            <div style={{ flex: 1, overflow: "auto", minHeight: 0, display: "flex", flexDirection: "column" }}>
+              <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap", alignItems: "center" }}>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const interactions = getInteractions();
+                    
+                    // Format as viewer-visible consolidated view (summaries + abbreviated timeline)
+                    const consolidatedView = interactions.map((interaction) => {
+                      const duration = interaction.endTime 
+                        ? `${((interaction.endTime - interaction.startTime) / 1000).toFixed(2)}s`
+                        : "active";
+                      
+                      // Abbreviated timeline entries (as shown in viewer)
+                      const timeline = interaction.events.map((event) => {
+                        const decisionStr = event.decision 
+                          ? String(event.decision).substring(0, 30)
+                          : undefined;
+                        return {
+                          system: event.system,
+                          action: event.action,
+                          decision: decisionStr,
+                          sectionId: event.sectionId,
+                          nodeId: event.nodeId,
+                        };
+                      });
+                      
+                      return {
+                        id: interaction.id,
+                        timestamp: new Date(interaction.startTime).toLocaleTimeString(),
+                        duration,
+                        summary: {
+                          systemsTouched: interaction.summary.systemsTouched,
+                          finalLayout: interaction.summary.finalLayout,
+                          layoutDecisions: interaction.summary.layoutDecisions || 0,
+                          overridesApplied: interaction.summary.overridesApplied || 0,
+                          stateChanges: interaction.summary.stateChanges || 0,
+                          behaviorTriggers: interaction.summary.behaviorTriggers || 0,
+                          errors: interaction.summary.errors || 0,
+                          sectionsAffected: new Set(interaction.events.map(e => e.sectionId).filter(Boolean)).size,
+                        },
+                        timeline,
+                        eventCount: interaction.events.length,
+                      };
+                    });
+                    
+                    const exportData = {
+                      exportedAt: new Date().toISOString(),
+                      totalInteractions: consolidatedView.length,
+                      interactions: consolidatedView.reverse(), // Newest first, like viewer
+                    };
+                    
+                    const text = JSON.stringify(exportData, null, 2);
+                    try {
+                      await navigator.clipboard.writeText(text);
+                      console.log("📋 Consolidated Trace (viewer format) copied to clipboard", exportData);
+                      setExportCopied(true);
+                      setTimeout(() => setExportCopied(false), 2000);
+                    } catch (err) {
+                      console.error("Failed to copy trace:", err);
+                    }
+                  }}
+                  style={{
+                    padding: "4px 10px",
+                    fontSize: 10,
+                    background: exportCopied ? "#0f0" : "#222",
+                    color: exportCopied ? "#000" : "#0f0",
+                    border: "1px solid #0f0",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                  }}
+                  title="Copy consolidated interactions as shown in viewer (summaries + abbreviated timeline)"
+                >
+                  {exportCopied ? "✓ Copied" : "Copy Full Trace"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    clearInteractions();
+                    setConsolidatedInteractions([]);
+                  }}
+                  style={{
+                    padding: "2px 8px",
+                    fontSize: 9,
+                    background: "#222",
+                    color: "#0f0",
+                    border: "1px solid #0f0",
+                    cursor: "pointer",
+                  }}
+                >
+                  Clear
+                </button>
+                {consolidatedInteractions.length > 0 && (
+                  <span style={{ fontSize: 9, color: "#888" }}>
+                    {consolidatedInteractions.length} interaction{consolidatedInteractions.length !== 1 ? "s" : ""}
+                  </span>
+                )}
+              </div>
+
+              {/* Top Summary Bar - Last Interaction */}
+              {consolidatedInteractions.length > 0 && (() => {
+                const lastInteraction = consolidatedInteractions[consolidatedInteractions.length - 1];
+                return (
+                  <div style={{ marginBottom: 12, padding: 8, background: "rgba(0,255,136,0.1)", border: "1px solid #0f0", borderRadius: 4 }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, marginBottom: 6, color: "#0f0" }}>Last Interaction Summary</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 8, fontSize: 9 }}>
+                      <div>
+                        <span style={{ color: "#888" }}>Sections affected: </span>
+                        <span style={{ color: "#0f0" }}>{new Set(lastInteraction.events.map(e => e.sectionId).filter(Boolean)).size}</span>
+                      </div>
+                      <div>
+                        <span style={{ color: "#888" }}>Layout decisions: </span>
+                        <span style={{ color: "#0f0" }}>{lastInteraction.summary.layoutDecisions || 0}</span>
+                      </div>
+                      <div>
+                        <span style={{ color: "#888" }}>Overrides applied: </span>
+                        <span style={{ color: "#0f0" }}>{lastInteraction.summary.overridesApplied || 0}</span>
+                      </div>
+                      <div>
+                        <span style={{ color: "#888" }}>State changes: </span>
+                        <span style={{ color: "#0f0" }}>{lastInteraction.summary.stateChanges || 0}</span>
+                      </div>
+                      <div>
+                        <span style={{ color: "#888" }}>Errors: </span>
+                        <span style={{ color: lastInteraction.summary.errors ? "#f66" : "#0f0" }}>{lastInteraction.summary.errors || 0}</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Consolidated Interactions List */}
+              <div style={{ overflow: "auto", flex: 1, minHeight: 0 }}>
+                {consolidatedInteractions.length === 0 ? (
+                  <div style={{ padding: 20, textAlign: "center", color: "#666", fontSize: 10 }}>
+                    <div style={{ marginBottom: 8 }}>— No interactions yet</div>
+                    <div style={{ fontSize: 8, color: "#555" }}>
+                      Click buttons, change dropdowns, or trigger layout changes to see consolidated traces.
+                    </div>
+                  </div>
+                ) : (
+                  consolidatedInteractions.slice().reverse().map((interaction) => {
+                    const isExpanded = expandedInteractions.has(interaction.id);
+                    const duration = interaction.endTime 
+                      ? `${((interaction.endTime - interaction.startTime) / 1000).toFixed(2)}s`
+                      : "active";
+                    
+                    return (
+                      <div
+                        key={interaction.id}
+                        style={{
+                          marginBottom: 8,
+                          padding: 8,
+                          background: "rgba(0,0,0,0.3)",
+                          border: "1px solid #0f0",
+                          borderRadius: 4,
+                          cursor: "pointer",
+                        }}
+                        onClick={() => {
+                          const newExpanded = new Set(expandedInteractions);
+                          if (newExpanded.has(interaction.id)) {
+                            newExpanded.delete(interaction.id);
+                          } else {
+                            newExpanded.add(interaction.id);
+                          }
+                          setExpandedInteractions(newExpanded);
+                        }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 9 }}>
+                          <span style={{ color: "#888", minWidth: 100 }}>
+                            {new Date(interaction.startTime).toLocaleTimeString()}
+                          </span>
+                          <span style={{ color: "#0f0", fontWeight: 600 }}>
+                            Interaction #{interaction.id.split("-").pop()}
+                          </span>
+                          <span style={{ color: "#888", fontSize: 8 }}>({duration})</span>
+                          <span style={{ color: "#888", fontSize: 8 }}>
+                            Systems: {interaction.summary.systemsTouched.join(", ")}
+                          </span>
+                          {interaction.summary.finalLayout && (
+                            <span style={{ color: "#88aaff", fontSize: 8 }}>
+                              Layout: {interaction.summary.finalLayout}
+                            </span>
+                          )}
+                          <span style={{ marginLeft: "auto", color: "#888", fontSize: 8 }}>
+                            {interaction.events.length} events
+                          </span>
+                        </div>
+                        
+                        {isExpanded && (
+                          <div style={{ marginTop: 8, paddingTop: 8, borderTop: "1px solid #0f033" }}>
+                            <div style={{ fontSize: 9, color: "#0f0", marginBottom: 6 }}>Timeline:</div>
+                            {interaction.events.map((event, idx) => {
+                              const systemColors: Record<string, string> = {
+                                layout: "#00ff88",
+                                state: "#88aaff",
+                                behavior: "#ffaa00",
+                                resolver: "#ff88ff",
+                                renderer: "#ff88ff",
+                              };
+                              const color = systemColors[event.system] || "#0f0";
+                              return (
+                                <div key={idx} style={{ marginBottom: 4, paddingLeft: 12, fontSize: 8 }}>
+                                  <span style={{ color }}>{event.system}</span>
+                                  <span style={{ color: "#fff" }}>.{event.action}</span>
+                                  {event.decision && (
+                                    <span style={{ color: "#888" }}> → {String(event.decision).substring(0, 30)}</span>
+                                  )}
+                                  {event.sectionId && (
+                                    <span style={{ color: "#666" }}> [{event.sectionId}]</span>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Runtime Timeline tab */}
+          {tab === "runtime" && (
+            <div style={{ flex: 1, overflow: "hidden", minHeight: 0, display: "flex", flexDirection: "column" }}>
+              <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap", alignItems: "center" }}>
+                <label style={{ display: "flex", alignItems: "center", gap: 4, cursor: "pointer", fontSize: 10 }}>
+                  <input
+                    type="checkbox"
+                    checked={persistTraces}
+                    onChange={(e) => {
+                      setPersistTraces(e.target.checked);
+                      setPersistTracesState(e.target.checked);
+                    }}
+                  />
+                  <span>Persist traces between renders</span>
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setInteractionCaptureActive(true);
+                    setCapturedInteractionEvents([]);
+                  }}
+                  disabled={interactionCaptureActive}
+                  style={{
+                    padding: "2px 8px",
+                    fontSize: 10,
+                    background: interactionCaptureActive ? "#333" : "#222",
+                    color: interactionCaptureActive ? "#666" : "#0f0",
+                    border: "1px solid #0f0",
+                    cursor: interactionCaptureActive ? "not-allowed" : "pointer",
+                  }}
+                >
+                  {interactionCaptureActive ? "CAPTURING..." : "START CAPTURE"}
+                </button>
+                {interactionCaptureActive && (
+                  <span style={{ fontSize: 9, color: "#0f0" }}>
+                    Captured: {capturedInteractionEvents.length}/20
+                  </span>
+                )}
+              </div>
+              
+              {/* Runtime Timeline sub-tabs */}
+              <div style={{ display: "flex", gap: 4, marginBottom: 8, flexWrap: "wrap" }}>
+                {(["all", "layout", "state", "behavior", "renderer"] as const).map((sys) => (
+                  <button
+                    key={sys}
+                    type="button"
+                    onClick={() => setRuntimeTraceTab(sys)}
+                    style={{
+                      padding: "2px 6px",
+                      fontSize: 9,
+                      cursor: "pointer",
+                      background: runtimeTraceTab === sys ? "#0f0" : "#222",
+                      color: runtimeTraceTab === sys ? "#000" : "#0f0",
+                      border: "1px solid #0f0",
+                    }}
+                  >
+                    {sys === "all" ? "All" : sys.charAt(0).toUpperCase() + sys.slice(1)}
+                  </button>
+                ))}
+              </div>
+
+              {/* Interaction Sessions */}
+              {interactionSessions.length > 0 && (
+                <div style={{ marginBottom: 12, padding: 8, background: "rgba(0,255,136,0.1)", border: "1px solid #0f0", borderRadius: 4 }}>
+                  <b style={{ fontSize: 10, marginBottom: 6, display: "block" }}>INTERACTION SESSIONS</b>
+                  {interactionSessions.map((session) => (
+                    <details key={session.id} style={{ marginBottom: 4 }}>
+                      <summary style={{ cursor: "pointer", fontSize: 9, color: "#0f0" }}>
+                        Interaction #{session.id} ({session.events.length} events)
+                      </summary>
+                      <div style={{ marginTop: 4, paddingLeft: 12 }}>
+                        {session.events.map((event, idx) => (
+                          <div key={idx} style={{ fontSize: 8, color: "#888", marginBottom: 2 }}>
+                            [{event.system}] {event.action}
+                          </div>
+                        ))}
+                      </div>
+                    </details>
+                  ))}
+                </div>
+              )}
+
+              <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
+                <RuntimeTimelineBlock 
+                  systemFilter={runtimeTraceTab === "all" ? undefined : runtimeTraceTab}
+                />
+              </div>
+            </div>
+          )}
 
           {/* TRACE tab: preserve existing LIVE/LOG behavior */}
           {tab === "trace" && mode === "log" && (

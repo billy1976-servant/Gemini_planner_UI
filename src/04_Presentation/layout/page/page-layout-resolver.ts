@@ -10,6 +10,13 @@ export type PageLayoutDefinition = {
   containerWidth?: "contained" | "edge-to-edge" | "narrow" | "wide" | "full" | "split" | string;
   split?: { type: "split"; mediaSlot?: "left" | "right" };
   backgroundVariant?: "default" | "hero-accent" | "alt" | "dark";
+  container?: {
+    width?: string;
+    marginLeft?: string;
+    marginRight?: string;
+    boxSizing?: string;
+    overflowX?: string;
+  };
 };
 
 type PageLayoutsMap = Record<string, PageLayoutDefinition>;

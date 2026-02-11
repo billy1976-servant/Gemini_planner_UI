@@ -15,6 +15,15 @@ import { TriggerAtom, SurfaceAtom, MediaAtom, TextAtom, SequenceAtom, Collection
 import { resolveParams } from "@/engine/core/palette-resolver";
 import { resolveMoleculeLayout } from "@/layout";
 
+// STRICT JSON MODE: If true, NO fallback values allowed. Renderer must obey JSON 100%.
+const STRICT_JSON_MODE = true;
+
+function warnDefault(fallbackName: string, value: any, source: string) {
+  if (STRICT_JSON_MODE) {
+    console.warn(`[STRICT_JSON_MODE] DEFAULT DETECTED: renderer used fallback value "${fallbackName}" = ${JSON.stringify(value)} (source: ${source})`);
+  }
+}
+
 
 function resolveWithDefaultLayout(
   flow?: string,
@@ -22,8 +31,12 @@ function resolveWithDefaultLayout(
   params?: Record<string, any>,
   defaultFlow: "row" | "column" | "grid" = "row"
 ) {
+  // STRICT: Log fallback flow
+  if (!flow && STRICT_JSON_MODE) {
+    warnDefault("moleculeLayout.type", defaultFlow, "card.compound.tsx:resolveWithDefaultLayout");
+  }
   return resolveMoleculeLayout(
-    flow ?? defaultFlow,
+    flow ?? (STRICT_JSON_MODE ? undefined : defaultFlow),
     preset ?? null,
     params
   );
@@ -87,13 +100,22 @@ export default function CardCompound({
   onTap,
   children,
 }: CardCompoundProps) {
-  const mediaPosition = params?.mediaPosition ?? "top";
-  const rawContentAlign = params?.contentAlign ?? "start";
+  // STRICT: Only use defaults if not provided in JSON
+  const mediaPosition = params?.mediaPosition;
+  if (!mediaPosition && STRICT_JSON_MODE) {
+    warnDefault("mediaPosition", "top", "card.compound.tsx:90");
+  }
+  const finalMediaPosition = mediaPosition ?? (STRICT_JSON_MODE ? undefined : "top");
+  const rawContentAlign = params?.contentAlign;
+  if (!rawContentAlign && STRICT_JSON_MODE) {
+    warnDefault("contentAlign", "start", "card.compound.tsx:91");
+  }
+  const finalRawContentAlign = rawContentAlign ?? (STRICT_JSON_MODE ? undefined : "start");
   // Normalize: "left" → "start", "right" → "end" for layout
   const contentAlign =
-    rawContentAlign === "left" ? "start"
-    : rawContentAlign === "right" ? "end"
-    : rawContentAlign;
+    finalRawContentAlign === "left" ? "start"
+    : finalRawContentAlign === "right" ? "end"
+    : finalRawContentAlign;
 
   const handleTap = () => {
     if (onTap) return onTap();
@@ -124,7 +146,12 @@ export default function CardCompound({
     ...(typeof (params as Record<string, unknown>).layout === "object" && (params as Record<string, unknown>).layout != null ? (params as Record<string, unknown>).layout as Record<string, unknown> : {}),
     ...(params.moleculeLayout?.params ?? {}),
   };
-  const gap = layoutParams.gap ?? "var(--spacing-4)";
+  // STRICT: Only use gap if explicitly provided in JSON
+  const gap = layoutParams.gap as string | undefined;
+  if (!gap && STRICT_JSON_MODE) {
+    warnDefault("gap", "var(--spacing-4)", "card.compound.tsx:127");
+  }
+  const finalGap = gap ?? (STRICT_JSON_MODE ? undefined : "var(--spacing-4)");
   const alignItems =
     contentAlign === "center" ? "center" : contentAlign === "end" ? "flex-end" : "flex-start";
   const textAlign =
@@ -137,7 +164,7 @@ export default function CardCompound({
     !media.includes("profile") &&
     !media.includes("icon") &&
     !media.includes("thumb");
-  const hasLayoutMedia = isPrimaryMedia && mediaPosition;
+  const hasLayoutMedia = isPrimaryMedia && finalMediaPosition;
 
   const isHeroMedia =
     (params?.heroMediaFill || params?.variant === "hero-media") && isPrimaryMedia && media;
@@ -175,6 +202,13 @@ export default function CardCompound({
     />
   ) : null;
 
+  // STRICT: Log hard-coded text chunk styles
+  if (STRICT_JSON_MODE) {
+    warnDefault("display", "flex", "card.compound.tsx:179");
+    warnDefault("flexDirection", "column", "card.compound.tsx:179");
+    warnDefault("gap", "var(--spacing-2)", "card.compound.tsx:179");
+    warnDefault("minWidth", 0, "card.compound.tsx:179");
+  }
   const textChunk = (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-2)", textAlign, minWidth: 0 }}>
       {!isPrimaryMedia && media && (
@@ -195,10 +229,15 @@ export default function CardCompound({
     </div>
   );
 
-  const isRow = hasLayoutMedia && (mediaPosition === "left" || mediaPosition === "right");
-  const firstChunk = hasLayoutMedia && (mediaPosition === "bottom" || mediaPosition === "right") ? textChunk : mediaChunk;
-  const secondChunk = hasLayoutMedia && (mediaPosition === "bottom" || mediaPosition === "right") ? mediaChunk : textChunk;
+  const isRow = hasLayoutMedia && (finalMediaPosition === "left" || finalMediaPosition === "right");
+  const firstChunk = hasLayoutMedia && (finalMediaPosition === "bottom" || finalMediaPosition === "right") ? textChunk : mediaChunk;
+  const secondChunk = hasLayoutMedia && (finalMediaPosition === "bottom" || finalMediaPosition === "right") ? mediaChunk : textChunk;
 
+  // STRICT: Log hard-coded slot content styles
+  if (STRICT_JSON_MODE && mediaChunk) {
+    warnDefault("display", "flex", "card.compound.tsx:207");
+    warnDefault("width", "100%", "card.compound.tsx:212");
+  }
   const slotContent =
     !mediaChunk ? (
       textChunk
@@ -207,7 +246,7 @@ export default function CardCompound({
         style={{
           display: "flex",
           flexDirection: isRow ? "row" : "column",
-          gap,
+          gap: finalGap,
           alignItems: isRow ? "center" : alignItems,
           width: "100%",
         }}
@@ -230,13 +269,13 @@ export default function CardCompound({
     laidOutSlots = slotContent;
   } else if (layout.flow === "grid") {
     laidOutSlots = (
-      <CollectionAtom params={{ ...layout, gap }}>
+      <CollectionAtom params={{ ...layout, gap: finalGap }}>
         {slotContent}
       </CollectionAtom>
     );
   } else if (layout.direction) {
     laidOutSlots = (
-      <SequenceAtom params={{ ...layout, gap }}>
+      <SequenceAtom params={{ ...layout, gap: finalGap }}>
         {slotContent}
       </SequenceAtom>
     );

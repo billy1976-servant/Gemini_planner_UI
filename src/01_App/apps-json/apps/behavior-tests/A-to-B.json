@@ -54,7 +54,8 @@
             }
           }
         }
-      ]
+      ],
+      "layout": "content-stack"
     },
     {
       "type": "section",
@@ -79,7 +80,8 @@
             }
           }
         }
-      ]
+      ],
+      "layout": "content-stack"
     },
     {
       "type": "section",
@@ -104,7 +106,8 @@
             }
           }
         }
-      ]
+      ],
+      "layout": "content-stack"
     },
     {
       "type": "section",
@@ -129,9 +132,8 @@
             }
           }
         }
-      ]
+      ],
+      "layout": "content-stack"
     }
   ]
 }
-
-

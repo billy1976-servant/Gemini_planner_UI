@@ -1,258 +1,286 @@
 {
-    "id": "screenRoot",
-    "type": "screen",
-    "children": [
-      {
-        "id": "trackJournal",
-        "type": "section",
-        "content": { "title": "TRACK Journal" },
-        "children": [
-  
-  
-          {
-            "id": "thinkSection",
-            "type": "section",
-            "content": { "title": "Think" },
-            "children": [
-              {
-                "type": "card",
-                "content": {
-                  "body": "What stands out to you from this Scripture?"
-                }
+  "id": "screenRoot",
+  "type": "screen",
+  "children": [
+    {
+      "id": "trackJournal",
+      "type": "section",
+      "content": {
+        "title": "TRACK Journal"
+      },
+      "children": [
+        {
+          "id": "thinkSection",
+          "type": "section",
+          "content": {
+            "title": "Think"
+          },
+          "children": [
+            {
+              "type": "card",
+              "content": {
+                "body": "What stands out to you from this Scripture?"
+              }
+            },
+            {
+              "id": "thinkInput",
+              "type": "field",
+              "state": {
+                "mode": "two-way",
+                "key": "journal.think"
               },
-              {
-                "id": "thinkInput",
-                "type": "field",
-                "state": { "mode": "two-way", "key": "journal.think" },
+              "params": {
+                "field": {
+                  "multiline": true,
+                  "rows": 4,
+                  "fieldKey": "journal.think"
+                }
+              }
+            },
+            {
+              "type": "button",
+              "content": {
+                "label": "Save Think Entry"
+              },
+              "behavior": {
+                "type": "Action",
                 "params": {
-                  "field": {
-                    "multiline": true,
-                    "rows": 4,
-                    "fieldKey": "journal.think"
-                  }
-                }
-              },
-              {
-                "type": "button",
-                "content": { "label": "Save Think Entry" },
-                "behavior": {
-                  "type": "Action",
-                  "params": {
-                    "name": "state:journal.add",
-                    "track": "think",
-                    "key": "entry",
-                    "valueFrom": "input",
-                    "fieldKey": "journal.think"
-                  }
-                }
-              },
-              {
-                "type": "UserInputViewer",
-                "params": {
+                  "name": "state:journal.add",
                   "track": "think",
-                  "stateKey": "journal.think"
+                  "key": "entry",
+                  "valueFrom": "input",
+                  "fieldKey": "journal.think"
                 }
               }
-            ]
+            },
+            {
+              "type": "UserInputViewer",
+              "params": {
+                "track": "think",
+                "stateKey": "journal.think"
+              }
+            }
+          ],
+          "layout": "content-stack"
+        },
+        {
+          "id": "repentSection",
+          "type": "section",
+          "content": {
+            "title": "Repent"
           },
-  
-  
-          {
-            "id": "repentSection",
-            "type": "section",
-            "content": { "title": "Repent" },
-            "children": [
-              {
-                "type": "card",
-                "content": {
-                  "body": "What do you need to confess or turn away from?"
-                }
+          "children": [
+            {
+              "type": "card",
+              "content": {
+                "body": "What do you need to confess or turn away from?"
+              }
+            },
+            {
+              "id": "repentInput",
+              "type": "field",
+              "state": {
+                "mode": "two-way",
+                "key": "journal.repent"
               },
-              {
-                "id": "repentInput",
-                "type": "field",
-                "state": { "mode": "two-way", "key": "journal.repent" },
+              "params": {
+                "field": {
+                  "multiline": true,
+                  "rows": 4,
+                  "fieldKey": "journal.repent"
+                }
+              }
+            },
+            {
+              "type": "button",
+              "content": {
+                "label": "Save Repent Entry"
+              },
+              "behavior": {
+                "type": "Action",
                 "params": {
-                  "field": {
-                    "multiline": true,
-                    "rows": 4,
-                    "fieldKey": "journal.repent"
-                  }
-                }
-              },
-              {
-                "type": "button",
-                "content": { "label": "Save Repent Entry" },
-                "behavior": {
-                  "type": "Action",
-                  "params": {
-                    "name": "state:journal.add",
-                    "track": "repent",
-                    "key": "entry",
-                    "valueFrom": "input",
-                    "fieldKey": "journal.repent"
-                  }
-                }
-              },
-              {
-                "type": "UserInputViewer",
-                "params": {
+                  "name": "state:journal.add",
                   "track": "repent",
-                  "stateKey": "journal.repent"
+                  "key": "entry",
+                  "valueFrom": "input",
+                  "fieldKey": "journal.repent"
                 }
               }
-            ]
+            },
+            {
+              "type": "UserInputViewer",
+              "params": {
+                "track": "repent",
+                "stateKey": "journal.repent"
+              }
+            }
+          ],
+          "layout": "content-stack"
+        },
+        {
+          "id": "askSection",
+          "type": "section",
+          "content": {
+            "title": "Ask"
           },
-  
-  
-          {
-            "id": "askSection",
-            "type": "section",
-            "content": { "title": "Ask" },
-            "children": [
-              {
-                "type": "card",
-                "content": {
-                  "body": "What are you asking God for wisdom about?"
-                }
+          "children": [
+            {
+              "type": "card",
+              "content": {
+                "body": "What are you asking God for wisdom about?"
+              }
+            },
+            {
+              "id": "askInput",
+              "type": "field",
+              "state": {
+                "mode": "two-way",
+                "key": "journal.ask"
               },
-              {
-                "id": "askInput",
-                "type": "field",
-                "state": { "mode": "two-way", "key": "journal.ask" },
+              "params": {
+                "field": {
+                  "multiline": true,
+                  "rows": 4,
+                  "fieldKey": "journal.ask"
+                }
+              }
+            },
+            {
+              "type": "button",
+              "content": {
+                "label": "Save Ask Entry"
+              },
+              "behavior": {
+                "type": "Action",
                 "params": {
-                  "field": {
-                    "multiline": true,
-                    "rows": 4,
-                    "fieldKey": "journal.ask"
-                  }
-                }
-              },
-              {
-                "type": "button",
-                "content": { "label": "Save Ask Entry" },
-                "behavior": {
-                  "type": "Action",
-                  "params": {
-                    "name": "state:journal.add",
-                    "track": "ask",
-                    "key": "entry",
-                    "valueFrom": "input",
-                    "fieldKey": "journal.ask"
-                  }
-                }
-              },
-              {
-                "type": "UserInputViewer",
-                "params": {
+                  "name": "state:journal.add",
                   "track": "ask",
-                  "stateKey": "journal.ask"
+                  "key": "entry",
+                  "valueFrom": "input",
+                  "fieldKey": "journal.ask"
                 }
               }
-            ]
+            },
+            {
+              "type": "UserInputViewer",
+              "params": {
+                "track": "ask",
+                "stateKey": "journal.ask"
+              }
+            }
+          ],
+          "layout": "content-stack"
+        },
+        {
+          "id": "conformSection",
+          "type": "section",
+          "content": {
+            "title": "Conform"
           },
-  
-  
-          {
-            "id": "conformSection",
-            "type": "section",
-            "content": { "title": "Conform" },
-            "children": [
-              {
-                "type": "card",
-                "content": {
-                  "body": "How will you live differently?"
-                }
+          "children": [
+            {
+              "type": "card",
+              "content": {
+                "body": "How will you live differently?"
+              }
+            },
+            {
+              "id": "conformInput",
+              "type": "field",
+              "state": {
+                "mode": "two-way",
+                "key": "journal.conform"
               },
-              {
-                "id": "conformInput",
-                "type": "field",
-                "state": { "mode": "two-way", "key": "journal.conform" },
+              "params": {
+                "field": {
+                  "multiline": true,
+                  "rows": 4,
+                  "fieldKey": "journal.conform"
+                }
+              }
+            },
+            {
+              "type": "button",
+              "content": {
+                "label": "Save Conform Entry"
+              },
+              "behavior": {
+                "type": "Action",
                 "params": {
-                  "field": {
-                    "multiline": true,
-                    "rows": 4,
-                    "fieldKey": "journal.conform"
-                  }
-                }
-              },
-              {
-                "type": "button",
-                "content": { "label": "Save Conform Entry" },
-                "behavior": {
-                  "type": "Action",
-                  "params": {
-                    "name": "state:journal.add",
-                    "track": "conform",
-                    "key": "entry",
-                    "valueFrom": "input",
-                    "fieldKey": "journal.conform"
-                  }
-                }
-              },
-              {
-                "type": "UserInputViewer",
-                "params": {
+                  "name": "state:journal.add",
                   "track": "conform",
-                  "stateKey": "journal.conform"
+                  "key": "entry",
+                  "valueFrom": "input",
+                  "fieldKey": "journal.conform"
                 }
               }
-            ]
+            },
+            {
+              "type": "UserInputViewer",
+              "params": {
+                "track": "conform",
+                "stateKey": "journal.conform"
+              }
+            }
+          ],
+          "layout": "content-stack"
+        },
+        {
+          "id": "keepSection",
+          "type": "section",
+          "content": {
+            "title": "Keep"
           },
-  
-  
-          {
-            "id": "keepSection",
-            "type": "section",
-            "content": { "title": "Keep" },
-            "children": [
-              {
-                "type": "card",
-                "content": {
-                  "body": "What will you guard against?"
-                }
+          "children": [
+            {
+              "type": "card",
+              "content": {
+                "body": "What will you guard against?"
+              }
+            },
+            {
+              "id": "keepInput",
+              "type": "field",
+              "state": {
+                "mode": "two-way",
+                "key": "journal.keep"
               },
-              {
-                "id": "keepInput",
-                "type": "field",
-                "state": { "mode": "two-way", "key": "journal.keep" },
-                "params": {
-                  "field": {
-                    "multiline": true,
-                    "rows": 4,
-                    "fieldKey": "journal.keep"
-                  }
-                }
-              },
-              {
-                "type": "button",
-                "content": { "label": "Save Keep Entry" },
-                "behavior": {
-                  "type": "Action",
-                  "params": {
-                    "name": "state:journal.add",
-                    "track": "keep",
-                    "key": "entry",
-                    "valueFrom": "input",
-                    "fieldKey": "journal.keep"
-                  }
-                }
-              },
-              {
-                "type": "UserInputViewer",
-                "params": {
-                  "track": "keep",
-                  "stateKey": "journal.keep"
+              "params": {
+                "field": {
+                  "multiline": true,
+                  "rows": 4,
+                  "fieldKey": "journal.keep"
                 }
               }
-            ]
-          }
-  
-  
-        ]
-      }
-    ]
-  }
-  
-  
-  
+            },
+            {
+              "type": "button",
+              "content": {
+                "label": "Save Keep Entry"
+              },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "state:journal.add",
+                  "track": "keep",
+                  "key": "entry",
+                  "valueFrom": "input",
+                  "fieldKey": "journal.keep"
+                }
+              }
+            },
+            {
+              "type": "UserInputViewer",
+              "params": {
+                "track": "keep",
+                "stateKey": "journal.keep"
+              }
+            }
+          ],
+          "layout": "content-stack"
+        }
+      ],
+      "layout": "content-stack"
+    }
+  ]
+}

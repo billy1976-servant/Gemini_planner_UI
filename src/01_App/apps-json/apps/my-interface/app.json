@@ -70,7 +70,8 @@
       ],
       "content": {
         "title": "Think About the Scriptures"
-      }
+      },
+      "layout": "content-stack"
     },
     {
       "id": "|RepentSection",
@@ -129,7 +130,8 @@
       ],
       "content": {
         "title": "Repent to God"
-      }
+      },
+      "layout": "content-stack"
     },
     {
       "id": "|AskSection",
@@ -188,7 +190,8 @@
       ],
       "content": {
         "title": "Ask God for Wisdom"
-      }
+      },
+      "layout": "content-stack"
     },
     {
       "id": "|ConformSection",
@@ -247,7 +250,8 @@
       ],
       "content": {
         "title": "Conform to Christ"
-      }
+      },
+      "layout": "content-stack"
     },
     {
       "id": "|KeepSection",
@@ -306,7 +310,8 @@
       ],
       "content": {
         "title": "Keep Your Heart"
-      }
+      },
+      "layout": "content-stack"
     }
   ]
 }

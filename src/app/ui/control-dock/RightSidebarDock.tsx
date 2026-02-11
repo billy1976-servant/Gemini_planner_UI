@@ -52,7 +52,8 @@ export default function RightSidebarDock({ layoutPanelContent }: RightSidebarDoc
   const isPanelOpen = (id: DockPanelId) => openPanel === id;
   const setPanelOpen = (id: DockPanelId) => togglePanel(id);
 
-  const dockWidth = openPanel ? 328 : 48;
+  /** Total width: panel (380) + strip (44) = 424 when open. Aligns with RightFloatingSidebar. */
+  const dockWidth = openPanel ? 424 : 48;
 
   useEffect(() => {
     if (!openPanel) return;
@@ -76,7 +77,7 @@ export default function RightSidebarDock({ layoutPanelContent }: RightSidebarDoc
       style: {
         width: dockWidth,
         minWidth: 48,
-        flexShrink: 0,
+        flex: "0 0 auto",
         height: "100%",
         display: "flex",
         flexDirection: "column",

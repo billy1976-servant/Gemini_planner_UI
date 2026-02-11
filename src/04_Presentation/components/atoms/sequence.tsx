@@ -1,6 +1,14 @@
 "use client";
 import { resolveToken } from "@/engine/core/palette-resolve-token";
 
+// STRICT JSON MODE: If true, NO fallback values allowed. Renderer must obey JSON 100%.
+const STRICT_JSON_MODE = true;
+
+function warnDefault(fallbackName: string, value: any, source: string) {
+  if (STRICT_JSON_MODE) {
+    console.warn(`[STRICT_JSON_MODE] DEFAULT DETECTED: renderer used fallback value "${fallbackName}" = ${JSON.stringify(value)} (source: ${source})`);
+  }
+}
 
 type SequenceAtomProps = {
   params?: any;
@@ -31,14 +39,23 @@ export default function SequenceAtom({ params = {}, children }: SequenceAtomProp
 
   // 🔹 GRID MODE
   if ((params.flow ?? p.flow) === "grid") {
-    const columns = p.columns ?? 2;
+    const columns = p.columns;
+    if (!columns && STRICT_JSON_MODE) {
+      warnDefault("columns", 2, "sequence.tsx:34");
+    }
+    const finalColumns = columns ?? (STRICT_JSON_MODE ? undefined : 2);
+    if (STRICT_JSON_MODE) {
+      warnDefault("display", "grid", "sequence.tsx:36");
+      if (!p.align) warnDefault("alignItems", "stretch", "sequence.tsx:40");
+      if (!p.justify) warnDefault("justifyItems", "stretch", "sequence.tsx:41");
+    }
     const style: React.CSSProperties = {
       display: "grid",
-      gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+      gridTemplateColumns: finalColumns ? `repeat(${finalColumns}, minmax(0, 1fr))` : undefined,
       gap,
       padding,
-      alignItems: p.align || "stretch",
-      justifyItems: p.justify || "stretch",
+      alignItems: p.align ?? (STRICT_JSON_MODE ? undefined : "stretch"),
+      justifyItems: p.justify ?? (STRICT_JSON_MODE ? undefined : "stretch"),
       overflowY: p.scrollable ? "auto" : "visible",
     };
     return <div style={style}>{children}</div>;
@@ -46,11 +63,17 @@ export default function SequenceAtom({ params = {}, children }: SequenceAtomProp
 
 
   // 🔹 FLEX MODE (default)
+  if (STRICT_JSON_MODE) {
+    warnDefault("display", "flex", "sequence.tsx:50");
+    if (!p.direction) warnDefault("flexDirection", "row", "sequence.tsx:51");
+    if (!p.align) warnDefault("alignItems", "flex-start", "sequence.tsx:52");
+    if (!p.justify) warnDefault("justifyContent", "flex-start", "sequence.tsx:53");
+  }
   const style: React.CSSProperties = {
     display: "flex",
-    flexDirection: p.direction || "row",
-    alignItems: p.align || "flex-start",
-    justifyContent: p.justify || "flex-start",
+    flexDirection: p.direction ?? (STRICT_JSON_MODE ? undefined : "row"),
+    alignItems: p.align ?? (STRICT_JSON_MODE ? undefined : "flex-start"),
+    justifyContent: p.justify ?? (STRICT_JSON_MODE ? undefined : "flex-start"),
     gap,
     padding,
     flexWrap: p.wrap ? "wrap" : "nowrap",

@@ -1,16 +1,15 @@
 # PIPELINE_PROOF_REPORT
 
-Generated: 2026-01-30T17:54:16.000Z
+Generated: 2026-02-11T13:06:44.340Z
 
-Diagnostic app: `src/apps-offline/apps/diagnostics/app.json`
-Linked screen: `src/apps-offline/apps/diagnostics/linked.json`
+Diagnostic app: `src/apps-json/apps/diagnostics/app.json`
+Linked screen: `src/apps-json/apps/diagnostics/linked.json`
 
 ## Checks
 
-- ✅ **JSON loads (app.json + linked.json)**
-- ✅ **Contract validator runs (scoped)**
-  - Violations: STATE_DECLARED_IN_TREE:2, NON_CONTRACT_ACTION_NAME:1
-- ✅ **All 12 molecules present in JSON**
+- ❌ **JSON loads (app.json + linked.json)**
+  - ENOENT: no such file or directory, open 'C:\Users\New User\Documents\HiSense\src\apps-json\apps\diagnostics\app.json'
+  - Inspect: `src/apps-json/apps/diagnostics/app.json`, `src/apps-json/apps/diagnostics/linked.json`
 - ✅ **Registry keys found for all 12 molecules**
 - ✅ **input-change observed (typing path)**
 - ✅ **state update observed (state.values updated)**

@@ -20,6 +20,15 @@ import { resolveLayout, LayoutMoleculeRenderer, type LayoutDefinition } from "@/
 import { getOrganLayoutOrganIds, resolveInternalLayoutId } from "@/layout-organ";
 import { loadOrganVariant } from "@/components/organs";
 
+// STRICT JSON MODE: If true, NO fallback values allowed. Renderer must obey JSON 100%.
+const STRICT_JSON_MODE = true;
+
+function warnDefault(fallbackName: string, value: any, source: string) {
+  if (STRICT_JSON_MODE) {
+    console.warn(`[STRICT_JSON_MODE] DEFAULT DETECTED: renderer used fallback value "${fallbackName}" = ${JSON.stringify(value)} (source: ${source})`);
+  }
+}
+
 /* ======================================================
    3) PROPS CONTRACT
    ====================================================== */
@@ -31,6 +40,8 @@ export type SectionCompoundProps = {
   layout?: string | { template: string; slot: string };
   /** Effective layout preset ID applied by engine (e.g. hero-full-bleed-image). Used for full-bleed detection. */
   _effectiveLayoutPreset?: string | null;
+  /** Template id for context-based layout resolution (template role mapping). */
+  templateId?: string;
   params?: {
     surface?: any;
     title?: any;
@@ -75,9 +86,22 @@ export default function SectionCompound({
   params = {},
   content = {},
   children,
+  templateId,
 }: SectionCompoundProps) {
   if (typeof window !== "undefined") {
     const sectionKey = id ?? role ?? "";
+    // LAYOUT INVESTIGATION: Enhanced logging for layout prop source
+    if (process.env.NODE_ENV === "development") {
+      console.log("[LAYOUT INVESTIGATION] SectionCompound received layout prop", {
+        sectionKey,
+        sectionId: id ?? "(none)",
+        sectionRole: role ?? "(none)",
+        layoutPropReceived: layout ?? "(undefined)",
+        layoutType: typeof layout,
+        isString: typeof layout === "string",
+        isEmpty: typeof layout === "string" && layout.trim() === "",
+      });
+    }
     console.log("[LAYOUT TRACE] Section received layout prop", {
       sectionKey,
       layoutPropReceived: layout,
@@ -90,8 +114,33 @@ export default function SectionCompound({
       ts: Date.now(),
     });
   }
+  
+  // LAYOUT CONTRACT CHECK: Verify layout resolution inputs
+  console.log("LAYOUT CONTRACT CHECK", {
+    section: id,
+    role,
+    layoutProp: layout,
+    templateId
+  });
+  
   // Section layout: section placement (container, split, background).
-  const layoutDef = resolveLayout(layout);
+  // Pass context for template role-based resolution when layout is undefined
+  const layoutDef = resolveLayout(layout, {
+    templateId: templateId,
+    sectionRole: role
+  });
+  
+  // LAYOUT INVESTIGATION: Log resolution result
+  if (process.env.NODE_ENV === "development") {
+    const sectionKey = id ?? role ?? "";
+    console.log("[LAYOUT INVESTIGATION] SectionCompound layout resolution", {
+      sectionKey,
+      layoutInput: layout ?? "(undefined)",
+      layoutDefResolved: layoutDef ? "YES" : "NO (null)",
+      willRenderLayoutMolecule: !!layoutDef,
+      fallbackToDiv: !layoutDef,
+    });
+  }
   // Organ internal layout: when this section is an organ, inner arrangement from organ layout resolver + variant JSON; does not use section layout for inner moleculeLayout.
   const organIds = getOrganLayoutOrganIds();
   const isOrgan = role != null && organIds.includes(role);
@@ -99,7 +148,18 @@ export default function SectionCompound({
     layoutDef != null && isOrgan
       ? (() => {
           const internalLayoutId = resolveInternalLayoutId(role, params.internalLayoutId);
-          const variantRoot = loadOrganVariant(role, internalLayoutId ?? "default");
+          // TEMP SAFE MODE: Log fallback hits but do NOT assign default internal layout
+          if (!internalLayoutId) {
+            console.warn("[FALLBACK HIT]", {
+              sectionKey: id ?? role ?? "",
+              requestedLayout: params.internalLayoutId ?? "(none)",
+              templateDefault: "(none)",
+              override: "(none)",
+              source: "internalLayoutId default",
+            });
+          }
+          // Do NOT assign fallback - pass undefined to expose missing JSON
+          const variantRoot = loadOrganVariant(role, internalLayoutId ?? undefined);
           const variantParams =
             variantRoot != null && typeof variantRoot === "object" && "params" in variantRoot
               ? (variantRoot as { params?: { moleculeLayout?: unknown } }).params
@@ -113,6 +173,12 @@ export default function SectionCompound({
       : layoutDef;
   if (effectiveDef) {
     const layoutPresetId = typeof layout === "string" && layout.trim() ? layout.trim() : null;
+    const sectionKey = id ?? role ?? "";
+    console.log("SECTION → LAYOUT PIPE", {
+      sectionKey,
+      layoutPropReceived: layout,
+      childCount: React.Children.count(children),
+    });
     return (
       <LayoutMoleculeRenderer
         layout={effectiveDef as LayoutDefinition}

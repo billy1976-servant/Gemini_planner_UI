@@ -26,6 +26,8 @@ export type EvaluateCompatibilityArgs = {
   /** Section role (e.g. hero, features-grid); used when evaluating organ internal layout. */
   organId?: string | null;
   organInternalLayoutId?: string | null;
+  /** When true, force cardValid to true (e.g. for preview tiles so layout override always renders). */
+  forceCardValid?: boolean;
 };
 
 /**
@@ -40,17 +42,15 @@ export function evaluateCompatibility(args: EvaluateCompatibilityArgs): Compatib
     cardLayoutId,
     organId,
     organInternalLayoutId,
+    forceCardValid = false,
   } = args;
 
-  const availableSet = new Set(
-    getAvailableSlots(sectionNode ?? undefined)
-  );
+  const availableSlotsList = getAvailableSlots(sectionNode ?? undefined);
+  const availableSet = new Set(availableSlotsList);
   const missing: string[] = [];
 
-  const sectionRequired = getRequiredSlots(
-    "section",
-    (sectionLayoutId ?? "").toString().trim()
-  );
+  const sectionLayoutIdTrimmed = (sectionLayoutId ?? "").toString().trim();
+  const sectionRequired = getRequiredSlots("section", sectionLayoutIdTrimmed);
   const sectionValid =
     sectionRequired.length === 0 ||
     sectionRequired.every((s) => availableSet.has(s));
@@ -60,12 +60,21 @@ export function evaluateCompatibility(args: EvaluateCompatibilityArgs): Compatib
     }
   }
 
-  const cardRequired = getRequiredSlots(
-    "card",
-    (cardLayoutId ?? "").toString().trim()
-  );
-  const cardValid =
+  const cardLayoutIdTrimmed = (cardLayoutId ?? "").toString().trim();
+  const cardRequired = getRequiredSlots("card", cardLayoutIdTrimmed);
+  const cardMissing = cardRequired.filter((s) => !availableSet.has(s));
+  let cardValid =
     cardRequired.length === 0 || cardRequired.every((s) => availableSet.has(s));
+  if (forceCardValid) {
+    cardValid = true;
+  }
+  // TEMP: Layout preview diagnostic — bypass card compatibility when env is set so preview tiles show different layouts (prove whether cardValid false was masking layout overrides). Do NOT remove; gate by NEXT_PUBLIC_LAYOUT_DEBUG only.
+  if (
+    typeof process !== "undefined" &&
+    process.env.NEXT_PUBLIC_LAYOUT_DEBUG === "true"
+  ) {
+    cardValid = true;
+  }
   if (!cardValid) {
     for (const s of cardRequired) {
       if (!availableSet.has(s)) missing.push(s);
@@ -76,12 +85,17 @@ export function evaluateCompatibility(args: EvaluateCompatibilityArgs): Compatib
       process.env.NODE_ENV === "development" &&
       cardRequired.length > 0
     ) {
-      const availableSlots = Array.from(availableSet);
+      const sectionKey = (sectionNode as SectionNode & { id?: string; role?: string })?.id ?? (sectionNode as SectionNode & { role?: string })?.role ?? "(no key)";
       console.log("[compatibility-evaluator] cardValid false", {
         cardLayoutId: cardLayoutId ?? "(empty)",
         cardRequired,
-        availableSlots,
-        missing: cardRequired.filter((s) => !availableSet.has(s)),
+        availableSlots: availableSlotsList,
+        missing: cardMissing,
+        missingSlot: cardMissing[0] ?? "(none)",
+        sectionKey,
+        sectionLayoutId: sectionLayoutIdTrimmed || "(empty)",
+        requiredSlotsForSection: sectionRequired,
+        requiredSlotsForCard: cardRequired,
       });
     }
   }
@@ -105,6 +119,26 @@ export function evaluateCompatibility(args: EvaluateCompatibilityArgs): Compatib
   }
 
   const uniqueMissing = Array.from(new Set(missing));
+
+  // Dev-only: log requiredSlots per layoutId, actual slots, and which slot is missing (for diagnosis)
+  if (
+    typeof process !== "undefined" &&
+    process.env.NODE_ENV === "development" &&
+    (sectionLayoutIdTrimmed || cardLayoutIdTrimmed)
+  ) {
+    const sectionKey = (sectionNode as SectionNode & { id?: string; role?: string })?.id ?? (sectionNode as SectionNode & { role?: string })?.role ?? "(no key)";
+    const missingForCard = cardRequired.filter((s) => !availableSet.has(s));
+    console.log("[compatibility-evaluator] slot summary", {
+      sectionKey,
+      sectionLayoutId: sectionLayoutIdTrimmed || "(empty)",
+      requiredSlotsForSection: sectionRequired,
+      cardLayoutId: cardLayoutIdTrimmed || "(empty)",
+      requiredSlotsForCard: cardRequired,
+      actualSlotsInSection: availableSlotsList,
+      missingSlotForCard: missingForCard.length > 0 ? missingForCard : undefined,
+      cardValid,
+    });
+  }
 
   return {
     sectionValid,

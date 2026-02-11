@@ -20,7 +20,8 @@
       ],
       "content": {
         "title": "Test"
-      }
+      },
+      "layout": "content-stack"
     },
     {
       "id": "|Next",
@@ -28,7 +29,8 @@
       "children": [],
       "content": {
         "title": "Next"
-      }
+      },
+      "layout": "content-stack"
     }
   ]
 }

@@ -9,6 +9,8 @@ const navigations = behaviorData.navigations;
 import { BehaviorEngine } from "./behavior-engine";
 import { resolveBehaviorVerb } from "./behavior-verb-resolver";
 import { logRuntimeDecision } from "@/engine/devtools/runtime-decision-trace";
+import { pushTrace } from "@/devtools/runtime-trace-store";
+import { addTraceEvent } from "@/03_Runtime/debug/pipeline-trace-aggregator";
 
 
 /**
@@ -173,7 +175,15 @@ export function runBehavior(
       decisionMade: null,
       downstreamEffect: "none",
     });
+    // Hard failure: no behavior found
     console.warn("⚠️ No behavior found:", { domain, action, args });
+    pushTrace({
+      system: "behavior",
+      action: "trigger",
+      input: { domain, action, args },
+      decision: null,
+      final: { error: "No behavior found" },
+    });
     return;
   }
 
@@ -188,25 +198,46 @@ export function runBehavior(
     decisionMade: { handlerName },
     downstreamEffect: "invoke handler",
   });
-  console.log("✔ Behavior Triggered:", { domain, action, handlerName, args });
-
 
   const fn = (BehaviorEngine as any)?.[handlerName];
   if (!fn) {
+    // Hard failure: handler not implemented
     console.warn("⚠️ Handler not implemented:", handlerName);
+    pushTrace({
+      system: "behavior",
+      action: "trigger",
+      input: { domain, action, args, handlerName },
+      decision: null,
+      final: { error: "Handler not implemented" },
+    });
     return;
   }
-
 
   // Pass ctx into the engine (required for navigation handlers)
   const result = fn.length >= 2 ? fn(ctx, args) : fn(args, ctx);
 
+  // Trace behavior trigger
+  pushTrace({
+    system: "behavior",
+    action: "trigger",
+    input: { domain, action, args, source },
+    decision: handlerName,
+    final: { result, navigationTarget: domain === "navigate" || domain === "navigation" ? (result?.target ?? args?.target) : undefined },
+  });
+  
+  // Add to consolidated trace aggregator
+  addTraceEvent({
+    system: "behavior",
+    action: "trigger",
+    input: { domain, action, args, source },
+    decision: handlerName,
+    final: { result, navigationTarget: domain === "navigate" || domain === "navigation" ? (result?.target ?? args?.target) : undefined },
+  });
 
   // If navigation is declared, execute it (supports: result.target OR args.target)
   if (domain === "navigate" || domain === "navigation") {
     fireNavigation(ctx, result?.target ?? args?.target);
   }
-
 
   return result;
 }

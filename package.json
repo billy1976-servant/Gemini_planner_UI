@@ -14,7 +14,7 @@
     "blueprint": "ts-node -r tsconfig-paths/register src/07_Dev_Tools/scripts/blueprint.ts",
     "contract:validate": "ts-node src/scripts/contract-validate.ts",
     "contract:report": "ts-node src/scripts/contract-report.ts",
-    "pipeline:proof": "ts-node -r tsconfig-paths/register src/scripts/pipeline-proof.ts",
+    "pipeline:proof": "ts-node -r tsconfig-paths/register src/07_Dev_Tools/scripts/pipeline-proof.ts",
     "content": "ts-node src/map/engine/content-engine.ts",
     "build": "node --max-old-space-size=4096 ./node_modules/next/dist/bin/next build",
     "start": "next start",

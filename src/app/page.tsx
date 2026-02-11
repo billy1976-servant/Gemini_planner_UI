@@ -4,7 +4,7 @@ import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "re
 import { useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useSyncExternalStore } from "react";
-import JsonRenderer from "@/engine/core/json-renderer";
+import ExperienceRenderer from "@/engine/core/ExperienceRenderer";
 import { recordStage } from "@/engine/debug/pipelineStageTrace";
 import { PipelineDebugStore } from "@/devtools/pipeline-debug-store";
 import { loadScreen } from "@/engine/core/screen-loader";
@@ -48,6 +48,7 @@ import {
 import { getOrganLayoutOrganIds, getInternalLayoutIds } from "@/layout-organ";
 import { hasLayoutNodeType, collapseLayoutNodes } from "@/engine/core/collapse-layout-nodes";
 import { applySkinBindings } from "@/logic/bridges/skinBindings.apply";
+import { validateScreenJson, logScreenJsonValidation } from "@/debug/validateScreenJsonLayouts";
 import WebsiteShell from "@/lib/site-skin/shells/WebsiteShell";
 import AppShell from "@/lib/site-skin/shells/AppShell";
 import LearningShell from "@/lib/site-skin/shells/LearningShell";
@@ -243,6 +244,43 @@ export default function Page() {
   const experienceProfile = getExperienceProfile(experience);
   const templateProfile = getTemplateProfile(effectiveTemplateId);
 
+  // LAYOUT INVESTIGATION: Log template profile data and validate defaultSectionLayoutId
+  if (process.env.NODE_ENV === "development" && templateProfile) {
+    const hasDefaultLayout = !!templateProfile.defaultSectionLayoutId;
+    const defaultLayout = templateProfile.defaultSectionLayoutId ?? "(MISSING - will fallback to undefined)";
+    const sectionRoles = Object.keys(templateProfile.sections ?? {});
+    
+    console.log("[LAYOUT INVESTIGATION] Template Profile", {
+      templateId: effectiveTemplateId,
+      templateLabel: templateProfile.label,
+      defaultSectionLayoutId: defaultLayout,
+      hasDefaultLayout,
+      validation: hasDefaultLayout ? "✓ HAS default" : "✗ MISSING default",
+      containerWidth: templateProfile.containerWidth ?? "(none)",
+      sectionRoles: sectionRoles.length > 0 ? sectionRoles : "(none)",
+      totalSectionRoles: sectionRoles.length,
+      note: hasDefaultLayout 
+        ? "Template provides default layout for sections without explicit layout"
+        : "WARNING: Template has no default - sections without layout will be undefined",
+    });
+    
+    // Warn if template forces all sections to same layout via default
+    if (hasDefaultLayout && defaultLayout !== "(MISSING - will fallback to undefined)") {
+      console.log("[LAYOUT INVESTIGATION] Template Default Layout Impact", {
+        templateId: effectiveTemplateId,
+        defaultLayout,
+        impact: "Sections without explicit 'layout' field will use this default",
+        note: "This is expected behavior - JSON can override with explicit layout field",
+      });
+    }
+  } else if (process.env.NODE_ENV === "development") {
+    console.log("[LAYOUT INVESTIGATION] Template Profile", {
+      templateId: effectiveTemplateId,
+      status: "NOT FOUND",
+      impact: "No template default available - sections must have explicit layout or will be undefined",
+    });
+  }
+
   /* --- DEV ONLY: state.values.stylingPreset / behaviorProfile trace ---
    * Written: RightFloatingSidebar, RightSidebarDockContent, ControlDock via setValue(key, value) → dispatchState("state.update", { key, value }).
    * Read (UI only): Same files — for active button state and panel display.
@@ -417,6 +455,13 @@ export default function Page() {
         // ✅ JSON SCREEN BRANCH — FIXED
         // IMPORTANT: store the FULL descriptor, but render ONLY its root
         setJson(data);
+        
+        // LAYOUT INVESTIGATION: Validate and log screen JSON layout values
+        if (process.env.NODE_ENV === "development" && data) {
+          const validation = validateScreenJson(screen, data);
+          logScreenJsonValidation(validation);
+        }
+        
         setTsxMeta(null);
         setTsxComponent(null);
         setError(null);
@@ -658,9 +703,36 @@ export default function Page() {
     screenKey,
     sectionOverrides: sectionLayoutPresetOverrides,
   });
+  
+  // LAYOUT INVESTIGATION: Comprehensive summary before rendering
+  if (process.env.NODE_ENV === "development") {
+    const validation = json ? validateScreenJson(screen ?? "unknown", json) : null;
+    console.log("[LAYOUT INVESTIGATION] ===== RENDER SUMMARY =====", {
+      screenPath: screen ?? "(none)",
+      screenKey,
+      templateId: effectiveTemplateId,
+      templateDefaultLayout: templateProfile?.defaultSectionLayoutId ?? "(none)",
+      engineKillSwitchActive: true, // DISABLE_ENGINE_LAYOUT is true
+      jsonValidation: validation ? {
+        totalSections: validation.sections.length,
+        sectionsWithLayout: validation.sections.filter(s => s.hasLayout).length,
+        sectionsWithoutLayout: validation.sections.filter(s => !s.hasLayout).length,
+        uniqueLayoutsInJson: validation.uniqueLayouts,
+        allSectionsHaveLayout: validation.allSectionsHaveLayout,
+      } : "(no JSON)",
+      overrideCounts: {
+        section: Object.keys(sectionLayoutPresetOverrides).length,
+        card: Object.keys(cardLayoutPresetOverrides).length,
+        organ: Object.keys(organInternalLayoutOverrides).length,
+      },
+      note: "With DISABLE_ENGINE_LAYOUT=true, engine overrides are bypassed. Layouts come from JSON or template default only.",
+    });
+    console.log("[LAYOUT INVESTIGATION] ===== END SUMMARY =====");
+  }
+  
   const behaviorProfile = (stateSnapshot?.values?.behaviorProfile ?? "default") as string;
   const jsonContent = (
-    <JsonRenderer
+    <ExperienceRenderer
       key={screenContainerKey}
       node={treeForRender}
       defaultState={json?.state}
@@ -670,6 +742,9 @@ export default function Page() {
       organInternalLayoutOverrides={organInternalLayoutOverrides}
       screenId={screenKey}
       behaviorProfile={behaviorProfile}
+      experience={experience}
+      sectionKeys={sectionKeysFromTree}
+      sectionLabels={sectionLabels}
     />
   );
 

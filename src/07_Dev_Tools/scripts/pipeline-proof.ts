@@ -32,13 +32,13 @@ const FILES = {
 const REPORT_OUT = path.join(process.cwd(), "PIPELINE_PROOF_REPORT.md");
 
 const FILES_TO_INSPECT_DEFAULT = [
-  "src/engine/core/behavior-listener.ts",
-  "src/state/state-store.ts",
-  "src/state/state-resolver.ts",
-  "src/engine/core/json-renderer.tsx",
-  "src/engine/core/screen-loader.ts",
-  "src/scripts/blueprint.ts",
-  "src/engine/core/registry.tsx",
+  "src/03_Runtime/engine/core/behavior-listener.ts",
+  "src/03_Runtime/state/state-store.ts",
+  "src/03_Runtime/state/state-resolver.ts",
+  "src/03_Runtime/engine/core/json-renderer.tsx",
+  "src/03_Runtime/engine/core/screen-loader.ts",
+  "src/07_Dev_Tools/scripts/blueprint.ts",
+  "src/03_Runtime/engine/core/registry.tsx",
 ];
 
 function rel(p: string) {
@@ -214,6 +214,7 @@ async function main() {
       const registryFile = path.join(
         process.cwd(),
         "src",
+        "03_Runtime",
         "engine",
         "core",
         "registry.tsx"
@@ -238,7 +239,7 @@ async function main() {
         name: "Registry keys found for all 12 molecules",
         ok: missing.length === 0,
         details: missing.length ? `Missing keys: ${missing.join(", ")}` : undefined,
-        filesToInspect: missing.length ? ["src/engine/core/registry.tsx"] : undefined,
+        filesToInspect: missing.length ? ["src/03_Runtime/engine/core/registry.tsx"] : undefined,
       });
     }
 
@@ -269,7 +270,7 @@ async function main() {
       filesToInspect:
         getState()?.values?.["diag.email"] === "test@example.com"
           ? undefined
-          : ["src/engine/core/behavior-listener.ts", "src/state/state-resolver.ts"],
+          : ["src/03_Runtime/engine/core/behavior-listener.ts", "src/03_Runtime/state/state-resolver.ts"],
     });
 
     // action → journal.add (async dynamic import inside listener)
@@ -297,7 +298,7 @@ async function main() {
       filesToInspect:
         getState()?.journal?.pipeline?.entry === "test@example.com"
           ? undefined
-          : ["src/engine/core/behavior-listener.ts", "src/state/state-resolver.ts"],
+          : ["src/03_Runtime/engine/core/behavior-listener.ts", "src/03_Runtime/state/state-resolver.ts"],
     });
 
     // navigation observed
@@ -322,7 +323,7 @@ async function main() {
         navigations.includes("apps/diagnostics/linked.json") &&
         !navigations.some((x) => x.startsWith("DUP:"))
           ? undefined
-          : ["src/engine/core/behavior-listener.ts", "src/app/layout.tsx", "src/engine/core/screen-loader.ts"],
+          : ["src/03_Runtime/engine/core/behavior-listener.ts", "src/app/layout.tsx", "src/03_Runtime/engine/core/screen-loader.ts"],
     });
 
     checks.push({
@@ -331,7 +332,7 @@ async function main() {
       details: `navigations=${JSON.stringify(navigations)}`,
       filesToInspect: !navigations.some((x) => x.startsWith("DUP:"))
         ? undefined
-        : ["src/engine/core/behavior-listener.ts"],
+        : ["src/03_Runtime/engine/core/behavior-listener.ts"],
     });
 
     // persistence proof (journal events persist; state.update does not)
@@ -343,7 +344,7 @@ async function main() {
       filesToInspect:
         typeof persisted === "string" && persisted.length > 0
           ? undefined
-          : ["src/state/state-store.ts"],
+          : ["src/03_Runtime/state/state-store.ts"],
     });
 
     // simulate refresh: clear state-store module cache and re-import
@@ -360,7 +361,7 @@ async function main() {
       filesToInspect:
         refreshed.getState?.()?.journal?.pipeline?.entry === "test@example.com"
           ? undefined
-          : ["src/state/state-store.ts", "src/state/state-resolver.ts"],
+          : ["src/03_Runtime/state/state-store.ts", "src/03_Runtime/state/state-resolver.ts"],
     });
 
     // no console errors

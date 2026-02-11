@@ -20,7 +20,8 @@
             "steps": "Step 1 → Step 2 → Step 3"
           }
         }
-      ]
+      ],
+      "layout": "content-stack"
     },
     {
       "id": "|hero_section",
@@ -62,9 +63,11 @@
           ],
           "content": {
             "title": "[Practice Name] - Hero Section"
-          }
+          },
+          "layout": "content-stack"
         }
-      ]
+      ],
+      "layout": "content-stack"
     },
     {
       "id": "|services_section",
@@ -96,9 +99,11 @@
           ],
           "content": {
             "title": "Our Dental Services"
-          }
+          },
+          "layout": "content-stack"
         }
-      ]
+      ],
+      "layout": "content-stack"
     },
     {
       "id": "|content_section",
@@ -122,9 +127,11 @@
           ],
           "content": {
             "title": "About Our Practice"
-          }
+          },
+          "layout": "content-stack"
         }
-      ]
+      ],
+      "layout": "content-stack"
     },
     {
       "id": "|cta_section",
@@ -206,7 +213,8 @@
           ],
           "content": {
             "title": "Contact Us"
-          }
+          },
+          "layout": "content-stack"
         },
         {
           "id": "|BookingSection",
@@ -269,9 +277,11 @@
           ],
           "content": {
             "title": "Book an Appointment"
-          }
+          },
+          "layout": "content-stack"
         }
-      ]
+      ],
+      "layout": "content-stack"
     },
     {
       "id": "|footer_section",
@@ -289,7 +299,8 @@
             "right": "© [Practice Name]"
           }
         }
-      ]
+      ],
+      "layout": "content-stack"
     }
   ]
 }

@@ -15,6 +15,11 @@ import { logRuntimeDecision } from "@/engine/devtools/runtime-decision-trace";
 import { trace } from "@/devtools/interaction-tracer.store";
 import { PipelineDebugStore } from "@/devtools/pipeline-debug-store";
 import { recordStage } from "@/engine/debug/pipelineStageTrace";
+import { pushTrace } from "@/devtools/runtime-trace-store";
+import { addTraceEvent } from "@/03_Runtime/debug/pipeline-trace-aggregator";
+
+// Global debug flag for layout source tracing
+const TRACE_LAYOUT_SOURCE = true;
 
 export type LayoutDefinition = {
   containerWidth?: "contained" | "edge-to-edge" | "narrow" | "wide" | "full" | "split" | string;
@@ -24,6 +29,13 @@ export type LayoutDefinition = {
     type: "column" | "row" | "grid" | "stacked";
     preset?: string | null;
     params?: Record<string, unknown>;
+  };
+  container?: {
+    width?: string;
+    marginLeft?: string;
+    marginRight?: string;
+    boxSizing?: string;
+    overflowX?: string;
   };
 };
 
@@ -41,7 +53,18 @@ export function resolveLayout(
     });
   }
   const layoutId = getPageLayoutId(layout, context);
+  const sectionKey = context?.sectionRole ?? layoutId ?? "(unknown)";
+  
   if (!layoutId) {
+    // Trace failure
+    pushTrace({
+      system: "layout",
+      sectionId: sectionKey,
+      action: "resolveLayout",
+      input: { layout, context },
+      decision: null,
+      final: null,
+    });
     logRuntimeDecision({
       timestamp: Date.now(),
       engineId: "layout-resolver",
@@ -56,6 +79,14 @@ export function resolveLayout(
   const pageDef = getPageLayoutById(layoutId);
   const componentDef = resolveComponentLayout(layoutId);
   if (!pageDef) {
+    pushTrace({
+      system: "layout",
+      sectionId: sectionKey,
+      action: "resolveLayout",
+      input: { layout, context, layoutId },
+      decision: null,
+      final: null,
+    });
     logRuntimeDecision({
       timestamp: Date.now(),
       engineId: "layout-resolver",
@@ -71,6 +102,44 @@ export function resolveLayout(
     ...pageDef,
     moleculeLayout: componentDef ?? undefined,
   };
+  
+  // Trace successful resolution
+  const templateDefault = context?.templateId ? getDefaultFromPage(context.templateId) : undefined;
+  pushTrace({
+    system: "layout",
+    sectionId: sectionKey,
+    action: "resolveLayout",
+    input: { layout, context },
+    decision: layoutId,
+    override: templateDefault ? `template:${templateDefault}` : undefined,
+    final: {
+      layoutId,
+      hasPageDef: !!pageDef,
+      hasComponentDef: !!componentDef,
+      containerWidth: pageDef?.containerWidth,
+      split: pageDef?.split,
+      backgroundVariant: pageDef?.backgroundVariant,
+    },
+  });
+  
+  // Add to consolidated trace aggregator
+  addTraceEvent({
+    system: "layout",
+    sectionId: sectionKey,
+    action: "resolveLayout",
+    input: { layout, context },
+    decision: layoutId,
+    override: templateDefault ? `template:${templateDefault}` : undefined,
+    final: {
+      layoutId,
+      hasPageDef: !!pageDef,
+      hasComponentDef: !!componentDef,
+      containerWidth: pageDef?.containerWidth,
+      split: pageDef?.split,
+      backgroundVariant: pageDef?.backgroundVariant,
+    },
+  });
+  
   logRuntimeDecision({
     timestamp: Date.now(),
     engineId: "layout-resolver",
@@ -81,7 +150,6 @@ export function resolveLayout(
     downstreamEffect: "merged page + component layout",
   });
   trace({ time: Date.now(), type: "layout", label: layoutId });
-  const sectionKey = context?.sectionRole ?? layoutId;
   const before = PipelineDebugStore.getSnapshot
     ? PipelineDebugStore.getSnapshot()
     : null;

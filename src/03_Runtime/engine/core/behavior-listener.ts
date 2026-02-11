@@ -138,6 +138,7 @@ export function installBehaviorListener(navigate: (to: string) => void) {
     PipelineDebugStore.setLastBehavior(behavior);
     PipelineDebugStore.setLastAction(actionName ?? null);
     trace({ time: ts, type: "event", label: actionName, payload: params });
+    // Note: Action events are automatically captured via PipelineDebugStore.setLastAction and setLastBehavior hooks
     if (process.env.NODE_ENV === "development") {
       console.log("[action]", actionName, params);
     }

@@ -1,13 +1,27 @@
 {
   "pageLayouts": {
     "hero-centered": {
-      "containerWidth": "wide"
+      "containerWidth": "wide",
+      "container": {
+        "width": "100%",
+        "marginLeft": "auto",
+        "marginRight": "auto",
+        "boxSizing": "border-box",
+        "overflowX": "hidden"
+      }
     },
     "hero-split": {
       "containerWidth": "full",
       "split": {
         "type": "split",
         "mediaSlot": "right"
+      },
+      "container": {
+        "width": "100%",
+        "marginLeft": "auto",
+        "marginRight": "auto",
+        "boxSizing": "border-box",
+        "overflowX": "hidden"
       }
     },
     "hero-split-image-right": {
@@ -15,6 +29,13 @@
       "split": {
         "type": "split",
         "mediaSlot": "right"
+      },
+      "container": {
+        "width": "100%",
+        "marginLeft": "auto",
+        "marginRight": "auto",
+        "boxSizing": "border-box",
+        "overflowX": "hidden"
       }
     },
     "hero-split-image-left": {
@@ -22,32 +43,95 @@
       "split": {
         "type": "split",
         "mediaSlot": "left"
+      },
+      "container": {
+        "width": "100%",
+        "marginLeft": "auto",
+        "marginRight": "auto",
+        "boxSizing": "border-box",
+        "overflowX": "hidden"
       }
     },
     "hero-full-bleed-image": {
       "containerWidth": "full",
-      "backgroundVariant": "default"
+      "backgroundVariant": "default",
+      "container": {
+        "width": "100%",
+        "marginLeft": "auto",
+        "marginRight": "auto",
+        "boxSizing": "border-box",
+        "overflowX": "hidden"
+      }
     },
     "content-narrow": {
-      "containerWidth": "narrow"
+      "containerWidth": "narrow",
+      "container": {
+        "width": "100%",
+        "marginLeft": "auto",
+        "marginRight": "auto",
+        "boxSizing": "border-box",
+        "overflowX": "hidden"
+      }
     },
     "content-stack": {
-      "containerWidth": "contained"
+      "containerWidth": "contained",
+      "container": {
+        "width": "100%",
+        "marginLeft": "auto",
+        "marginRight": "auto",
+        "boxSizing": "border-box",
+        "overflowX": "hidden"
+      }
     },
     "image-left-text-right": {
-      "containerWidth": "contained"
+      "containerWidth": "contained",
+      "container": {
+        "width": "100%",
+        "marginLeft": "auto",
+        "marginRight": "auto",
+        "boxSizing": "border-box",
+        "overflowX": "hidden"
+      }
     },
     "features-grid-3": {
-      "containerWidth": "contained"
+      "containerWidth": "contained",
+      "container": {
+        "width": "100%",
+        "marginLeft": "auto",
+        "marginRight": "auto",
+        "boxSizing": "border-box",
+        "overflowX": "hidden"
+      }
     },
     "testimonial-band": {
-      "containerWidth": "contained"
+      "containerWidth": "contained",
+      "container": {
+        "width": "100%",
+        "marginLeft": "auto",
+        "marginRight": "auto",
+        "boxSizing": "border-box",
+        "overflowX": "hidden"
+      }
     },
     "cta-centered": {
-      "containerWidth": "contained"
+      "containerWidth": "contained",
+      "container": {
+        "width": "100%",
+        "marginLeft": "auto",
+        "marginRight": "auto",
+        "boxSizing": "border-box",
+        "overflowX": "hidden"
+      }
     },
     "test-extensible": {
-      "containerWidth": "contained"
+      "containerWidth": "contained",
+      "container": {
+        "width": "100%",
+        "marginLeft": "auto",
+        "marginRight": "auto",
+        "boxSizing": "border-box",
+        "overflowX": "hidden"
+      }
     }
   },
   "templates": {

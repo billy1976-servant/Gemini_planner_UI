@@ -5,6 +5,7 @@ import { getOrganLabel } from "@/components/organs";
 import { getSectionLayoutIds, getAllowedCardPresetsForSectionPreset, evaluateCompatibility, getAvailableSlots } from "@/layout";
 import { getInternalLayoutIds } from "@/layout-organ";
 import { PipelineDebugStore } from "@/devtools/pipeline-debug-store";
+import { recordLayoutClick } from "@/devtools/pipeline-capture";
 import LayoutTilePicker from "@/app/ui/control-dock/layout/LayoutTilePicker";
 import type { LayoutTileOption } from "@/app/ui/control-dock/layout/LayoutTilePicker";
 import LayoutLivePreview from "@/app/ui/control-dock/layout/LayoutLivePreview";
@@ -65,7 +66,7 @@ const PANEL_STYLE: React.CSSProperties = {
   borderLeft: "none",
   padding: "var(--spacing-5)",
   overflowY: "auto",
-  overflowX: "hidden",
+  overflowX: "visible",
   fontSize: "var(--font-size-sm)",
   boxShadow: "-4px 0 16px rgba(0,0,0,0.04)",
   boxSizing: "border-box",
@@ -214,7 +215,9 @@ export default function OrganPanel({
 
   const fireSectionChange = (sectionKey: string, value: string) => {
     const target = `section-layout-preset-${sectionKey}`;
+    const previousLayout = sectionLayoutPresetOverrides?.[sectionKey] ?? "";
     PipelineDebugStore.setLastEvent({ time: Date.now(), type: "change", target });
+    recordLayoutClick(sectionKey, value, previousLayout);
     window.dispatchEvent(
       new CustomEvent("action", {
         detail: { type: "Action", params: { name: "state:update", key: `sectionLayoutPreset.${sectionKey}`, value } },
@@ -224,7 +227,9 @@ export default function OrganPanel({
   };
   const fireCardChange = (sectionKey: string, value: string) => {
     const target = `card-layout-preset-${sectionKey}`;
+    const previousLayout = cardLayoutPresetOverrides?.[sectionKey] ?? "";
     PipelineDebugStore.setLastEvent({ time: Date.now(), type: "change", target });
+    recordLayoutClick(`card-${sectionKey}`, value, previousLayout);
     window.dispatchEvent(
       new CustomEvent("action", {
         detail: { type: "Action", params: { name: "state:update", key: `cardLayoutPreset.${sectionKey}`, value } },
@@ -234,7 +239,9 @@ export default function OrganPanel({
   };
   const fireOrganChange = (sectionKey: string, value: string) => {
     const target = `organ-internal-layout-${sectionKey}`;
+    const previousLayout = organInternalLayoutOverrides?.[sectionKey] ?? "";
     PipelineDebugStore.setLastEvent({ time: Date.now(), type: "change", target });
+    recordLayoutClick(`organ-${sectionKey}`, value, previousLayout);
     window.dispatchEvent(
       new CustomEvent("action", {
         detail: { type: "Action", params: { name: "state:update", key: `organInternalLayout.${sectionKey}`, value } },
@@ -433,6 +440,7 @@ export default function OrganPanel({
               ),
           })),
         ]);
+        console.log("TILE IDS", sectionTileOptions.map((o) => o.id));
         const cardTileOptions: LayoutTileOption[] = [
           {
             id: "",

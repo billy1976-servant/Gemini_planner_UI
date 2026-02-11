@@ -79,7 +79,8 @@
           "type": "Section",
           "content": {
             "title": "Journal"
-          }
+          },
+          "layout": "content-stack"
         },
         {
           "type": "Button",
@@ -114,10 +115,15 @@
         },
         {
           "type": "Button",
-          "content": { "label": "Start writing" },
+          "content": {
+            "label": "Start writing"
+          },
           "behavior": {
             "type": "Navigation",
-            "params": { "verb": "go", "to": "apps/journal_track/app-1.json" }
+            "params": {
+              "verb": "go",
+              "to": "apps/journal_track/app-1.json"
+            }
           }
         }
       ]
@@ -133,7 +139,8 @@
           "type": "Section",
           "content": {
             "title": "Why this works"
-          }
+          },
+          "layout": "content-stack"
         },
         {
           "type": "Card",
@@ -181,7 +188,8 @@
           "type": "Section",
           "content": {
             "title": "In focus"
-          }
+          },
+          "layout": "content-stack"
         },
         {
           "type": "Card",
@@ -229,7 +237,8 @@
           "type": "Section",
           "content": {
             "title": "What people say"
-          }
+          },
+          "layout": "content-stack"
         },
         {
           "type": "Card",
@@ -265,7 +274,8 @@
           "type": "Section",
           "content": {
             "title": "Simple pricing"
-          }
+          },
+          "layout": "content-stack"
         },
         {
           "type": "Card",
@@ -301,7 +311,8 @@
           "type": "Section",
           "content": {
             "title": "Questions"
-          }
+          },
+          "layout": "content-stack"
         },
         {
           "type": "List",

@@ -20,7 +20,8 @@ const EXPERIENCES = [
 ] as const;
 
 const DOCK_STRIP_WIDTH = 44;
-const EXPANDED_PANEL_WIDTH = 280;
+/** Panel content width (360–420 range). Must match RightFloatingSidebar for consistent Layout panel. */
+const EXPANDED_PANEL_WIDTH = 380;
 
 const PILL_CONFIG: Array<{ id: DockPanelId; label: string }> = [
   { id: "experience", label: "Experience" },
@@ -97,19 +98,19 @@ export default function RightSidebarDockContent(props: RightSidebarDockContentPr
         }}
       >
         {openPanel && (
-          <div
-            style={{
-              width: "100%",
-              maxWidth: "100%",
-              flex: 1,
-              minHeight: 0,
-              minWidth: 0,
-              overflowY: "auto",
-              overflowX: "hidden",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
+            <div
+              style={{
+                width: "100%",
+                maxWidth: "100%",
+                flex: 1,
+                minHeight: 0,
+                minWidth: 0,
+                overflowY: "auto",
+                overflowX: "visible",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
             <div
               className="editor-header"
               style={{
@@ -122,7 +123,7 @@ export default function RightSidebarDockContent(props: RightSidebarDockContentPr
                 {PILL_CONFIG.find((p) => p.id === openPanel)?.label ?? openPanel}
               </h3>
             </div>
-            <div style={{ padding: "var(--spacing-3)", flex: 1, minWidth: 0, width: "100%", maxWidth: "100%", overflowX: "hidden", display: "flex", flexDirection: "column" }}>
+            <div style={{ padding: "var(--spacing-3)", flex: 1, minWidth: 0, width: "100%", maxWidth: "100%", overflowX: "visible", overflowY: "auto", display: "flex", flexDirection: "column" }}>
               {openPanel === "experience" && (
                 <div style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-2)" }}>
                   {EXPERIENCES.map((exp) => (
@@ -269,7 +270,7 @@ export default function RightSidebarDockContent(props: RightSidebarDockContentPr
               )}
               {openPanel === "layout" && (
                 layoutPanelContent != null ? (
-                  <div style={{ width: "100%", maxWidth: "100%", minWidth: 0, flex: 1, overflowX: "hidden", display: "flex", flexDirection: "column" }}>
+                  <div style={{ width: "100%", maxWidth: "none", minWidth: 0, flex: 1, overflowX: "visible", overflowY: "visible", display: "flex", flexDirection: "column" }}>
                     {layoutPanelContent}
                   </div>
                 ) : (

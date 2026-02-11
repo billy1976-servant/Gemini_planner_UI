@@ -86,7 +86,7 @@ const THUMB_BOX_STYLE: React.CSSProperties = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  overflow: "hidden",
+  overflow: "visible",
   marginBottom: "8px",
   boxShadow: "inset 0 1px 2px rgba(255,255,255,0.5), 0 1px 3px rgba(0,0,0,0.06)",
 };
@@ -99,7 +99,7 @@ const THUMB_BOX_STACK_STYLE: React.CSSProperties = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  overflow: "hidden",
+  overflow: "visible",
   marginBottom: "8px",
   boxShadow: "inset 0 1px 2px rgba(255,255,255,0.5), 0 1px 3px rgba(0,0,0,0.06)",
 };
@@ -120,7 +120,7 @@ const THUMB_BOX_INTERNAL_STYLE: React.CSSProperties = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  overflow: "hidden",
+  overflow: "visible",
 };
 
 export default function LayoutTilePicker({
@@ -157,7 +157,7 @@ export default function LayoutTilePicker({
             };
 
   const wrapperStyle: React.CSSProperties = isSection
-    ? { width: "100%", marginBottom: "var(--spacing-3)", minWidth: 0, maxWidth: "100%", overflow: "hidden" }
+    ? { width: "100%", marginBottom: "var(--spacing-3)", minWidth: 0, maxWidth: "100%", overflow: "visible" }
     : {
         width: "100%",
         marginBottom: "var(--spacing-3)",
@@ -168,7 +168,7 @@ export default function LayoutTilePicker({
         boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
         minWidth: 0,
         maxWidth: "100%",
-        overflow: "hidden",
+        overflow: "visible",
       };
 
   return (
@@ -268,13 +268,13 @@ function LayoutTile({
           style={
             isSection
               ? { width: "100%", height: "auto", objectFit: "contain", display: "block" }
-              : { width: "100%", height: "100%", objectFit: "cover" }
+              : { width: "100%", height: "100%", objectFit: "contain" }
           }
         />
       ) : isSection ? (
-        <div style={{ width: "100%", display: "block" }}>{opt.thumbnail}</div>
+        <div style={{ width: "100%", display: "block", overflow: "visible" }}>{opt.thumbnail}</div>
       ) : (
-        opt.thumbnail
+        <div style={{ width: "100%", height: "100%", overflow: "visible", display: "flex", alignItems: "center", justifyContent: "center" }}>{opt.thumbnail}</div>
       )
     ) : (
       <>
@@ -292,7 +292,7 @@ function LayoutTile({
           style={
             isSection
               ? { width: "100%", height: "auto", objectFit: "contain", display: "block" }
-              : { width: "100%", height: "100%", objectFit: "contain" }
+              : { width: "100%", height: "auto", objectFit: "contain", maxHeight: "100%" }
           }
         />
       </>

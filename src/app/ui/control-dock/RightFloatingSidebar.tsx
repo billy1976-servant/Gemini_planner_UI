@@ -30,7 +30,8 @@ const EXPERIENCES = [
   { id: "learning", label: "Learning" },
 ] as const;
 
-const FLOATING_PANEL_WIDTH = 280;
+/** Panel content width (360–420 range). Tiles/layout use full width; no clipping. */
+const FLOATING_PANEL_WIDTH = 380;
 const RAIL_WIDTH = 44;
 /** Total width when panel is open (panel + rail). Use for main content padding-right. */
 export const SIDEBAR_TOTAL_WIDTH = FLOATING_PANEL_WIDTH + RAIL_WIDTH;
@@ -133,16 +134,19 @@ function RightFloatingSidebarInner({ layoutPanelContent }: RightFloatingSidebarP
         top: headerHeight,
         height: `calc(100vh - ${headerHeight}px)`,
         width: openPanel ? FLOATING_PANEL_WIDTH + RAIL_WIDTH : RAIL_WIDTH,
+        minWidth: openPanel ? undefined : RAIL_WIDTH,
         display: "flex",
         flexDirection: "row",
         zIndex: 900,
         transition: "width 0.2s ease",
       }}
     >
-      {/* Docked panel — full height, scrollable content */}
+      {/* Docked panel — full height, scrollable content; minWidth:0 so flex children can use full width */}
       <div
         style={{
           width: openPanel ? FLOATING_PANEL_WIDTH : 0,
+          minWidth: 0,
+          flexShrink: 0,
           overflow: "hidden",
           display: "flex",
           flexDirection: "column",
@@ -159,7 +163,7 @@ function RightFloatingSidebarInner({ layoutPanelContent }: RightFloatingSidebarP
                 {activeLabel}
               </h3>
             </div>
-            <div style={{ padding: "12px 16px", overflowY: "auto", overflowX: "hidden", height: "100%", flex: 1, minHeight: 0, minWidth: 0, fontFamily: GOOGLE.fontFamily }}>
+            <div style={{ padding: "12px 16px", overflowY: "auto", overflowX: "visible", height: "100%", flex: 1, minHeight: 0, minWidth: 0, fontFamily: GOOGLE.fontFamily }}>
             {openPanel === "experience" && (
               <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
                 {EXPERIENCES.map((exp) => {
@@ -385,7 +389,7 @@ function RightFloatingSidebarInner({ layoutPanelContent }: RightFloatingSidebarP
             )}
             {openPanel === "layout" && (
               layoutPanelContent != null ? (
-                <div style={{ width: "100%", maxWidth: "100%", minWidth: 0, overflowX: "hidden", display: "flex", flexDirection: "column" }}>
+                <div style={{ width: "100%", maxWidth: "none", minWidth: 0, flex: 1, overflowX: "visible", overflowY: "visible", display: "flex", flexDirection: "column" }}>
                   {layoutPanelContent}
                 </div>
               ) : (

@@ -3,6 +3,15 @@
 // =====================================================
 import moleculeLayouts from "@/lib/layout/molecule-layouts.json";
 
+// STRICT JSON MODE: If true, NO fallback values allowed. Renderer must obey JSON 100%.
+const STRICT_JSON_MODE = true;
+
+function warnDefault(fallbackName: string, value: any, source: string) {
+  if (STRICT_JSON_MODE) {
+    console.warn(`[STRICT_JSON_MODE] DEFAULT DETECTED: renderer used fallback value "${fallbackName}" = ${JSON.stringify(value)} (source: ${source})`);
+  }
+}
+
 
 // =====================================================
 // TYPES (LOCKED)
@@ -130,7 +139,13 @@ export function resolveMoleculeLayout(
   preset?: string | null,
   params?: Record<string, any>
 ): Record<string, any> {
-  if (!flow) return params ?? {};
+  // STRICT: Log when flow is missing
+  if (!flow) {
+    if (STRICT_JSON_MODE) {
+      warnDefault("flow", "undefined (returning params only)", "molecule-layout-resolver.ts:133");
+    }
+    return params ?? {};
+  }
 
 
   const normalized = flow.toLowerCase() as LayoutFlow;
@@ -139,6 +154,9 @@ export function resolveMoleculeLayout(
 
   if (!def) {
     logOnce(`unknown:${flow}`, "❌ Unknown layout flow:", flow);
+    if (STRICT_JSON_MODE) {
+      warnDefault("flow", flow, "molecule-layout-resolver.ts:140 (unknown flow)");
+    }
     return params ?? {};
   }
 
@@ -149,6 +167,10 @@ export function resolveMoleculeLayout(
   const presetParams =
     preset && def.presets ? def.presets[preset] ?? {} : {};
 
+  // STRICT: Log when defaults are merged
+  if (def.defaults && Object.keys(def.defaults).length > 0 && STRICT_JSON_MODE) {
+    warnDefault("def.defaults", def.defaults, "molecule-layout-resolver.ts:155");
+  }
   // Merge all params BEFORE calling translateFlow so it can process columns/gap from passed params
   // This ensures translateFlow sees the full merged params, not just definition params
   const mergedParams = {

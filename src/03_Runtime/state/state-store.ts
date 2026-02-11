@@ -6,6 +6,8 @@ const stateDefaults = config.stateDefaults;
 import { trace } from "@/devtools/interaction-tracer.store";
 import { PipelineDebugStore } from "@/devtools/pipeline-debug-store";
 import { recordStage } from "@/engine/debug/pipelineStageTrace";
+import { pushTrace } from "@/devtools/runtime-trace-store";
+import { addTraceEvent } from "@/03_Runtime/debug/pipeline-trace-aggregator";
 
 
 /* ======================
@@ -70,6 +72,24 @@ export function dispatchState(intent: string, payload?: any) {
   trace({ time: Date.now(), type: "state", label: intent, payload });
 
   const nextState = state;
+  
+  // Trace state write
+  pushTrace({
+    system: "state",
+    action: "write",
+    input: prevState,
+    decision: intent,
+    final: nextState,
+  });
+  
+  // Add to consolidated trace aggregator
+  addTraceEvent({
+    system: "state",
+    action: "write",
+    input: prevState,
+    decision: intent,
+    final: nextState,
+  });
   if (process.env.NODE_ENV === "development") {
     if (nextState !== prevState) {
       const key =

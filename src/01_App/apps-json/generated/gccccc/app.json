@@ -50,7 +50,8 @@
           ],
           "content": {
             "title": "[Company Name] - Hero Section"
-          }
+          },
+          "layout": "content-stack"
         },
         {
           "id": "|AboutSection",
@@ -67,7 +68,8 @@
           ],
           "content": {
             "title": "About Our Company"
-          }
+          },
+          "layout": "content-stack"
         },
         {
           "id": "|ServicesSection",
@@ -92,7 +94,8 @@
           ],
           "content": {
             "title": "Our Services"
-          }
+          },
+          "layout": "content-stack"
         },
         {
           "id": "|ContactSection",
@@ -167,7 +170,8 @@
           ],
           "content": {
             "title": "Contact Us"
-          }
+          },
+          "layout": "content-stack"
         },
         {
           "id": "|BookingSection",
@@ -230,7 +234,8 @@
           ],
           "content": {
             "title": "Request a Quote or Consultation"
-          }
+          },
+          "layout": "content-stack"
         },
         {
           "id": "|FooterBlock",
@@ -244,7 +249,8 @@
       ],
       "content": {
         "title": "[Company Name] - Root Section"
-      }
+      },
+      "layout": "content-stack"
     }
   ]
 }

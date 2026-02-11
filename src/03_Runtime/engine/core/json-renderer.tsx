@@ -35,6 +35,15 @@ import { trace } from "@/devtools/interaction-tracer.store";
 import { PipelineDebugStore } from "@/devtools/pipeline-debug-store";
 import { recordStage } from "@/engine/debug/pipelineStageTrace";
 import { emitRendererTrace } from "@/engine/debug/renderer-trace";
+import { getExperienceVisibility } from "@/engine/core/experience-visibility";
+import { pushTrace } from "@/devtools/runtime-trace-store";
+import { addTraceEvent, endInteraction } from "@/03_Runtime/debug/pipeline-trace-aggregator";
+
+
+/* ======================================================
+   LAYOUT INVESTIGATION KILL SWITCH
+====================================================== */
+const DISABLE_ENGINE_LAYOUT = false; // Re-enabled: engine overrides and template resolution active
 
 
 /* ======================================================
@@ -60,7 +69,7 @@ function traceOnce(key: string, ...args: any[]) {
   const k = `${JR.cycle}:${key}`;
   if (JR.seen.has(k)) return;
   JR.seen.add(k);
-  console.log("[JsonRenderer]", ...args);
+  // Removed console.log - use trace store instead
 }
 
 
@@ -249,19 +258,7 @@ function shouldRenderNode(node: any, state: any, defaultState?: any): boolean {
     stateValue = undefined;
   }
   
-  // Debug logging
-  if (key === "currentView") {
-    console.log("[shouldRenderNode]", {
-      nodeId: node?.id,
-      key,
-      equals,
-      stateValue,
-      stateCurrentView: state?.currentView,
-      defaultStateCurrentView: defaultState?.currentView,
-      usingDefault: defaultState?.[key] !== undefined && state?.[key] !== defaultState[key],
-      willRender: stateValue === equals,
-    });
-  }
+  // Debug logging removed - use trace store instead
   
   // If state key doesn't exist in either, don't render (prevents showing wrong content)
   if (stateValue === undefined) {
@@ -338,7 +335,8 @@ function applyProfileToNode(
   cardLayoutPresetOverrides?: Record<string, string>,
   parentSectionKey?: string | null,
   parentSectionLayoutId?: string | null,
-  organInternalLayoutOverrides?: Record<string, string>
+  organInternalLayoutOverrides?: Record<string, string>,
+  forceCardCompatibility?: boolean
 ): any {
   if (!node || !profile) return node;
 
@@ -362,7 +360,30 @@ function applyProfileToNode(
   // Per-section: set a single layout-2 string id (OrganPanel overrides, explicit node.layout, template default).
   // Single authority: layout.getSectionLayoutId (override → node.layout → template role → template default).
   if (isSection) {
-    const sectionKey = (node.id ?? node.role) ?? "";
+    // Guard: Ensure sectionKey is never empty, null, or undefined
+    // Use node.id, node.role, or generate anonymous identifier
+    let sectionKey = (node.id ?? node.role) ?? "";
+    if (!sectionKey || !sectionKey.trim()) {
+      // Generate deterministic anonymous identifier if no id/role exists
+      // Use a combination of type and a hash-like identifier based on node structure
+      const nodeHash = typeof node === "object" && node !== null
+        ? String(Math.abs(JSON.stringify(node).split("").reduce((acc, char) => {
+            const hash = ((acc << 5) - acc) + char.charCodeAt(0);
+            return hash & hash;
+          }, 0))).slice(0, 8)
+        : String(Date.now()).slice(-8);
+      sectionKey = `anonymous_section_${nodeHash}`;
+      
+      if (process.env.NODE_ENV === "development") {
+        console.warn(
+          `[applyProfileToNode] Generated anonymous sectionKey "${sectionKey}" for section without id/role:`,
+          { nodeType: node.type, nodeId: node.id, nodeRole: node.role }
+        );
+      }
+    } else {
+      sectionKey = sectionKey.trim();
+    }
+    
     const templateId = (profile?.id ?? null) as string | null;
     const { layoutId, ruleApplied } = getSectionLayoutId(
       {
@@ -379,11 +400,28 @@ function applyProfileToNode(
       typeof node.layout === "string" && (node.layout as string).trim()
         ? (node.layout as string).trim()
         : null;
-    console.log("FLOW 5 — RENDERER INPUT", {
-      sectionId: sectionKey,
-      sectionOverride: sectionLayoutPresetOverrides?.[sectionKey],
-      finalLayout: layoutId,
-    });
+    const templateDefaultLayoutId = (profile as { defaultSectionLayoutId?: string } | null)?.defaultSectionLayoutId ?? null;
+    
+    // Layout resolution traced via trace store
+    if (process.env.NODE_ENV === "development") {
+      pushTrace({
+        system: "renderer",
+        sectionId: sectionKey,
+        action: "layout-resolution",
+        input: {
+          templateId: templateId ?? "(none)",
+          templateDefault: templateDefaultLayoutId ?? "(none)",
+          engineOverride: overrideId ?? "(none)",
+        },
+        decision: layoutId,
+        final: {
+          resolvedLayoutId: layoutId,
+          ruleApplied,
+          engineDisabled: DISABLE_ENGINE_LAYOUT,
+        },
+      });
+    }
+    
     logRuntimeDecision({
       timestamp: Date.now(),
       engineId: "renderer",
@@ -395,33 +433,39 @@ function applyProfileToNode(
         layoutMode: layoutMode ?? null,
       },
       ruleApplied,
-      decisionMade: layoutId ?? null,
+      decisionMade: layoutId,
       downstreamEffect: "section layout + compatibility",
     });
-    next.layout = layoutId;
+    
+    // KILL SWITCH: Temporarily disable engine overrides to verify JSON integrity
+    // Note: layoutId is now guaranteed to be a string (never undefined) due to fallback in getSectionLayoutId
+    const finalLayoutId = DISABLE_ENGINE_LAYOUT
+      ? (existingLayoutId || templateDefaultLayoutId || layoutId)
+      : layoutId;
+    
+    if (process.env.NODE_ENV === "development" && DISABLE_ENGINE_LAYOUT && finalLayoutId !== layoutId) {
+      // Removed console.log - use trace store instead
+    }
+    
+    next.layout = finalLayoutId;
     (next as any)._effectiveLayoutPreset = layoutId;
     if (process.env.NODE_ENV === "development") {
       PipelineDebugStore.mark("json-renderer", "applyProfileToNode.section", {
         sectionKey,
-        layoutId: layoutId ?? null,
+        layoutId: layoutId,
         ruleApplied,
       });
       // Duplicate layout diagnosis: trace sectionKey + resolved layoutId + ruleApplied (expected: multiple sections can share same layout; detect duplicate keys / override collision).
       PipelineDebugStore.mark("json-renderer", "section-layout-diagnosis", {
         sectionKey,
-        resolvedLayoutId: layoutId ?? null,
+        resolvedLayoutId: layoutId,
         ruleApplied,
       });
     }
-    const resolvedSectionKey = (sectionKey && sectionKey.trim()) ? sectionKey : (node?.id ?? node?.role ?? "anonymous");
+    // sectionKey is now guaranteed to be non-empty due to guard above
+    const resolvedSectionKey = sectionKey;
     const cardVal = cardLayoutPresetOverrides?.[sectionKey];
     const organVal = organInternalLayoutOverrides?.[sectionKey];
-    console.log("RESOLVER INPUT", resolvedSectionKey, {
-      sectionOverride: overrideId ?? undefined,
-      cardOverride: cardVal,
-      organOverride: organVal,
-      chosenLayout: layoutId ?? undefined,
-    });
     const resolutionChain: Array<{ source: string; found?: boolean; value?: string; used?: boolean }> = [
       { source: "section override", found: !!overrideId, value: overrideId ?? undefined },
       { source: "card override", found: !!cardVal, value: cardVal },
@@ -433,7 +477,7 @@ function applyProfileToNode(
         sectionKey: resolvedSectionKey,
         overrideLayout: overrideId ?? undefined,
         nodeLayout: typeof node.layout === "string" ? node.layout : undefined,
-        finalChosenLayout: layoutId ?? undefined,
+        finalChosenLayout: layoutId,
       });
       recordStage("resolver-input", "pass", {
         sectionKey: resolvedSectionKey,
@@ -480,6 +524,53 @@ function applyProfileToNode(
         : ruleApplied === "template role" || ruleApplied === "template default"
         ? "template"
         : "fallback";
+    
+    // Trace renderer resolution
+    pushTrace({
+      system: "renderer",
+      sectionId: resolvedSectionKey,
+      nodeId: node?.id ?? node?.role,
+      action: "renderSection",
+      input: {
+        node: { id: node?.id, role: node?.role, layout: existingLayoutId },
+        overrideId,
+        cardOverride: cardVal,
+        organOverride: organVal,
+      },
+      decision: layoutId,
+      override: overrideId || undefined,
+      final: {
+        layoutId,
+        layoutRequested: existingLayoutId,
+        layoutResolved: layoutId ?? "",
+        reason,
+        resolutionChain,
+      },
+    });
+    
+    // Add to consolidated trace aggregator
+    addTraceEvent({
+      system: "renderer",
+      sectionId: resolvedSectionKey,
+      nodeId: node?.id ?? node?.role,
+      action: "renderSection",
+      input: {
+        node: { id: node?.id, role: node?.role, layout: existingLayoutId },
+        overrideId,
+        cardOverride: cardVal,
+        organOverride: organVal,
+      },
+      decision: layoutId,
+      override: overrideId || undefined,
+      final: {
+        layoutId,
+        layoutRequested: existingLayoutId,
+        layoutResolved: layoutId ?? "",
+        reason,
+        resolutionChain,
+      },
+    });
+    
     emitRendererTrace({
       stage: "profile-resolution",
       nodeId: resolvedSectionKey || (node?.id ?? node?.role ?? "anonymous"),
@@ -491,26 +582,16 @@ function applyProfileToNode(
       finalLayout: layoutId ?? "",
       reason,
     });
-    if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
-      console.debug("[LAYOUT RESOLVE]", {
-        nodeId: sectionKey || (node.id ?? node.role),
-        sectionLayout: existingLayoutId ?? "—",
-        cardLayout: "—",
-        profileOverride: overrideId ?? "—",
-        templateDefault: (ruleApplied === "template role" || ruleApplied === "template default" ? layoutId : undefined) ?? "—",
-        FINAL: layoutId ?? "undefined",
-      });
-    }
+    
     const compatibility = evaluateCompatibility({
       sectionNode: node,
       sectionLayoutId: next.layout ?? null,
       cardLayoutId: cardLayoutPresetOverrides?.[sectionKey] ?? null,
       organId: node.role ?? null,
       organInternalLayoutId: organInternalLayoutOverrides?.[sectionKey] ?? null,
+      forceCardValid: forceCardCompatibility === true,
     });
-    if (process.env.NODE_ENV === "development") {
-      console.debug("Layout compatibility:", compatibility);
-    }
+    // Layout compatibility traced via trace store
   }
 
   // Per-section card layout preset: override → first allowed for section → safe default. Single source.
@@ -518,20 +599,47 @@ function applyProfileToNode(
     const overrideId = cardLayoutPresetOverrides?.[parentSectionKey] ?? null;
     const defaultForSection =
       parentSectionLayoutId != null ? getDefaultCardPresetForSectionPreset(parentSectionLayoutId) : null;
-    const cardPresetId = overrideId ?? defaultForSection ?? SAFE_DEFAULT_CARD_PRESET_ID;
+    
+    // TEMP SAFE MODE: Log fallback hits but do NOT assign default card preset
+    let cardPresetId: string | null = null;
+    
+    if (overrideId) {
+      cardPresetId = overrideId;
+    } else if (defaultForSection) {
+      cardPresetId = defaultForSection;
+    } else {
+      // FALLBACK HIT: Safe default card preset would be used
+      console.warn("[FALLBACK HIT]", {
+        sectionKey: parentSectionKey,
+        requestedLayout: parentSectionLayoutId ?? "(none)",
+        templateDefault: defaultForSection ?? "(none)",
+        override: overrideId ?? "(none)",
+        safeDefault: SAFE_DEFAULT_CARD_PRESET_ID,
+        source: "SAFE_DEFAULT_CARD_PRESET_ID",
+      });
+      // Do NOT assign fallback - leave as null to expose missing JSON
+      cardPresetId = null;
+    }
     const cardPreset = getCardLayoutPreset(cardPresetId);
     const layoutBefore = typeof node.layout === "string" ? node.layout : "(none)";
-    if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
-      console.log("[JsonRenderer] card layout chain", {
-        sectionKey: parentSectionKey,
-        parentSectionLayoutId: parentSectionLayoutId ?? "(null)",
-        cardOverridesSectionKey: cardLayoutPresetOverrides?.[parentSectionKey] ?? "(none)",
-        overrideId: overrideId ?? "(none)",
-        defaultForSection: defaultForSection ?? "(none)",
-        resolvedCardPresetId: cardPresetId,
-        nodeType: node.type,
-        layoutBefore,
-        layoutAfter: cardPresetId,
+    // Card layout chain traced via trace store
+    if (process.env.NODE_ENV === "development") {
+      pushTrace({
+        system: "renderer",
+        sectionId: parentSectionKey ?? "",
+        action: "card-layout-resolution",
+        input: {
+          cardOverridesSectionKey: cardLayoutPresetOverrides?.[parentSectionKey] ?? "(none)",
+          overrideId: overrideId ?? "(none)",
+          defaultForSection: defaultForSection ?? "(none)",
+        },
+        decision: cardPresetId ?? null,
+        final: {
+          resolvedCardPresetId: cardPresetId,
+          nodeType: node.type,
+          layoutBefore,
+          layoutAfter: cardPresetId,
+        },
       });
     }
     if (cardPreset) {
@@ -541,20 +649,15 @@ function applyProfileToNode(
         ...(cardPreset.contentAlign != null ? { contentAlign: cardPreset.contentAlign } : {}),
       };
       next.layout = cardPresetId;
-      if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
-        console.log("[JsonRenderer] Card preset applied", {
-          sectionKey: parentSectionKey,
-          cardPresetId,
-          mediaPosition: cardPreset.mediaPosition,
-          contentAlign: cardPreset.contentAlign,
-        });
-        console.debug("[LAYOUT RESOLVE]", {
-          nodeId: node.id ?? node.role ?? parentSectionKey,
-          sectionLayout: "—",
-          cardLayout: cardPresetId,
-          profileOverride: cardPresetId,
-          templateDefault: "—",
-          FINAL: "card preset applied",
+      // Card preset application traced via trace store
+      if (process.env.NODE_ENV === "development") {
+        pushTrace({
+          system: "renderer",
+          sectionId: parentSectionKey ?? "",
+          action: "card-preset-applied",
+          input: { cardPresetId },
+          decision: "applied",
+          final: { templateDefault: "—", FINAL: "card preset applied" },
         });
       }
     } else {
@@ -565,7 +668,7 @@ function applyProfileToNode(
   if (Array.isArray(node.children)) {
     const sectionKey = isSection ? ((node.id ?? node.role) ?? "") : parentSectionKey ?? null;
     next.children = node.children.map((child) =>
-      applyProfileToNode(child, profile, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, sectionKey, next.layout ?? null, organInternalLayoutOverrides)
+      applyProfileToNode(child, profile, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, sectionKey, next.layout ?? null, organInternalLayoutOverrides, forceCardCompatibility)
     );
   }
 
@@ -576,6 +679,17 @@ function applyProfileToNode(
 /* ======================================================
    PURE RENDER — NO HOOKS, NO STATE ACCESS
 ====================================================== */
+/** Experience context for visibility filter (optional). When absent, all nodes render. */
+export type ExperienceContext = {
+  experience: string;
+  currentStepIndex: number;
+  sectionKeys: string[];
+  activeSectionKey?: string | null;
+  onSelectSection?: (sectionKey: string) => void;
+  /** Optional labels for section keys (e.g. "Hero", "Features") for collapsed panel title. */
+  sectionLabels?: Record<string, string>;
+};
+
 export function renderNode(
   node: any,
   profile: any,
@@ -583,7 +697,10 @@ export function renderNode(
   defaultState?: any,
   sectionLayoutPresetOverrides?: Record<string, string>,
   cardLayoutPresetOverrides?: Record<string, string>,
-  organInternalLayoutOverrides?: Record<string, string>
+  organInternalLayoutOverrides?: Record<string, string>,
+  experienceContext?: ExperienceContext | null,
+  depth: number = 0,
+  forceCardCompatibility?: boolean
 ): any {
   if (!node) return null;
 
@@ -596,10 +713,57 @@ export function renderNode(
     );
   }
 
+  // Experience visibility filter (runtime-only; no JSON mutation)
+  if (experienceContext?.experience) {
+    const visibility = getExperienceVisibility(
+      experienceContext.experience,
+      node,
+      depth,
+      experienceContext.currentStepIndex,
+      experienceContext.sectionKeys,
+      experienceContext.activeSectionKey
+    );
+    if (visibility === "hide") return null;
+    if (visibility === "collapse") {
+      const sectionKey = (node.id ?? node.role) ?? "";
+      const label =
+        experienceContext.sectionLabels?.[sectionKey] ??
+        (sectionKey ? sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1).replace(/-/g, " ") : "Section");
+      const onSelect = experienceContext.onSelectSection;
+      return (
+        <div
+          key={node.key ?? node.id}
+          role="button"
+          tabIndex={0}
+          data-experience-collapsed
+          data-section-id={sectionKey || undefined}
+          data-experience="app"
+          onClick={() => onSelect?.(sectionKey)}
+          onKeyDown={(e: React.KeyboardEvent) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              onSelect?.(sectionKey);
+            }
+          }}
+          style={{
+            padding: "var(--spacing-3)",
+            background: "var(--color-surface-2, #f5f5f5)",
+            borderRadius: "var(--radius-2, 6px)",
+            border: "1px solid var(--color-border, #e0e0e0)",
+            cursor: "pointer",
+            boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+          }}
+        >
+          <span style={{ fontSize: "var(--font-size-sm)", fontWeight: 500 }}>{label}</span>
+        </div>
+      );
+    }
+  }
+
   if (!shouldRenderNode(node, stateSnapshot, defaultState)) return null;
 
   const profiledNode = profile
-    ? applyProfileToNode(node, profile, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, null, null, organInternalLayoutOverrides)
+    ? applyProfileToNode(node, profile, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, null, null, organInternalLayoutOverrides, forceCardCompatibility)
     : node;
 
 
@@ -683,14 +847,7 @@ export function renderNode(
   });
   logParamsDiagnostic(typeKey, resolvedNode.id, finalParams);
 
-  // Hero section only: log section layout id (diagnose preset → layout).
-  if (typeKey === "section" && (profiledNode.role ?? resolvedNode.role) === "hero") {
-    console.log("[JsonRenderer] HERO SECTION (layout-2)", {
-      id: resolvedNode.id,
-      layout: resolvedNode.layout,
-      _effectiveLayoutPreset: (profiledNode as any)._effectiveLayoutPreset,
-    });
-  }
+  // Hero section traced via trace store
 
   const Component = (Registry as any)[resolvedNode.type];
 
@@ -738,19 +895,46 @@ export function renderNode(
     const sectionLayoutId = resolvedNode.layout ?? null;
     const overrideId = parentSectionKey ? (cardLayoutPresetOverrides?.[parentSectionKey] ?? null) : null;
     const defaultForSection = sectionLayoutId != null ? getDefaultCardPresetForSectionPreset(sectionLayoutId) : null;
-    const cardPresetId = parentSectionKey
-      ? (overrideId ?? defaultForSection ?? SAFE_DEFAULT_CARD_PRESET_ID)
-      : null;
+    
+    // TEMP SAFE MODE: Log fallback hits but do NOT assign default card preset
+    let cardPresetId: string | null = null;
+    
+    if (parentSectionKey) {
+      if (overrideId) {
+        cardPresetId = overrideId;
+      } else if (defaultForSection) {
+        cardPresetId = defaultForSection;
+      } else {
+        // FALLBACK HIT: Safe default card preset would be used
+        console.warn("[FALLBACK HIT]", {
+          sectionKey: parentSectionKey,
+          requestedLayout: sectionLayoutId ?? "(none)",
+          templateDefault: defaultForSection ?? "(none)",
+          override: overrideId ?? "(none)",
+          safeDefault: SAFE_DEFAULT_CARD_PRESET_ID,
+          source: "SAFE_DEFAULT_CARD_PRESET_ID (repeater)",
+        });
+        // Do NOT assign fallback - leave as null to expose missing JSON
+        cardPresetId = null;
+      }
+    }
     const cardPreset = cardPresetId ? getCardLayoutPreset(cardPresetId) : null;
-    if (typeof process !== "undefined" && process.env.NODE_ENV === "development" && parentSectionKey) {
-      console.log("[JsonRenderer] repeater card layout chain", {
-        sectionKey: parentSectionKey,
-        parentSectionLayoutId: sectionLayoutId ?? "(null)",
-        cardOverridesSectionKey: cardLayoutPresetOverrides?.[parentSectionKey] ?? "(none)",
-        overrideId: overrideId ?? "(none)",
-        defaultForSection: defaultForSection ?? "(none)",
-        resolvedCardPresetId: cardPresetId,
-        nodeType: "section(items)",
+    // Repeater card layout chain traced via trace store
+    if (process.env.NODE_ENV === "development") {
+      pushTrace({
+        system: "renderer",
+        sectionId: parentSectionKey ?? "",
+        action: "repeater-card-layout-resolution",
+        input: {
+          cardOverridesSectionKey: cardLayoutPresetOverrides?.[parentSectionKey] ?? "(none)",
+          overrideId: overrideId ?? "(none)",
+          defaultForSection: defaultForSection ?? "(none)",
+        },
+        decision: cardPresetId ?? null,
+        final: {
+          resolvedCardPresetId: cardPresetId,
+          nodeType: "section(items)",
+        },
       });
     }
 
@@ -776,14 +960,14 @@ export function renderNode(
       if (cardPresetId) itemNode.layout = cardPresetId;
 
       const uniqueKey = item.id || `item-${i}`;
-      return renderNode({ ...itemNode, key: uniqueKey }, profile, stateSnapshot, defaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides);
+      return renderNode({ ...itemNode, key: uniqueKey }, profile, stateSnapshot, defaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides, experienceContext, depth + 1, forceCardCompatibility);
     });
   } else if (Array.isArray(resolvedNode.children)) {
     // Normal mode: render children
     renderedChildren = resolvedNode.children.map((child: any, i: number) => {
       // 🔑 Use child.id if available, otherwise use index + type for unique key
       const uniqueKey = child.id || `${child.type}-${i}`;
-      return renderNode({ ...child, key: uniqueKey }, profile, stateSnapshot, defaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides);
+      return renderNode({ ...child, key: uniqueKey }, profile, stateSnapshot, defaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides, experienceContext, depth + 1, forceCardCompatibility);
     });
   }
 
@@ -892,9 +1076,16 @@ export function renderNode(
   // Section layout: driven by layout-2 id only (set in applyProfileToNode); strip legacy keys.
   delete (props as any).layoutPreset;
   delete (props as any).layout;
-  // Pass through section layout id so SectionCompound can use LayoutMoleculeRenderer.
-  if (typeKey === "section" && resolvedNode.layout != null) {
-    (props as any).layout = resolvedNode.layout;
+  // Pass through section layout id and templateId so SectionCompound can use LayoutMoleculeRenderer with context.
+  if (typeKey === "section") {
+    if (resolvedNode.layout != null) {
+      (props as any).layout = resolvedNode.layout;
+    }
+    // Pass templateId for context-based layout resolution (template role mapping)
+    const templateId = profile?.id;
+    if (templateId) {
+      (props as any).templateId = templateId;
+    }
   }
 
   const nodeIdForTrace = resolvedNode.id ?? resolvedNode.role ?? "anonymous";
@@ -939,6 +1130,13 @@ export default function JsonRenderer({
   organInternalLayoutOverrides,
   screenId,
   behaviorProfile: behaviorProfileProp,
+  experience,
+  currentStepIndex,
+  sectionKeys,
+  activeSectionKey,
+  onSelectSection,
+  sectionLabels: sectionLabelsProp,
+  forceCardCompatibility,
 }: {
   node: any;
   defaultState?: any;
@@ -957,24 +1155,35 @@ export default function JsonRenderer({
   screenId?: string;
   /** Behavior profile from state.values.behaviorProfile (calm/fast/default etc). Applied as attr + class on root wrapper only. */
   behaviorProfile?: string;
+  /** Experience mode (website | app | learning). When set, experience-visibility filter is applied. */
+  experience?: string;
+  /** Current step index for learning experience (0-based). */
+  currentStepIndex?: number;
+  /** Ordered section keys for step/panel visibility. */
+  sectionKeys?: string[];
+  /** App mode: which section panel is expanded (section key). */
+  activeSectionKey?: string | null;
+  /** App mode: callback when user clicks a collapsed panel to expand it. */
+  onSelectSection?: (sectionKey: string) => void;
+  /** Optional labels for section keys (for collapsed panel title in app mode). */
+  sectionLabels?: Record<string, string>;
+  /** When true, treat card layout as valid for compatibility (e.g. preview tiles so overrides always render). */
+  forceCardCompatibility?: boolean;
 }) {
   // 🔑 Track if user has interacted (state changed from default) - use reactive state after interaction
   const hasInteracted = React.useRef(false);
   const lastDefaultState = React.useRef(defaultState?.currentView);
 
+  // Mount/unmount lifecycle removed from console - use trace store if needed
   React.useEffect(() => {
-    console.log("[MOUNT]", "JsonRenderer");
-    return () => console.log("[UNMOUNT]", "JsonRenderer");
+    // Removed console.log
+    return () => {
+      // Removed console.log
+    };
   }, []);
 
-  // 🔑 LIFECYCLE: Log mount/unmount
+  // 🔑 LIFECYCLE: Mount/unmount traced via trace store if needed
   React.useEffect(() => {
-    console.log("[JsonRenderer] ✅ MOUNTED", {
-      nodeId: node?.id,
-      nodeType: node?.type,
-      defaultStateCurrentView: defaultState?.currentView,
-    });
-    
     // Reset interaction flag when defaultState changes (new screen loaded)
     if (lastDefaultState.current !== defaultState?.currentView) {
       hasInteracted.current = false;
@@ -982,10 +1191,6 @@ export default function JsonRenderer({
     }
     
     return () => {
-      console.log("[JsonRenderer] ❌ UNMOUNTED", {
-        nodeId: node?.id,
-        nodeType: node?.type,
-      });
       // Reset when unmounting (new screen loading)
       hasInteracted.current = false;
     };
@@ -1042,22 +1247,42 @@ export default function JsonRenderer({
   );
   const profile = profileOverride ?? layoutSnapshot;
 
+  // Layout preview pipeline traced via trace store
+  if (process.env.NODE_ENV === "development") {
+    pushTrace({
+      system: "renderer",
+      sectionId: "",
+      action: "layout-preview-pipeline",
+      input: { layoutSnapshotTemplateId: (layoutSnapshot as any)?.templateId },
+      decision: null,
+      final: null,
+    });
+  }
+
   // 🔍 PHASE 1 VERIFICATION: Log profile sections and visualPreset
   React.useEffect(() => {
     if (profile?.sections) {
-      console.log("[JsonRenderer] 🎨 Profile active", {
-        hasSections: !!profile.sections,
-        sectionRoles: Object.keys(profile.sections),
-        visualPreset: profile.visualPreset,
-        templateId: (layoutSnapshot as any)?.templateId,
-      });
+      // Profile active traced via trace store
+      if (process.env.NODE_ENV === "development") {
+        pushTrace({
+          system: "renderer",
+          sectionId: "",
+          action: "profile-active",
+          input: {
+            visualPreset: profile.visualPreset,
+            templateId: (layoutSnapshot as any)?.templateId,
+          },
+          decision: null,
+          final: null,
+        });
+      }
     }
   }, [profile?.sections, profile?.visualPreset, (layoutSnapshot as any)?.templateId]);
 
   // 🔍 UI PIPELINE TRACE: Add ?trace=ui to URL to log params per molecule + TextAtom breakdown
   React.useEffect(() => {
     if (isTraceUI()) {
-      console.log("[JsonRenderer] 📋 UI pipeline trace ACTIVE — params per molecule + TextAtom empty-params warnings");
+      // UI pipeline trace active - use trace store
     }
   }, []);
 
@@ -1068,17 +1293,6 @@ export default function JsonRenderer({
     getState,
     getState
   );
-
-  // Debug: Log state changes
-  console.log("[JsonRenderer] State snapshot", {
-    rawStateCurrentView: rawState?.currentView,
-    defaultStateCurrentView: defaultState?.currentView,
-    nodeId: node?.id,
-    nodeType: node?.type,
-    hasChildren: !!node?.children,
-    childrenCount: node?.children?.length,
-    rawStateKeys: rawState ? Object.keys(rawState) : [],
-  });
 
   // Flatten state for shouldRenderNode access (currentView at root level)
   // 🔑 CRITICAL: Use defaultState until user interacts, then switch to reactive state
@@ -1112,10 +1326,27 @@ export default function JsonRenderer({
   const behaviorProfile = behaviorProfileProp ?? (rawState?.values?.behaviorProfile as string) ?? "default";
   const behaviorTransition = getBehaviorTransitionHint(behaviorProfile);
 
+  const experienceContext: ExperienceContext | null =
+    experience && sectionKeys
+      ? {
+          experience,
+          currentStepIndex: currentStepIndex ?? 0,
+          sectionKeys,
+          activeSectionKey: activeSectionKey ?? undefined,
+          onSelectSection,
+          sectionLabels: sectionLabelsProp,
+        }
+      : null;
+
   PipelineDebugStore.startRenderPass();
-  const result = renderNode(node, profile, stateSnapshot, effectiveDefaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides);
+  const result = renderNode(node, profile, stateSnapshot, effectiveDefaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides, experienceContext, 0, forceCardCompatibility);
   PipelineDebugStore.endRenderPass();
   recordStage("render", "pass", "Render cycle completed");
+  
+  // End interaction after render completes
+  if (process.env.NODE_ENV === "development") {
+    endInteraction();
+  }
 
   return (
     <div

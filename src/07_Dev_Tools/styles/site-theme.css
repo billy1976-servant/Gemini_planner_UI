@@ -683,3 +683,37 @@
   font-size: 12px !important;
   margin: 2px 0 !important;
 }
+
+/* ============================================================================
+   Experience identity (runtime composition — styling only, no layout IDs)
+   ============================================================================ */
+
+/* App: dashboard feel — tighter spacing, card containers, subtle shadows */
+.experience-app.experience-dashboard {
+  --experience-gap: var(--spacing-4);
+}
+.experience-app [data-experience-collapsed] {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.15s ease, background 0.15s ease;
+}
+.experience-app [data-experience-collapsed]:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: var(--color-surface-2, #f0f0f0);
+}
+
+/* Learning: focus mode — centered, large typography, minimal distractions */
+.experience-learning.experience-step-engine {
+  --experience-content-max-width: min(820px, 100%);
+}
+.experience-learning h1 {
+  font-size: var(--font-size-3xl);
+  line-height: var(--line-height-tight);
+}
+.experience-learning main {
+  max-width: var(--experience-content-max-width, 820px);
+}
+
+/* Website: marketing rhythm (baseline — section gaps already from wrapper) */
+.experience-website {
+  --experience-gap: var(--spacing-8);
+}

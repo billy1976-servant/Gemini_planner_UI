@@ -1,0 +1,930 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "stepId": "interaction",
+      "step": "interaction",
+      "label": "Interaction",
+      "pass": true,
+      "reason": "Interaction detected",
+      "before": null,
+      "after": {
+        "time": 1770817972568,
+        "type": "change",
+        "target": "section-layout-preset-fallback-section"
+      }
+    },
+    {
+      "stepId": "action",
+      "step": "action",
+      "label": "Action",
+      "pass": true,
+      "reason": "Action emitted",
+      "before": null,
+      "after": [
+        {
+          "stage": "action",
+          "status": "pass",
+          "message": {
+            "name": "state:update",
+            "key": "sectionLayoutPreset.fallback-section",
+            "value": "content-narrow",
+            "ts": 1770817972572
+          }
+        },
+        {
+          "stage": "behavior",
+          "status": "pass",
+          "message": {
+            "matched": false,
+            "bypass": "state:update is direct state op",
+            "matchedBehavior": "state:update"
+          }
+        }
+      ]
+    },
+    {
+      "stepId": "state",
+      "step": "state",
+      "label": "State Update",
+      "pass": true,
+      "reason": "State updated for layout key",
+      "before": [],
+      "after": [
+        {
+          "key": "layoutByScreen",
+          "prev": {
+            "websites-demo-blueprint-site-app": {
+              "section": {
+                "fallback-section": "content-narrow"
+              },
+              "card": {},
+              "organ": {}
+            }
+          },
+          "curr": {
+            "websites-demo-blueprint-site-app": {
+              "section": {
+                "fallback-section": "content-narrow"
+              },
+              "card": {
+                "fallback-section": "image-top"
+              },
+              "organ": {}
+            }
+          }
+        }
+      ]
+    },
+    {
+      "stepId": "page-overrides",
+      "step": "page-overrides",
+      "label": "Page Overrides",
+      "pass": true,
+      "reason": "Page recomputed overrides",
+      "before": null,
+      "after": {
+        "overrideAfter": {
+          "sectionLayoutPresetOverrides": {
+            "fallback-section": "content-narrow"
+          },
+          "cardLayoutPresetOverrides": {
+            "fallback-section": "image-top"
+          },
+          "organInternalLayoutOverrides": {},
+          "screenId": "websites-demo-blueprint-site-app"
+        },
+        "perActiveSectionDelta": null
+      }
+    },
+    {
+      "stepId": "resolver-input",
+      "step": "resolver-input",
+      "label": "Resolver Input",
+      "pass": true,
+      "reason": "Resolver received override",
+      "before": null,
+      "after": {
+        "requestedLayout": "content-narrow",
+        "sectionKey": "fallback-section"
+      }
+    },
+    {
+      "stepId": "render-pass",
+      "step": "render-pass",
+      "label": "Render Pass",
+      "pass": true,
+      "reason": "Render pass completed",
+      "before": null,
+      "after": {
+        "sectionsRendered": [
+          "fallback-section",
+          "anonymous",
+          "content-stack"
+        ]
+      }
+    },
+    {
+      "stepId": "final-layout",
+      "step": "final-layout",
+      "label": "Final Layout Change",
+      "pass": true,
+      "reason": "Final layout changed",
+      "before": {
+        "fallback-section": "content-stack"
+      },
+      "after": {
+        "fallback-section": "content-narrow"
+      }
+    }
+  ],
+  "debugDump": {
+    "screenKey": "websites-demo-blueprint-site-app",
+    "activeSection": "fallback-section",
+    "lastInteractionTarget": "section-layout-preset-fallback-section",
+    "pipelineStages": [
+      {
+        "stage": "action",
+        "status": "pass",
+        "message": {
+          "name": "state:update",
+          "key": "sectionLayoutPreset.fallback-section",
+          "value": "content-narrow",
+          "ts": 1770817972572
+        }
+      },
+      {
+        "stage": "behavior",
+        "status": "pass",
+        "message": {
+          "matched": false,
+          "bypass": "state:update is direct state op",
+          "matchedBehavior": "state:update"
+        }
+      },
+      {
+        "stage": "state",
+        "status": "pass",
+        "message": {
+          "key": "sectionLayoutPreset.fallback-section",
+          "value": "content-narrow",
+          "storedValue": "content-narrow",
+          "ts": 1770817972572
+        }
+      },
+      {
+        "stage": "state",
+        "status": "pass",
+        "message": {
+          "key": "layout.override",
+          "ts": 1770817972574
+        }
+      },
+      {
+        "stage": "state",
+        "status": "pass",
+        "message": {
+          "key": "layout.override",
+          "ts": 1770817972575
+        }
+      },
+      {
+        "stage": "page-overrides",
+        "status": "pass",
+        "message": {
+          "screenKey": "websites-demo-blueprint-site-app",
+          "source": "state",
+          "sectionKeys": [
+            "fallback-section"
+          ],
+          "sectionOverrides": {
+            "fallback-section": "content-narrow"
+          },
+          "cardOverrides": {
+            "fallback-section": "image-top"
+          },
+          "organOverrides": {}
+        }
+      },
+      {
+        "stage": "page",
+        "status": "pass",
+        "message": {
+          "screenKey": "websites-demo-blueprint-site-app",
+          "activeTemplateId": "",
+          "overrides": {
+            "section": {
+              "fallback-section": "content-narrow"
+            },
+            "card": {
+              "fallback-section": "image-top"
+            },
+            "organ": {}
+          },
+          "ts": 1770817972577
+        }
+      },
+      {
+        "stage": "page-overrides",
+        "status": "pass",
+        "message": {
+          "screenKey": "websites-demo-blueprint-site-app",
+          "source": "state",
+          "sectionKeys": [
+            "fallback-section"
+          ],
+          "sectionOverrides": {
+            "fallback-section": "content-narrow"
+          },
+          "cardOverrides": {
+            "fallback-section": "image-top"
+          },
+          "organOverrides": {}
+        }
+      },
+      {
+        "stage": "page",
+        "status": "pass",
+        "message": {
+          "screenKey": "websites-demo-blueprint-site-app",
+          "activeTemplateId": "",
+          "overrides": {
+            "section": {
+              "fallback-section": "content-narrow"
+            },
+            "card": {
+              "fallback-section": "image-top"
+            },
+            "organ": {}
+          },
+          "ts": 1770817972579
+        }
+      },
+      {
+        "stage": "jsonRenderer",
+        "status": "pass",
+        "message": {
+          "templateId": "website",
+          "hasDoc": true,
+          "overrideKeys": {
+            "section": [
+              "fallback-section"
+            ],
+            "card": [
+              "fallback-section"
+            ],
+            "organ": []
+          },
+          "ts": 1770817972580
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "fallback-section",
+          "chosenLayout": "content-narrow"
+        }
+      },
+      {
+        "stage": "resolver",
+        "status": "pass",
+        "message": {
+          "sectionKey": "fallback-section",
+          "requested": "content-stack",
+          "sectionOverride": "content-narrow",
+          "cardOverride": "image-top",
+          "organOverride": null,
+          "finalLayout": "content-narrow",
+          "chain": [
+            {
+              "source": "section override",
+              "found": true,
+              "value": "content-narrow"
+            },
+            {
+              "source": "card override",
+              "found": true,
+              "value": "image-top"
+            },
+            {
+              "source": "organ override",
+              "found": false
+            },
+            {
+              "source": "template default",
+              "used": false
+            }
+          ],
+          "ts": 1770817972581
+        }
+      },
+      {
+        "stage": "layout",
+        "status": "pass",
+        "message": {
+          "sectionKey": "fallback-section",
+          "layoutResolved": "content-narrow",
+          "layoutRequested": "content-stack",
+          "ts": 1770817972581
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "anonymous",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "fallback-section",
+          "chosenLayout": "content-narrow"
+        }
+      },
+      {
+        "stage": "resolver",
+        "status": "pass",
+        "message": {
+          "sectionKey": "fallback-section",
+          "requested": "content-narrow",
+          "sectionOverride": "content-narrow",
+          "cardOverride": "image-top",
+          "organOverride": null,
+          "finalLayout": "content-narrow",
+          "chain": [
+            {
+              "source": "section override",
+              "found": true,
+              "value": "content-narrow"
+            },
+            {
+              "source": "card override",
+              "found": true,
+              "value": "image-top"
+            },
+            {
+              "source": "organ override",
+              "found": false
+            },
+            {
+              "source": "template default",
+              "used": false
+            }
+          ],
+          "ts": 1770817972585
+        }
+      },
+      {
+        "stage": "layout",
+        "status": "pass",
+        "message": {
+          "sectionKey": "fallback-section",
+          "layoutResolved": "content-narrow",
+          "layoutRequested": "content-narrow",
+          "ts": 1770817972585
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "anonymous",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "anonymous",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "render-pass",
+        "status": "pass",
+        "message": {
+          "sectionsRendered": [
+            "fallback-section",
+            "anonymous",
+            "content-stack"
+          ]
+        }
+      },
+      {
+        "stage": "render",
+        "status": "pass",
+        "message": "Render cycle completed"
+      },
+      {
+        "stage": "jsonRenderer",
+        "status": "pass",
+        "message": {
+          "templateId": "website",
+          "hasDoc": true,
+          "overrideKeys": {
+            "section": [
+              "fallback-section"
+            ],
+            "card": [
+              "fallback-section"
+            ],
+            "organ": []
+          },
+          "ts": 1770817972589
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "fallback-section",
+          "chosenLayout": "content-narrow"
+        }
+      },
+      {
+        "stage": "resolver",
+        "status": "pass",
+        "message": {
+          "sectionKey": "fallback-section",
+          "requested": "content-stack",
+          "sectionOverride": "content-narrow",
+          "cardOverride": "image-top",
+          "organOverride": null,
+          "finalLayout": "content-narrow",
+          "chain": [
+            {
+              "source": "section override",
+              "found": true,
+              "value": "content-narrow"
+            },
+            {
+              "source": "card override",
+              "found": true,
+              "value": "image-top"
+            },
+            {
+              "source": "organ override",
+              "found": false
+            },
+            {
+              "source": "template default",
+              "used": false
+            }
+          ],
+          "ts": 1770817972590
+        }
+      },
+      {
+        "stage": "layout",
+        "status": "pass",
+        "message": {
+          "sectionKey": "fallback-section",
+          "layoutResolved": "content-narrow",
+          "layoutRequested": "content-stack",
+          "ts": 1770817972590
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "anonymous",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "fallback-section",
+          "chosenLayout": "content-narrow"
+        }
+      },
+      {
+        "stage": "resolver",
+        "status": "pass",
+        "message": {
+          "sectionKey": "fallback-section",
+          "requested": "content-narrow",
+          "sectionOverride": "content-narrow",
+          "cardOverride": "image-top",
+          "organOverride": null,
+          "finalLayout": "content-narrow",
+          "chain": [
+            {
+              "source": "section override",
+              "found": true,
+              "value": "content-narrow"
+            },
+            {
+              "source": "card override",
+              "found": true,
+              "value": "image-top"
+            },
+            {
+              "source": "organ override",
+              "found": false
+            },
+            {
+              "source": "template default",
+              "used": false
+            }
+          ],
+          "ts": 1770817972593
+        }
+      },
+      {
+        "stage": "layout",
+        "status": "pass",
+        "message": {
+          "sectionKey": "fallback-section",
+          "layoutResolved": "content-narrow",
+          "layoutRequested": "content-narrow",
+          "ts": 1770817972593
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "anonymous",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "resolver-input",
+        "status": "pass",
+        "message": {
+          "sectionKey": "anonymous",
+          "chosenLayout": null
+        }
+      },
+      {
+        "stage": "render-pass",
+        "status": "pass",
+        "message": {
+          "sectionsRendered": [
+            "fallback-section",
+            "anonymous",
+            "content-stack"
+          ]
+        }
+      },
+      {
+        "stage": "render",
+        "status": "pass",
+        "message": "Render cycle completed"
+      },
+      {
+        "stage": "layout",
+        "status": "pass",
+        "message": "Layout recalculated for sections"
+      },
+      {
+        "stage": "layout",
+        "status": "fail",
+        "message": "Layout resolver ran but no layout changes detected"
+      },
+      {
+        "stage": "page-overrides",
+        "status": "pass",
+        "message": {
+          "screenKey": "websites-demo-blueprint-site-app",
+          "source": "state",
+          "sectionKeys": [
+            "fallback-section"
+          ],
+          "sectionOverrides": {
+            "fallback-section": "content-narrow"
+          },
+          "cardOverrides": {
+            "fallback-section": "image-top"
+          },
+          "organOverrides": {}
+        }
+      },
+      {
+        "stage": "page",
+        "status": "pass",
+        "message": {
+          "screenKey": "websites-demo-blueprint-site-app",
+          "activeTemplateId": "",
+          "overrides": {
+            "section": {
+              "fallback-section": "content-narrow"
+            },
+            "card": {
+              "fallback-section": "image-top"
+            },
+            "organ": {}
+          },
+          "ts": 1770817972624
+        }
+      },
+      {
+        "stage": "page-overrides",
+        "status": "pass",
+        "message": {
+          "screenKey": "websites-demo-blueprint-site-app",
+          "source": "state",
+          "sectionKeys": [
+            "fallback-section"
+          ],
+          "sectionOverrides": {
+            "fallback-section": "content-narrow"
+          },
+          "cardOverrides": {
+            "fallback-section": "image-top"
+          },
+          "organOverrides": {}
+        }
+      },
+      {
+        "stage": "page",
+        "status": "pass",
+        "message": {
+          "screenKey": "websites-demo-blueprint-site-app",
+          "activeTemplateId": "",
+          "overrides": {
+            "section": {
+              "fallback-section": "content-narrow"
+            },
+            "card": {
+              "fallback-section": "image-top"
+            },
+            "organ": {}
+          },
+          "ts": 1770817972626
+        }
+      }
+    ],
+    "jsonRendererPropsSnapshotBefore": null,
+    "jsonRendererPropsSnapshotAfter": {
+      "sectionLayoutPresetOverrides": {
+        "fallback-section": "content-narrow"
+      },
+      "cardLayoutPresetOverrides": {
+        "fallback-section": "image-top"
+      },
+      "organInternalLayoutOverrides": {},
+      "screenId": "websites-demo-blueprint-site-app"
+    },
+    "layoutMapBefore": {
+      "fallback-section": "content-stack",
+      "anonymous": "",
+      "content-stack": "content-stack"
+    },
+    "layoutMapAfter": {
+      "fallback-section": "content-narrow",
+      "anonymous": "",
+      "content-stack": "content-stack",
+      "content-narrow": "content-narrow"
+    },
+    "stateDiffAfter": [
+      {
+        "key": "journal",
+        "prev": {},
+        "curr": {}
+      },
+      {
+        "key": "rawCount",
+        "prev": 3,
+        "curr": 4
+      },
+      {
+        "key": "scans",
+        "prev": [],
+        "curr": []
+      },
+      {
+        "key": "interactions",
+        "prev": [],
+        "curr": []
+      },
+      {
+        "key": "layoutByScreen",
+        "prev": {
+          "websites-demo-blueprint-site-app": {
+            "section": {
+              "fallback-section": "content-narrow"
+            },
+            "card": {},
+            "organ": {}
+          }
+        },
+        "curr": {
+          "websites-demo-blueprint-site-app": {
+            "section": {
+              "fallback-section": "content-narrow"
+            },
+            "card": {
+              "fallback-section": "image-top"
+            },
+            "organ": {}
+          }
+        }
+      }
+    ]
+  },
+  "conciseHandoffReport": {
+    "interaction": {
+      "time": 1770817972568,
+      "type": "change",
+      "target": "section-layout-preset-fallback-section"
+    },
+    "action": {
+      "name": "state:update",
+      "key": "sectionLayoutPreset.fallback-section",
+      "value": "content-narrow",
+      "ts": 1770817972572
+    },
+    "state": {
+      "key": "sectionLayoutPreset.fallback-section",
+      "value": "content-narrow",
+      "storedValue": "content-narrow",
+      "ts": 1770817972572
+    },
+    "pageOverrides": {
+      "screenKey": "websites-demo-blueprint-site-app",
+      "source": "state",
+      "sectionKeys": [
+        "fallback-section"
+      ],
+      "sectionOverrides": {
+        "fallback-section": "content-narrow"
+      },
+      "cardOverrides": {
+        "fallback-section": "image-top"
+      },
+      "organOverrides": {}
+    },
+    "jsonRenderer": {
+      "templateId": "website",
+      "hasDoc": true,
+      "overrideKeys": {
+        "section": [
+          "fallback-section"
+        ],
+        "card": [
+          "fallback-section"
+        ],
+        "organ": []
+      },
+      "ts": 1770817972580
+    },
+    "resolverInput": {
+      "sectionKey": "fallback-section",
+      "chosenLayout": "content-narrow"
+    },
+    "resolver": {
+      "sectionKey": "fallback-section",
+      "requested": "content-stack",
+      "sectionOverride": "content-narrow",
+      "cardOverride": "image-top",
+      "organOverride": null,
+      "finalLayout": "content-narrow",
+      "chain": [
+        {
+          "source": "section override",
+          "found": true,
+          "value": "content-narrow"
+        },
+        {
+          "source": "card override",
+          "found": true,
+          "value": "image-top"
+        },
+        {
+          "source": "organ override",
+          "found": false
+        },
+        {
+          "source": "template default",
+          "used": false
+        }
+      ],
+      "ts": 1770817972581
+    },
+    "layout": {
+      "sectionKey": "fallback-section",
+      "layoutResolved": "content-narrow",
+      "layoutRequested": "content-stack",
+      "ts": 1770817972581
+    },
+    "layoutHandoff": [
+      {
+        "stage": "section-prop",
+        "sectionKey": "fallback-section",
+        "layoutPropReceived": "content-stack",
+        "ts": 1770817966077
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "fallback-section",
+        "layoutPropReceived": "content-stack",
+        "ts": 1770817966079
+      },
+      {
+        "stage": "layout-renderer",
+        "sectionKey": "fallback-section",
+        "layoutIdUsed": "content-stack",
+        "containerWidthApplied": "contained",
+        "ts": 1770817966081
+      },
+      {
+        "stage": "layout-renderer",
+        "sectionKey": "fallback-section",
+        "layoutIdUsed": "content-stack",
+        "containerWidthApplied": "contained",
+        "ts": 1770817966083
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "",
+        "ts": 1770817966084
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "",
+        "ts": 1770817966085
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "fallback-section",
+        "layoutPropReceived": "content-stack",
+        "ts": 1770817966110
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "fallback-section",
+        "layoutPropReceived": "content-stack",
+        "ts": 1770817966110
+      },
+      {
+        "stage": "layout-renderer",
+        "sectionKey": "fallback-section",
+        "layoutIdUsed": "content-stack",
+        "containerWidthApplied": "contained",
+        "ts": 1770817966111
+      },
+      {
+        "stage": "layout-renderer",
+        "sectionKey": "fallback-section",
+        "layoutIdUsed": "content-stack",
+        "containerWidthApplied": "contained",
+        "ts": 1770817966111
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "",
+        "ts": 1770817966112
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "",
+        "ts": 1770817966112
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "fallback-section",
+        "layoutPropReceived": "content-narrow",
+        "ts": 1770817972597
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "fallback-section",
+        "layoutPropReceived": "content-narrow",
+        "ts": 1770817972598
+      },
+      {
+        "stage": "layout-renderer",
+        "sectionKey": "fallback-section",
+        "layoutIdUsed": "content-narrow",
+        "containerWidthApplied": "narrow",
+        "ts": 1770817972599
+      },
+      {
+        "stage": "layout-renderer",
+        "sectionKey": "fallback-section",
+        "layoutIdUsed": "content-narrow",
+        "containerWidthApplied": "narrow",
+        "ts": 1770817972601
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "",
+        "ts": 1770817972602
+      },
+      {
+        "stage": "section-prop",
+        "sectionKey": "",
+        "ts": 1770817972603
+      }
+    ]
+  }
+}

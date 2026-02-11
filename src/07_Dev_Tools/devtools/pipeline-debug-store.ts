@@ -7,6 +7,7 @@
 
 import type { RendererTraceEvent } from "@/engine/debug/renderer-trace";
 import { recordStage } from "@/engine/debug/pipelineStageTrace";
+import { recordCaptureEvent } from "./pipeline-capture";
 
 if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
   (window as any).__PIPELINE_DEBUG_STORE__ = true;
@@ -203,6 +204,7 @@ export const PipelineDebugStore = {
       deadInteractionDetected: false,
       deadInteractionDetails: null,
     };
+    recordCaptureEvent("interaction", event, "interaction");
     notify();
   },
 
@@ -233,12 +235,14 @@ export const PipelineDebugStore = {
       lastBehavior: behavior,
       lastAction: behavior?.params?.name ?? null,
     };
+    recordCaptureEvent("behavior", behavior, "behavior");
     notify();
   },
 
   setLastAction(actionName: string | null) {
     if (process.env.NODE_ENV !== "development") return;
     snapshot = { ...snapshot, lastAction: actionName };
+    recordCaptureEvent("action", { actionName }, "action");
     notify();
   },
 
@@ -254,6 +258,7 @@ export const PipelineDebugStore = {
       currentState: nextState,
       stateDiff,
     };
+    recordCaptureEvent("state", { intent, stateDiff, state: nextState }, "state");
     notify();
   },
 
@@ -266,8 +271,10 @@ export const PipelineDebugStore = {
 
   setLayout(sectionId: string, resolvedLayoutId: string) {
     if (process.env.NODE_ENV !== "development") return;
+    const prevLayout = snapshot.layoutMap?.[sectionId];
     const layoutMap = { ...(snapshot.layoutMap ?? {}), [sectionId]: resolvedLayoutId };
     snapshot = { ...snapshot, layoutMap };
+    recordCaptureEvent("layout-resolution", { sectionId, resolvedLayoutId, previousLayout: prevLayout }, "layout");
     notify();
   },
 
@@ -359,6 +366,11 @@ export const PipelineDebugStore = {
     recordStage("render-pass", "pass", {
       sectionsRendered: Object.keys(snapshot.layoutMap ?? {}),
     });
+    recordCaptureEvent("render-pass", {
+      sectionRenderRows,
+      layoutChangeTrace: trimmedTrace,
+      sectionsRendered: Object.keys(snapshot.layoutMap ?? {}),
+    }, "render");
     notify();
   },
 
@@ -374,6 +386,7 @@ export const PipelineDebugStore = {
     if (process.env.NODE_ENV !== "development") return;
     const events = [...(snapshot.rendererTraceEvents ?? []), event].slice(-RENDERER_TRACE_CAP);
     snapshot = { ...snapshot, rendererTraceEvents: events };
+    recordCaptureEvent("renderer-trace", event, "renderer");
     notify();
   },
 
@@ -388,6 +401,9 @@ export const PipelineDebugStore = {
   setResolverInputSnapshot(snap: ResolverInputSnapshot | null) {
     if (process.env.NODE_ENV !== "development") return;
     snapshot = { ...snapshot, resolverInputSnapshot: snap };
+    if (snap) {
+      recordCaptureEvent("resolver-input", snap, "resolver");
+    }
     notify();
   },
 
