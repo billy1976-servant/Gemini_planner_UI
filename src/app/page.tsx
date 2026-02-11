@@ -802,6 +802,19 @@ export default function Page() {
               screenKey={screenKey}
             />
           }
+          palettePreviewScreen={treeForRender}
+          palettePreviewProps={{
+            defaultState: json?.state,
+            profileOverride: effectiveProfile,
+            sectionLayoutPresetOverrides,
+            cardLayoutPresetOverrides,
+            organInternalLayoutOverrides: organInternalLayoutOverridesProp,
+            screenKey,
+            behaviorProfile,
+            experience,
+            sectionKeys: sectionKeysFromTree,
+            sectionLabels,
+          }}
         />
       </>
     );
@@ -846,6 +859,19 @@ export default function Page() {
             screenKey={screenKey}
           />
         }
+        palettePreviewScreen={treeForRender}
+        palettePreviewProps={{
+          defaultState: json?.state,
+          profileOverride: effectiveProfile,
+          sectionLayoutPresetOverrides,
+          cardLayoutPresetOverrides,
+          organInternalLayoutOverrides: organInternalLayoutOverridesProp,
+          screenKey,
+          behaviorProfile,
+          experience,
+          sectionKeys: sectionKeysFromTree,
+          sectionLabels,
+        }}
       />
     </>
   );

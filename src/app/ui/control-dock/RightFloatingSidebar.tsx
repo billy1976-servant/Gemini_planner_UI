@@ -5,7 +5,7 @@
 
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import "@/editor/editor-theme.css";
@@ -19,6 +19,46 @@ import AppIcon, { getAppIconNameForPanel } from "@/04_Presentation/icons/AppIcon
 import PaletteLivePreview from "@/app/ui/control-dock/PaletteLivePreview";
 import StylingLivePreview from "@/app/ui/control-dock/StylingLivePreview";
 import CreateNewInterfacePanel from "@/app/ui/control-dock/CreateNewInterfacePanel";
+import ExperienceRenderer from "@/engine/core/ExperienceRenderer";
+import { applyPaletteToElement } from "@/lib/site-renderer/palette-bridge";
+
+/** Wraps content and applies a specific palette's CSS variables to the wrapper so the content renders in that palette. */
+function PaletteFullPreviewFrame({
+  paletteName,
+  children,
+}: {
+  paletteName: string;
+  children: React.ReactNode;
+}) {
+  const elRef = useRef<HTMLDivElement | null>(null);
+  const setRef = useCallback(
+    (el: HTMLDivElement | null) => {
+      elRef.current = el;
+      if (el) applyPaletteToElement(el, paletteName);
+    },
+    [paletteName]
+  );
+  useLayoutEffect(() => {
+    const el = elRef.current;
+    if (el) applyPaletteToElement(el, paletteName);
+  }, [paletteName]);
+  return (
+    <div
+      ref={setRef}
+      className="palette-live-preview-scope"
+      style={{
+        width: "100%",
+        minHeight: "100%",
+        isolation: "isolate",
+        position: "relative",
+        zIndex: 0,
+      }}
+      data-palette-preview={paletteName}
+    >
+      {children}
+    </div>
+  );
+}
 
 const PALETTE_NAMES = Object.keys(palettes) as string[];
 const MODES = ["template", "custom"] as const;
@@ -92,16 +132,35 @@ const ICON_BUTTON_BASE: React.CSSProperties = {
   transition: "background 0.12s ease, transform 0.06s ease",
 };
 
+/** Props passed to ExperienceRenderer for the palette panel full-page preview. */
+export type PalettePreviewProps = {
+  defaultState?: any;
+  profileOverride?: any;
+  sectionLayoutPresetOverrides?: Record<string, string>;
+  cardLayoutPresetOverrides?: Record<string, string>;
+  organInternalLayoutOverrides?: Record<string, string>;
+  screenKey: string;
+  behaviorProfile?: string;
+  experience?: string;
+  sectionKeys?: string[];
+  sectionLabels?: Record<string, string>;
+};
+
 export type RightFloatingSidebarProps = {
   /** Optional: Layout section content (e.g. OrganPanel) */
   layoutPanelContent?: React.ReactNode;
+  /** Optional: Screen tree for palette panel full-page live preview (same as passed to ExperienceRenderer). */
+  palettePreviewScreen?: any;
+  /** Optional: Props for rendering ExperienceRenderer in the palette preview (when palettePreviewScreen is set). */
+  palettePreviewProps?: PalettePreviewProps;
 };
 
-function RightFloatingSidebarInner({ layoutPanelContent }: RightFloatingSidebarProps) {
+function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, palettePreviewProps }: RightFloatingSidebarProps) {
   const { openPanel, togglePanel } = useDockState();
   const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
   const currentHref = typeof window !== "undefined" ? window.location.href : "";
   useSyncExternalStore(subscribePalette, getPaletteName, () => "default");
+  const [paletteViewMode, setPaletteViewMode] = useState<"live" | "swatches">("swatches");
 
   const experience = (stateSnapshot?.values?.experience ?? "website") as string;
   const layoutMode = (stateSnapshot?.values?.layoutMode ?? "template") as string;
@@ -228,41 +287,159 @@ function RightFloatingSidebarInner({ layoutPanelContent }: RightFloatingSidebarP
               </div>
             )}
             {openPanel === "palette" && (
-              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                <div style={{ fontSize: 12, color: GOOGLE.textSecondary, marginBottom: "4px", fontWeight: 500 }}>
-                  Live preview
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "8px" }}>
-                  {PALETTE_NAMES.map((name) => {
-                    const isActive = paletteName === name;
-                    return (
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                {palettePreviewScreen != null && palettePreviewProps != null && (
+                  <div style={{ display: "flex", gap: "var(--spacing-2)", alignItems: "center", flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 12, color: GOOGLE.textSecondary, fontWeight: 500 }}>Mode:</span>
+                    {(["live", "swatches"] as const).map((mode) => (
                       <button
-                        key={name}
+                        key={mode}
                         type="button"
-                        onClick={() => handlePaletteChange(name)}
+                        onClick={() => setPaletteViewMode(mode)}
                         style={{
-                          padding: "12px",
-                          borderRadius: GOOGLE.radius,
+                          padding: "6px 12px",
+                          borderRadius: 8,
+                          border: "none",
+                          background: paletteViewMode === mode ? "linear-gradient(180deg, #3b82f6 0%, #2563eb 100%)" : GOOGLE.surfaceHover,
+                          color: paletteViewMode === mode ? "#fff" : GOOGLE.textPrimary,
+                          fontSize: 12,
+                          fontWeight: 500,
                           cursor: "pointer",
-                          fontSize: 13,
-                          fontWeight: isActive ? 500 : 400,
+                          boxShadow: paletteViewMode === mode ? "0 2px 6px rgba(59, 130, 246, 0.35)" : "none",
+                          transition: "background 0.2s ease, box-shadow 0.2s ease",
                           textTransform: "capitalize",
-                          border: `1px solid ${isActive ? GOOGLE.primary : GOOGLE.border}`,
-                          background: isActive ? GOOGLE.primaryBg : GOOGLE.surface,
-                          color: isActive ? GOOGLE.primary : GOOGLE.textPrimary,
-                          transition: "background 0.15s ease, border-color 0.15s ease",
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          gap: "6px",
                         }}
                       >
-                        <PaletteLivePreview paletteName={name} size={64} />
-                        {name}
+                        {mode === "live" ? "Live" : "Swatches"}
                       </button>
-                    );
-                  })}
-                </div>
+                    ))}
+                  </div>
+                )}
+                {paletteViewMode === "live" && palettePreviewScreen != null && palettePreviewProps != null && (
+                  <div
+                    style={{
+                      maxHeight: "50vh",
+                      minHeight: 120,
+                      overflowY: "auto",
+                      overflowX: "hidden",
+                      borderRadius: GOOGLE.radius,
+                      border: `1px solid ${GOOGLE.border}`,
+                      background: GOOGLE.surface,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "12px",
+                      padding: "8px",
+                    }}
+                  >
+                    {PALETTE_NAMES.map((name) => {
+                      const isActive = paletteName === name;
+                      return (
+                        <div
+                          key={name}
+                          style={{
+                            border: `1px solid ${isActive ? GOOGLE.primary : GOOGLE.border}`,
+                            borderRadius: GOOGLE.radius,
+                            overflow: "hidden",
+                            background: GOOGLE.surface,
+                          }}
+                        >
+                          <div
+                            style={{
+                              padding: "6px 10px",
+                              borderBottom: `1px solid ${GOOGLE.border}`,
+                              fontSize: 12,
+                              fontWeight: 600,
+                              color: GOOGLE.textPrimary,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <span style={{ textTransform: "capitalize" }}>{name}</span>
+                            <button
+                              type="button"
+                              onClick={() => handlePaletteChange(name)}
+                              style={{
+                                padding: "4px 10px",
+                                borderRadius: 6,
+                                border: "none",
+                                background: isActive ? GOOGLE.primary : GOOGLE.surfaceHover,
+                                color: isActive ? "#fff" : GOOGLE.textPrimary,
+                                fontSize: 11,
+                                fontWeight: 500,
+                                cursor: "pointer",
+                              }}
+                            >
+                              {isActive ? "Selected" : "Use"}
+                            </button>
+                          </div>
+                          <div
+                            style={{
+                              minHeight: 180,
+                              maxHeight: 280,
+                              overflow: "auto",
+                            }}
+                          >
+                            <PaletteFullPreviewFrame paletteName={name}>
+                              <ExperienceRenderer
+                                key={`palette-preview-${name}`}
+                                node={palettePreviewScreen}
+                                defaultState={palettePreviewProps.defaultState}
+                                profileOverride={palettePreviewProps.profileOverride}
+                                sectionLayoutPresetOverrides={palettePreviewProps.sectionLayoutPresetOverrides}
+                                cardLayoutPresetOverrides={palettePreviewProps.cardLayoutPresetOverrides}
+                                organInternalLayoutOverrides={palettePreviewProps.organInternalLayoutOverrides}
+                                screenId={palettePreviewProps.screenKey}
+                                behaviorProfile={palettePreviewProps.behaviorProfile}
+                                experience={palettePreviewProps.experience}
+                                sectionKeys={palettePreviewProps.sectionKeys}
+                                sectionLabels={palettePreviewProps.sectionLabels}
+                              />
+                            </PaletteFullPreviewFrame>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+                {(paletteViewMode === "swatches" || palettePreviewScreen == null || palettePreviewProps == null) && (
+                  <>
+                    <div style={{ fontSize: 12, color: GOOGLE.textSecondary, marginBottom: "4px", fontWeight: 500 }}>
+                      {palettePreviewScreen != null && palettePreviewProps != null ? "Swatches" : "Live preview"}
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "8px" }}>
+                      {PALETTE_NAMES.map((name) => {
+                        const isActive = paletteName === name;
+                        return (
+                          <button
+                            key={name}
+                            type="button"
+                            onClick={() => handlePaletteChange(name)}
+                            style={{
+                              padding: "12px",
+                              borderRadius: GOOGLE.radius,
+                              cursor: "pointer",
+                              fontSize: 13,
+                              fontWeight: isActive ? 500 : 400,
+                              textTransform: "capitalize",
+                              border: `1px solid ${isActive ? GOOGLE.primary : GOOGLE.border}`,
+                              background: isActive ? GOOGLE.primaryBg : GOOGLE.surface,
+                              color: isActive ? GOOGLE.primary : GOOGLE.textPrimary,
+                              transition: "background 0.15s ease, border-color 0.15s ease",
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                              gap: "6px",
+                            }}
+                          >
+                            <PaletteLivePreview paletteName={name} size={64} />
+                            {name}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
               </div>
             )}
             {openPanel === "template" && (
