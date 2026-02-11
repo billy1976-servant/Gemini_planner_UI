@@ -95,14 +95,30 @@ function PreviewRenderInner({
     return () => ro.disconnect();
   }, []);
 
+  // Re-measure height when inner content size changes (e.g. images load) so tiles don't collapse.
+  // ResizeObserver fires when the inner div's size changes; we scale and set scaledHeight.
   useLayoutEffect(() => {
     const outer = containerRef.current;
     const inner = innerRef.current;
     if (!outer || !inner || containerWidth <= 0) return;
-    const scale = containerWidth / BASE_RENDER_WIDTH;
-    const contentHeight = inner.offsetHeight;
-    setScaledHeight(Math.ceil(contentHeight * scale));
-  });
+
+    const updateScaledHeight = () => {
+      const w = containerRef.current?.offsetWidth ?? 0;
+      if (w <= 0) return;
+      const scale = w / BASE_RENDER_WIDTH;
+      const contentHeight = innerRef.current?.offsetHeight ?? 0;
+      const next = Math.ceil(contentHeight * scale);
+      setScaledHeight(next);
+      if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
+        console.debug("[PreviewRender] scaledHeight recalculated", { previewValue, sectionKey, contentHeight, scaledHeight: next });
+      }
+    };
+
+    updateScaledHeight();
+    const ro = new ResizeObserver(updateScaledHeight);
+    ro.observe(inner);
+    return () => ro.disconnect();
+  }, [containerWidth, previewValue, sectionKey]);
 
   const content = useMemo(() => {
     if (!screenModel) return null;

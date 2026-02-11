@@ -272,9 +272,9 @@ function LayoutTile({
           }
         />
       ) : isSection ? (
-        <div style={{ width: "100%", display: "block", overflow: "visible" }}>{opt.thumbnail}</div>
+        <div style={{ width: "100%", display: "block", overflow: "visible", pointerEvents: "none" }}>{opt.thumbnail}</div>
       ) : (
-        <div style={{ width: "100%", height: "100%", overflow: "visible", display: "flex", alignItems: "center", justifyContent: "center" }}>{opt.thumbnail}</div>
+        <div style={{ width: "100%", height: "100%", overflow: "visible", display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>{opt.thumbnail}</div>
       )
     ) : (
       <>

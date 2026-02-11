@@ -120,7 +120,14 @@ export default function OrganPanel({
 }: OrganPanelProps) {
   const [layoutViewMode, setLayoutViewMode] = useState<LayoutViewMode>("visual");
   const [layoutMode, setLayoutMode] = useState<LayoutMode>("section");
+  /** Per-section: show "Section layout" or "Card layout" picker (avoids stacking both vertically). */
+  const [layoutPickerModeBySection, setLayoutPickerModeBySection] = useState<Record<string, "sectionLayout" | "cardLayout">>({});
   const panelScrollRef = useRef<HTMLElement | null>(null);
+
+  const getLayoutPickerMode = (sectionKey: string) => layoutPickerModeBySection[sectionKey] ?? "sectionLayout";
+  const setLayoutPickerMode = (sectionKey: string, mode: "sectionLayout" | "cardLayout") => {
+    setLayoutPickerModeBySection((prev) => ({ ...prev, [sectionKey]: mode }));
+  };
   useEffect(() => {
     if (panelScrollRef.current) panelScrollRef.current.scrollTop = 0;
   }, [layoutMode]);
@@ -509,24 +516,79 @@ export default function OrganPanel({
                 )}
                 {layoutMode === "section" && (
                   <>
-                    {onSectionLayoutPresetOverride && (
-                      <LayoutTilePicker
-                        title="Section Layout"
-                        value={currentSectionPreset}
-                        options={sectionTileOptions}
-                        onChange={(id) => fireSectionChange(sectionKey, id)}
-                        mode={pickerMode}
-                        variant="section"
-                      />
-                    )}
-                    {onCardLayoutPresetOverride && hasCardSlot && (
-                      <LayoutTilePicker
-                        title="Card Layout"
-                        value={currentCardPreset}
-                        options={cardTileOptions}
-                        onChange={(id) => fireCardChange(sectionKey, id)}
-                        mode={pickerMode}
-                      />
+                    {(onSectionLayoutPresetOverride || (onCardLayoutPresetOverride && hasCardSlot)) && (
+                      <>
+                        {onSectionLayoutPresetOverride && onCardLayoutPresetOverride && hasCardSlot ? (
+                          <>
+                            <div style={{ marginBottom: "var(--spacing-2)", display: "flex", gap: 0, alignItems: "stretch", border: "1px solid rgba(0,0,0,0.08)", borderRadius: "8px", overflow: "hidden", background: "rgba(255,255,255,0.5)" }}>
+                              {(["sectionLayout", "cardLayout"] as const).map((mode) => {
+                                const isActive = getLayoutPickerMode(sectionKey) === mode;
+                                return (
+                                  <button
+                                    key={mode}
+                                    type="button"
+                                    onClick={() => setLayoutPickerMode(sectionKey, mode)}
+                                    style={{
+                                      flex: 1,
+                                      padding: "6px 10px",
+                                      border: "none",
+                                      background: isActive ? "linear-gradient(180deg, #3b82f6 0%, #2563eb 100%)" : "transparent",
+                                      color: isActive ? "#fff" : "rgba(0,0,0,0.65)",
+                                      fontSize: "var(--font-size-xs)",
+                                      fontWeight: 500,
+                                      cursor: "pointer",
+                                      transition: "background 0.2s ease, color 0.2s ease",
+                                    }}
+                                  >
+                                    {mode === "sectionLayout" ? "Section layout" : "Card layout"}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                            {getLayoutPickerMode(sectionKey) === "sectionLayout" && (
+                              <LayoutTilePicker
+                                title="Section Layout"
+                                value={currentSectionPreset}
+                                options={sectionTileOptions}
+                                onChange={(id) => fireSectionChange(sectionKey, id)}
+                                mode={pickerMode}
+                                variant="section"
+                              />
+                            )}
+                            {getLayoutPickerMode(sectionKey) === "cardLayout" && (
+                              <LayoutTilePicker
+                                title="Card Layout"
+                                value={currentCardPreset}
+                                options={cardTileOptions}
+                                onChange={(id) => fireCardChange(sectionKey, id)}
+                                mode={pickerMode}
+                              />
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            {onSectionLayoutPresetOverride && (
+                              <LayoutTilePicker
+                                title="Section Layout"
+                                value={currentSectionPreset}
+                                options={sectionTileOptions}
+                                onChange={(id) => fireSectionChange(sectionKey, id)}
+                                mode={pickerMode}
+                                variant="section"
+                              />
+                            )}
+                            {onCardLayoutPresetOverride && hasCardSlot && (
+                              <LayoutTilePicker
+                                title="Card Layout"
+                                value={currentCardPreset}
+                                options={cardTileOptions}
+                                onChange={(id) => fireCardChange(sectionKey, id)}
+                                mode={pickerMode}
+                              />
+                            )}
+                          </>
+                        )}
+                      </>
                     )}
                   </>
                 )}

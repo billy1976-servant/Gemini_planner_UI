@@ -436,25 +436,6 @@ export default function LayoutMoleculeRenderer({
     source: "LayoutMoleculeRenderer",
   });
 
-  const layoutIdStr = (layoutIdUsed ?? "").toString();
-  const debugStyle: React.CSSProperties = {};
-  if (layoutIdStr.includes("stack")) {
-    debugStyle.flexDirection = "column";
-    debugStyle.gap = "40px";
-  }
-  if (layoutIdStr.includes("row")) {
-    debugStyle.flexDirection = "row";
-    debugStyle.gap = "40px";
-  }
-  if (layoutIdStr.includes("narrow")) {
-    debugStyle.maxWidth = "400px";
-    debugStyle.margin = "auto";
-  }
-  if (layoutIdStr.includes("full")) {
-    debugStyle.width = "100%";
-    debugStyle.background = "rgba(0,0,0,0.03)";
-  }
-
   const childrenArr = React.Children.toArray(children);
   const firstChild = childrenArr[0];
   const firstChildType =
@@ -481,12 +462,11 @@ export default function LayoutMoleculeRenderer({
     slotCount: Object.keys((layout as any)?.slots ?? {}).length,
   });
 
+  // Ensure section outer has display and boxSizing so layout doesn't collapse (lost when debugStyle was removed).
   const combinedOuterStyle =
-    Object.keys(debugStyle).length > 0
-      ? { ...outerStyle, ...debugStyle, display: "flex", boxSizing: "border-box" as const }
-      : Object.keys(outerStyle).length > 0
-        ? outerStyle
-        : undefined;
+    Object.keys(outerStyle).length > 0
+      ? { display: "block" as const, boxSizing: "border-box" as const, ...outerStyle }
+      : undefined;
 
   return (
     <div

@@ -16,6 +16,32 @@
         "type": "split",
         "mediaSlot": "right"
       },
+      "contentColumn": {
+        "display": "flex",
+        "flexDirection": "column",
+        "gap": "var(--spacing-6)",
+        "alignItems": "flex-start",
+        "minWidth": "0"
+      },
+      "mediaColumn": {
+        "display": "flex",
+        "minHeight": "200px",
+        "overflow": "hidden",
+        "alignItems": "center",
+        "width": "100%",
+        "maxWidth": "100%"
+      },
+      "mediaImageWrapper": {
+        "maxHeight": "none",
+        "overflow": "hidden"
+      },
+      "mediaImage": {
+        "width": "100%",
+        "maxWidth": "100%",
+        "height": "auto",
+        "objectFit": "contain",
+        "display": "block"
+      },
       "container": {
         "width": "100%",
         "marginLeft": "auto",
@@ -30,6 +56,32 @@
         "type": "split",
         "mediaSlot": "right"
       },
+      "contentColumn": {
+        "display": "flex",
+        "flexDirection": "column",
+        "gap": "var(--spacing-6)",
+        "alignItems": "flex-start",
+        "minWidth": "0"
+      },
+      "mediaColumn": {
+        "display": "flex",
+        "minHeight": "200px",
+        "overflow": "hidden",
+        "alignItems": "center",
+        "width": "100%",
+        "maxWidth": "100%"
+      },
+      "mediaImageWrapper": {
+        "maxHeight": "none",
+        "overflow": "hidden"
+      },
+      "mediaImage": {
+        "width": "100%",
+        "maxWidth": "100%",
+        "height": "auto",
+        "objectFit": "contain",
+        "display": "block"
+      },
       "container": {
         "width": "100%",
         "marginLeft": "auto",
@@ -43,6 +95,32 @@
       "split": {
         "type": "split",
         "mediaSlot": "left"
+      },
+      "contentColumn": {
+        "display": "flex",
+        "flexDirection": "column",
+        "gap": "var(--spacing-6)",
+        "alignItems": "flex-start",
+        "minWidth": "0"
+      },
+      "mediaColumn": {
+        "display": "flex",
+        "minHeight": "200px",
+        "overflow": "hidden",
+        "alignItems": "center",
+        "width": "100%",
+        "maxWidth": "100%"
+      },
+      "mediaImageWrapper": {
+        "maxHeight": "none",
+        "overflow": "hidden"
+      },
+      "mediaImage": {
+        "width": "100%",
+        "maxWidth": "100%",
+        "height": "auto",
+        "objectFit": "contain",
+        "display": "block"
       },
       "container": {
         "width": "100%",
