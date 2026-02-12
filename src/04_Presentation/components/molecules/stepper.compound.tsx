@@ -40,6 +40,8 @@ export type StepperCompoundProps = {
       preset?: string;
       params?: Record<string, any>;
     };
+    surfaceActive?: any;
+    textActive?: any;
   };
   steps?: Array<{
     content?: {
@@ -53,6 +55,7 @@ export type StepperCompoundProps = {
     behavior?: any;
     onTap?: () => void;
   }>;
+  activeValue?: string;
 };
 
 
@@ -70,6 +73,7 @@ export type StepperCompoundProps = {
 export default function StepperCompound({
   params = {},
   steps = [],
+  activeValue,
 }: StepperCompoundProps) {
   /* ======================================================
      STEP ITEMS (BUTTON-LIKE, INTERACTIVE)
@@ -93,14 +97,23 @@ export default function StepperCompound({
               new CustomEvent("interaction", { detail: step.behavior })
             );
         };
+
+        // Check if this step is active based on behavior value
+        const isActive = activeValue !== undefined && 
+          step.behavior?.params?.value === activeValue;
+
         return (
           <TriggerAtom
             key={i}
             params={step.params?.trigger}
             onTap={handleTap}
           >
-            <SurfaceAtom params={resolveParams(step.params?.surface)}>
-              <TextAtom params={resolveParams(step.params?.text)}>
+            <SurfaceAtom params={resolveParams(
+              isActive ? params.surfaceActive : params.surface
+            )}>
+              <TextAtom params={resolveParams(
+                isActive ? params.textActive : params.text
+              )}>
                 {step.content?.label}
               </TextAtom>
             </SurfaceAtom>

@@ -234,6 +234,30 @@
         "sequence": { "direction": "row", "gap": "gap.sm" },
         "surface": { "background": "color.surface", "radius": "radius.none", "padding": "padding.xs" },
         "text": { "size": "textSize.xs", "weight": "textWeight.medium", "color": "color.secondary" }
+      },
+      "tab-underline": {
+        "sequence": { "direction": "row", "gap": "gap.none" },
+        "surface": { "background": "color.surface", "radius": "radius.none", "padding": "padding.md", "borderBottom": "borderWidth.none" },
+        "text": { "size": "textSize.md", "weight": "textWeight.medium", "color": "color.secondary" },
+        "trigger": { "cursor": "pointer", "hoverFeedback": "soft", "transition": "transition.base" },
+        "surfaceActive": { "background": "color.surface", "radius": "radius.none", "padding": "padding.md", "borderBottom": "borderWidth.md", "borderColor": "color.primary" },
+        "textActive": { "size": "textSize.md", "weight": "textWeight.semibold", "color": "color.primary" }
+      },
+      "tab-pill": {
+        "sequence": { "direction": "row", "gap": "gap.sm" },
+        "surface": { "background": "color.surfaceVariant", "radius": "radius.lg", "padding": "padding.md" },
+        "text": { "size": "textSize.md", "weight": "textWeight.medium", "color": "color.onSurface" },
+        "trigger": { "cursor": "pointer", "hoverFeedback": "medium", "transition": "transition.base" },
+        "surfaceActive": { "background": "color.primary", "radius": "radius.lg", "padding": "padding.md" },
+        "textActive": { "size": "textSize.md", "weight": "textWeight.semibold", "color": "color.onPrimary" }
+      },
+      "tab-segment": {
+        "sequence": { "direction": "row", "gap": "gap.xs", "background": "color.surfaceVariant", "radius": "radius.lg", "padding": "padding.xs" },
+        "surface": { "background": "color.surface", "radius": "radius.md", "padding": "padding.sm" },
+        "text": { "size": "textSize.sm", "weight": "textWeight.medium", "color": "color.onSurface" },
+        "trigger": { "cursor": "pointer", "hoverFeedback": "soft", "transition": "transition.base" },
+        "surfaceActive": { "background": "color.primary", "radius": "radius.md", "padding": "padding.sm" },
+        "textActive": { "size": "textSize.sm", "weight": "textWeight.semibold", "color": "color.onPrimary" }
       }
     },
     "sizes": {

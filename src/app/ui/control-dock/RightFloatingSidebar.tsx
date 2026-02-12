@@ -174,9 +174,12 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
     dispatchState("state.update", { key, value });
   };
   const handlePaletteChange = (name: string) => {
+    if (process.env.NODE_ENV !== "production") console.log("[palette] click", name);
     if (!(name in palettes)) return;
     setValue("paletteName", name);
+    if (process.env.NODE_ENV !== "production") console.log("[palette] state.update dispatched paletteName", name);
     setPalette(name);
+    if (process.env.NODE_ENV !== "production") console.log("[palette] setPalette called", name);
   };
 
   const isPanelOpen = (id: DockPanelId) => openPanel === id;
@@ -383,7 +386,11 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
                             <PaletteFullPreviewFrame paletteName={name}>
                               <ExperienceRenderer
                                 key={`palette-preview-${name}`}
-                                node={palettePreviewScreen}
+                                node={
+                                  typeof structuredClone === "function"
+                                    ? structuredClone(palettePreviewScreen)
+                                    : JSON.parse(JSON.stringify(palettePreviewScreen))
+                                }
                                 defaultState={palettePreviewProps.defaultState}
                                 profileOverride={palettePreviewProps.profileOverride}
                                 sectionLayoutPresetOverrides={palettePreviewProps.sectionLayoutPresetOverrides}
@@ -394,6 +401,7 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
                                 experience={palettePreviewProps.experience}
                                 sectionKeys={palettePreviewProps.sectionKeys}
                                 sectionLabels={palettePreviewProps.sectionLabels}
+                                paletteOverride={name}
                               />
                             </PaletteFullPreviewFrame>
                           </div>

@@ -700,7 +700,8 @@ export function renderNode(
   organInternalLayoutOverrides?: Record<string, string>,
   experienceContext?: ExperienceContext | null,
   depth: number = 0,
-  forceCardCompatibility?: boolean
+  forceCardCompatibility?: boolean,
+  paletteOverride?: string
 ): any {
   if (!node) return null;
 
@@ -814,7 +815,8 @@ export function renderNode(
     { ...visualPresetOverlay, ...cardPresetOverlay },
     variantPreset,
     sizePreset,
-    profiledNode.params ?? {}
+    profiledNode.params ?? {},
+    paletteOverride
   );
 
   // Template visual architecture: section preset layout (gap/padding) merged into moleculeLayout.params
@@ -960,14 +962,14 @@ export function renderNode(
       if (cardPresetId) itemNode.layout = cardPresetId;
 
       const uniqueKey = item.id || `item-${i}`;
-      return renderNode({ ...itemNode, key: uniqueKey }, profile, stateSnapshot, defaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides, experienceContext, depth + 1, forceCardCompatibility);
+      return renderNode({ ...itemNode, key: uniqueKey }, profile, stateSnapshot, defaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides, experienceContext, depth + 1, forceCardCompatibility, paletteOverride);
     });
   } else if (Array.isArray(resolvedNode.children)) {
     // Normal mode: render children
     renderedChildren = resolvedNode.children.map((child: any, i: number) => {
       // 🔑 Use child.id if available, otherwise use index + type for unique key
       const uniqueKey = child.id || `${child.type}-${i}`;
-      return renderNode({ ...child, key: uniqueKey }, profile, stateSnapshot, defaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides, experienceContext, depth + 1, forceCardCompatibility);
+      return renderNode({ ...child, key: uniqueKey }, profile, stateSnapshot, defaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides, experienceContext, depth + 1, forceCardCompatibility, paletteOverride);
     });
   }
 
@@ -1070,6 +1072,14 @@ export function renderNode(
     }
   }
 
+  // Phase C: state binding for Stepper — pass currentView for active tab styling
+  if (
+    (resolvedNode.type === "stepper" || resolvedNode.type === "Stepper") &&
+    stateSnapshot?.currentView !== undefined
+  ) {
+    props.activeValue = stateSnapshot.currentView;
+  }
+
 
   delete props.type;
   delete props.key;
@@ -1137,6 +1147,7 @@ export default function JsonRenderer({
   onSelectSection,
   sectionLabels: sectionLabelsProp,
   forceCardCompatibility,
+  paletteOverride,
 }: {
   node: any;
   defaultState?: any;
@@ -1169,6 +1180,8 @@ export default function JsonRenderer({
   sectionLabels?: Record<string, string>;
   /** When true, treat card layout as valid for compatibility (e.g. preview tiles so overrides always render). */
   forceCardCompatibility?: boolean;
+  /** When set (e.g. palette preview tile), token resolution uses this palette instead of the global store. */
+  paletteOverride?: string;
 }) {
   // 🔑 Track if user has interacted (state changed from default) - use reactive state after interaction
   const hasInteracted = React.useRef(false);
@@ -1339,7 +1352,7 @@ export default function JsonRenderer({
       : null;
 
   PipelineDebugStore.startRenderPass();
-  const result = renderNode(node, profile, stateSnapshot, effectiveDefaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides, experienceContext, 0, forceCardCompatibility);
+  const result = renderNode(node, profile, stateSnapshot, effectiveDefaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides, experienceContext, 0, forceCardCompatibility, paletteOverride);
   PipelineDebugStore.endRenderPass();
   recordStage("render", "pass", "Render cycle completed");
   

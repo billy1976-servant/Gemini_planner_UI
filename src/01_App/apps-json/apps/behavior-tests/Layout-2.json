@@ -1,1 +1,47 @@
-{"id":"layout_stress_test","type":"screen","children":[{"id":"hero_section","type":"Section","role":"hero","layout":"hero-split","content":{"title":"Layout Stress Test","subtitle":"This section is designed to clearly show layout differences."},"children":[{"type":"Card","content":{"media":"https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=1200","title":"Primary Visual","body":"Split layouts should show red/blue regions."}},{"type":"Button","content":{"label":"Call To Action"}}]},{"id":"stack_section","type":"Section","role":"content","layout":"content-stack","content":{"title":"Stack Layout Test"},"children":[{"type":"Card","content":{"title":"Stack Card 1","body":"This should render as a green outlined block."}},{"type":"Card","content":{"title":"Stack Card 2","body":"Second stacked card."}}]},{"id":"grid_section","type":"Section","role":"features","layout":"features-grid-3","content":{"title":"Grid Layout Test"},"children":[{"type":"Card","content":{"title":"Feature One","body":"Grid test item."}},{"type":"Card","content":{"title":"Feature Two","body":"Grid test item."}},{"type":"Card","content":{"title":"Feature Three","body":"Grid test item."}}]}]}
+{
+    "id": "features_section",
+    "type": "Section",
+    "role": "features",
+    "layout": "features-grid-3",
+    "content": {
+      "title": "Why this works"
+    },
+    "children": [
+      {
+        "type": "Card",
+        "content": {
+          "media": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=400",
+          "title": "Clean layout",
+          "body": "Sections and cards driven by one screen. No extra primitives—just JSON and organs."
+        },
+        "params": {
+          "mediaPosition": "left"
+        }
+      },
+      {
+        "type": "Card",
+        "content": {
+          "media": "https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=400",
+          "title": "Real images",
+          "body": "Use image URLs in Card media. Hero and gallery use the same pattern for a consistent look."
+        },
+        "params": {
+          "mediaPosition": "left"
+        }
+      },
+      {
+        "type": "Card",
+        "content": {
+          "media": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400",
+          "title": "Palette & presets",
+          "body": "Switch palette and template in the bar. Section preset layout and card presets apply from this file."
+        },
+        "params": {
+          "mediaPosition": "left"
+        }
+      }
+    ]
+  }
+  
+  
+  

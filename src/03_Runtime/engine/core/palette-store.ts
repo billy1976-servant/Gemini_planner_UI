@@ -29,7 +29,7 @@ export function setPalette(name: string) {
   const next = palettes[name] ? name : "default";
   if (next === activePaletteName) return;
 
-
+  if (process.env.NODE_ENV !== "production") console.log("[palette-store] updating", next);
   activePaletteName = next;
   listeners.forEach(fn => fn());
 }

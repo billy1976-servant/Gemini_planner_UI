@@ -90,6 +90,9 @@ export function deriveState(log: StateEvent[]): DerivedState {
       const key = payload.key;
       if (typeof key === "string") {
         derived.values![key] = payload.value;
+        if (process.env.NODE_ENV !== "production") {
+          console.log("[state-resolver] state.update set", key, payload.value);
+        }
       }
       continue;
     }

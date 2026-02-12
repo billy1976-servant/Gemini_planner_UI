@@ -18,6 +18,8 @@ export type ExperienceRendererProps = {
   sectionKeys?: string[];
   /** Optional labels for section keys (e.g. for collapsed panel title in app mode). */
   sectionLabels?: Record<string, string>;
+  /** When set (e.g. palette preview tile), token resolution uses this palette instead of the global store. */
+  paletteOverride?: string;
 };
 
 /**
@@ -38,6 +40,7 @@ export default function ExperienceRenderer({
   experience: experienceProp,
   sectionKeys = [],
   sectionLabels = {},
+  paletteOverride,
 }: ExperienceRendererProps) {
   const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
   const experience = experienceProp ?? (stateSnapshot?.values?.experience as string) ?? "website";
@@ -80,6 +83,7 @@ export default function ExperienceRenderer({
       activeSectionKey={experience === "app" ? activeSectionKey : undefined}
       onSelectSection={experience === "app" ? setActiveSection : undefined}
       sectionLabels={sectionLabels}
+      paletteOverride={paletteOverride}
     />
   );
 

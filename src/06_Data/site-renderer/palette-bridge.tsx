@@ -28,6 +28,9 @@ function setPaletteVarsOnElement(root: HTMLElement, palette: Record<string, any>
     root.style.setProperty("--color-primary-hover", c.primaryVariant ?? c.primary ?? d?.color?.primaryVariant ?? d?.color?.primary);
     root.style.setProperty("--color-bg-primary", c.surface ?? d?.color?.surface);
     root.style.setProperty("--color-bg-secondary", c.surfaceVariant ?? d?.color?.surfaceVariant);
+    // Compatibility aliases: ExperienceRenderer and others use these names for background/surface.
+    root.style.setProperty("--color-surface-1", c.surface ?? d?.color?.surface);
+    root.style.setProperty("--color-surfaceVariant", c.surfaceVariant ?? d?.color?.surfaceVariant);
     if (c.surfaceHero != null) root.style.setProperty("--color-surface-hero-accent", c.surfaceHero);
     root.style.setProperty("--color-text-primary", c.onSurface ?? d?.color?.onSurface);
     root.style.setProperty("--color-text-secondary", c.secondary ?? d?.color?.secondary);
@@ -152,6 +155,7 @@ export function usePaletteCSS(containerRef?: RefObject<HTMLElement | null>) {
   useEffect(() => {
     const updateCSS = () => {
       const name = (getState()?.values?.paletteName ?? getPaletteName()) || "default";
+      if (process.env.NODE_ENV !== "production") console.log("[palette-root] applying palette", name);
       const palette = (palettes as Record<string, any>)[name] ?? getPalette();
       const root = containerRef?.current ?? document.documentElement;
       if (root) setPaletteVarsOnElement(root, (palette as Record<string, any>) ?? d);

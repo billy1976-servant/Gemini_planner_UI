@@ -50,7 +50,9 @@ export function dispatchState(intent: string, payload?: any) {
   // ❌ Never dispatch during derivation
   if (isDeriving) return;
 
-
+  if (process.env.NODE_ENV !== "production" && intent === "state.update" && payload?.key) {
+    console.log("[state-dispatch] state.update", payload.key, payload?.value);
+  }
   const prevState = state;
   log.push({ intent, payload });
 
