@@ -46,6 +46,9 @@ export default function PreviewStage({ children }: PreviewStageProps) {
           display: "flex",
           justifyContent: "center",
           alignItems: "flex-start",
+          boxSizing: "border-box",
+          maxWidth: "100%",
+          overflowX: "hidden",
         }}
       >
         <div
@@ -54,6 +57,8 @@ export default function PreviewStage({ children }: PreviewStageProps) {
             width: "100%",
             maxWidth: "1100px",
             margin: "0 auto",
+            boxSizing: "border-box",
+            overflowX: "hidden",
           }}
         >
           {children}
@@ -75,6 +80,9 @@ export default function PreviewStage({ children }: PreviewStageProps) {
           justifyContent: "center",
           alignItems: "flex-start",
           padding: "32px 16px",
+          boxSizing: "border-box",
+          maxWidth: "100%",
+          overflowX: "hidden",
         }}
       >
         <div
@@ -88,6 +96,7 @@ export default function PreviewStage({ children }: PreviewStageProps) {
             borderRadius: "12px",
             overflow: "hidden",
             transition: "width 0.3s ease",
+            boxSizing: "border-box",
           }}
         >
           {children}
@@ -108,6 +117,9 @@ export default function PreviewStage({ children }: PreviewStageProps) {
         justifyContent: "center",
         alignItems: "flex-start",
         padding: "48px 16px",
+        boxSizing: "border-box",
+        maxWidth: "100%",
+        overflowX: "hidden",
       }}
     >
       <div
@@ -123,6 +135,7 @@ export default function PreviewStage({ children }: PreviewStageProps) {
           padding: "12px",
           boxShadow: "0 16px 48px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.3)",
           transition: "width 0.3s ease",
+          boxSizing: "border-box",
         }}
       >
         <div
@@ -134,6 +147,7 @@ export default function PreviewStage({ children }: PreviewStageProps) {
             borderRadius: "24px",
             overflow: "hidden",
             boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.1)",
+            boxSizing: "border-box",
           }}
         >
           {children}

@@ -147,7 +147,10 @@ export default function GlobalAppSkin({ children }: GlobalAppSkinProps) {
         display: 'flex', 
         flexDirection: 'column', 
         height: '100vh',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        boxSizing: 'border-box',
+        width: '100%',
+        maxWidth: '100%'
       }}
       data-shell="global-app-skin"
     >
@@ -157,7 +160,11 @@ export default function GlobalAppSkin({ children }: GlobalAppSkinProps) {
         style={{ 
           flex: 1, 
           overflow: 'auto',
-          minHeight: 0
+          minHeight: 0,
+          boxSizing: 'border-box',
+          width: '100%',
+          maxWidth: '100%',
+          overflowX: 'hidden'
         }}>
         {children}
       </div>

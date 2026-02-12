@@ -13,6 +13,8 @@ import { resolveLandingPage } from "@/logic/runtime/landing-page-resolver";
 import { getLayout, subscribeLayout } from "@/engine/core/layout-store";
 import { getPaletteName, subscribePalette } from "@/engine/core/palette-store";
 import { getState, subscribeState, dispatchState } from "@/state/state-store";
+import { getPhoneFrameEnabled, subscribePhoneFrameEnabled } from "@/dev/phone-frame-store";
+import { getDevicePreviewMode, subscribeDevicePreviewMode } from "@/dev/device-preview-store";
 import { setCurrentScreenTree } from "@/engine/core/current-screen-tree-store";
 import { getExperienceProfile } from "@/lib/layout/profile-resolver";
 import { getTemplateProfile } from "@/lib/layout/template-profiles";
@@ -202,11 +204,16 @@ export default function Page() {
   useSyncExternalStore(subscribeSectionLayoutPresetOverrides, getSectionLayoutPresetOverrides, getSectionLayoutPresetOverrides);
   useSyncExternalStore(subscribeCardLayoutPresetOverrides, getCardLayoutPresetOverrides, getCardLayoutPresetOverrides);
   useSyncExternalStore(subscribeOrganInternalLayoutOverrides, getOrganInternalLayoutOverrides, getOrganInternalLayoutOverrides);
+  const phoneFrameEnabled = useSyncExternalStore(subscribePhoneFrameEnabled, getPhoneFrameEnabled, getPhoneFrameEnabled);
+  const devicePreviewMode = useSyncExternalStore(subscribeDevicePreviewMode, getDevicePreviewMode, getDevicePreviewMode);
 
   const experience = (stateSnapshot?.values?.experience ?? (layoutSnapshot as { experience?: string })?.experience) ?? "website";
   const templateIdFromState = stateSnapshot?.values?.templateId;
   const layoutModeFromState = stateSnapshot?.values?.layoutMode;
   const paletteName = (stateSnapshot?.values?.paletteName ?? getPaletteName()) || "default";
+  
+  // Dynamic padding: 0 when phone frame is active OR when preview is tablet/phone (content is centered), otherwise full sidebar width
+  const contentPaddingRight = (phoneFrameEnabled || devicePreviewMode === "phone" || devicePreviewMode === "tablet") ? 0 : SIDEBAR_TOTAL_WIDTH;
 
   /** Section/card/organ overrides from state.layoutByScreen[screenKey]. Do not use state.values for layout presets. */
   const getLayoutOverridesFromState = (screenKey: string) => {
@@ -777,7 +784,7 @@ export default function Page() {
         {overlay}
         <AppShell
           primary={
-            <div ref={contentRef} style={{ width: "100%", minHeight: "100%", overflowX: "hidden", overflowY: "visible", paddingRight: SIDEBAR_TOTAL_WIDTH }}>
+            <div ref={contentRef} style={{ width: "100%", minHeight: "100%", overflowX: "hidden", overflowY: "visible", paddingRight: contentPaddingRight }}>
               {jsonContent}
             </div>
           }
@@ -824,7 +831,7 @@ export default function Page() {
     return (
       <PreviewStage>
         {overlay}
-        <LearningShell content={<div style={{ paddingRight: SIDEBAR_TOTAL_WIDTH }}>{jsonContent}</div>} />
+        <LearningShell content={<div style={{ paddingRight: contentPaddingRight }}>{jsonContent}</div>} />
         <RightFloatingSidebar />
       </PreviewStage>
     );
@@ -834,7 +841,7 @@ export default function Page() {
       {overlay}
       <WebsiteShell
         content={
-          <div ref={contentRef} style={{ width: "100%", minHeight: "100vh", overflowX: "hidden", overflowY: "visible", paddingRight: SIDEBAR_TOTAL_WIDTH }}>
+          <div ref={contentRef} style={{ width: "100%", minHeight: "100vh", overflowX: "hidden", overflowY: "visible", paddingRight: contentPaddingRight }}>
             {wrappedContent}
           </div>
         }

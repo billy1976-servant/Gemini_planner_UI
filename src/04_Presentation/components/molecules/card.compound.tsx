@@ -195,7 +195,7 @@ export default function CardCompound({
     );
   }
 
-  const mediaChunk = isPrimaryMedia && media ? (
+  const mediaChunk = isPrimaryMedia && media && typeof media === "string" ? (
     <MediaAtom
       params={resolveParams(params.media)}
       src={media}
@@ -211,7 +211,7 @@ export default function CardCompound({
   }
   const textChunk = (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-2)", textAlign, minWidth: 0 }}>
-      {!isPrimaryMedia && media && (
+      {!isPrimaryMedia && media && typeof media === "string" && (
         <div style={{ width: 32, height: 32, borderRadius: "50%", overflow: "hidden", flexShrink: 0 }}>
           <MediaAtom src={media} params={{ aspectRatio: "1", radius: "999px" }} />
         </div>

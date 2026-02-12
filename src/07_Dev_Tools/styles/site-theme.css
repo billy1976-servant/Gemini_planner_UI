@@ -151,6 +151,10 @@
   background-color: var(--color-bg-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .site-container * {
@@ -185,6 +189,8 @@
   margin-right: auto;
   padding-left: var(--spacing-4);
   padding-right: var(--spacing-4);
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 @media (min-width: 640px) {
@@ -646,6 +652,9 @@
   z-index: 0;
   overflow-x: hidden;
   overflow-y: visible;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
 }
 
 /* ============================================================================

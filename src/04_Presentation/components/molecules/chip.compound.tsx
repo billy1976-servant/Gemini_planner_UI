@@ -106,7 +106,7 @@ export default function ChipCompound({
      ====================================================== */
   const slotContent = (
     <>
-      {content.media && (
+      {content.media && typeof content.media === "string" && (
         <MediaAtom
           params={resolveParams(params.media)}
           src={content.media}

@@ -156,19 +156,21 @@ export default function MediaAtom({
         )}
 
         {/* Image — in preview tile: contain + height auto to avoid crop/stretch */}
-        <img
-          src={src}
-          alt={alt || ""}
-          onLoad={() => setLoaded(true)}
-          onError={() => setError(true)}
-          style={{
-            width: "100%",
-            maxWidth: "100%",
-            height: imgHeight,
-            display: loaded ? "block" : "none",
-            objectFit,
-          }}
-        />
+        {typeof src === "string" && src && (
+          <img
+            src={src}
+            alt={alt || ""}
+            onLoad={() => setLoaded(true)}
+            onError={() => setError(true)}
+            style={{
+              width: "100%",
+              maxWidth: "100%",
+              height: imgHeight,
+              display: loaded ? "block" : "none",
+              objectFit,
+            }}
+          />
+        )}
       </div>
 
       {/* Caption */}

@@ -251,7 +251,10 @@ export default function RootLayout({ children }: any) {
                   borderRadius: "28px",
                   background: "#fff",
                   overflowY: "auto",
+                  overflowX: "hidden",
                   display: "block",
+                  boxSizing: "border-box",
+                  maxWidth: "100%",
                 }}
               >
                 <div
@@ -274,6 +277,9 @@ export default function RootLayout({ children }: any) {
                 justifyContent: "center",
                 width: "100%",
                 minHeight: "100vh",
+                boxSizing: "border-box",
+                maxWidth: "100%",
+                overflowX: "hidden",
               }}
             >
               {children}

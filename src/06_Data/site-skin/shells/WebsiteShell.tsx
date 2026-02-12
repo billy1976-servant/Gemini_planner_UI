@@ -37,6 +37,10 @@ export default function WebsiteShell({
       style={{
         minHeight: "100vh",
         background: "var(--color-bg-primary)",
+        boxSizing: "border-box",
+        width: "100%",
+        maxWidth: "100%",
+        overflowX: "hidden",
       }}
     >
       <main
@@ -44,6 +48,10 @@ export default function WebsiteShell({
         style={{
           paddingTop: "var(--spacing-6)",
           paddingBottom: "var(--spacing-16)",
+          boxSizing: "border-box",
+          width: "100%",
+          maxWidth: "100%",
+          overflowX: "hidden",
         }}
       >
         {mainContent}
