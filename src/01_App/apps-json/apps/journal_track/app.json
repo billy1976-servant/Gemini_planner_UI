@@ -2,7 +2,7 @@
   "id": "screenRoot",
   "type": "screen",
   "state": {
-    "currentView": "|home"
+    "currentView": "think"
   },
   "children": [
     {
@@ -17,31 +17,160 @@
     {
       "id": "|TrackLesson",
       "type": "Section",
+      "layout": "content-stack",
+      "content": {},
       "children": [
         {
           "id": "|TrackNav",
           "type": "Stepper",
           "children": [],
+          "params": {
+            "variant": "tab-underline"
+          },
           "content": {
-            "steps": ""
+            "steps": [
+              {
+                "content": {
+                  "label": "Think"
+                },
+                "behavior": {
+                  "type": "Action",
+                  "params": {
+                    "name": "state:currentView",
+                    "value": "think"
+                  }
+                }
+              },
+              {
+                "content": {
+                  "label": "Repent"
+                },
+                "behavior": {
+                  "type": "Action",
+                  "params": {
+                    "name": "state:currentView",
+                    "value": "repent"
+                  }
+                }
+              },
+              {
+                "content": {
+                  "label": "Ask"
+                },
+                "behavior": {
+                  "type": "Action",
+                  "params": {
+                    "name": "state:currentView",
+                    "value": "ask"
+                  }
+                }
+              },
+              {
+                "content": {
+                  "label": "Conform"
+                },
+                "behavior": {
+                  "type": "Action",
+                  "params": {
+                    "name": "state:currentView",
+                    "value": "conform"
+                  }
+                }
+              },
+              {
+                "content": {
+                  "label": "Keep"
+                },
+                "behavior": {
+                  "type": "Action",
+                  "params": {
+                    "name": "state:currentView",
+                    "value": "keep"
+                  }
+                }
+              }
+            ]
           }
         },
         {
-          "id": "|ThinkSection",
+          "id": "|SharedJournalSection",
           "type": "Section",
+          "layout": "content-narrow",
+          "content": {},
           "children": [
             {
               "id": "|ThinkPrompt",
               "type": "Card",
               "children": [],
+              "when": {
+                "state": "currentView",
+                "equals": "think"
+              },
               "content": {
+                "title": "Reflect",
                 "body": "Read the Scripture carefully and consider what God is revealing about Himself, His will, and His truth."
+              }
+            },
+            {
+              "id": "|RepentPrompt",
+              "type": "Card",
+              "children": [],
+              "when": {
+                "state": "currentView",
+                "equals": "repent"
+              },
+              "content": {
+                "title": "Confess",
+                "body": "Ask the Lord to reveal any sin, disobedience, or wrong thinking exposed by this Scripture."
+              }
+            },
+            {
+              "id": "|AskPrompt",
+              "type": "Card",
+              "children": [],
+              "when": {
+                "state": "currentView",
+                "equals": "ask"
+              },
+              "content": {
+                "title": "Pray",
+                "body": "Pray for wisdom, understanding, and strength to walk in obedience to what you have read."
+              }
+            },
+            {
+              "id": "|ConformPrompt",
+              "type": "Card",
+              "children": [],
+              "when": {
+                "state": "currentView",
+                "equals": "conform"
+              },
+              "content": {
+                "title": "Change",
+                "body": "Consider how your life, attitudes, and actions need to change to align with Christ."
+              }
+            },
+            {
+              "id": "|KeepPrompt",
+              "type": "Card",
+              "children": [],
+              "when": {
+                "state": "currentView",
+                "equals": "keep"
+              },
+              "content": {
+                "title": "Guard",
+                "body": "Identify temptations, distractions, or dangers that could pull you away from obedience."
               }
             },
             {
               "id": "|ThinkInput",
               "type": "Field",
               "children": [],
+              "when": {
+                "state": "currentView",
+                "equals": "think"
+              },
               "content": {
                 "label": "What stands out to you from this passage?",
                 "input": ""
@@ -59,49 +188,13 @@
               }
             },
             {
-              "id": "|ThinkSave",
-              "type": "Button",
-              "children": [],
-              "content": {},
-              "behavior": {
-                "type": "Action",
-                "params": {
-                  "name": "state:journal.add",
-                  "track": "think",
-                  "key": "entry",
-                  "valueFrom": "input",
-                  "fieldKey": "journal.think"
-                }
-              }
-            },
-            {
-              "id": "|ThinkViewer",
-              "type": "UserInputViewer",
-              "children": [],
-              "content": {}
-            }
-          ],
-          "content": {
-            "title": "Think About the Scriptures"
-          },
-          "layout": "content-narrow"
-        },
-        {
-          "id": "|RepentSection",
-          "type": "Section",
-          "children": [
-            {
-              "id": "|RepentPrompt",
-              "type": "Card",
-              "children": [],
-              "content": {
-                "body": "Ask the Lord to reveal any sin, disobedience, or wrong thinking exposed by this Scripture."
-              }
-            },
-            {
               "id": "|RepentInput",
               "type": "Field",
               "children": [],
+              "when": {
+                "state": "currentView",
+                "equals": "repent"
+              },
               "content": {
                 "label": "What do you need to confess or turn away from?",
                 "input": ""
@@ -119,49 +212,13 @@
               }
             },
             {
-              "id": "|RepentSave",
-              "type": "Button",
-              "children": [],
-              "content": {},
-              "behavior": {
-                "type": "Action",
-                "params": {
-                  "name": "state:journal.add",
-                  "track": "repent",
-                  "key": "entry",
-                  "valueFrom": "input",
-                  "fieldKey": "journal.repent"
-                }
-              }
-            },
-            {
-              "id": "|RepentViewer",
-              "type": "UserInputViewer",
-              "children": [],
-              "content": {}
-            }
-          ],
-          "content": {
-            "title": "Repent to God"
-          },
-          "layout": "content-narrow"
-        },
-        {
-          "id": "|AskSection",
-          "type": "Section",
-          "children": [
-            {
-              "id": "|AskPrompt",
-              "type": "Card",
-              "children": [],
-              "content": {
-                "body": "Pray for wisdom, understanding, and strength to walk in obedience to what you have read."
-              }
-            },
-            {
               "id": "|AskInput",
               "type": "Field",
               "children": [],
+              "when": {
+                "state": "currentView",
+                "equals": "ask"
+              },
               "content": {
                 "label": "What are you asking God to help you understand or do?",
                 "input": ""
@@ -179,49 +236,13 @@
               }
             },
             {
-              "id": "|AskSave",
-              "type": "Button",
-              "children": [],
-              "content": {},
-              "behavior": {
-                "type": "Action",
-                "params": {
-                  "name": "state:journal.add",
-                  "track": "ask",
-                  "key": "entry",
-                  "valueFrom": "input",
-                  "fieldKey": "journal.ask"
-                }
-              }
-            },
-            {
-              "id": "|AskViewer",
-              "type": "UserInputViewer",
-              "children": [],
-              "content": {}
-            }
-          ],
-          "content": {
-            "title": "Ask God for Wisdom"
-          },
-          "layout": "content-narrow"
-        },
-        {
-          "id": "|ConformSection",
-          "type": "Section",
-          "children": [
-            {
-              "id": "|ConformPrompt",
-              "type": "Card",
-              "children": [],
-              "content": {
-                "body": "Consider how your life, attitudes, and actions need to change to align with Christ."
-              }
-            },
-            {
               "id": "|ConformInput",
               "type": "Field",
               "children": [],
+              "when": {
+                "state": "currentView",
+                "equals": "conform"
+              },
               "content": {
                 "label": "How will you live differently in response to this Scripture?",
                 "input": ""
@@ -239,49 +260,13 @@
               }
             },
             {
-              "id": "|ConformSave",
-              "type": "Button",
-              "children": [],
-              "content": {},
-              "behavior": {
-                "type": "Action",
-                "params": {
-                  "name": "state:journal.add",
-                  "track": "conform",
-                  "key": "entry",
-                  "valueFrom": "input",
-                  "fieldKey": "journal.conform"
-                }
-              }
-            },
-            {
-              "id": "|ConformViewer",
-              "type": "UserInputViewer",
-              "children": [],
-              "content": {}
-            }
-          ],
-          "content": {
-            "title": "Conform to Christ"
-          },
-          "layout": "content-narrow"
-        },
-        {
-          "id": "|KeepSection",
-          "type": "Section",
-          "children": [
-            {
-              "id": "|KeepPrompt",
-              "type": "Card",
-              "children": [],
-              "content": {
-                "body": "Identify temptations, distractions, or dangers that could pull you away from obedience."
-              }
-            },
-            {
               "id": "|KeepInput",
               "type": "Field",
               "children": [],
+              "when": {
+                "state": "currentView",
+                "equals": "keep"
+              },
               "content": {
                 "label": "What will you guard against, and how will you remain faithful?",
                 "input": ""
@@ -299,10 +284,104 @@
               }
             },
             {
+              "id": "|ThinkSave",
+              "type": "Button",
+              "children": [],
+              "when": {
+                "state": "currentView",
+                "equals": "think"
+              },
+              "content": {
+                "label": "Save Think Entry"
+              },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "state:journal.add",
+                  "track": "think",
+                  "key": "entry",
+                  "valueFrom": "input",
+                  "fieldKey": "journal.think"
+                }
+              }
+            },
+            {
+              "id": "|RepentSave",
+              "type": "Button",
+              "children": [],
+              "when": {
+                "state": "currentView",
+                "equals": "repent"
+              },
+              "content": {
+                "label": "Save Repent Entry"
+              },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "state:journal.add",
+                  "track": "repent",
+                  "key": "entry",
+                  "valueFrom": "input",
+                  "fieldKey": "journal.repent"
+                }
+              }
+            },
+            {
+              "id": "|AskSave",
+              "type": "Button",
+              "children": [],
+              "when": {
+                "state": "currentView",
+                "equals": "ask"
+              },
+              "content": {
+                "label": "Save Ask Entry"
+              },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "state:journal.add",
+                  "track": "ask",
+                  "key": "entry",
+                  "valueFrom": "input",
+                  "fieldKey": "journal.ask"
+                }
+              }
+            },
+            {
+              "id": "|ConformSave",
+              "type": "Button",
+              "children": [],
+              "when": {
+                "state": "currentView",
+                "equals": "conform"
+              },
+              "content": {
+                "label": "Save Conform Entry"
+              },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "state:journal.add",
+                  "track": "conform",
+                  "key": "entry",
+                  "valueFrom": "input",
+                  "fieldKey": "journal.conform"
+                }
+              }
+            },
+            {
               "id": "|KeepSave",
               "type": "Button",
               "children": [],
-              "content": {},
+              "when": {
+                "state": "currentView",
+                "equals": "keep"
+              },
+              "content": {
+                "label": "Save Keep Entry"
+              },
               "behavior": {
                 "type": "Action",
                 "params": {
@@ -315,20 +394,78 @@
               }
             },
             {
+              "id": "|ThinkViewer",
+              "type": "UserInputViewer",
+              "children": [],
+              "when": {
+                "state": "currentView",
+                "equals": "think"
+              },
+              "content": {},
+              "params": {
+                "track": "think",
+                "stateKey": "journal.think"
+              }
+            },
+            {
+              "id": "|RepentViewer",
+              "type": "UserInputViewer",
+              "children": [],
+              "when": {
+                "state": "currentView",
+                "equals": "repent"
+              },
+              "content": {},
+              "params": {
+                "track": "repent",
+                "stateKey": "journal.repent"
+              }
+            },
+            {
+              "id": "|AskViewer",
+              "type": "UserInputViewer",
+              "children": [],
+              "when": {
+                "state": "currentView",
+                "equals": "ask"
+              },
+              "content": {},
+              "params": {
+                "track": "ask",
+                "stateKey": "journal.ask"
+              }
+            },
+            {
+              "id": "|ConformViewer",
+              "type": "UserInputViewer",
+              "children": [],
+              "when": {
+                "state": "currentView",
+                "equals": "conform"
+              },
+              "content": {},
+              "params": {
+                "track": "conform",
+                "stateKey": "journal.conform"
+              }
+            },
+            {
               "id": "|KeepViewer",
               "type": "UserInputViewer",
               "children": [],
-              "content": {}
+              "when": {
+                "state": "currentView",
+                "equals": "keep"
+              },
+              "content": {},
+              "params": {
+                "track": "keep",
+                "stateKey": "journal.keep"
+              }
             }
-          ],
-          "content": {
-            "title": "Keep Your Heart"
-          },
-          "layout": "content-narrow"
+          ]
         }
-      ],
-      "content": {},
-      "layout": "content-stack"
+      ]
     }
   ]
 }
