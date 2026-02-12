@@ -10,6 +10,7 @@ import { useSyncExternalStore } from "react";
 import "@/styles/site-theme.css";
 import InteractionTracerPanel from "@/devtools/InteractionTracerPanel";
 import DevicePreviewToggle from "@/dev/DevicePreviewToggle";
+import { getPhoneFrameEnabled, subscribePhoneFrameEnabled } from "@/dev/phone-frame-store";
 
 /* ============================================================
    🎨 PALETTE ENGINE (state is source of truth; palette-store used only as fallback)
@@ -90,6 +91,7 @@ export default function RootLayout({ children }: any) {
 
   const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
   const layoutSnapshot = useSyncExternalStore(subscribeLayout, getLayout, getLayout);
+  const phoneFrameEnabled = useSyncExternalStore(subscribePhoneFrameEnabled, getPhoneFrameEnabled, getPhoneFrameEnabled);
   const templateList = getTemplateList();
 
   // State is source of truth; fall back to layout-store / palette-store when key is missing
@@ -105,6 +107,10 @@ export default function RootLayout({ children }: any) {
     console.log("[MOUNT]", "RootLayout");
     return () => console.log("[UNMOUNT]", "RootLayout");
   }, []);
+
+  useEffect(() => {
+    console.log("[layout.tsx] phoneFrameEnabled changed to:", phoneFrameEnabled);
+  }, [phoneFrameEnabled]);
 
   /* Apply palette to document root so app-chrome + content both inherit */
   usePaletteCSS();
@@ -214,7 +220,66 @@ export default function RootLayout({ children }: any) {
           <div id="section-layout-panel" className="app-section-layout-panel" />
         )}
 
-        <div ref={contentRef} className="app-content">{children}</div>
+        <div ref={contentRef} className="app-content" style={{ padding: 0 }}>
+          {phoneFrameEnabled ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                minHeight: "100vh",
+                background: "#111",
+              }}
+            >
+              <div
+                style={{
+                  width: "390px",
+                  height: "844px",
+                  borderRadius: "38px",
+                  background: "#000",
+                  boxShadow: "0 40px 120px rgba(0,0,0,0.6)",
+                  padding: "12px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "28px",
+                  background: "#fff",
+                  overflowY: "auto",
+                  display: "block",
+                }}
+              >
+                <div
+                  style={{
+                    height: "100%",
+                    width: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  {children}
+                </div>
+              </div>
+              </div>
+            </div>
+          ) : (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                width: "100%",
+                minHeight: "100vh",
+              }}
+            >
+              {children}
+            </div>
+          )}
+        </div>
         {process.env.NODE_ENV === "development" && <InteractionTracerPanel />}
       </body>
     </html>

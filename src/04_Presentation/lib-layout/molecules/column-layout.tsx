@@ -1,5 +1,15 @@
 "use client";
-export default function ColumnLayout({ params = {}, children }) {
+
+interface ColumnLayoutProps {
+  params?: {
+    gap?: string;
+    align?: string;
+    justify?: string;
+  };
+  children?: React.ReactNode;
+}
+
+export default function ColumnLayout({ params = {}, children }: ColumnLayoutProps) {
   const {
     gap = "1rem",
     align = "stretch",
@@ -13,8 +23,8 @@ export default function ColumnLayout({ params = {}, children }) {
         display: "flex",
         flexDirection: "column",
         gap,
-        alignItems: align,
-        justifyContent: justify,
+        alignItems: align as React.CSSProperties['alignItems'],
+        justifyContent: justify as React.CSSProperties['justifyContent'],
         width: "100%"
       }}
     >

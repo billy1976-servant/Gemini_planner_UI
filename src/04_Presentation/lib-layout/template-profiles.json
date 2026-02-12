@@ -2,6 +2,7 @@
   {
     "id": "modern-hero-centered",
     "label": "Modern Hero Centered",
+    "experience": "website",
     "defaultSectionLayoutId": "content-narrow",
     "visualPreset": "default",
     "containerWidth": "contained",
@@ -105,6 +106,7 @@
   {
     "id": "startup-split-hero",
     "label": "Startup Split Hero",
+    "experience": "website",
     "defaultSectionLayoutId": "content-narrow",
     "visualPreset": "prominent",
     "containerWidth": "contained",
@@ -195,6 +197,7 @@
   {
     "id": "editorial-story",
     "label": "Editorial Story",
+    "experience": "website",
     "visualPreset": "editorial",
     "containerWidth": "narrow",
     "spacingScale": "magazine",
@@ -277,6 +280,7 @@
   {
     "id": "course-landing",
     "label": "Course Landing",
+    "experience": "learning",
     "visualPreset": "editorial",
     "containerWidth": "narrow",
     "sections": {
@@ -360,6 +364,7 @@
   {
     "id": "product-grid",
     "label": "Product Grid",
+    "experience": "website",
     "visualPreset": "compact",
     "containerWidth": "contained",
     "spacingScale": "saas",
@@ -448,6 +453,7 @@
   {
     "id": "saas-dark",
     "label": "SaaS Dark",
+    "experience": "website",
     "visualPreset": "default",
     "containerWidth": "contained",
     "sections": {
@@ -532,6 +538,7 @@
   {
     "id": "agency-bold",
     "label": "Agency Bold",
+    "experience": "website",
     "visualPreset": "prominent",
     "containerWidth": "contained",
     "widthByRole": {
@@ -624,6 +631,7 @@
   {
     "id": "minimalist",
     "label": "Minimalist",
+    "experience": "website",
     "visualPreset": "compact",
     "containerWidth": "narrow",
     "sections": {
@@ -704,6 +712,7 @@
   {
     "id": "playful-cards",
     "label": "Playful Cards",
+    "experience": "website",
     "visualPreset": "prominent",
     "containerWidth": "contained",
     "sections": {
@@ -789,6 +798,7 @@
   {
     "id": "luxury-spacious",
     "label": "Luxury Spacious",
+    "experience": "website",
     "visualPreset": "spacious",
     "containerWidth": "contained",
     "sections": {
@@ -873,6 +883,7 @@
   {
     "id": "portfolio-showcase",
     "label": "Portfolio Showcase",
+    "experience": "website",
     "visualPreset": "editorial",
     "containerWidth": "contained",
     "sections": {
@@ -1044,6 +1055,7 @@
   {
     "id": "blog-magazine",
     "label": "Blog Magazine",
+    "experience": "website",
     "visualPreset": "editorial",
     "containerWidth": "contained",
     "sections": {
@@ -1211,6 +1223,7 @@
   {
     "id": "consulting-professional",
     "label": "Consulting Professional",
+    "experience": "website",
     "visualPreset": "default",
     "containerWidth": "contained",
     "sections": {
@@ -1957,6 +1970,528 @@
         "params": {
           "columns": 3,
           "gap": "2.5rem"
+        }
+      }
+    }
+  },
+  {
+    "id": "hiclarify-media-player",
+    "label": "HIClarify Media Player",
+    "visualPreset": "media-player",
+    "containerWidth": "contained",
+    "defaultSectionLayoutId": "content-stack",
+    "spacingScale": "default",
+    "cardPreset": "soft",
+    "sections": {
+      "nav": {
+        "type": "row",
+        "params": {
+          "gap": "0.5rem",
+          "justify": "space-around",
+          "align": "center",
+          "padding": "0.75rem 0"
+        }
+      },
+      "header": {
+        "type": "column",
+        "params": {
+          "gap": "1rem",
+          "align": "center"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "features": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "actions": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "center",
+          "align": "center"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      }
+    }
+  },
+  {
+    "id": "focus-writing",
+    "label": "Focus Writing",
+    "experience": "journal",
+    "visualPreset": "compact",
+    "spacingScale": "default",
+    "cardPreset": "borderless",
+    "containerWidth": "narrow",
+    "layoutVariants": {
+      "writing": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "0.5rem",
+          "padding": "2rem 1rem",
+          "maxWidth": "65ch"
+        }
+      },
+      "focus": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "0.75rem",
+          "padding": "1.5rem 1rem"
+        }
+      },
+      "track": {
+        "layoutId": "content-stack",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "0.5rem",
+          "padding": "1rem"
+        }
+      }
+    },
+    "sections": {
+      "writing": {
+        "type": "column",
+        "params": {
+          "gap": "0.5rem",
+          "align": "stretch"
+        }
+      },
+      "focus": {
+        "type": "column",
+        "params": {
+          "gap": "0.75rem",
+          "align": "stretch"
+        }
+      },
+      "track": {
+        "type": "row",
+        "params": {
+          "gap": "0.5rem",
+          "justify": "center"
+        }
+      }
+    }
+  },
+  {
+    "id": "guided-reflection",
+    "label": "Guided Reflection",
+    "experience": "journal",
+    "visualPreset": "default",
+    "spacingScale": "default",
+    "cardPreset": "soft",
+    "containerWidth": "contained",
+    "layoutVariants": {
+      "writing": {
+        "layoutId": "content-stack",
+        "containerWidth": "contained",
+        "params": {
+          "gap": "1.5rem",
+          "padding": "2rem 1.5rem"
+        }
+      },
+      "focus": {
+        "layoutId": "content-stack",
+        "containerWidth": "contained",
+        "params": {
+          "gap": "1.25rem",
+          "padding": "1.5rem"
+        }
+      },
+      "track": {
+        "layoutId": "content-stack",
+        "containerWidth": "contained",
+        "params": {
+          "gap": "1rem",
+          "padding": "1rem"
+        }
+      }
+    },
+    "sections": {
+      "writing": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem",
+          "align": "stretch"
+        }
+      },
+      "focus": {
+        "type": "column",
+        "params": {
+          "gap": "1.25rem",
+          "align": "stretch"
+        }
+      },
+      "track": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "center",
+          "wrap": "wrap"
+        }
+      }
+    }
+  },
+  {
+    "id": "contemplative-space",
+    "label": "Contemplative Space",
+    "experience": "journal",
+    "visualPreset": "spacious",
+    "spacingScale": "luxury",
+    "cardPreset": "elevated",
+    "containerWidth": "narrow",
+    "layoutVariants": {
+      "writing": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "3rem",
+          "padding": "4rem 2rem"
+        }
+      },
+      "focus": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "2.5rem",
+          "padding": "3rem 2rem"
+        }
+      },
+      "track": {
+        "layoutId": "content-stack",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "2rem",
+          "padding": "2rem"
+        }
+      }
+    },
+    "sections": {
+      "writing": {
+        "type": "column",
+        "params": {
+          "gap": "3rem",
+          "align": "stretch"
+        }
+      },
+      "focus": {
+        "type": "column",
+        "params": {
+          "gap": "2.5rem",
+          "align": "stretch"
+        }
+      },
+      "track": {
+        "type": "row",
+        "params": {
+          "gap": "2rem",
+          "justify": "center"
+        }
+      }
+    }
+  },
+  {
+    "id": "structured-journal",
+    "label": "Structured Journal",
+    "experience": "journal",
+    "visualPreset": "compact",
+    "spacingScale": "saas",
+    "cardPreset": "bordered",
+    "containerWidth": "contained",
+    "layoutVariants": {
+      "writing": {
+        "layoutId": "content-stack",
+        "containerWidth": "contained",
+        "params": {
+          "gap": "1rem",
+          "padding": "1.5rem"
+        }
+      },
+      "focus": {
+        "layoutId": "content-stack",
+        "containerWidth": "contained",
+        "params": {
+          "gap": "0.75rem",
+          "padding": "1rem"
+        }
+      },
+      "track": {
+        "layoutId": "content-stack",
+        "containerWidth": "contained",
+        "params": {
+          "gap": "0.5rem",
+          "padding": "0.75rem"
+        }
+      }
+    },
+    "sections": {
+      "writing": {
+        "type": "column",
+        "params": {
+          "gap": "1rem",
+          "align": "stretch"
+        }
+      },
+      "focus": {
+        "type": "column",
+        "params": {
+          "gap": "0.75rem",
+          "align": "stretch"
+        }
+      },
+      "track": {
+        "type": "row",
+        "params": {
+          "gap": "0.5rem",
+          "justify": "flex-start"
+        }
+      }
+    }
+  },
+  {
+    "id": "minimal-distraction",
+    "label": "Minimal Distraction",
+    "experience": "journal",
+    "visualPreset": "compact",
+    "spacingScale": "default",
+    "cardPreset": "borderless",
+    "containerWidth": "narrow",
+    "layoutVariants": {
+      "writing": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "0.25rem",
+          "padding": "1rem 0.5rem",
+          "maxWidth": "60ch"
+        }
+      },
+      "focus": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "0.5rem",
+          "padding": "0.75rem 0.5rem"
+        }
+      },
+      "track": {
+        "layoutId": "content-stack",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "0.25rem",
+          "padding": "0.5rem"
+        }
+      }
+    },
+    "sections": {
+      "writing": {
+        "type": "column",
+        "params": {
+          "gap": "0.25rem",
+          "align": "stretch"
+        }
+      },
+      "focus": {
+        "type": "column",
+        "params": {
+          "gap": "0.5rem",
+          "align": "stretch"
+        }
+      },
+      "track": {
+        "type": "row",
+        "params": {
+          "gap": "0.25rem",
+          "justify": "center"
+        }
+      }
+    }
+  },
+  {
+    "id": "evening-journal",
+    "label": "Evening Journal",
+    "experience": "journal",
+    "visualPreset": "editorial",
+    "spacingScale": "magazine",
+    "cardPreset": "soft",
+    "containerWidth": "narrow",
+    "layoutVariants": {
+      "writing": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "2rem",
+          "padding": "3rem 2rem"
+        }
+      },
+      "focus": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "1.5rem",
+          "padding": "2rem 1.5rem"
+        }
+      },
+      "track": {
+        "layoutId": "content-stack",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "1rem",
+          "padding": "1.5rem"
+        }
+      }
+    },
+    "sections": {
+      "writing": {
+        "type": "column",
+        "params": {
+          "gap": "2rem",
+          "align": "stretch"
+        }
+      },
+      "focus": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem",
+          "align": "stretch"
+        }
+      },
+      "track": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "center"
+        }
+      }
+    }
+  },
+  {
+    "id": "morning-pages",
+    "label": "Morning Pages",
+    "experience": "journal",
+    "visualPreset": "spacious",
+    "spacingScale": "default",
+    "cardPreset": "soft",
+    "containerWidth": "contained",
+    "layoutVariants": {
+      "writing": {
+        "layoutId": "content-stack",
+        "containerWidth": "contained",
+        "params": {
+          "gap": "2.5rem",
+          "padding": "3rem 2rem"
+        }
+      },
+      "focus": {
+        "layoutId": "content-stack",
+        "containerWidth": "contained",
+        "params": {
+          "gap": "2rem",
+          "padding": "2rem 1.5rem"
+        }
+      },
+      "track": {
+        "layoutId": "content-stack",
+        "containerWidth": "contained",
+        "params": {
+          "gap": "1.5rem",
+          "padding": "1.5rem"
+        }
+      }
+    },
+    "sections": {
+      "writing": {
+        "type": "column",
+        "params": {
+          "gap": "2.5rem",
+          "align": "stretch"
+        }
+      },
+      "focus": {
+        "type": "column",
+        "params": {
+          "gap": "2rem",
+          "align": "stretch"
+        }
+      },
+      "track": {
+        "type": "row",
+        "params": {
+          "gap": "1.5rem",
+          "justify": "center",
+          "wrap": "wrap"
+        }
+      }
+    }
+  },
+  {
+    "id": "course-reflection",
+    "label": "Course Reflection",
+    "experience": "journal",
+    "visualPreset": "editorial",
+    "spacingScale": "course",
+    "cardPreset": "elevated",
+    "containerWidth": "narrow",
+    "layoutVariants": {
+      "writing": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "2rem",
+          "padding": "3rem 2rem"
+        }
+      },
+      "focus": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "1.5rem",
+          "padding": "2rem 1.5rem"
+        }
+      },
+      "track": {
+        "layoutId": "content-stack",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "1rem",
+          "padding": "1.5rem"
+        }
+      }
+    },
+    "sections": {
+      "writing": {
+        "type": "column",
+        "params": {
+          "gap": "2rem",
+          "align": "stretch"
+        }
+      },
+      "focus": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem",
+          "align": "stretch"
+        }
+      },
+      "track": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "center"
         }
       }
     }

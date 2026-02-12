@@ -57,5 +57,14 @@
     "section": { "surface": { "background": "surfaceTier.floating.background", "shadow": "surfaceTier.floating.shadow", "padding": "spacing.sectionPadding", "radius": "radius.xl", "transition": "transition.base" } },
     "card": { "surface": { "background": "surfaceTier.floating.background", "shadow": "surfaceTier.floating.shadow", "padding": "spacing.cardPadding", "radius": "radius.xl", "transition": "transition.base" } },
     "button": { "surface": { "shadow": "surfaceTier.floating.shadow", "transition": "transition.base" } }
+  },
+  "media-player": {
+    "section": { "surface": { "background": "surface.app", "shadow": "elevation.none", "padding": "spacing.sectionPadding", "radius": "radius.lg", "transition": "transition.base" }, "layout": { "gap": "spacing.stackGap" }, "title": { "size": "textRole.title.size", "weight": "textRole.title.weight", "lineHeight": "textRole.title.lineHeight", "color": "color.onSurface", "fontFamily": "fontFamily.heading" } },
+    "card": { "surface": { "background": "surface.card", "shadow": "elevation.low", "padding": "spacing.cardPadding", "radius": "radius.lg", "transition": "transition.base" }, "title": { "size": "textRole.title.size", "weight": "textRole.title.weight", "lineHeight": "textRole.title.lineHeight", "color": "color.onSurface", "fontFamily": "fontFamily.heading" }, "body": { "size": "textRole.body.size", "weight": "textRole.body.weight", "lineHeight": "textRole.body.lineHeight", "color": "color.onSurface", "fontFamily": "fontFamily.sans" } },
+    "button": { "surface": { "background": "color.secondary", "color": "color.onPrimary", "padding": "padding.md", "radius": "radius.pill", "shadow": "elevation.mid", "transition": "transition.base" }, "text": { "color": "color.onPrimary", "weight": "textWeight.semibold" } },
+    "toolbar": { "surface": { "background": "surface.elevated", "padding": "spacing.inlinePadding", "radius": "radius.lg", "shadow": "elevation.mid", "transition": "transition.base" }, "layout": { "gap": "spacing.inlineGap" } },
+    "navigation": { "surface": { "background": "surface.elevated", "padding": "spacing.inlinePadding", "radius": "radius.pill", "shadow": "elevation.mid", "transition": "transition.base" } },
+    "stepper": { "surface": { "background": "surface.elevated", "padding": "padding.xs", "radius": "radius.pill", "shadow": "elevation.mid", "transition": "transition.fast" }, "step": { "padding": "padding.sm", "radius": "radius.pill", "transition": "transition.fast" }, "activeStep": { "background": "color.primary", "color": "color.onPrimary", "shadow": "elevation.low" } },
+    "list": { "collection": { "gap": "spacing.stackGap" }, "layout": { "gap": "spacing.inlineGap" }, "surface": { "padding": "spacing.cardPadding", "background": "surface.card", "radius": "radius.md" } }
   }
 }

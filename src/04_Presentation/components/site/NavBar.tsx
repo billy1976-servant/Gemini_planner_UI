@@ -11,6 +11,7 @@ import Link from "next/link";
 export interface NavigationItem {
   label: string;
   href: string;
+  external?: boolean;
 }
 
 interface NavBarProps {

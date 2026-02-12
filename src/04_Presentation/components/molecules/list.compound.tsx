@@ -39,6 +39,8 @@ export type ListCompoundProps = {
   params?: {
     surface?: any;
     item?: any;
+    text?: any;
+    collection?: any;
     moleculeLayout?: {
       type: string;
       preset?: string;

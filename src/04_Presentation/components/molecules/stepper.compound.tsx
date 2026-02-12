@@ -40,6 +40,8 @@ export type StepperCompoundProps = {
       preset?: string;
       params?: Record<string, any>;
     };
+    surface?: any;
+    text?: any;
     surfaceActive?: any;
     textActive?: any;
   };

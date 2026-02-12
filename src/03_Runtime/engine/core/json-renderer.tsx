@@ -385,13 +385,14 @@ function applyProfileToNode(
     }
     
     const templateId = (profile?.id ?? null) as string | null;
-    const { layoutId, ruleApplied } = getSectionLayoutId(
+    const { layoutId, ruleApplied, variantParams, variantContainerWidth } = getSectionLayoutId(
       {
         sectionKey,
         node,
         templateId,
         sectionLayoutPresetOverrides,
         defaultSectionLayoutIdFromProfile: (profile as { defaultSectionLayoutId?: string } | null)?.defaultSectionLayoutId,
+        templateProfile: profile as any,
       },
       { includeRule: true }
     );
@@ -449,6 +450,11 @@ function applyProfileToNode(
     
     next.layout = finalLayoutId;
     (next as any)._effectiveLayoutPreset = layoutId;
+    // Merge variantContainerWidth into variantParams so it's applied during params resolution
+    (next as any)._variantParams = variantContainerWidth 
+      ? { ...variantParams, containerWidth: variantContainerWidth }
+      : variantParams;
+    (next as any)._variantContainerWidth = variantContainerWidth;
     if (process.env.NODE_ENV === "development") {
       PipelineDebugStore.mark("json-renderer", "applyProfileToNode.section", {
         sectionKey,
@@ -834,10 +840,20 @@ export function renderNode(
     typeKey === "section" && profile?.spacingScale
       ? getSpacingForScale(profile.spacingScale, "section")
       : {};
-  let finalParams =
+  let paramsAfterSpacing =
     Object.keys(spacingOverlay).length > 0
       ? deepMergeParams(paramsAfterSectionLayout, spacingOverlay)
       : paramsAfterSectionLayout;
+  
+  // Template layoutVariants: Apply variant params if present (Option D)
+  const variantParamsOverlay = 
+    typeKey === "section" && (profiledNode as any)._variantParams
+      ? (profiledNode as any)._variantParams
+      : {};
+  let finalParams =
+    Object.keys(variantParamsOverlay).length > 0
+      ? deepMergeParams(paramsAfterSpacing, variantParamsOverlay)
+      : paramsAfterSpacing;
 
   const resolvedNode = {
     ...profiledNode,
@@ -1366,6 +1382,13 @@ export default function JsonRenderer({
       data-behavior-profile={behaviorProfile}
       data-behavior-transition={behaviorTransition}
       className={`behavior-${behaviorProfile}`}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        width: "100%",
+        marginLeft: "auto",
+        marginRight: "auto",
+      }}
     >
       {result}
     </div>

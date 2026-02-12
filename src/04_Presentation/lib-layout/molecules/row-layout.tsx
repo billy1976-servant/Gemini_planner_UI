@@ -1,5 +1,16 @@
 "use client";
-export default function RowLayout({ params = {}, children }) {
+
+interface RowLayoutProps {
+  params?: {
+    gap?: string;
+    align?: string;
+    justify?: string;
+    wrap?: string;
+  };
+  children?: React.ReactNode;
+}
+
+export default function RowLayout({ params = {}, children }: RowLayoutProps) {
   const {
     gap = "1rem",
     align = "center",
@@ -14,9 +25,9 @@ export default function RowLayout({ params = {}, children }) {
         display: "flex",
         flexDirection: "row",
         gap,
-        alignItems: align,
-        justifyContent: justify,
-        flexWrap: wrap,
+        alignItems: align as React.CSSProperties['alignItems'],
+        justifyContent: justify as React.CSSProperties['justifyContent'],
+        flexWrap: wrap as React.CSSProperties['flexWrap'],
         width: "100%"
       }}
     >

@@ -7,6 +7,11 @@ import {
   setDevicePreviewMode,
   subscribeDevicePreviewMode,
 } from "./device-preview-store";
+import {
+  getPhoneFrameEnabled,
+  setPhoneFrameEnabled,
+  subscribePhoneFrameEnabled,
+} from "./phone-frame-store";
 
 /**
  * DevicePreviewToggle — Top header control
@@ -19,6 +24,12 @@ export default function DevicePreviewToggle() {
     subscribeDevicePreviewMode,
     getDevicePreviewMode,
     getDevicePreviewMode
+  );
+
+  const phoneFrameEnabled = useSyncExternalStore(
+    subscribePhoneFrameEnabled,
+    getPhoneFrameEnabled,
+    getPhoneFrameEnabled
   );
 
   return (
@@ -61,6 +72,36 @@ export default function DevicePreviewToggle() {
           {deviceMode}
         </button>
       ))}
+      
+      <div style={{ width: "1px", height: "24px", background: "#444", margin: "0 4px" }} />
+      
+      <button
+        type="button"
+        onClick={() => setPhoneFrameEnabled(!phoneFrameEnabled)}
+        style={{
+          padding: "4px 12px",
+          fontSize: "12px",
+          fontWeight: phoneFrameEnabled ? 600 : 500,
+          color: phoneFrameEnabled ? "#ffffff" : "#aaa",
+          background: phoneFrameEnabled ? "#1976d2" : "transparent",
+          border: phoneFrameEnabled ? "1px solid #1565c0" : "1px solid #444",
+          borderRadius: "4px",
+          cursor: "pointer",
+          transition: "all 0.15s ease",
+        }}
+        onMouseEnter={(e) => {
+          if (!phoneFrameEnabled) {
+            e.currentTarget.style.background = "#333";
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!phoneFrameEnabled) {
+            e.currentTarget.style.background = "transparent";
+          }
+        }}
+      >
+        Phone Frame
+      </button>
     </div>
   );
 }

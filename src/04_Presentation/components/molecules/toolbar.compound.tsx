@@ -36,6 +36,8 @@ function resolveWithDefaultLayout(
 export type ToolbarCompoundProps = {
   params?: {
     surface?: any; // toolbar container styling
+    text?: any;
+    sequence?: any;
     item?: {
       trigger?: any;
       text?: any;

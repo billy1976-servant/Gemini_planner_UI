@@ -1,0 +1,367 @@
+{
+  "id": "screenRoot",
+  "type": "screen",
+  "defaultSectionLayoutId": "content-stack",
+  "state": {
+    "currentView": "me"
+  },
+  "children": [
+    {
+      "id": "|TabNavigation",
+      "type": "Stepper",
+      "params": {
+        "moleculeLayout": {
+          "type": "row",
+          "preset": "distributed"
+        }
+      },
+      "content": {
+        "steps": [
+          {
+            "content": {
+              "label": "Me"
+            },
+            "behavior": {
+              "type": "Action",
+              "params": {
+                "name": "state:currentView",
+                "value": "me"
+              }
+            }
+          },
+          {
+            "content": {
+              "label": "Others"
+            },
+            "behavior": {
+              "type": "Action",
+              "params": {
+                "name": "state:currentView",
+                "value": "others"
+              }
+            }
+          },
+          {
+            "content": {
+              "label": "▶"
+            },
+            "behavior": {
+              "type": "Action",
+              "params": {
+                "name": "media.play"
+              }
+            },
+            "params": {
+              "surface": {
+                "background": "color.secondary",
+                "radius": "radius.pill",
+                "padding": "padding.md"
+              },
+              "text": {
+                "color": "color.onPrimary",
+                "weight": "textWeight.bold",
+                "size": "textSize.lg"
+              }
+            }
+          },
+          {
+            "content": {
+              "label": "Plan"
+            },
+            "behavior": {
+              "type": "Action",
+              "params": {
+                "name": "state:currentView",
+                "value": "plan"
+              }
+            }
+          },
+          {
+            "content": {
+              "label": "Journey"
+            },
+            "behavior": {
+              "type": "Action",
+              "params": {
+                "name": "state:currentView",
+                "value": "journey"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "|MeSection",
+      "type": "Section",
+      "when": {
+        "state": "currentView",
+        "equals": "me"
+      },
+      "content": {
+        "title": "My Life"
+      },
+      "layout": "content-stack",
+      "children": [
+        {
+          "type": "Card",
+          "content": {
+            "title": "Daily Habits",
+            "body": "Track your personal growth and daily routines."
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "Morning Routine",
+            "body": "Start your day with intention and purpose."
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "Evening Reflection",
+            "body": "Review your day and prepare for tomorrow."
+          }
+        }
+      ]
+    },
+    {
+      "id": "|OthersSection",
+      "type": "Section",
+      "when": {
+        "state": "currentView",
+        "equals": "others"
+      },
+      "content": {
+        "title": "Relationship Manager"
+      },
+      "layout": "content-stack",
+      "children": [
+        {
+          "type": "Card",
+          "content": {
+            "title": "By Category",
+            "body": "View relationships organized by type and category."
+          }
+        },
+        {
+          "type": "List",
+          "content": {
+            "items": [
+              {
+                "content": {
+                  "label": "Family"
+                },
+                "behavior": {
+                  "type": "Action",
+                  "params": {
+                    "name": "navigate.category",
+                    "value": "family"
+                  }
+                }
+              },
+              {
+                "content": {
+                  "label": "Friends"
+                },
+                "behavior": {
+                  "type": "Action",
+                  "params": {
+                    "name": "navigate.category",
+                    "value": "friends"
+                  }
+                }
+              },
+              {
+                "content": {
+                  "label": "Colleagues"
+                },
+                "behavior": {
+                  "type": "Action",
+                  "params": {
+                    "name": "navigate.category",
+                    "value": "colleagues"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "|PlanSection",
+      "type": "Section",
+      "when": {
+        "state": "currentView",
+        "equals": "plan"
+      },
+      "content": {
+        "title": "Journey Builder"
+      },
+      "layout": "content-stack",
+      "children": [
+        {
+          "type": "Card",
+          "content": {
+            "title": "Calendar View",
+            "body": "Plan your days, weeks, and months ahead."
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "Upcoming Events",
+            "body": "See what's coming up in your schedule."
+          }
+        },
+        {
+          "type": "Toolbar",
+          "content": {
+            "actions": [
+              {
+                "content": {
+                  "label": "Today"
+                },
+                "behavior": {
+                  "type": "Action",
+                  "params": {
+                    "name": "calendar.today"
+                  }
+                }
+              },
+              {
+                "content": {
+                  "label": "Week"
+                },
+                "behavior": {
+                  "type": "Action",
+                  "params": {
+                    "name": "calendar.week"
+                  }
+                }
+              },
+              {
+                "content": {
+                  "label": "Month"
+                },
+                "behavior": {
+                  "type": "Action",
+                  "params": {
+                    "name": "calendar.month"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "|JourneySection",
+      "type": "Section",
+      "when": {
+        "state": "currentView",
+        "equals": "journey"
+      },
+      "content": {
+        "title": "My Journey"
+      },
+      "layout": "content-stack",
+      "children": [
+        {
+          "type": "Card",
+          "content": {
+            "title": "Recent Activities",
+            "body": "Review your recent progress and milestones."
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "Goals & Achievements",
+            "body": "Track your long-term goals and celebrate wins."
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "Reflections",
+            "body": "Look back on your journey and insights gained."
+          }
+        }
+      ]
+    },
+    {
+      "id": "|PlaySection",
+      "type": "Section",
+      "content": {
+        "title": "Autopilot Mode"
+      },
+      "layout": "content-center",
+      "children": [
+        {
+          "type": "Card",
+          "content": {
+            "title": "Ready to Launch",
+            "body": "Autopilot will guide you through your daily routine automatically."
+          },
+          "params": {
+            "surface": {
+              "background": "color.primary",
+              "padding": "padding.xl"
+            },
+            "title": {
+              "color": "color.onPrimary"
+            },
+            "body": {
+              "color": "color.onPrimary"
+            }
+          }
+        },
+        {
+          "type": "Toolbar",
+          "content": {
+            "actions": [
+              {
+                "content": {
+                  "label": "▶ Start Autopilot"
+                },
+                "behavior": {
+                  "type": "Action",
+                  "params": {
+                    "name": "media.play"
+                  }
+                },
+                "params": {
+                  "surface": {
+                    "background": "color.secondary",
+                    "padding": "padding.lg",
+                    "radius": "radius.pill"
+                  },
+                  "text": {
+                    "color": "color.onPrimary",
+                    "weight": "textWeight.bold",
+                    "size": "textSize.xl"
+                  }
+                }
+              },
+              {
+                "content": {
+                  "label": "⚙ Options"
+                },
+                "behavior": {
+                  "type": "Action",
+                  "params": {
+                    "name": "media.options"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

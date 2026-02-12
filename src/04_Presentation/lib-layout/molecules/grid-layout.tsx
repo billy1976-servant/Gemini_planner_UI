@@ -1,5 +1,16 @@
 "use client";
-export default function GridLayout({ params = {}, children }) {
+
+interface GridLayoutProps {
+  params?: {
+    columns?: number;
+    gap?: string;
+    align?: string;
+    justify?: string;
+  };
+  children?: React.ReactNode;
+}
+
+export default function GridLayout({ params = {}, children }: GridLayoutProps) {
   const {
     columns = 2,
     gap = "1rem",

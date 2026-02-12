@@ -1,6 +1,6 @@
 /**
  * Single authority for section layout id resolution.
- * Authority ladder: override (store) → node.layout → template role → template default → undefined.
+ * Authority ladder: override (store) → node.layout → template layoutVariants → template role → template default → fallback.
  * Used by JsonRenderer; no duplicate "which layout id" logic in engine.
  */
 
@@ -10,6 +10,18 @@ import {
 } from "@/layout/page";
 import { pushTrace } from "@/devtools/runtime-trace-store";
 import { addTraceEvent } from "@/03_Runtime/debug/pipeline-trace-aggregator";
+
+export type LayoutVariant = {
+  layoutId: string;
+  containerWidth?: string;
+  params?: Record<string, unknown>;
+};
+
+export type TemplateProfile = {
+  id?: string;
+  layoutVariants?: Record<string, LayoutVariant>;
+  [key: string]: unknown;
+};
 
 export type GetSectionLayoutIdArgs = {
   /** Section key (node.id ?? node.role ?? ""). */
@@ -22,11 +34,15 @@ export type GetSectionLayoutIdArgs = {
   sectionLayoutPresetOverrides?: Record<string, string>;
   /** If set, used as template default instead of getDefaultSectionLayoutId(templateId). */
   defaultSectionLayoutIdFromProfile?: string | null;
+  /** Template profile with layoutVariants support. */
+  templateProfile?: TemplateProfile | null;
 };
 
 export type GetSectionLayoutIdResult = {
   layoutId: string;
-  ruleApplied: "override" | "explicit node.layout" | "template role" | "template default" | "fallback";
+  ruleApplied: "override" | "explicit node.layout" | "template layoutVariants" | "template role" | "template default" | "fallback";
+  variantParams?: Record<string, unknown>;
+  variantContainerWidth?: string;
 };
 
 /**
@@ -49,6 +65,7 @@ export function getSectionLayoutId(
     templateId,
     sectionLayoutPresetOverrides,
     defaultSectionLayoutIdFromProfile,
+    templateProfile,
   } = args;
 
   // Guard: If sectionKey is empty, null, or undefined, use fallback immediately
@@ -66,17 +83,28 @@ export function getSectionLayoutId(
     (defaultSectionLayoutIdFromProfile && defaultSectionLayoutIdFromProfile.trim()) ||
     getDefaultFromTemplate(templateId ?? undefined) ||
     null;
+  
+  // Check for layoutVariants in template profile (new Option D approach)
+  const nodeRole = (node.role ?? "").toString().trim();
+  const layoutVariant = 
+    !existingLayoutId && !overrideId && nodeRole && templateProfile?.layoutVariants?.[nodeRole]
+      ? templateProfile.layoutVariants[nodeRole]
+      : null;
+  const layoutVariantId = layoutVariant?.layoutId?.trim() || null;
+  
   const templateRoleLayoutId =
-    !existingLayoutId && !overrideId && templateId && (node.role ?? "").toString().trim()
+    !existingLayoutId && !overrideId && !layoutVariantId && templateId && nodeRole
       ? (getPageLayoutId(null, {
           templateId,
-          sectionRole: (node.role ?? "").toString().trim(),
+          sectionRole: nodeRole,
         }) ?? null)
       : null;
 
   // Resolve layout ID with deterministic fallback
   let layoutId: string;
   let ruleApplied: GetSectionLayoutIdResult["ruleApplied"];
+  let variantParams: Record<string, unknown> | undefined;
+  let variantContainerWidth: string | undefined;
   
   if (overrideId) {
     layoutId = overrideId;
@@ -84,6 +112,11 @@ export function getSectionLayoutId(
   } else if (existingLayoutId) {
     layoutId = existingLayoutId;
     ruleApplied = "explicit node.layout";
+  } else if (layoutVariantId) {
+    layoutId = layoutVariantId;
+    ruleApplied = "template layoutVariants";
+    variantParams = layoutVariant?.params;
+    variantContainerWidth = layoutVariant?.containerWidth;
   } else if (templateRoleLayoutId?.trim()) {
     layoutId = templateRoleLayoutId.trim();
     ruleApplied = "template role";
@@ -106,7 +139,7 @@ export function getSectionLayoutId(
           templateId: templateId || "(none)",
           reason: !effectiveSectionKey 
             ? "empty sectionKey" 
-            : "all resolution paths failed (no override, node.layout, template role, or template default)",
+            : "all resolution paths failed (no override, node.layout, template layoutVariants, template role, or template default)",
         }
       );
     }
@@ -125,15 +158,19 @@ export function getSectionLayoutId(
       templateDefaultFromProfile: defaultSectionLayoutIdFromProfile,
       overrideId,
       sectionKeyEmpty: !effectiveSectionKey,
+      hasLayoutVariants: !!layoutVariant,
     },
     decision: ruleApplied,
     override: overrideId || undefined,
     final: {
       layoutId,
       ruleApplied,
+      variantParams,
+      variantContainerWidth,
       priorityChain: {
         override: overrideId || null,
         explicit: existingLayoutId || null,
+        layoutVariant: layoutVariantId || null,
         templateRole: templateRoleLayoutId || null,
         templateDefault: templateDefaultLayoutId || null,
         fallback: ruleApplied === "fallback" ? "content-stack" : null,
@@ -153,15 +190,19 @@ export function getSectionLayoutId(
       templateDefaultFromProfile: defaultSectionLayoutIdFromProfile,
       overrideId,
       sectionKeyEmpty: !effectiveSectionKey,
+      hasLayoutVariants: !!layoutVariant,
     },
     decision: ruleApplied,
     override: overrideId || undefined,
     final: {
       layoutId,
       ruleApplied,
+      variantParams,
+      variantContainerWidth,
       priorityChain: {
         override: overrideId || null,
         explicit: existingLayoutId || null,
+        layoutVariant: layoutVariantId || null,
         templateRole: templateRoleLayoutId || null,
         templateDefault: templateDefaultLayoutId || null,
         fallback: ruleApplied === "fallback" ? "content-stack" : null,
@@ -171,7 +212,7 @@ export function getSectionLayoutId(
 
 
   if (opts?.includeRule) {
-    return { layoutId, ruleApplied };
+    return { layoutId, ruleApplied, variantParams, variantContainerWidth };
   }
   return layoutId;
 }

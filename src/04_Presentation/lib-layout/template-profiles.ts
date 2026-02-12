@@ -42,12 +42,24 @@ export type HeroMode = "centered" | "split" | "full-screen" | "overlay" | "strip
 /** Section background pattern: none, alternating, hero accent, dark bands */
 export type SectionBackgroundPattern = "none" | "alternate" | "hero-accent" | "dark-bands";
 
+export type ExperienceType = "website" | "journal" | "app" | "learning" | "dashboard";
+
+export type LayoutVariant = {
+  layoutId: string;
+  containerWidth?: ContainerWidth;
+  params?: Record<string, unknown>;
+};
+
 export type TemplateProfile = {
   id: string;
   label: string;
+  /** Experience type: filters templates by use case (website, journal, app, learning, dashboard) */
+  experience?: ExperienceType;
   visualPreset: "default" | "compact" | "spacious" | "editorial" | "prominent";
   /** Section role → layout (type + params). Template overrides organ defaults at render time. */
   sections: Record<string, LayoutDef>;
+  /** Layout variants: per-role layout overrides with params (Option D approach) */
+  layoutVariants?: Record<string, LayoutVariant>;
   /** Default layout id for sections when no override and no explicit node.layout. Layout-only; not keyed by role. */
   defaultSectionLayoutId?: string;
   /** Default section width; overridden per role by widthByRole when set. */
@@ -72,8 +84,35 @@ export function getTemplateProfile(id: string): TemplateProfile | null {
   return TEMPLATES.find((t) => t.id === id) ?? null;
 }
 
-export function getTemplateList(): { id: string; label: string }[] {
-  return TEMPLATES.map((t) => ({ id: t.id, label: t.label }));
+/**
+ * Get list of templates, optionally filtered by experience type.
+ * @param experience - Filter by experience type (website, journal, app, learning, dashboard)
+ * @returns Array of template id and label objects
+ */
+export function getTemplateList(experience?: ExperienceType): { id: string; label: string }[] {
+  let templates = TEMPLATES;
+  
+  // Filter by experience if specified
+  if (experience) {
+    templates = templates.filter((t) => 
+      t.experience === experience || 
+      // If template has no experience tag, include it for backward compatibility
+      !t.experience
+    );
+  }
+  
+  return templates.map((t) => ({ id: t.id, label: t.label }));
+}
+
+/**
+ * Get all templates for a specific experience type only (no fallback).
+ * @param experience - Experience type to filter by
+ * @returns Array of template id and label objects
+ */
+export function getTemplateListStrict(experience: ExperienceType): { id: string; label: string }[] {
+  return TEMPLATES
+    .filter((t) => t.experience === experience)
+    .map((t) => ({ id: t.id, label: t.label }));
 }
 
 /**

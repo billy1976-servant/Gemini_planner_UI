@@ -10,6 +10,7 @@ import frenchPalette from "./french.json";
 import spanishPalette from "./spanish.json";
 import premiumPalette from "./premium.json";
 import crazyPalette from "./crazy.json";
+import hiclarifyPalette from "./hiclarify.json";
 
 
 /**
@@ -26,6 +27,7 @@ export const palettes = {
   spanish: spanishPalette,
   premium: premiumPalette,
   crazy: crazyPalette,
+  hiclarify: hiclarifyPalette,
 } as const;
 
 

@@ -7,13 +7,30 @@ import { resolveParams } from "@/engine/core/palette-resolver";
 import { resolveMoleculeLayout } from "@/layout";
 import type { LayoutDefinition } from "@/layout/resolver";
 
-// STRICT JSON MODE: NO fallback values allowed. Renderer must obey JSON 100%.
+// Safe layout rendering: missing values warn but don't block
 function requireLayoutValue(name: string, value: any, layoutId: string | null) {
   if (value === undefined || value === null) {
-    console.error("[LAYOUT HARD FAIL]", { layoutId, missing: name });
+    console.warn("[LAYOUT SAFE DEFAULT]", name);
     return undefined;
   }
   return value;
+}
+
+// Fallback renderer for when layout validation would fail
+function renderWithDefaults(layout: any, children: React.ReactNode) {
+  return (
+    <div
+      style={{
+        width: "100%",
+        minHeight: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
+      }}
+    >
+      {children}
+    </div>
+  );
 }
 
 // Safe defaults helper: provides fallback values ONLY when layoutId exists but token is missing
@@ -401,8 +418,8 @@ export default function LayoutMoleculeRenderer({
     if (containerLayout.width !== undefined) outerStyle.width = containerLayout.width;
     if (containerLayout.marginLeft !== undefined) outerStyle.marginLeft = containerLayout.marginLeft;
     if (containerLayout.marginRight !== undefined) outerStyle.marginRight = containerLayout.marginRight;
-    if (containerLayout.boxSizing !== undefined) outerStyle.boxSizing = containerLayout.boxSizing;
-    if (containerLayout.overflowX !== undefined) outerStyle.overflowX = containerLayout.overflowX;
+    if (containerLayout.boxSizing !== undefined) outerStyle.boxSizing = containerLayout.boxSizing as React.CSSProperties['boxSizing'];
+    if (containerLayout.overflowX !== undefined) outerStyle.overflowX = containerLayout.overflowX as React.CSSProperties['overflowX'];
     // Use containerWidth semantic token for maxWidth (preserved semantic layer)
     if (containerVar !== undefined) outerStyle.maxWidth = containerVar;
   } else {

@@ -35,19 +35,29 @@ export default function PreviewStage({ children }: PreviewStageProps) {
     getDevicePreviewMode
   );
 
-  // DESKTOP MODE — Full responsive canvas
+  // DESKTOP MODE — Centered with max-width constraint
   if (mode === "desktop") {
     return (
       <div
-        data-preview-stage="desktop"
+        data-preview-stage="desktop-outer"
         style={{
+          minHeight: "100vh",
           width: "100%",
-          height: "100%",
-          margin: 0,
-          padding: 0,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "flex-start",
         }}
       >
-        {children}
+        <div
+          data-preview-frame="desktop"
+          style={{
+            width: "100%",
+            maxWidth: "1100px",
+            margin: "0 auto",
+          }}
+        >
+          {children}
+        </div>
       </div>
     );
   }
@@ -106,6 +116,7 @@ export default function PreviewStage({ children }: PreviewStageProps) {
           position: "relative",
           width: "390px",
           maxWidth: "100%",
+          margin: "0 auto",
           minHeight: "calc(100vh - 96px)",
           background: "#1a1a1a",
           borderRadius: "32px",
