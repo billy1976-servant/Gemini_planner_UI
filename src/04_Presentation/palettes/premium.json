@@ -115,10 +115,11 @@
     "display": { "size": "textSize.display", "weight": "textWeight.bold", "lineHeight": "lineHeight.tight" },
     "headline": { "size": "textSize.headline", "weight": "textWeight.semibold", "lineHeight": "lineHeight.tight" },
     "title": { "size": "textSize.title", "weight": "textWeight.semibold", "lineHeight": "lineHeight.normal" },
+    "subtitle": { "size": "textSize.lg", "weight": "textWeight.medium", "lineHeight": "lineHeight.normal", "color": "color.secondary" },
     "bodyLg": { "size": "textSize.bodyLg", "weight": "textWeight.regular", "lineHeight": "lineHeight.normal" },
     "body": { "size": "textSize.body", "weight": "textWeight.regular", "lineHeight": "lineHeight.normal" },
     "label": { "size": "textSize.sm", "weight": "textWeight.medium", "lineHeight": "lineHeight.normal" },
-    "caption": { "size": "textSize.caption", "weight": "textWeight.regular", "lineHeight": "lineHeight.normal" }
+    "caption": { "size": "textSize.caption", "weight": "textWeight.regular", "lineHeight": "lineHeight.normal", "color": "color.secondary" }
   },
   "surfaceTier": {
     "base": { "background": "color.surface", "shadow": "shadow.none" },
@@ -157,5 +158,11 @@
   },
   "transform": {
     "hoverLift": "translateY(-1px)"
+  },
+
+  "interaction": {
+    "hover": { "opacity": 0.92, "scale": 1.02, "lift": "translateY(-2px)" },
+    "press": { "opacity": 0.85, "scale": 0.98 },
+    "disabled": { "opacity": 0.38 }
   }
 }

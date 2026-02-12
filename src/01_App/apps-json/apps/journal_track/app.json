@@ -6,6 +6,15 @@
   },
   "children": [
     {
+      "id": "|HeroSection",
+      "type": "Section",
+      "layout": "hero-centered",
+      "children": [],
+      "content": {
+        "title": "TRACK Journal"
+      }
+    },
+    {
       "id": "|TrackLesson",
       "type": "Section",
       "children": [
@@ -75,7 +84,7 @@
           "content": {
             "title": "Think About the Scriptures"
           },
-          "layout": "content-stack"
+          "layout": "content-narrow"
         },
         {
           "id": "|RepentSection",
@@ -135,7 +144,7 @@
           "content": {
             "title": "Repent to God"
           },
-          "layout": "content-stack"
+          "layout": "content-narrow"
         },
         {
           "id": "|AskSection",
@@ -195,7 +204,7 @@
           "content": {
             "title": "Ask God for Wisdom"
           },
-          "layout": "content-stack"
+          "layout": "content-narrow"
         },
         {
           "id": "|ConformSection",
@@ -255,7 +264,7 @@
           "content": {
             "title": "Conform to Christ"
           },
-          "layout": "content-stack"
+          "layout": "content-narrow"
         },
         {
           "id": "|KeepSection",
@@ -315,12 +324,10 @@
           "content": {
             "title": "Keep Your Heart"
           },
-          "layout": "content-stack"
+          "layout": "content-narrow"
         }
       ],
-      "content": {
-        "title": "TRACK Journal"
-      },
+      "content": {},
       "layout": "content-stack"
     }
   ]
