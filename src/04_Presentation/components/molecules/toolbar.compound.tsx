@@ -110,16 +110,22 @@ export default function ToolbarCompound({
   /* ======================================================
      APPLY MOLECULE LAYOUT *ONLY TO ITEMS*
      ====================================================== */
-  const layoutParams = {
-    ...(typeof (params as Record<string, unknown>).layout === "object" && (params as Record<string, unknown>).layout != null ? (params as Record<string, unknown>).layout as Record<string, unknown> : {}),
-    ...(params.moleculeLayout?.params ?? {}),
-  };
-  const layout = resolveWithDefaultLayout(
-    params.moleculeLayout?.type,
-    params.moleculeLayout?.preset ?? null,
-    layoutParams,
-    "row" // ← default for Toolbar
-  );
+  // Use sequence params from JSON if provided, otherwise fall back to moleculeLayout
+  const sequenceParams = params.sequence 
+    ? resolveParams(params.sequence)
+    : {
+        ...(typeof (params as Record<string, unknown>).layout === "object" && (params as Record<string, unknown>).layout != null ? (params as Record<string, unknown>).layout as Record<string, unknown> : {}),
+        ...(params.moleculeLayout?.params ?? {}),
+      };
+  
+  const layout = params.sequence
+    ? sequenceParams
+    : resolveWithDefaultLayout(
+        params.moleculeLayout?.type,
+        params.moleculeLayout?.preset ?? null,
+        sequenceParams,
+        "row" // ← default for Toolbar
+      );
 
 
   let laidOutItems: React.ReactNode = items;

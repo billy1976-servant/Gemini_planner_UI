@@ -1,1 +1,23 @@
-{}
+{
+  "soft": {
+    "hoverScale": 1.01,
+    "pressScale": 0.99,
+    "hoverOpacity": 0.95,
+    "pressOpacity": 0.92,
+    "description": "Gentle, subtle feedback"
+  },
+  "medium": {
+    "hoverScale": 1.02,
+    "pressScale": 0.98,
+    "hoverOpacity": 0.92,
+    "pressOpacity": 0.85,
+    "description": "Standard, balanced feedback"
+  },
+  "hard": {
+    "hoverScale": 1.04,
+    "pressScale": 0.96,
+    "hoverOpacity": 0.88,
+    "pressOpacity": 0.8,
+    "description": "Strong, pronounced feedback"
+  }
+}

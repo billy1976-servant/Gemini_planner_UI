@@ -1,1 +1,22 @@
-{}
+{
+  "standard": {
+    "duration": "transition.base",
+    "easing": "ease",
+    "description": "Balanced motion for general use"
+  },
+  "minimal": {
+    "duration": "transition.fast",
+    "easing": "ease-out",
+    "description": "Quick, subtle motion for focus mode"
+  },
+  "smooth": {
+    "duration": "transition.slow",
+    "easing": "cubic-bezier(0.4, 0, 0.2, 1)",
+    "description": "Fluid, elegant motion for immersive experiences"
+  },
+  "playful": {
+    "duration": "200ms",
+    "easing": "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+    "description": "Bouncy, energetic motion for playful contexts"
+  }
+}

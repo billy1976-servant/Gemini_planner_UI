@@ -8,6 +8,8 @@
     "condition": {},
     "collection": {"direction":["row","column"],"gap":["gap.none","gap.xs","gap.sm","gap.md","gap.lg"],"padding":["padding.none","padding.xs","padding.sm","padding.md"],"scrollable":[true,false]},
     "sequence": {"direction":["row","column"],"align":["start","center","end"],"justify":["start","center","end","space-between"],"gap":["gap.none","gap.xs","gap.sm","gap.md","gap.lg"],"padding":["padding.none","padding.sm","padding.md"],"wrap":[true,false],"scrollable":[true,false]},
-    "shell": {"background":["color.surface","color.surfaceVariant"],"padding":["padding.sm","padding.md","padding.lg"],"scrollable":[true,false],"safeArea":[true,false]}
+    "shell": {"background":["color.surface","color.surfaceVariant"],"padding":["padding.sm","padding.md","padding.lg"],"scrollable":[true,false],"safeArea":[true,false]},
+    "skeleton": {"background":["color.surfaceVariant","surface.variant"],"radius":["radius.none","radius.sm","radius.md","radius.lg"],"width":["size.xs","size.sm","size.md","size.lg","100%"],"height":["textSize.sm","textSize.md","textSize.lg","size.xs","size.sm","size.md"]},
+    "spinner": {"color":["color.primary","color.onPrimary","color.secondary"],"size":["size.xs","size.sm","size.md","size.lg"],"thickness":["borderWidth.sm","borderWidth.md"]}
   }
 }

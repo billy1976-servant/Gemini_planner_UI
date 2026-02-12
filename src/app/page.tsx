@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useSyncExternalStore } from "react";
 import ExperienceRenderer from "@/engine/core/ExperienceRenderer";
+import PreviewStage from "@/components/stage/PreviewStage";
 import { recordStage } from "@/engine/debug/pipelineStageTrace";
 import { PipelineDebugStore } from "@/devtools/pipeline-debug-store";
 import { loadScreen } from "@/engine/core/screen-loader";
@@ -772,7 +773,7 @@ export default function Page() {
 
   if (experience === "app") {
     return (
-      <>
+      <PreviewStage>
         {overlay}
         <AppShell
           primary={
@@ -816,20 +817,20 @@ export default function Page() {
             sectionLabels,
           }}
         />
-      </>
+      </PreviewStage>
     );
   }
   if (experience === "learning") {
     return (
-      <>
+      <PreviewStage>
         {overlay}
         <LearningShell content={<div style={{ paddingRight: SIDEBAR_TOTAL_WIDTH }}>{jsonContent}</div>} />
         <RightFloatingSidebar />
-      </>
+      </PreviewStage>
     );
   }
   return (
-    <>
+    <PreviewStage>
       {overlay}
       <WebsiteShell
         content={
@@ -873,7 +874,7 @@ export default function Page() {
           sectionLabels,
         }}
       />
-    </>
+    </PreviewStage>
   );
 }
 

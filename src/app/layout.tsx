@@ -9,6 +9,7 @@ import { useSyncExternalStore } from "react";
 
 import "@/styles/site-theme.css";
 import InteractionTracerPanel from "@/devtools/InteractionTracerPanel";
+import DevicePreviewToggle from "@/dev/DevicePreviewToggle";
 
 /* ============================================================
    🎨 PALETTE ENGINE (state is source of truth; palette-store used only as fallback)
@@ -196,6 +197,8 @@ export default function RootLayout({ children }: any) {
           >
             Save Layout
           </button>
+
+          <DevicePreviewToggle />
 
           <span className="app-chrome-hint" title="Experience, Palette, Template: right sidebar pills." aria-hidden="true">
             Right sidebar: Experience, Palette, Template

@@ -92,6 +92,9 @@
 
 
     "lineHeight": {
+      "display": 1.05,
+      "headline": 1.15,
+      "title": 1.25,
       "tight": 1.2,
       "normal": 1.45,
       "relaxed": 1.65
@@ -135,13 +138,13 @@
     },
 
   "textRole": {
-    "display": { "size": "textSize.display", "weight": "textWeight.bold", "lineHeight": "lineHeight.tight" },
-    "headline": { "size": "textSize.headline", "weight": "textWeight.bold", "lineHeight": "lineHeight.tight" },
-    "title": { "size": "textSize.title", "weight": "textWeight.semibold", "lineHeight": "lineHeight.normal" },
+    "display": { "size": "textSize.display", "weight": "textWeight.bold", "lineHeight": "lineHeight.display", "letterSpacing": "letterSpacing.tight" },
+    "headline": { "size": "textSize.headline", "weight": "textWeight.bold", "lineHeight": "lineHeight.headline", "letterSpacing": "letterSpacing.tight" },
+    "title": { "size": "textSize.title", "weight": "textWeight.semibold", "lineHeight": "lineHeight.title" },
     "subtitle": { "size": "textSize.lg", "weight": "textWeight.medium", "lineHeight": "lineHeight.normal", "color": "color.secondary" },
     "bodyLg": { "size": "textSize.bodyLg", "weight": "textWeight.regular", "lineHeight": "lineHeight.relaxed" },
     "body": { "size": "textSize.body", "weight": "textWeight.regular", "lineHeight": "lineHeight.relaxed" },
-    "label": { "size": "textSize.sm", "weight": "textWeight.semibold", "lineHeight": "lineHeight.normal" },
+    "label": { "size": "textSize.sm", "weight": "textWeight.semibold", "lineHeight": "lineHeight.normal", "letterSpacing": "letterSpacing.loose" },
     "caption": { "size": "textSize.caption", "weight": "textWeight.regular", "lineHeight": "lineHeight.normal", "color": "color.secondary" }
   },
 

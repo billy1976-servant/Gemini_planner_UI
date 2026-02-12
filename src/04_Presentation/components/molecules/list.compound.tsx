@@ -110,16 +110,22 @@ export default function ListCompound({
   /* ======================================================
      APPLY MOLECULE LAYOUT *ONLY TO SLOT CONTENT*
      ====================================================== */
-  const layoutParams = {
-    ...(typeof (params as Record<string, unknown>).layout === "object" && (params as Record<string, unknown>).layout != null ? (params as Record<string, unknown>).layout as Record<string, unknown> : {}),
-    ...(params.moleculeLayout?.params ?? {}),
-  };
-  const layout = resolveWithDefaultLayout(
-    params.moleculeLayout?.type,
-    params.moleculeLayout?.preset ?? null,
-    layoutParams,
-    "column" // ← default for List
-  );
+  // Use collection params from JSON if provided, otherwise fall back to moleculeLayout
+  const collectionParams = params.collection 
+    ? resolveParams(params.collection)
+    : {
+        ...(typeof (params as Record<string, unknown>).layout === "object" && (params as Record<string, unknown>).layout != null ? (params as Record<string, unknown>).layout as Record<string, unknown> : {}),
+        ...(params.moleculeLayout?.params ?? {}),
+      };
+  
+  const layout = params.collection
+    ? collectionParams
+    : resolveWithDefaultLayout(
+        params.moleculeLayout?.type,
+        params.moleculeLayout?.preset ?? null,
+        collectionParams,
+        "column" // ← default for List
+      );
 
 
   let laidOutSlots: React.ReactNode = slotContent;
