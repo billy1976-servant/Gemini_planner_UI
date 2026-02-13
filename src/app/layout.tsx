@@ -49,6 +49,7 @@ import { installBehaviorListener } from "@/engine/core/behavior-listener";
 ============================================================ */
 import presentationProfiles from "@/lib/layout/presentation-profiles.json";
 import CascadingScreenMenu from "@/app/components/CascadingScreenMenu";
+import PersistentLauncher from "@/components/global/PersistentLauncher";
 
 
 /* ============================================================
@@ -259,7 +260,6 @@ export default function RootLayout({ children }: any) {
               >
                 <div
                   style={{
-                    height: "100%",
                     width: "100%",
                     display: "flex",
                     flexDirection: "column",
@@ -287,6 +287,9 @@ export default function RootLayout({ children }: any) {
           )}
         </div>
         {process.env.NODE_ENV === "development" && <InteractionTracerPanel />}
+        
+        {/* Global persistent launcher - renders via portal */}
+        <PersistentLauncher />
       </body>
     </html>
   );

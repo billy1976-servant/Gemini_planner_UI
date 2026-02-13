@@ -5,7 +5,6 @@
       "type": "column",
       "params": {
         "maxWidth": 720,
-        "padding": "3rem",
         "gap": "3rem"
       }
     },

@@ -47,18 +47,23 @@ export default function PreviewStage({ children }: PreviewStageProps) {
           justifyContent: "center",
           alignItems: "flex-start",
           boxSizing: "border-box",
-          maxWidth: "100%",
+          maxWidth: "none", /* DEBUG: Stripped */
           overflowX: "hidden",
+          padding: 0, /* DEBUG: Stripped */
+          margin: 0, /* DEBUG: Stripped */
+          border: "none", /* DEBUG: Stripped */
         }}
       >
         <div
           data-preview-frame="desktop"
           style={{
             width: "100%",
-            maxWidth: "1100px",
-            margin: "0 auto",
+            maxWidth: "none", /* DEBUG: Stripped */
+            margin: 0, /* DEBUG: Stripped */
             boxSizing: "border-box",
             overflowX: "hidden",
+            padding: 0, /* DEBUG: Stripped */
+            border: "none", /* DEBUG: Stripped */
           }}
         >
           {children}
@@ -79,24 +84,29 @@ export default function PreviewStage({ children }: PreviewStageProps) {
           display: "flex",
           justifyContent: "center",
           alignItems: "flex-start",
-          padding: "32px 16px",
+          padding: 0, /* DEBUG: Stripped */
           boxSizing: "border-box",
-          maxWidth: "100%",
+          maxWidth: "none", /* DEBUG: Stripped */
           overflowX: "hidden",
+          margin: 0, /* DEBUG: Stripped */
+          border: "none", /* DEBUG: Stripped */
         }}
       >
         <div
           data-preview-frame="tablet"
           style={{
-            width: "768px",
-            maxWidth: "100%",
+            width: "100%", /* DEBUG: Stripped constraint */
+            maxWidth: "none", /* DEBUG: Stripped */
             minHeight: "calc(100vh - 64px)",
             background: "#ffffff",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08)",
-            borderRadius: "12px",
+            boxShadow: "none", /* DEBUG: Stripped */
+            borderRadius: 0, /* DEBUG: Stripped */
             overflow: "hidden",
             transition: "width 0.3s ease",
             boxSizing: "border-box",
+            padding: 0, /* DEBUG: Stripped */
+            margin: 0, /* DEBUG: Stripped */
+            border: "none", /* DEBUG: Stripped */
           }}
         >
           {children}
@@ -116,26 +126,29 @@ export default function PreviewStage({ children }: PreviewStageProps) {
         display: "flex",
         justifyContent: "center",
         alignItems: "flex-start",
-        padding: "48px 16px",
+        padding: 0, /* DEBUG: Stripped */
         boxSizing: "border-box",
-        maxWidth: "100%",
+        maxWidth: "none", /* DEBUG: Stripped */
         overflowX: "hidden",
+        margin: 0, /* DEBUG: Stripped */
+        border: "none", /* DEBUG: Stripped */
       }}
     >
       <div
         data-preview-frame="phone-device"
         style={{
           position: "relative",
-          width: "390px",
-          maxWidth: "100%",
-          margin: "0 auto",
+          width: "100%", /* DEBUG: Stripped constraint */
+          maxWidth: "none", /* DEBUG: Stripped */
+          margin: 0, /* DEBUG: Stripped */
           minHeight: "calc(100vh - 96px)",
           background: "#1a1a1a",
-          borderRadius: "32px",
-          padding: "12px",
-          boxShadow: "0 16px 48px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.3)",
+          borderRadius: 0, /* DEBUG: Stripped */
+          padding: 0, /* DEBUG: Stripped */
+          boxShadow: "none", /* DEBUG: Stripped */
           transition: "width 0.3s ease",
           boxSizing: "border-box",
+          border: "none", /* DEBUG: Stripped */
         }}
       >
         <div
@@ -144,10 +157,13 @@ export default function PreviewStage({ children }: PreviewStageProps) {
             width: "100%",
             minHeight: "calc(100vh - 120px)",
             background: "#ffffff",
-            borderRadius: "24px",
+            borderRadius: 0, /* DEBUG: Stripped */
             overflow: "hidden",
-            boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.1)",
+            boxShadow: "none", /* DEBUG: Stripped */
             boxSizing: "border-box",
+            padding: 0, /* DEBUG: Stripped */
+            margin: 0, /* DEBUG: Stripped */
+            border: "none", /* DEBUG: Stripped */
           }}
         >
           {children}

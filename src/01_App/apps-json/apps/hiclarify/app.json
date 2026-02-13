@@ -54,8 +54,7 @@
             "params": {
               "surface": {
                 "background": "color.secondary",
-                "radius": "radius.pill",
-                "padding": "padding.md"
+                "radius": "radius.pill"
               },
               "text": {
                 "color": "color.onPrimary",
@@ -309,8 +308,7 @@
           },
           "params": {
             "surface": {
-              "background": "color.primary",
-              "padding": "padding.xl"
+              "background": "color.primary"
             },
             "title": {
               "color": "color.onPrimary"
@@ -337,7 +335,6 @@
                 "params": {
                   "surface": {
                     "background": "color.secondary",
-                    "padding": "padding.lg",
                     "radius": "radius.pill"
                   },
                   "text": {

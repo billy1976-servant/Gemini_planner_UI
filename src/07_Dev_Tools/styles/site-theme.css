@@ -153,8 +153,11 @@
   -moz-osx-font-smoothing: grayscale;
   box-sizing: border-box;
   width: 100%;
-  max-width: 100%;
+  max-width: none !important; /* DEBUG: Stripped container constraint */
   overflow-x: hidden;
+  padding: 0 !important; /* DEBUG: Stripped container constraint */
+  margin: 0 !important; /* DEBUG: Stripped container constraint */
+  border: none !important; /* DEBUG: Stripped container constraint */
 }
 
 .site-container * {
@@ -184,19 +187,20 @@
 
 .site-container-inner {
   width: 100%;
-  max-width: var(--container-2xl);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: var(--spacing-4);
-  padding-right: var(--spacing-4);
+  max-width: none !important; /* DEBUG: Stripped container constraint */
+  margin-left: 0 !important; /* DEBUG: Stripped container constraint */
+  margin-right: 0 !important; /* DEBUG: Stripped container constraint */
+  padding-left: 0 !important; /* DEBUG: Stripped container constraint */
+  padding-right: 0 !important; /* DEBUG: Stripped container constraint */
   box-sizing: border-box;
   overflow-x: hidden;
+  border: none !important; /* DEBUG: Stripped container constraint */
 }
 
 @media (min-width: 640px) {
   .site-container-inner {
-    padding-left: var(--spacing-6);
-    padding-right: var(--spacing-6);
+    padding-left: 0 !important; /* DEBUG: Stripped container constraint */
+    padding-right: 0 !important; /* DEBUG: Stripped container constraint */
   }
 }
 
@@ -645,7 +649,7 @@
 
 .app-content {
   margin-top: 0;
-  padding: var(--spacing-5);
+  padding: 0 !important; /* DEBUG: Stripped container constraint */
   background: var(--app-bg);
   pointer-events: auto;
   position: relative;
@@ -654,7 +658,8 @@
   overflow-y: visible;
   box-sizing: border-box;
   width: 100%;
-  max-width: 100%;
+  max-width: none !important; /* DEBUG: Stripped container constraint */
+  border: none !important; /* DEBUG: Stripped container constraint */
 }
 
 /* ============================================================================
@@ -725,4 +730,16 @@
 /* Website: marketing rhythm (baseline — section gaps already from wrapper) */
 .experience-website {
   --experience-gap: var(--spacing-8);
+}
+
+/* ============================================================================
+   PHONE MODE OPTIMIZATIONS
+   ============================================================================ */
+
+/* Phone preview mode: Reduce padding to maximize content width */
+@media (max-width: 420px) {
+  .site-container-inner {
+    padding-left: 0 !important; /* DEBUG: Stripped container constraint */
+    padding-right: 0 !important; /* DEBUG: Stripped container constraint */
+  }
 }

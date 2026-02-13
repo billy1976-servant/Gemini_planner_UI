@@ -5,8 +5,6 @@
       "backgroundVariant": "hero-accent",
       "container": {
         "width": "100%",
-        "marginLeft": "auto",
-        "marginRight": "auto",
         "boxSizing": "border-box",
         "overflowX": "hidden"
       }
@@ -45,8 +43,6 @@
       },
       "container": {
         "width": "100%",
-        "marginLeft": "auto",
-        "marginRight": "auto",
         "boxSizing": "border-box",
         "overflowX": "hidden"
       }
@@ -85,8 +81,6 @@
       },
       "container": {
         "width": "100%",
-        "marginLeft": "auto",
-        "marginRight": "auto",
         "boxSizing": "border-box",
         "overflowX": "hidden"
       }
@@ -125,8 +119,6 @@
       },
       "container": {
         "width": "100%",
-        "marginLeft": "auto",
-        "marginRight": "auto",
         "boxSizing": "border-box",
         "overflowX": "hidden"
       }
@@ -136,8 +128,6 @@
       "backgroundVariant": "default",
       "container": {
         "width": "100%",
-        "marginLeft": "auto",
-        "marginRight": "auto",
         "boxSizing": "border-box",
         "overflowX": "hidden"
       }
@@ -146,8 +136,6 @@
       "containerWidth": "narrow",
       "container": {
         "width": "100%",
-        "marginLeft": "auto",
-        "marginRight": "auto",
         "boxSizing": "border-box",
         "overflowX": "hidden"
       }
@@ -156,8 +144,6 @@
       "containerWidth": "contained",
       "container": {
         "width": "100%",
-        "marginLeft": "auto",
-        "marginRight": "auto",
         "boxSizing": "border-box",
         "overflowX": "hidden"
       }
@@ -166,8 +152,6 @@
       "containerWidth": "contained",
       "container": {
         "width": "100%",
-        "marginLeft": "auto",
-        "marginRight": "auto",
         "boxSizing": "border-box",
         "overflowX": "hidden"
       }
@@ -176,8 +160,6 @@
       "containerWidth": "contained",
       "container": {
         "width": "100%",
-        "marginLeft": "auto",
-        "marginRight": "auto",
         "boxSizing": "border-box",
         "overflowX": "hidden"
       }
@@ -186,8 +168,6 @@
       "containerWidth": "contained",
       "container": {
         "width": "100%",
-        "marginLeft": "auto",
-        "marginRight": "auto",
         "boxSizing": "border-box",
         "overflowX": "hidden"
       }
@@ -196,8 +176,6 @@
       "containerWidth": "contained",
       "container": {
         "width": "100%",
-        "marginLeft": "auto",
-        "marginRight": "auto",
         "boxSizing": "border-box",
         "overflowX": "hidden"
       }
@@ -206,8 +184,6 @@
       "containerWidth": "contained",
       "container": {
         "width": "100%",
-        "marginLeft": "auto",
-        "marginRight": "auto",
         "boxSizing": "border-box",
         "overflowX": "hidden"
       }
@@ -228,7 +204,7 @@
         "gap": "var(--spacing-10)",
         "align": "center",
         "justify": "center",
-        "padding": "var(--spacing-16) var(--spacing-6)"
+        "padding": "var(--spacing-16) 0"
       }
     },
     "hero-split": {
@@ -238,7 +214,7 @@
         "gap": "var(--spacing-12)",
         "align": "center",
         "justify": "space-between",
-        "padding": "var(--spacing-20) var(--spacing-8)",
+        "padding": "var(--spacing-20) 0",
         "minHeight": "min(60vh, 560px)"
       }
     },
@@ -249,7 +225,7 @@
         "gap": "var(--spacing-12)",
         "align": "center",
         "justify": "space-between",
-        "padding": "var(--spacing-20) var(--spacing-8)",
+        "padding": "var(--spacing-20) 0",
         "minHeight": "min(60vh, 560px)"
       }
     },
@@ -260,7 +236,7 @@
         "gap": "var(--spacing-12)",
         "align": "center",
         "justify": "space-between",
-        "padding": "var(--spacing-20) var(--spacing-8)",
+        "padding": "var(--spacing-20) 0",
         "minHeight": "min(60vh, 560px)"
       }
     },
@@ -271,7 +247,7 @@
         "gap": "var(--spacing-6)",
         "align": "center",
         "justify": "center",
-        "padding": "var(--spacing-16) var(--spacing-6)",
+        "padding": "var(--spacing-16) 0",
         "minHeight": "420px",
         "maxHeight": "70vh",
         "display": "flex",
@@ -323,7 +299,7 @@
         "gap": "var(--spacing-8)",
         "align": "stretch",
         "justify": "center",
-        "padding": "var(--spacing-10) var(--spacing-6)"
+        "padding": "var(--spacing-10) 0"
       }
     },
     "cta-centered": {
@@ -333,7 +309,7 @@
         "gap": "var(--spacing-8)",
         "align": "center",
         "justify": "center",
-        "padding": "var(--spacing-12) var(--spacing-6)"
+        "padding": "var(--spacing-12) 0"
       }
     }
   }

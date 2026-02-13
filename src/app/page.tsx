@@ -768,7 +768,6 @@ export default function Page() {
           flexDirection: "column",
           gap: "var(--spacing-8)",
           width: "100%",
-          overflowX: "hidden",
           overflowY: "visible",
         }}
       >
@@ -784,7 +783,7 @@ export default function Page() {
         {overlay}
         <AppShell
           primary={
-            <div ref={contentRef} style={{ width: "100%", minHeight: "100%", overflowX: "hidden", overflowY: "visible", paddingRight: contentPaddingRight }}>
+            <div ref={contentRef} style={{ width: "100%", minHeight: "100%", overflowY: "visible", paddingRight: contentPaddingRight }}>
               {jsonContent}
             </div>
           }
@@ -841,7 +840,7 @@ export default function Page() {
       {overlay}
       <WebsiteShell
         content={
-          <div ref={contentRef} style={{ width: "100%", minHeight: "100vh", overflowX: "hidden", overflowY: "visible", paddingRight: contentPaddingRight }}>
+          <div ref={contentRef} style={{ width: "100%", minHeight: "100vh", overflowY: "visible", paddingRight: contentPaddingRight }}>
             {wrappedContent}
           </div>
         }

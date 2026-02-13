@@ -5,8 +5,7 @@
       "type": "grid",
       "params": {
         "columns": 12,
-        "gap": "1rem",
-        "padding": "1.5rem"
+        "gap": "1rem"
       }
     },
     "section": {

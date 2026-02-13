@@ -14,6 +14,7 @@
 import { TriggerAtom, SurfaceAtom, TextAtom, SequenceAtom, CollectionAtom } from "@/components/atoms";
 import { resolveParams } from "@/engine/core/palette-resolver";
 import { resolveMoleculeLayout } from "@/layout";
+import { useState, useEffect } from "react";
 
 
 function resolveWithDefaultLayout(
@@ -27,6 +28,63 @@ function resolveWithDefaultLayout(
     preset ?? null,
     params
   );
+}
+
+/**
+ * Hook to detect mobile viewport width for responsive tab sizing.
+ * Returns true if viewport is phone-sized (≤420px).
+ */
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 420);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  return isMobile;
+}
+
+/**
+ * Apply mobile-optimized params for tab components on narrow screens.
+ * Reduces padding and text size to fit more tabs in constrained width.
+ */
+function applyMobileTabOptimization(params: any, isMobile: boolean) {
+  if (!isMobile) return params;
+  
+  // Scale down padding for mobile
+  const mobileSurface = {
+    ...params.surface,
+    padding: "padding.xs", // 6px instead of 20px
+  };
+  
+  const mobileSurfaceActive = {
+    ...params.surfaceActive,
+    padding: "padding.xs",
+  };
+  
+  const mobileText = {
+    ...params.text,
+    size: "textSize.sm", // 14px instead of 16px
+  };
+  
+  const mobileTextActive = {
+    ...params.textActive,
+    size: "textSize.sm",
+  };
+  
+  return {
+    ...params,
+    surface: mobileSurface,
+    surfaceActive: mobileSurfaceActive,
+    text: mobileText,
+    textActive: mobileTextActive,
+  };
 }
 
 
@@ -78,6 +136,12 @@ export default function StepperCompound({
   activeValue,
 }: StepperCompoundProps) {
   /* ======================================================
+     RESPONSIVE MOBILE OPTIMIZATION
+     ====================================================== */
+  const isMobile = useIsMobile();
+  const responsiveParams = applyMobileTabOptimization(params, isMobile);
+  
+  /* ======================================================
      STEP ITEMS (BUTTON-LIKE, INTERACTIVE)
      ====================================================== */
   const slotContent = (
@@ -111,10 +175,10 @@ export default function StepperCompound({
             onTap={handleTap}
           >
             <SurfaceAtom params={resolveParams(
-              isActive ? params.surfaceActive : params.surface
+              isActive ? responsiveParams.surfaceActive : responsiveParams.surface
             )}>
               <TextAtom params={resolveParams(
-                isActive ? params.textActive : params.text
+                isActive ? responsiveParams.textActive : responsiveParams.text
               )}>
                 {step.content?.label}
               </TextAtom>
@@ -130,12 +194,12 @@ export default function StepperCompound({
      APPLY MOLECULE LAYOUT *ONLY TO SLOT CONTENT*
      ====================================================== */
   const layoutParams = {
-    ...(typeof (params as Record<string, unknown>).layout === "object" && (params as Record<string, unknown>).layout != null ? (params as Record<string, unknown>).layout as Record<string, unknown> : {}),
-    ...(params.moleculeLayout?.params ?? {}),
+    ...(typeof (responsiveParams as Record<string, unknown>).layout === "object" && (responsiveParams as Record<string, unknown>).layout != null ? (responsiveParams as Record<string, unknown>).layout as Record<string, unknown> : {}),
+    ...(responsiveParams.moleculeLayout?.params ?? {}),
   };
   const layout = resolveWithDefaultLayout(
-    params.moleculeLayout?.type,
-    params.moleculeLayout?.preset ?? null,
+    responsiveParams.moleculeLayout?.type,
+    responsiveParams.moleculeLayout?.preset ?? null,
     layoutParams,
     "row" // ← default for Stepper
   );

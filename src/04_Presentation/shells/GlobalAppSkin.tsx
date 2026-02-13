@@ -146,11 +146,13 @@ export default function GlobalAppSkin({ children }: GlobalAppSkinProps) {
       style={{ 
         display: 'flex', 
         flexDirection: 'column', 
-        height: '100vh',
         overflow: 'hidden',
         boxSizing: 'border-box',
         width: '100%',
-        maxWidth: '100%'
+        maxWidth: 'none', /* DEBUG: Stripped container constraint */
+        padding: 0, /* DEBUG: Stripped container constraint */
+        margin: 0, /* DEBUG: Stripped container constraint */
+        border: 'none' /* DEBUG: Stripped container constraint */
       }}
       data-shell="global-app-skin"
     >
@@ -163,8 +165,11 @@ export default function GlobalAppSkin({ children }: GlobalAppSkinProps) {
           minHeight: 0,
           boxSizing: 'border-box',
           width: '100%',
-          maxWidth: '100%',
-          overflowX: 'hidden'
+          maxWidth: 'none', /* DEBUG: Stripped container constraint */
+          overflowX: 'hidden',
+          padding: 0, /* DEBUG: Stripped container constraint */
+          margin: 0, /* DEBUG: Stripped container constraint */
+          border: 'none' /* DEBUG: Stripped container constraint */
         }}>
         {children}
       </div>

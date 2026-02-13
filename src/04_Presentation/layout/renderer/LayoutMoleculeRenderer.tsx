@@ -293,9 +293,10 @@ export default function LayoutMoleculeRenderer({
       )
     : null;
 
-  const splitContentWrapper = { border: "3px solid red", background: "rgba(255,0,0,0.05)" as const };
-  const splitMediaWrapper = { border: "3px solid blue", background: "rgba(0,0,255,0.05)" as const };
-  const nonSplitWrapper = { border: "3px solid green", background: "rgba(0,255,0,0.05)" as const };
+  // DEBUG: Stripped all debug borders/backgrounds to see raw layout
+  const splitContentWrapper = { border: "none", background: "transparent" as const, padding: 0, margin: 0 };
+  const splitMediaWrapper = { border: "none", background: "transparent" as const, padding: 0, margin: 0 };
+  const nonSplitWrapper = { border: "none", background: "transparent" as const, padding: 0, margin: 0 };
 
   // STRICT: Only apply split layout styles if explicitly provided in JSON
   const splitLayout = (layout as any)?.splitLayout ?? {};
@@ -480,10 +481,24 @@ export default function LayoutMoleculeRenderer({
   });
 
   // Ensure section outer has display and boxSizing so layout doesn't collapse (lost when debugStyle was removed).
+  // DEBUG: Force strip all container constraints
   const combinedOuterStyle =
     Object.keys(outerStyle).length > 0
-      ? { display: "block" as const, boxSizing: "border-box" as const, ...outerStyle }
-      : undefined;
+      ? { 
+          display: "block" as const, 
+          boxSizing: "border-box" as const, 
+          ...outerStyle,
+          padding: 0, /* DEBUG: Stripped */
+          margin: 0, /* DEBUG: Stripped */
+          border: "none", /* DEBUG: Stripped */
+          maxWidth: "none" /* DEBUG: Stripped */
+        }
+      : {
+          padding: 0, /* DEBUG: Stripped */
+          margin: 0, /* DEBUG: Stripped */
+          border: "none", /* DEBUG: Stripped */
+          maxWidth: "none" /* DEBUG: Stripped */
+        };
 
   return (
     <div

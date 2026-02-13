@@ -46,6 +46,7 @@ export default function MediaAtom({
 
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
+  const [iconError, setIconError] = useState(false);
 
   // If children provided, render them directly
   if (children) {
@@ -87,9 +88,38 @@ export default function MediaAtom({
     );
   }
 
-  // Non-URL src (emoji, symbol): render as text in a styled box instead of <img>
+  // Non-URL src: try icon name, else render as text (emoji, symbol)
   const isUrl = typeof src === "string" && (src.startsWith("http") || src.startsWith("/"));
   if (!isUrl) {
+    // Attempt to load as icon from /icons/ directory
+    if (!iconError) {
+      const iconSrc = `/icons/${src}.svg`;
+      return (
+        <div
+          style={{
+            position: "relative",
+            width: "100%",
+            aspectRatio: aspectRatio || "1",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <img
+            src={iconSrc}
+            alt={alt || src}
+            onError={() => setIconError(true)}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+            }}
+          />
+        </div>
+      );
+    }
+    
+    // Fallback: render as text in a styled box
     return (
       <div
         style={{
