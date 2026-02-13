@@ -212,7 +212,7 @@ export default function Page() {
   const layoutModeFromState = stateSnapshot?.values?.layoutMode;
   const paletteName = (stateSnapshot?.values?.paletteName ?? getPaletteName()) || "default";
   
-  // Dynamic padding: 0 when phone frame is active OR when preview is tablet/phone (content is centered), otherwise full sidebar width
+  // Sidebar offset only (not general content inset): 0 when phone frame or tablet/phone preview, otherwise SIDEBAR_TOTAL_WIDTH so content is not hidden behind right sidebar.
   const contentPaddingRight = (phoneFrameEnabled || devicePreviewMode === "phone" || devicePreviewMode === "tablet") ? 0 : SIDEBAR_TOTAL_WIDTH;
 
   /** Section/card/organ overrides from state.layoutByScreen[screenKey]. Do not use state.values for layout presets. */
