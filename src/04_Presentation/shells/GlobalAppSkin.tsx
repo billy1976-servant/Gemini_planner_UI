@@ -1,86 +1,89 @@
 "use client";
 
-import React, { useEffect } from "react";
-import peopleSvg from "./assets/people_svg.svg";
-import journeySvg from "./assets/journey_svg.svg";
-import playSvg from "./assets/play_svg.svg";
-import calendarSvg from "./assets/calendar_svg.svg";
+import React, { useEffect, useState } from "react";
+import { SCREEN_GUTTER_X, NAV_STRIP_HEIGHT, SCREEN_UI_BREAKPOINT_PX } from "@/app/shell-ui-constants";
 
 /**
  * GlobalAppSkin - PURE VISUAL WRAPPER
- * 
+ *
  * Extracted from HIClarify's existing BottomNavBar
  * NO BEHAVIOR - NO LOGIC - NO HANDLERS
- * 
+ *
  * This component only provides the visual structure of the bottom navigation.
  * All functionality is removed - this is purely presentational.
+ *
+ * Shell quick icons: every icon renders as button > svg only (no img, no container).
+ * Strip has data-molecule="ShellQuickIcons"; each button has data-shell-icon for diagnostics.
+ * Strip parent is #app-viewport. Gutter from shell-ui-constants.
  */
 
-// Icon components - EXACT COPIES from original App.jsx
+const SHELL_ICON_SVG_PROPS = { width: 22, height: 22, viewBox: "0 0 24 24", "aria-hidden": true };
 
-const HabitIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-    <path d="M20 21v-1a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v1"/>
-    <circle cx="12" cy="7" r="4"/>
+const HabitIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" {...SHELL_ICON_SVG_PROPS} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20 21v-1a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v1" />
+    <circle cx="12" cy="7" r="4" />
   </svg>
 );
 
-const MaskIcon = ({ src, className, color }: { src: string; className?: string; color?: string }) => (
-  <span
-    className={className}
-    style={{
-      display: "inline-block",
-      minWidth: "1.5rem",
-      minHeight: "1.5rem",
-      backgroundColor: color || "currentColor",
-      maskImage: `url(${src})`,
-      WebkitMaskImage: `url(${src})`,
-      maskSize: "contain",
-      WebkitMaskSize: "contain",
-      maskRepeat: "no-repeat",
-      WebkitMaskRepeat: "no-repeat",
-      maskPosition: "center",
-      WebkitMaskPosition: "center",
-    }}
-    aria-hidden
-  />
+const PlayIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" {...SHELL_ICON_SVG_PROPS} fill="currentColor">
+    <path d="M8 5v14l11-7L8 5z" />
+  </svg>
 );
 
-const CalendarIcon = ({ className, color }: { className?: string; color?: string }) => (
-  <MaskIcon src={calendarSvg} className={className} color={color} />
+const PeopleIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" {...SHELL_ICON_SVG_PROPS} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+    <circle cx="9" cy="7" r="4" />
+    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+  </svg>
 );
 
-const PeopleIcon = ({ className, color }: { className?: string; color?: string }) => (
-  <MaskIcon src={peopleSvg} className={className} color={color} />
+const CalendarIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" {...SHELL_ICON_SVG_PROPS} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+    <line x1="16" y1="2" x2="16" y2="6" />
+    <line x1="8" y1="2" x2="8" y2="6" />
+    <line x1="3" y1="10" x2="21" y2="10" />
+  </svg>
 );
 
-const JourneyIcon = ({ className, color }: { className?: string; color?: string }) => (
-  <MaskIcon src={journeySvg} className={className} color={color} />
+const JourneyIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" {...SHELL_ICON_SVG_PROPS} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+    <circle cx="12" cy="10" r="3" />
+  </svg>
 );
 
-const playSvgResolved = typeof playSvg === "string" ? playSvg : (playSvg as { default?: string })?.default ?? String(playSvg);
-const PlayIcon = ({ className }: { className?: string }) => {
-  if (process.env.NODE_ENV === "development") {
-    console.log("[PlayIcon] playSvg resolved src:", playSvgResolved);
-  }
-  return (
-    <span data-nav-image-wrapper>
-      <img src={playSvgResolved} alt="Play" className={className} style={{ width: "24px", height: "24px" }} />
-    </span>
-  );
-};
-
-// Icon registry: real asset keys → components (no placeholders)
-const iconRegistry: Record<string, React.ComponentType<{ className?: string; color?: string }>> = {
+const iconRegistry: Record<string, React.ComponentType> = {
   Habit: HabitIcon,
   Calendar: CalendarIcon,
   People: PeopleIcon,
   Journey: JourneyIcon,
   Overview: PlayIcon,
 };
+
 const centerItem = "Overview";
 const leftItems = ["Habit", "People"];
 const rightItems = ["Journey", "Calendar"];
+
+const SHELL_BUTTON_STYLE: React.CSSProperties = {
+  width: 48,
+  height: 48,
+  minWidth: 48,
+  minHeight: 48,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  borderRadius: "50%",
+  border: "none",
+  background: "transparent",
+  cursor: "pointer",
+  padding: 0,
+  color: "inherit",
+};
 
 function renderNavItem(iconKey: string) {
   const Icon = iconRegistry[iconKey];
@@ -90,59 +93,45 @@ function renderNavItem(iconKey: string) {
     }
     return null;
   }
-  const isOverview = iconKey === "Overview";
-  const isImageIcon = iconKey === "People" || iconKey === "Journey" || iconKey === "Calendar";
-  const maskedColor = "#64748b";
-  const desiredClass = isOverview
-    ? "h-12 w-12 sm:h-14 sm:w-14"
-    : iconKey === "Journey" || iconKey === "Calendar"
-      ? "h-11 w-11 sm:h-[52px] sm:w-[52px]"
-      : iconKey === "Habit" || iconKey === "People"
-        ? "h-10 w-10 sm:h-12 sm:w-12"
-        : isImageIcon
-          ? "h-9 w-9 sm:h-10 sm:w-10"
-          : "h-8 w-8 sm:h-9 sm:w-9";
-  const textClasses = isOverview ? "text-slate-600" : "text-slate-500";
   return (
     <button
       key={iconKey}
       data-nav-item={iconKey}
-      className={`flex flex-col items-center flex-1 min-w-0 sm:flex-none px-1 sm:px-4 pt-2 max-[400px]:pt-1 pb-1 ${textClasses}`}
+      data-shell-icon={iconKey}
+      style={SHELL_BUTTON_STYLE}
       title={iconKey}
       type="button"
       aria-label={iconKey}
-      style={{ pointerEvents: "none" }}
     >
-      <span data-nav-icon={iconKey} className="flex items-center justify-center shrink-0">
-        {isImageIcon ? (
-          <Icon className={desiredClass} color={maskedColor} />
-        ) : (
-          <Icon className={desiredClass} />
-        )}
-      </span>
+      <Icon />
     </button>
   );
 }
 
-function getFrameRect(): { left: number; width: number } {
-  if (typeof document === "undefined") return { left: 0, width: typeof window !== "undefined" ? window.innerWidth : 0 };
-  const frame = document.querySelector("[data-phone-frame]");
-  const rect = frame?.getBoundingClientRect();
-  return {
-    left: rect?.left ?? 0,
-    width: rect?.width ?? (typeof window !== "undefined" ? window.innerWidth : 0),
-  };
-}
-
-/** Bottom nav at viewport level — locked to phone frame bounds when present. */
+/** Bottom nav: anchored to AppViewport (persistent in both phone frame and desktop). */
 export function BottomNavOnly() {
-  const [frameRect, setFrameRect] = React.useState(getFrameRect);
+  const navRootRef = React.useRef<HTMLDivElement>(null);
+  const [isDesktopOrTablet, setIsDesktopOrTablet] = useState(
+    typeof window !== "undefined" ? window.matchMedia(`(min-width: ${SCREEN_UI_BREAKPOINT_PX}px)`).matches : true
+  );
+  useEffect(() => {
+    const mq = window.matchMedia(`(min-width: ${SCREEN_UI_BREAKPOINT_PX}px)`);
+    const handler = () => setIsDesktopOrTablet(mq.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
 
   useEffect(() => {
-    const update = () => setFrameRect(getFrameRect());
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
+    const el = navRootRef.current;
+    if (!el) return;
+    const parent = el.parentElement;
+    const rect = el.getBoundingClientRect();
+    const vis = window.getComputedStyle(el).visibility;
+    console.log("[NAV ROOT MOUNTED]", {
+      parentNodeType: parent?.tagName ?? "none",
+      boundingRect: { top: rect.top, left: rect.left, width: rect.width, height: rect.height, bottom: rect.bottom },
+      visibility: vis,
+    });
   }, []);
 
   useEffect(() => {
@@ -161,82 +150,46 @@ export function BottomNavOnly() {
       console.log("rect", logRect(container), "position", s.position, "display", s.display, "overflow", s.overflow, "zIndex", s.zIndex);
       console.groupEnd();
 
-      const overviewItem = document.querySelector('[data-nav-item="Overview"]');
-      const overviewIcon = document.querySelector('[data-nav-icon="Overview"]');
+      const overviewItem = document.querySelector('[data-shell-icon="Overview"]');
       if (overviewItem) {
         console.group("[Step A] Play nav item (Overview)");
-        console.log("item rect", logRect(overviewItem));
-        if (overviewIcon) console.log("icon rect", logRect(overviewIcon));
-        let p: HTMLElement | null = overviewItem.parentElement;
-        const chain: Array<{ tag: string; rect: ReturnType<typeof logRect> }> = [];
-        while (p && p !== document.body) {
-          chain.push({ tag: p.tagName + (p.id ? "#" + p.id : ""), rect: logRect(p) });
-          p = p.parentElement;
-        }
-        console.log("parent chain to body", chain);
+        console.log("button rect", logRect(overviewItem));
+        const svg = overviewItem.querySelector("svg");
+        if (svg) console.log("svg rect", logRect(svg));
         console.groupEnd();
       }
 
-      const habitItem = document.querySelector('[data-nav-item="Habit"]');
-      const habitIcon = document.querySelector('[data-nav-icon="Habit"]');
+      const habitItem = document.querySelector('[data-shell-icon="Habit"]');
       if (habitItem) {
         console.group("[Step A] Other nav item (Habit)");
-        console.log("item rect", logRect(habitItem));
-        if (habitIcon) console.log("icon rect", logRect(habitIcon));
+        console.log("button rect", logRect(habitItem));
+        const svg = habitItem.querySelector("svg");
+        if (svg) console.log("svg rect", logRect(svg));
         console.groupEnd();
       }
 
-      const peopleItem = document.querySelector('[data-nav-item="People"]');
-      const peopleIcon = document.querySelector('[data-nav-icon="People"]');
+      const peopleItem = document.querySelector('[data-shell-icon="People"]');
       if (peopleItem) {
         console.group("[Step A] Other nav item (People)");
-        console.log("item rect", logRect(peopleItem));
-        if (peopleIcon) console.log("icon rect", logRect(peopleIcon));
+        console.log("button rect", logRect(peopleItem));
+        const svg = peopleItem.querySelector("svg");
+        if (svg) console.log("svg rect", logRect(svg));
         console.groupEnd();
       }
 
-      const imgs = container.querySelectorAll("img");
-      const logComputedStyle = (img: HTMLImageElement) => {
-        const s = window.getComputedStyle(img);
-        return { display: s.display, visibility: s.visibility, opacity: s.opacity, zIndex: s.zIndex };
-      };
-      imgs.forEach((img, i) => {
-        const rect = img.getBoundingClientRect();
-        console.log(`[Step B] bottom-nav img ${i}`, {
-          src: img.src,
-          currentSrc: img.currentSrc,
-          complete: img.complete,
-          naturalWidth: img.naturalWidth,
-          naturalHeight: img.naturalHeight,
-          getBoundingClientRect: logRect(img),
-          computedStyle: logComputedStyle(img),
-        });
-        const onload = () => {
-          console.log(`[Step B] bottom-nav img ${i} LOADED`, { src: img.src, naturalWidth: img.naturalWidth, naturalHeight: img.naturalHeight });
-        };
-        const onerror = () => {
-          console.log(`[Step B] bottom-nav img ${i} FAILED (404?)`, { src: img.src });
-        };
-        img.addEventListener("load", onload);
-        img.addEventListener("error", onerror);
-        cleanups.push(() => {
-          img.removeEventListener("load", onload);
-          img.removeEventListener("error", onerror);
-        });
-        if (img.complete && img.naturalWidth > 0) onload();
-      });
-
-      const iconEls = container.querySelectorAll("[data-nav-icon]");
-      iconEls.forEach((el, i) => {
-        const key = el.getAttribute("data-nav-icon") ?? i;
+      const iconButtons = container.querySelectorAll("[data-shell-icon]");
+      iconButtons.forEach((el, i) => {
+        const key = el.getAttribute("data-shell-icon") ?? i;
         const rect = el.getBoundingClientRect();
         const cs = window.getComputedStyle(el);
-        console.log(`[Step B] nav icon ${key}`, {
+        const svg = el.querySelector("svg");
+        console.log(`[Step B] shell icon ${key}`, {
           tagName: el.tagName,
           getBoundingClientRect: { width: rect.width, height: rect.height },
           computedWidth: cs.width,
           computedHeight: cs.height,
           display: cs.display,
+          hasSvg: !!svg,
         });
       });
     };
@@ -252,33 +205,54 @@ export function BottomNavOnly() {
     console.log("NAV ITEMS:", navItems.length);
   }
 
+  const SHOW_LAYOUT_DEBUG_BORDERS = process.env.NODE_ENV === "development" && false;
+  const navRootStyle: React.CSSProperties = {
+    position: "absolute",
+    left: 0,
+    bottom: 0,
+    width: "100%",
+    height: NAV_STRIP_HEIGHT,
+    minHeight: 48,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    background: "white",
+    borderTop: SHOW_LAYOUT_DEBUG_BORDERS ? "2px solid lime" : "none",
+    zIndex: 9999,
+    overflow: "visible",
+  };
+
   return (
     <div
+      ref={navRootRef}
       data-bottom-nav
       data-nav-root
-      style={{
-        position: "fixed",
-        left: frameRect.left,
-        width: frameRect.width,
-        bottom: 0,
-        height: 64,
-        minHeight: 64,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-around",
-        background: "white",
-        borderTop: "2px solid lime",
-        zIndex: 9999,
-      }}
+      data-render-source="shell"
+      data-shell-layer="bottom-nav"
+      style={navRootStyle}
     >
       <nav
         className="w-full px-2"
         style={{
-          maxWidth: frameRect.width,
-          margin: "0 auto",
+          width: "100%",
+          maxWidth: isDesktopOrTablet ? "none" : 420,
+          margin: isDesktopOrTablet ? 0 : "0 auto",
+          marginLeft: isDesktopOrTablet ? SCREEN_GUTTER_X : undefined,
+          display: "flex",
+          justifyContent: isDesktopOrTablet ? "flex-start" : "space-around",
+          gap: "0.5rem",
+          padding: "0.25rem 0",
         }}
       >
-        <div className="flex items-center justify-between gap-2.5 sm:gap-3 py-1">
+        <div
+          data-molecule="ShellQuickIcons"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: isDesktopOrTablet ? "flex-start" : "space-around",
+            width: "100%",
+          }}
+        >
           {leftItems.map(renderNavItem)}
           {centerItem && renderNavItem(centerItem)}
           {rightItems.map(renderNavItem)}
@@ -332,6 +306,10 @@ function GlobalAppSkin({ children }: GlobalAppSkinProps) {
         border: "none",
       }}
       data-shell="global-app-skin"
+      data-render-source="shell"
+      data-shell-layer="chrome"
+      data-tsx-source="GlobalAppSkin"
+      data-tsx-layer="shell"
     >
       <div
         ref={contentRef}

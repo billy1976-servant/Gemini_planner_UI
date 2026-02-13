@@ -60,12 +60,23 @@ function resolveWithPalette(path: string, pal: Record<string, any> | null | unde
 const DIAG_COMPUTED_KEYS = ["fontSize", "fontWeight", "lineHeight", "padding", "gap", "borderRadius", "color", "background", "backgroundColor", "boxShadow"] as const;
 
 type OriginTrace = {
-  component: string;
-  molecule: string;
-  compound: string;
-  layout: string;
   screen: string;
+  layout: string;
+  section: string;
+  molecule: string;
+  atom: string;
   jsonPath: string;
+  /** Provenance: from data-render-source ("json" | "shell") or undefined = unknown. */
+  renderSource?: "json" | "shell";
+  /** When renderSource is "json": screenId from nearest data-render-source="json" ancestor. */
+  screenIdFromRender?: string;
+  /** When renderSource is "json": jsonPath from that ancestor. */
+  jsonPathFromRender?: string;
+  /** When renderSource is "shell": data-shell-layer value. */
+  originLayer?: string;
+  /** Resolved display: "JSON" | "SHELL" | "unknown". */
+  originType?: "JSON" | "SHELL" | "unknown";
+  tsxSource?: string;
 };
 
 type ElementType = "text" | "svg" | "img" | "button" | "container";
@@ -77,23 +88,51 @@ type IconInfo =
 
 function collectOriginTrace(el: HTMLElement): OriginTrace {
   const out: OriginTrace = {
-    component: "unknown",
-    molecule: "unknown",
-    compound: "unknown",
-    layout: "unknown",
     screen: "unknown",
+    layout: "unknown",
+    section: "unknown",
+    molecule: "unknown",
+    atom: "unknown",
     jsonPath: "unknown",
   };
+  let tsxSource = "";
+  let tsxLayer = "";
+  let nearestRenderSource: "json" | "shell" | undefined;
+  let shellLayerFromRender = "";
+  let screenIdFromRender = "";
+  let jsonPathFromRender = "";
   let node: Element | null = el;
   while (node && node !== document.body) {
     const d = "dataset" in node ? (node as HTMLElement).dataset : ({} as Record<string, string>);
-    if (out.component === "unknown" && d.component) out.component = String(d.component);
-    if (out.molecule === "unknown" && d.molecule) out.molecule = String(d.molecule);
-    if (out.compound === "unknown" && d.compound) out.compound = String(d.compound);
-    if (out.layout === "unknown" && d.layout) out.layout = String(d.layout);
+    const dAny = d as Record<string, string>;
+    if (nearestRenderSource === undefined && dAny.renderSource) {
+      nearestRenderSource = dAny.renderSource === "shell" ? "shell" : dAny.renderSource === "json" ? "json" : undefined;
+      if (nearestRenderSource === "shell" && dAny.shellLayer) shellLayerFromRender = String(dAny.shellLayer);
+      if (nearestRenderSource === "json") {
+        if (dAny.screenId) screenIdFromRender = String(dAny.screenId);
+        if (dAny.jsonPath) jsonPathFromRender = String(dAny.jsonPath);
+      }
+    }
     if (out.screen === "unknown" && d.screen) out.screen = String(d.screen);
+    if (out.layout === "unknown" && d.layout) out.layout = String(d.layout);
+    if (out.section === "unknown" && d.section) out.section = String(d.section);
+    if (out.molecule === "unknown" && d.molecule) out.molecule = String(d.molecule);
+    if (out.atom === "unknown" && d.atom) out.atom = String(d.atom);
     if (out.jsonPath === "unknown" && d.jsonPath) out.jsonPath = String(d.jsonPath);
+    if (!tsxSource && dAny.tsxSource) tsxSource = String(dAny.tsxSource);
+    if (!tsxLayer && dAny.tsxLayer) tsxLayer = String(dAny.tsxLayer);
     node = node.parentElement;
+  }
+  out.renderSource = nearestRenderSource;
+  if (nearestRenderSource === "json") {
+    out.originType = "JSON";
+    if (screenIdFromRender) out.screenIdFromRender = screenIdFromRender;
+    if (jsonPathFromRender) out.jsonPathFromRender = jsonPathFromRender;
+  } else if (nearestRenderSource === "shell") {
+    out.originType = "SHELL";
+    out.originLayer = shellLayerFromRender || "shell";
+  } else {
+    out.originType = "unknown";
   }
   return out;
 }
@@ -260,7 +299,7 @@ function buildHoverDiagnostic(el: HTMLElement, palette: any): HoverDiagnostic | 
     textRoleMatch: !!detectedRole && statuses.size && statuses.weight && statuses.lineHeight,
     tokenResolved: !!elementLabel && elementLabel !== "element",
     resolverKnown: !!resolverHint && resolverHint !== "—",
-    componentOriginFound: originTrace.component !== "unknown",
+    componentOriginFound: originTrace.originType === "JSON" || originTrace.originType === "SHELL",
     moleculeKnown: originTrace.molecule !== "unknown",
   };
   return {
@@ -426,6 +465,8 @@ const STYLES = {
 
 export type PaletteContractInspectorProps = {
   palette: any;
+  paletteName?: string;
+  pipelineContext?: { screenId?: string; layoutId?: string; deviceMode?: string };
 };
 
 export type ProbeResultRow = {
@@ -435,7 +476,9 @@ export type ProbeResultRow = {
   computed?: Record<string, string>;
 };
 
-export default function PaletteContractInspector({ palette }: PaletteContractInspectorProps) {
+const ROLE_LIKE_GROUPS = ["textRole", "surfaceTier", "prominence", "interaction"];
+
+export default function PaletteContractInspector({ palette, paletteName, pipelineContext }: PaletteContractInspectorProps) {
   const [inspectMode, setInspectMode] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
@@ -445,17 +488,28 @@ export default function PaletteContractInspector({ palette }: PaletteContractIns
   const [probeResults, setProbeResults] = useState<Record<string, Record<string, string>>>({});
   const [paletteProbeResults, setPaletteProbeResults] = useState<Record<string, ProbeResultRow> | null>(null);
   const [hoverDiagnostic, setHoverDiagnostic] = useState<HoverDiagnostic | null>(null);
+  const [pinnedDiagnostic, setPinnedDiagnostic] = useState<HoverDiagnostic | null>(null);
+  const [panelReportCopied, setPanelReportCopied] = useState(false);
+  const [panelOffset, setPanelOffset] = useState({ x: 0, y: 0 });
+  const [panelPinPos, setPanelPinPos] = useState<{ x: number; y: number } | null>(null);
+  const [isDraggingPanel, setIsDraggingPanel] = useState(false);
+  const dragStartRef = useRef({ x: 0, y: 0, offsetX: 0, offsetY: 0 });
   const [reportCopied, setReportCopied] = useState(false);
   const probeHostRef = useRef<TokenProbeHostRef>(null);
   const lastOutlinedRef = useRef<HTMLElement | null>(null);
   const lastHoverRunRef = useRef(0);
+  const pinnedRef = useRef<HoverDiagnostic | null>(null);
   const HOVER_THROTTLE_MS = 60;
+  pinnedRef.current = pinnedDiagnostic;
 
   const { globalOk, groups } = useMemo(() => computeInspection(palette), [palette]);
 
   useEffect(() => {
     if (!inspectMode) {
       setHoverDiagnostic(null);
+      setPinnedDiagnostic(null);
+      setPanelPinPos(null);
+      pinnedRef.current = null;
       if (lastOutlinedRef.current) {
         lastOutlinedRef.current.style.outline = "";
         lastOutlinedRef.current = null;
@@ -463,6 +517,7 @@ export default function PaletteContractInspector({ palette }: PaletteContractIns
       return;
     }
     const onMove = (e: MouseEvent) => {
+      if (pinnedRef.current) return;
       const now = Date.now();
       if (now - lastHoverRunRef.current < HOVER_THROTTLE_MS) return;
       lastHoverRunRef.current = now;
@@ -487,6 +542,11 @@ export default function PaletteContractInspector({ palette }: PaletteContractIns
       if (!el) return;
       const htmlEl = el instanceof HTMLElement ? el : null;
       const diag = htmlEl ? buildHoverDiagnostic(htmlEl, palette) : null;
+      if (diag) {
+        setPinnedDiagnostic(diag);
+        pinnedRef.current = diag;
+        setPanelPinPos({ x: e.clientX, y: e.clientY });
+      }
       const computedStyle: Record<string, string> = {};
       if (el instanceof Element) {
         const s = getComputedStyle(el);
@@ -497,21 +557,32 @@ export default function PaletteContractInspector({ palette }: PaletteContractIns
       }
       console.log("[PALETTE ORIGIN TRACE]", {
         elementType: diag?.elementType ?? "unknown",
-        component: diag?.originTrace.component ?? "unknown",
+        originType: diag?.originTrace.originType,
+        renderSource: diag?.originTrace.renderSource,
+        screen: diag?.originTrace.screenIdFromRender ?? diag?.originTrace.screen ?? "unknown",
+        jsonPath: diag?.originTrace.jsonPathFromRender ?? diag?.originTrace.jsonPath ?? "unknown",
+        section: diag?.originTrace.section ?? "unknown",
         molecule: diag?.originTrace.molecule ?? "unknown",
-        compound: diag?.originTrace.compound ?? "unknown",
-        layout: diag?.originTrace.layout ?? "unknown",
-        screen: diag?.originTrace.screen ?? "unknown",
-        jsonPath: diag?.originTrace.jsonPath ?? "unknown",
+        atom: diag?.originTrace.atom ?? "unknown",
+        shellLayer: diag?.originTrace.originLayer,
         computedStyle,
         iconInfo: diag?.iconInfo ?? null,
       });
     };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setPinnedDiagnostic(null);
+        setPanelPinPos(null);
+        pinnedRef.current = null;
+      }
+    };
     document.addEventListener("mousemove", onMove);
     document.addEventListener("click", onClick);
+    document.addEventListener("keydown", onKeyDown);
     return () => {
       document.removeEventListener("mousemove", onMove);
       document.removeEventListener("click", onClick);
+      document.removeEventListener("keydown", onKeyDown);
       setHoverDiagnostic(null);
       if (lastOutlinedRef.current) {
         lastOutlinedRef.current.style.outline = "";
@@ -519,6 +590,21 @@ export default function PaletteContractInspector({ palette }: PaletteContractIns
       }
     };
   }, [inspectMode, palette]);
+
+  useEffect(() => {
+    if (!isDraggingPanel) return;
+    const onMouseMove = (e: MouseEvent) => {
+      const { x, y, offsetX, offsetY } = dragStartRef.current;
+      setPanelOffset({ x: offsetX + (e.clientX - x), y: offsetY + (e.clientY - y) });
+    };
+    const onMouseUp = () => setIsDraggingPanel(false);
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
+    return () => {
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseup", onMouseUp);
+    };
+  }, [isDraggingPanel]);
 
   const tokenDetailsMap = useMemo(() => {
     const map: Record<string, TokenProbeResult> = {};
@@ -596,75 +682,197 @@ export default function PaletteContractInspector({ palette }: PaletteContractIns
   }
 
   function buildPaletteReport(): string {
-    const lines: string[] = ["PALETTE REPORT", "--------------"];
-    let hasAny = false;
+    const palName = paletteName ?? "current";
+    const screenId = pipelineContext?.screenId ?? "unknown";
+    const layoutId = pipelineContext?.layoutId ?? "unknown";
+    const deviceMode = pipelineContext?.deviceMode ?? "Desktop";
+    const originDiag = pinnedDiagnostic ?? hoverDiagnostic;
 
-    if (paletteProbeResults) {
-      for (const [groupKey, row] of Object.entries(paletteProbeResults)) {
-        if (!row || row.pass) continue;
-        hasAny = true;
-        lines.push(`FAIL: ${groupKey}`);
-        if (row.expected != null) lines.push(`  expected: ${row.expected}`);
-        if (row.resolved !== undefined && row.resolved !== null) lines.push(`  resolved: ${displayValue(row.resolved)}`);
-        if (row.computed && Object.keys(row.computed).length > 0) {
-          lines.push(`  actual: ${Object.entries(row.computed).map(([k, v]) => `${k}=${v}`).join("; ")}`);
-        }
-        lines.push("");
-      }
-    }
+    const lines: string[] = [
+      "PIPELINE CONTEXT:",
+      `- active palette: ${palName}`,
+      `- screen id: ${screenId}`,
+      `- layout id: ${layoutId}`,
+      `- device mode: ${deviceMode}`,
+      "- renderer: JsonRenderer",
+      `- timestamp: ${new Date().toISOString()}`,
+      "",
+      "--------------",
+      "",
+    ];
 
+    const contractKeys: { path: string; ok: boolean; groupKey: string; tokenKey: string }[] = [];
     for (const gr of groups) {
       for (const t of gr.tokens) {
-        if (t.ok) continue;
-        hasAny = true;
-        const detail = tokenDetailsMap[t.path];
-        lines.push(`FAIL: ${t.path}`);
-        lines.push(`  expected: ${displayValue(t.value)}`);
-        if (detail?.resolved !== undefined) lines.push(`  actual: ${displayValue(detail.resolved)}`);
-        lines.push("");
+        contractKeys.push({ path: t.path, ok: t.ok, groupKey: gr.groupKey, tokenKey: t.path.split(".")[1] ?? "" });
       }
     }
+    const total = contractKeys.length;
+    const passCount = contractKeys.filter((c) => c.ok).length;
+    const failCount = total - passCount;
 
-    if (hoverDiagnostic) {
-      const d = hoverDiagnostic;
-      const hoverMismatches: string[] = [];
-      if (!d.statuses.size) hoverMismatches.push("size mismatch");
-      if (!d.statuses.weight) hoverMismatches.push("weight mismatch");
-      if (!d.statuses.lineHeight) hoverMismatches.push("lineHeight mismatch");
-      if (!d.statuses.color) hoverMismatches.push("color mismatch");
-      if (d.tokenNotFound) hoverMismatches.push("token mismatch");
-      if (!d.statusFlags.palettePass) hoverMismatches.push("palette fail");
-      if (hoverMismatches.length > 0) {
-        hasAny = true;
-        lines.push(`Last hovered: ${d.elementLabel}`);
-        lines.push(`  size: expected ${d.expected.size} → actual ${d.actual.size}`);
-        lines.push(`  weight: expected ${d.expected.weight} → actual ${d.actual.weight}`);
-        lines.push(`  lineHeight: expected ${d.expected.lineHeight} → actual ${d.actual.lineHeight}`);
-        hoverMismatches.forEach((m) => lines.push(`  ${m}`));
-        lines.push("");
-      }
+    lines.push("SUMMARY:");
+    lines.push(`- total checks: ${total}`);
+    lines.push(`- pass: ${passCount}`);
+    lines.push(`- fail: ${failCount}`);
+    lines.push("");
 
-      const unknown: string[] = [];
-      if (d.originTrace.component === "unknown") unknown.push("component unknown");
-      if (d.originTrace.molecule === "unknown") unknown.push("molecule unknown");
-      if (d.originTrace.layout === "unknown") unknown.push("layout unknown");
-      if (d.originTrace.jsonPath === "unknown") unknown.push("json path unknown");
-      if (d.originTrace.compound === "unknown") unknown.push("compound unknown");
-      if (d.originTrace.screen === "unknown") unknown.push("screen unknown");
-      if (unknown.length > 0) {
-        hasAny = true;
-        lines.push("Unknown origin:");
-        unknown.forEach((u) => lines.push(`  ${u}`));
-        lines.push("");
+    const passKeys = contractKeys.filter((c) => c.ok).map((c) => c.path);
+    const failKeys = contractKeys.filter((c) => !c.ok);
+
+    lines.push("PASS KEYS (compact):");
+    lines.push(passKeys.length > 0 ? passKeys.join(" ") : "(none)");
+    lines.push("");
+
+    lines.push("FAIL KEYS (expanded below):");
+    lines.push("");
+
+    for (const { path, groupKey, tokenKey } of failKeys) {
+      const detail = tokenDetailsMap[path];
+      const computed = probeResults[path] ?? paletteProbeResults?.[groupKey]?.computed;
+      const isRoleLike = ROLE_LIKE_GROUPS.includes(groupKey);
+
+      lines.push(`---- ${path} ----`);
+      lines.push("STATUS: FAIL");
+      lines.push(`KEY: ${path}`);
+      lines.push("");
+
+      if (groupKey === "textRole" && tokenKey && palette?.textRole?.[tokenKey]) {
+        const roleDef = palette.textRole[tokenKey] as Record<string, string> | undefined;
+        const exp = getTextRoleExpected(palette, tokenKey);
+        const expectedParts: string[] = [];
+        if (roleDef?.size) expectedParts.push(`size=${roleDef.size}`);
+        if (roleDef?.weight) expectedParts.push(`weight=${roleDef.weight}`);
+        if (roleDef?.lineHeight) expectedParts.push(`lineHeight=${roleDef.lineHeight}`);
+        if (roleDef?.color) expectedParts.push(`color=${roleDef.color}`);
+        lines.push(`Expected tokens: ${expectedParts.join(" ") || "—"}`);
+        const actualParts: string[] = [];
+        if (exp?.size != null) actualParts.push(`size=${exp.size}`);
+        if (exp?.weight != null) actualParts.push(`weight=${exp.weight}`);
+        if (exp?.lineHeight != null) actualParts.push(`lineHeight=${exp.lineHeight}`);
+        if (exp?.color != null) actualParts.push(`color=${exp.color}`);
+        lines.push(`Actual tokens:   ${actualParts.join(" ") || "—"}`);
+      } else {
+        const tokenRow = groups.flatMap((g) => g.tokens).find((t) => t.path === path);
+        lines.push(`Expected: ${displayValue(tokenRow?.value ?? detail?.expected)}`);
+        lines.push(`Actual: ${displayValue(detail?.resolved)}`);
       }
+      lines.push("");
+
+      lines.push("Resolved:");
+      if (computed && Object.keys(computed).length > 0) {
+        ["fontSize", "fontWeight", "lineHeight", "color"].forEach((k) => {
+          if (computed[k] != null) lines.push(`- ${k}: ${computed[k]}`);
+        });
+        if (Object.keys(computed).filter((k) => !["fontSize", "fontWeight", "lineHeight", "color"].includes(k)).length > 0) {
+          Object.entries(computed).forEach(([k, v]) => {
+            if (!["fontSize", "fontWeight", "lineHeight", "color"].includes(k)) lines.push(`- ${k}: ${v}`);
+          });
+        }
+      } else {
+        lines.push("- (run probes for computed values)");
+      }
+      lines.push("");
+
+      const diffLines: string[] = [];
+      if (isRoleLike && tokenKey && detail) {
+        const exp = getTextRoleExpected(palette, tokenKey);
+        const actualSize = computed?.fontSize != null ? parsePx(computed.fontSize) : null;
+        const expSize = exp?.size != null ? parsePx(exp.size + "px") ?? parseFloat(exp.size) : null;
+        if (expSize != null && actualSize != null && Math.abs(expSize - actualSize) >= 2) diffLines.push("fontSize mismatch");
+        const actualWeight = computed?.fontWeight != null ? (parseFloat(computed.fontWeight) || (computed.fontWeight === "bold" ? 700 : 400)) : null;
+        const expWeight = exp?.weight != null ? parseFloat(exp.weight) : null;
+        if (expWeight != null && actualWeight != null && Math.abs(expWeight - actualWeight) >= 50) diffLines.push("fontWeight mismatch");
+        const actualLh = computed?.lineHeight != null ? parseFloat(computed.lineHeight) : null;
+        const expLh = exp?.lineHeight != null ? parseFloat(exp.lineHeight) : null;
+        if (expLh != null && actualLh != null && !Number.isNaN(actualLh) && Math.abs(expLh - actualLh) >= 0.15) diffLines.push("lineHeight mismatch");
+        if (computed?.color && exp?.color && (computed.color?.replace(/\s/g, "") !== exp.color?.replace(/\s/g, ""))) diffLines.push("color mismatch");
+      } else if (detail && !detail.pass) {
+        diffLines.push("token resolution mismatch");
+      }
+      if (diffLines.length === 0 && !detail?.pass) diffLines.push("token or value mismatch");
+      lines.push("Diff:");
+      diffLines.forEach((d) => lines.push(`✗ ${d}`));
+      lines.push("");
+
+      lines.push("Origin:");
+      lines.push(`- palette: ${palName}`);
+      if (originDiag?.originTrace.originType === "JSON") {
+        lines.push(`- Origin: JSON`);
+        lines.push(`- screen: ${originDiag.originTrace.screenIdFromRender ?? originDiag.originTrace.screen ?? "unknown"}`);
+        lines.push(`- jsonPath: ${originDiag.originTrace.jsonPathFromRender ?? originDiag.originTrace.jsonPath ?? "unknown"}`);
+        lines.push(`- section: ${originDiag.originTrace.section ?? "unknown"}`);
+        lines.push(`- molecule: ${originDiag.originTrace.molecule ?? "unknown"}`);
+        lines.push(`- atom: ${originDiag.originTrace.atom ?? "unknown"}`);
+      } else if (originDiag?.originTrace.originType === "SHELL") {
+        lines.push(`- Origin: shell`, `- Layer: ${originDiag.originTrace.originLayer ?? "—"}`);
+      } else {
+        lines.push(`- Origin: unknown`);
+      }
+      lines.push("");
     }
 
-    if (!hasAny) return "PALETTE REPORT\n--------------\nNo failures.";
+    if (failKeys.length === 0) {
+      lines.push("(No failures)");
+    }
+
     return lines.join("\n").replace(/\n\n+$/, "\n");
   }
 
   const selectedDetail = selectedTokenKey ? tokenDetailsMap[selectedTokenKey] : null;
   const firstFailingStep = selectedDetail?.trace?.find((s) => !s.ok);
+
+  function buildFloatingPanelReport(d: HoverDiagnostic): string {
+    const palName = paletteName ?? "current";
+    const lines: string[] = [
+      "PIPELINE CONTEXT:",
+      `- active palette: ${palName}`,
+      `- screen id: ${pipelineContext?.screenId ?? "unknown"}`,
+      `- layout id: ${pipelineContext?.layoutId ?? "unknown"}`,
+      `- device mode: ${pipelineContext?.deviceMode ?? "Desktop"}`,
+      "- renderer: JsonRenderer",
+      `- timestamp: ${new Date().toISOString()}`,
+      "",
+      "--------------",
+      "",
+      "---- " + d.elementLabel + " ----",
+      `STATUS: ${d.statusFlags.palettePass && Object.values(d.statuses).every(Boolean) ? "PASS" : "FAIL"}`,
+      `KEY: ${d.elementLabel}`,
+      "",
+      `Expected tokens: size=${d.expected.size} weight=${d.expected.weight} lineHeight=${d.expected.lineHeight}`,
+      `Actual tokens:   size=${d.actual.size} weight=${d.actual.weight} lineHeight=${d.actual.lineHeight}`,
+      "",
+      "Resolved:",
+      `- fontSize: ${d.actual.size}`,
+      `- fontWeight: ${d.actual.weight}`,
+      `- lineHeight: ${d.actual.lineHeight}`,
+      `- color: ${d.actual.color ?? "—"}`,
+      "",
+      "Diff:",
+    ];
+    const diffLines: string[] = [];
+    if (!d.statuses.size) diffLines.push("✗ fontSize mismatch");
+    if (!d.statuses.weight) diffLines.push("✗ fontWeight mismatch");
+    if (!d.statuses.lineHeight) diffLines.push("✗ lineHeight mismatch");
+    if (!d.statuses.color) diffLines.push("✗ color mismatch");
+    if (d.tokenNotFound) diffLines.push("✗ token mismatch");
+    if (diffLines.length === 0) diffLines.push("(none)");
+    lines.push(...diffLines, "", "Origin:", `- palette: ${palName}`);
+    if (d.originTrace.originType === "JSON") {
+      lines.push(`- Origin: JSON`, `- screen: ${d.originTrace.screenIdFromRender ?? d.originTrace.screen}`, `- jsonPath: ${d.originTrace.jsonPathFromRender ?? d.originTrace.jsonPath}`);
+      lines.push(`- section: ${d.originTrace.section}`, `- molecule: ${d.originTrace.molecule}`, `- atom: ${d.originTrace.atom}`);
+    } else if (d.originTrace.originType === "SHELL") {
+      lines.push(`- Origin: shell`, `- Layer: ${d.originTrace.originLayer ?? "—"}`);
+    } else {
+      lines.push(`- Origin: unknown`);
+    }
+    return lines.join("\n");
+  }
+
+  const displayDiagnostic = pinnedDiagnostic ?? hoverDiagnostic;
+  const PANEL_WIDTH = 300;
+  const PANEL_HEIGHT_ESTIMATE = 320;
+  const PANEL_FLIP_THRESHOLD = typeof window !== "undefined" ? Math.min(PANEL_HEIGHT_ESTIMATE, window.innerHeight * 0.5) : PANEL_HEIGHT_ESTIMATE;
 
   return (
     <div style={{ marginBottom: 10 }}>
@@ -688,100 +896,199 @@ export default function PaletteContractInspector({ palette }: PaletteContractIns
         Inspect Mode {inspectMode ? "ON" : "OFF"}
       </button>
 
-      {inspectMode && hoverDiagnostic && (
-        <div
-          style={{
-            position: "fixed",
-            left: Math.min(hoverDiagnostic.rect.right + 8, typeof window !== "undefined" ? window.innerWidth - 320 : 400),
-            top: hoverDiagnostic.rect.top,
-            width: 300,
-            maxWidth: "90vw",
-            padding: "10px 12px",
-            fontSize: 11,
-            fontFamily: "ui-monospace, SF Mono, Menlo, monospace",
-            background: "#fff",
-            border: "1px solid #e5e7eb",
-            borderRadius: 8,
-            boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
-            zIndex: 10000,
-            pointerEvents: "none",
-          }}
-        >
-          <div style={{ fontWeight: 700, marginBottom: 6, color: "#111" }}>Element: {hoverDiagnostic.elementLabel}</div>
-          {hoverDiagnostic.tokenNotFound && (
-            <div style={{ marginBottom: 6, padding: "4px 6px", background: "#fef2f2", color: "#b91c1c", borderRadius: 4 }}>
-              TOKEN NOT FOUND → {hoverDiagnostic.tokenNotFound}
-            </div>
-          )}
-          <div style={{ marginBottom: 4 }}><strong>EXPECTED:</strong></div>
-          <div style={{ marginLeft: 8, marginBottom: 6 }}>
-            size → {hoverDiagnostic.expected.size} weight → {hoverDiagnostic.expected.weight} lineHeight → {hoverDiagnostic.expected.lineHeight}
-          </div>
-          <div style={{ marginBottom: 4 }}><strong>ACTUAL:</strong></div>
-          <div style={{ marginLeft: 8, marginBottom: 8 }}>
-            size → {hoverDiagnostic.actual.size} weight → {hoverDiagnostic.actual.weight} lineHeight → {hoverDiagnostic.actual.lineHeight}
-          </div>
-          <div style={{ marginBottom: 4 }}><strong>STATUS:</strong></div>
-          <div style={{ marginLeft: 8 }}>
-            {hoverDiagnostic.statuses.size ? <span style={{ color: "#16a34a" }}>✔ SIZE OK</span> : <span style={{ color: "#dc2626" }}>✖ SIZE MISMATCH</span>}
-            {" "}
-            {hoverDiagnostic.statuses.weight ? <span style={{ color: "#16a34a" }}>✔ WEIGHT OK</span> : <span style={{ color: "#dc2626" }}>✖ WEIGHT MISMATCH</span>}
-            {" "}
-            {hoverDiagnostic.statuses.lineHeight ? <span style={{ color: "#16a34a" }}>✔ LINE-HEIGHT OK</span> : <span style={{ color: "#dc2626" }}>✖ LINE-HEIGHT MISMATCH</span>}
-            <br />
-            {hoverDiagnostic.statuses.color ? <span style={{ color: "#16a34a" }}>✔ COLOR OK</span> : <span style={{ color: "#dc2626" }}>✖ COLOR MISMATCH</span>}
-            <br />
-            {hoverDiagnostic.statusFlags.tokenResolved ? <span style={{ color: "#16a34a" }}>✔ token resolved</span> : <span style={{ color: "#dc2626" }}>✖ token unresolved</span>}
-            {hoverDiagnostic.statusFlags.textRoleMatch ? <span style={{ color: "#16a34a" }}> ✔ textRole match</span> : (hoverDiagnostic.elementLabel !== "element" ? <span style={{ color: "#dc2626" }}> ✖ textRole mismatch</span> : null)}
-            {hoverDiagnostic.statusFlags.resolverKnown ? <span style={{ color: "#16a34a" }}> ✔ resolver known</span> : <span style={{ color: "#dc2626" }}> ✖ missing resolver</span>}
-            <br />
-            {hoverDiagnostic.statusFlags.palettePass ? <span style={{ color: "#16a34a" }}>✔ palette PASS</span> : <span style={{ color: "#dc2626" }}>✖ palette FAIL</span>}
-            {hoverDiagnostic.statusFlags.componentOriginFound ? <span style={{ color: "#16a34a" }}> ✔ component origin found</span> : <span style={{ color: "#dc2626" }}> ✖ component unknown</span>}
-            {hoverDiagnostic.statusFlags.moleculeKnown ? <span style={{ color: "#16a34a" }}> ✔ molecule known</span> : <span style={{ color: "#dc2626" }}> ✖ molecule unknown</span>}
-          </div>
-          <div style={{ marginTop: 8, paddingTop: 6, borderTop: "1px solid #e5e7eb", fontSize: 10, color: "#374151" }}>
-            <strong>Element Type:</strong> {hoverDiagnostic.elementType}
-          </div>
-          {hoverDiagnostic.iconInfo && (
-            <div style={{ marginTop: 4, fontSize: 10, color: "#374151" }}>
-              {hoverDiagnostic.iconInfo.kind === "img" && (
-                <>
-                  <strong>IMG:</strong> src → {hoverDiagnostic.iconInfo.src.length > 40 ? hoverDiagnostic.iconInfo.src.slice(0, 40) + "…" : hoverDiagnostic.iconInfo.src}
-                  <br />
-                  naturalWidth × naturalHeight → {hoverDiagnostic.iconInfo.naturalWidth} × {hoverDiagnostic.iconInfo.naturalHeight}
-                </>
+      {inspectMode && displayDiagnostic && (() => {
+        const rect = displayDiagnostic.rect;
+        const usePinPos = pinnedDiagnostic && panelPinPos;
+        const anchorX = usePinPos ? panelPinPos.x : rect.right + 8;
+        const anchorY = usePinPos ? panelPinPos.y : rect.top;
+        const spaceBelow = typeof window !== "undefined" ? window.innerHeight - anchorY : 400;
+        const flipUp = spaceBelow < PANEL_FLIP_THRESHOLD;
+        let left = anchorX + 12 + panelOffset.x;
+        if (typeof window !== "undefined") left = Math.min(left, window.innerWidth - PANEL_WIDTH - 8);
+        left = Math.max(8, left);
+        let top: number | undefined;
+        let bottom: number | undefined;
+        if (flipUp) {
+          bottom = (typeof window !== "undefined" ? window.innerHeight - anchorY + 12 : 400) - panelOffset.y;
+          bottom = Math.max(8, Math.min(bottom, typeof window !== "undefined" ? window.innerHeight - 8 : 400));
+        } else {
+          top = anchorY + 12 + panelOffset.y;
+          top = Math.max(8, Math.min(top, typeof window !== "undefined" ? window.innerHeight - PANEL_HEIGHT_ESTIMATE - 8 : 400));
+        }
+        return (
+          <div
+            style={{
+              position: "fixed",
+              left,
+              ...(flipUp ? { bottom } : { top }),
+              width: PANEL_WIDTH,
+              maxWidth: "90vw",
+              maxHeight: "65vh",
+              padding: "10px 12px",
+              fontSize: 11,
+              fontFamily: "ui-monospace, SF Mono, Menlo, monospace",
+              background: "#fff",
+              border: "1px solid #e5e7eb",
+              borderRadius: 8,
+              boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+              zIndex: 10000,
+              pointerEvents: pinnedDiagnostic ? "auto" : "none",
+              overflowY: "auto",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            {pinnedDiagnostic && (
+              <div
+                role="button"
+                tabIndex={0}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  setIsDraggingPanel(true);
+                  dragStartRef.current = { x: e.clientX, y: e.clientY, offsetX: panelOffset.x, offsetY: panelOffset.y };
+                }}
+                style={{
+                  cursor: "move",
+                  padding: "4px 0",
+                  marginBottom: 4,
+                  borderBottom: "1px solid #e5e7eb",
+                  userSelect: "none",
+                  fontSize: 10,
+                  color: "#6b7280",
+                }}
+                title="Drag to move panel"
+              >
+                ⋮⋮ Drag to move
+              </div>
+            )}
+            {pinnedDiagnostic && (
+              <div style={{ fontWeight: 700, fontSize: 11, marginBottom: 6, color: "#111" }}>[ PINNED ] {displayDiagnostic.elementLabel}</div>
+            )}
+            <div style={{ display: "flex", gap: 6, marginBottom: 6, flexShrink: 0 }}>
+              {pinnedDiagnostic ? (
+                <button
+                  type="button"
+                  onClick={() => { setPinnedDiagnostic(null); pinnedRef.current = null; setPanelPinPos(null); setPanelOffset({ x: 0, y: 0 }); }}
+                  style={{ padding: "2px 8px", fontSize: 10, cursor: "pointer", border: "1px solid #d1d5db", borderRadius: 4, background: "#f3f4f6" }}
+                >
+                  Unpin
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => { setPinnedDiagnostic(displayDiagnostic); pinnedRef.current = displayDiagnostic; }}
+                  style={{ padding: "2px 8px", fontSize: 10, cursor: "pointer", border: "1px solid #22c55e", borderRadius: 4, background: "rgba(34,197,94,0.1)", color: "#16a34a" }}
+                >
+                  Pin
+                </button>
               )}
-              {hoverDiagnostic.iconInfo.kind === "svg" && (
-                <>
-                  <strong>SVG:</strong> inline svg = true
-                  <br />
-                  viewBox → {hoverDiagnostic.iconInfo.viewBox} | width × height → {hoverDiagnostic.iconInfo.width} × {hoverDiagnostic.iconInfo.height}
-                </>
-              )}
+              <button
+                type="button"
+                onClick={() => {
+                  const report = buildFloatingPanelReport(displayDiagnostic);
+                  if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+                    navigator.clipboard.writeText(report).then(
+                      () => { setPanelReportCopied(true); setTimeout(() => setPanelReportCopied(false), 2000); },
+                      () => setPanelReportCopied(false),
+                    );
+                  }
+                }}
+                style={{ padding: "2px 8px", fontSize: 10, cursor: "pointer", border: "1px solid #d1d5db", borderRadius: 4, background: "#f3f4f6" }}
+              >
+                {panelReportCopied ? "Copied" : "Copy Report"}
+              </button>
             </div>
-          )}
-          <div style={{ marginTop: 8, paddingTop: 6, borderTop: "1px solid #e5e7eb", fontSize: 10, color: "#374151" }}>
-            <strong>RENDER ORIGIN</strong>
-            <div style={{ marginLeft: 4, marginTop: 2 }}>Component: {hoverDiagnostic.originTrace.component}</div>
-            <div style={{ marginLeft: 4 }}>Molecule: {hoverDiagnostic.originTrace.molecule}</div>
-            <div style={{ marginLeft: 4 }}>Compound: {hoverDiagnostic.originTrace.compound}</div>
-            <div style={{ marginLeft: 4 }}>Layout: {hoverDiagnostic.originTrace.layout}</div>
-            <div style={{ marginLeft: 4 }}>Screen: {hoverDiagnostic.originTrace.screen}</div>
-            <div style={{ marginLeft: 4 }}>JSON path: {hoverDiagnostic.originTrace.jsonPath}</div>
+            <div style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
+              <div style={{ fontWeight: 700, marginBottom: 6, color: "#111" }}>Element: {displayDiagnostic.elementLabel}</div>
+              {displayDiagnostic.tokenNotFound && (
+                <div style={{ marginBottom: 6, padding: "4px 6px", background: "#fef2f2", color: "#b91c1c", borderRadius: 4 }}>
+                  TOKEN NOT FOUND → {displayDiagnostic.tokenNotFound}
+                </div>
+              )}
+              <div style={{ marginBottom: 4 }}><strong>EXPECTED:</strong></div>
+              <div style={{ marginLeft: 8, marginBottom: 6 }}>
+                size → {displayDiagnostic.expected.size} weight → {displayDiagnostic.expected.weight} lineHeight → {displayDiagnostic.expected.lineHeight}
+              </div>
+              <div style={{ marginBottom: 4 }}><strong>ACTUAL:</strong></div>
+              <div style={{ marginLeft: 8, marginBottom: 8 }}>
+                size → {displayDiagnostic.actual.size} weight → {displayDiagnostic.actual.weight} lineHeight → {displayDiagnostic.actual.lineHeight}
+              </div>
+              <div style={{ marginBottom: 4 }}><strong>STATUS:</strong></div>
+              <div style={{ marginLeft: 8 }}>
+                {displayDiagnostic.statuses.size ? <span style={{ color: "#16a34a" }}>✔ SIZE OK</span> : <span style={{ color: "#dc2626" }}>✖ SIZE MISMATCH</span>}
+                {" "}
+                {displayDiagnostic.statuses.weight ? <span style={{ color: "#16a34a" }}>✔ WEIGHT OK</span> : <span style={{ color: "#dc2626" }}>✖ WEIGHT MISMATCH</span>}
+                {" "}
+                {displayDiagnostic.statuses.lineHeight ? <span style={{ color: "#16a34a" }}>✔ LINE-HEIGHT OK</span> : <span style={{ color: "#dc2626" }}>✖ LINE-HEIGHT MISMATCH</span>}
+                <br />
+                {displayDiagnostic.statuses.color ? <span style={{ color: "#16a34a" }}>✔ COLOR OK</span> : <span style={{ color: "#dc2626" }}>✖ COLOR MISMATCH</span>}
+                <br />
+                {displayDiagnostic.statusFlags.tokenResolved ? <span style={{ color: "#16a34a" }}>✔ token resolved</span> : <span style={{ color: "#dc2626" }}>✖ token unresolved</span>}
+                {displayDiagnostic.statusFlags.textRoleMatch ? <span style={{ color: "#16a34a" }}> ✔ textRole match</span> : (displayDiagnostic.elementLabel !== "element" ? <span style={{ color: "#dc2626" }}> ✖ textRole mismatch</span> : null)}
+                {displayDiagnostic.statusFlags.resolverKnown ? <span style={{ color: "#16a34a" }}> ✔ resolver known</span> : <span style={{ color: "#dc2626" }}> ✖ missing resolver</span>}
+                <br />
+                {displayDiagnostic.statusFlags.palettePass ? <span style={{ color: "#16a34a" }}>✔ palette PASS</span> : <span style={{ color: "#dc2626" }}>✖ palette FAIL</span>}
+                {displayDiagnostic.statusFlags.componentOriginFound ? <span style={{ color: "#16a34a" }}> ✔ component origin found</span> : <span style={{ color: "#dc2626" }}> ✖ component unknown</span>}
+                {displayDiagnostic.statusFlags.moleculeKnown ? <span style={{ color: "#16a34a" }}> ✔ molecule known</span> : <span style={{ color: "#dc2626" }}> ✖ molecule unknown</span>}
+              </div>
+              <div style={{ marginTop: 8, paddingTop: 6, borderTop: "1px solid #e5e7eb", fontSize: 10, color: "#374151" }}>
+                <strong>Element Type:</strong> {displayDiagnostic.elementType}
+              </div>
+              {displayDiagnostic.iconInfo && (
+                <div style={{ marginTop: 4, fontSize: 10, color: "#374151" }}>
+                  {displayDiagnostic.iconInfo.kind === "img" && (
+                    <>
+                      <strong>IMG:</strong> src → {displayDiagnostic.iconInfo.src.length > 40 ? displayDiagnostic.iconInfo.src.slice(0, 40) + "…" : displayDiagnostic.iconInfo.src}
+                      <br />
+                      naturalWidth × naturalHeight → {displayDiagnostic.iconInfo.naturalWidth} × {displayDiagnostic.iconInfo.naturalHeight}
+                    </>
+                  )}
+                  {displayDiagnostic.iconInfo.kind === "svg" && (
+                    <>
+                      <strong>SVG:</strong> inline svg = true
+                      <br />
+                      viewBox → {displayDiagnostic.iconInfo.viewBox} | width × height → {displayDiagnostic.iconInfo.width} × {displayDiagnostic.iconInfo.height}
+                    </>
+                  )}
+                </div>
+              )}
+              <div style={{ marginTop: 8, paddingTop: 6, borderTop: "1px solid #e5e7eb", fontSize: 10, color: "#374151" }}>
+                <strong>RENDER ORIGIN</strong>
+                {displayDiagnostic.originTrace.originType === "JSON" && (
+                  <>
+                    <div style={{ marginLeft: 4, marginTop: 2 }}>Origin: JSON</div>
+                    <div style={{ marginLeft: 4 }}>Screen: {displayDiagnostic.originTrace.screenIdFromRender || displayDiagnostic.originTrace.screen}</div>
+                    <div style={{ marginLeft: 4 }}>JSON path: {displayDiagnostic.originTrace.jsonPathFromRender || displayDiagnostic.originTrace.jsonPath}</div>
+                    <div style={{ marginLeft: 4 }}>Section: {displayDiagnostic.originTrace.section}</div>
+                    <div style={{ marginLeft: 4 }}>Molecule: {displayDiagnostic.originTrace.molecule}</div>
+                    <div style={{ marginLeft: 4 }}>Atom: {displayDiagnostic.originTrace.atom}</div>
+                  </>
+                )}
+                {displayDiagnostic.originTrace.originType === "SHELL" && (
+                  <>
+                    <div style={{ marginLeft: 4, marginTop: 2 }}>Origin: shell</div>
+                    <div style={{ marginLeft: 4 }}>Layer: {displayDiagnostic.originTrace.originLayer ?? "—"}</div>
+                  </>
+                )}
+                {displayDiagnostic.originTrace.originType === "unknown" && (
+                  <div style={{ marginLeft: 4, marginTop: 2 }}>Origin: unknown</div>
+                )}
+              </div>
+              <div style={{ marginTop: 6, paddingTop: 6, borderTop: "1px solid #e5e7eb", fontSize: 10, color: "#6b7280" }}>
+                <strong>STYLE PIPELINE</strong>
+                <div style={{ marginLeft: 4, marginTop: 2 }}>Token source: {displayDiagnostic.elementLabel}</div>
+                <div style={{ marginLeft: 4 }}>Resolver used: {displayDiagnostic.resolverHint}</div>
+                <div style={{ marginLeft: 4 }}>Final computedStyle: {Object.entries(displayDiagnostic.actual).slice(0, 4).map(([k, v]) => `${k}=${v}`).join("; ")}…</div>
+              </div>
+              <div style={{ marginTop: 6, fontSize: 10, color: "#6b7280" }}>
+                {displayDiagnostic.pipeline.map((line, i) => (
+                  <div key={i}>{line}</div>
+                ))}
+              </div>
+            </div>
           </div>
-          <div style={{ marginTop: 6, paddingTop: 6, borderTop: "1px solid #e5e7eb", fontSize: 10, color: "#6b7280" }}>
-            <strong>STYLE PIPELINE</strong>
-            <div style={{ marginLeft: 4, marginTop: 2 }}>Token source: {hoverDiagnostic.elementLabel}</div>
-            <div style={{ marginLeft: 4 }}>Resolver used: {hoverDiagnostic.resolverHint}</div>
-            <div style={{ marginLeft: 4 }}>Final computedStyle: {Object.entries(hoverDiagnostic.actual).slice(0, 4).map(([k, v]) => `${k}=${v}`).join("; ")}…</div>
-          </div>
-          <div style={{ marginTop: 6, fontSize: 10, color: "#6b7280" }}>
-            {hoverDiagnostic.pipeline.map((line, i) => (
-              <div key={i}>{line}</div>
-            ))}
-          </div>
-        </div>
-      )}
+        );
+      })()}
 
       <div
         role="button"

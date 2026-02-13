@@ -293,7 +293,7 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
             )}
             {openPanel === "palette" && (
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                <PaletteContractInspector palette={activePalette} />
+                <PaletteContractInspector palette={activePalette} paletteName={paletteName} />
                 {palettePreviewScreen != null && palettePreviewProps != null && (
                   <div style={{ display: "flex", gap: "var(--spacing-2)", alignItems: "center", flexWrap: "wrap" }}>
                     <span style={{ fontSize: 12, color: GOOGLE.textSecondary, fontWeight: 500 }}>Mode:</span>

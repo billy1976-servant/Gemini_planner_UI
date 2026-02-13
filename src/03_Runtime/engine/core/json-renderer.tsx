@@ -39,6 +39,7 @@ import { getExperienceVisibility } from "@/engine/core/experience-visibility";
 import { pushTrace } from "@/devtools/runtime-trace-store";
 import { addTraceEvent, endInteraction } from "@/03_Runtime/debug/pipeline-trace-aggregator";
 import { startTrace, endTrace, isEnabled } from "@/diagnostics/traceStore";
+import { OriginTraceProvider } from "@/03_Runtime/diagnostics/OriginTraceContext";
 
 
 /* ======================================================
@@ -1178,11 +1179,35 @@ export function renderNode(
 
   if (isEnabled()) endTrace();
 
-  const content = (
+  const rawContent = (
     <MaybeDebugWrapper node={resolvedNode} screenPath={effectivePath}>
       <Component {...props}>{renderedChildren}</Component>
     </MaybeDebugWrapper>
   );
+
+  const content =
+    typeKey === "section"
+      ? (
+        <OriginTraceProvider
+          value={{
+            sectionId: (resolvedNode.id ?? resolvedNode.role ?? "") || undefined,
+            layoutId: (resolvedNode.layout ?? (resolvedNode as any)._effectiveLayoutPreset) ?? undefined,
+            jsonPath: effectivePath,
+          }}
+        >
+          {rawContent}
+        </OriginTraceProvider>
+      )
+      : (
+        <OriginTraceProvider
+          value={{
+            moleculeId: (resolvedNode.type ?? resolvedNode.id ?? "") || undefined,
+            jsonPath: effectivePath,
+          }}
+        >
+          {rawContent}
+        </OriginTraceProvider>
+      );
 
   if (typeKey === "section" && isLayoutDebug()) {
     return <SectionLayoutDebugOverlay node={resolvedNode}>{content}</SectionLayoutDebugOverlay>;
@@ -1437,21 +1462,27 @@ export default function JsonRenderer({
     endInteraction();
   }
 
+  const rootJsonPath = node?.id ?? node?.role ?? "root";
   return (
-    <div
-      data-behavior-profile={behaviorProfile}
-      data-behavior-transition={behaviorTransition}
-      className={`behavior-${behaviorProfile}`}
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        width: "100%",
-        marginLeft: "auto",
-        marginRight: "auto",
-      }}
-    >
-      {result}
-    </div>
+    <OriginTraceProvider value={{ screenId: screenId ?? undefined, jsonPath: rootJsonPath }}>
+      <div
+        data-render-source="json"
+        data-screen-id={screenId ?? ""}
+        data-json-path={rootJsonPath}
+        data-behavior-profile={behaviorProfile}
+        data-behavior-transition={behaviorTransition}
+        className={`behavior-${behaviorProfile}`}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
+          marginLeft: "auto",
+          marginRight: "auto",
+        }}
+      >
+        {result}
+      </div>
+    </OriginTraceProvider>
   );
 }
 

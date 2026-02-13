@@ -1,32 +1,28 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import { getPhoneFrameEnabled, subscribePhoneFrameEnabled } from "@/dev/phone-frame-store";
 
 /**
- * PersistentLauncher - Global UI overlay that persists across all screens
- * 
- * REQUIREMENTS:
- * - Always visible on every screen
- * - Independent of JSON rendering and PreviewStage
- * - Lives at ROOT app shell level
- * - Renders above all screens using z-index
- * - Does NOT affect layout flow
- * 
- * STRUCTURE:
- * - Circular play button (bottom-right)
- * - On click: expand panel with 4 links
- * - Fixed position with high z-index
+ * PersistentLauncher - FAB anchored to phone-frame-inner or screen-ui-layer (restored anchor model).
+ * Portal target priority: [data-phone-frame-inner] → #screen-ui-layer → body.
  */
-const FAB_INSET = 24;
 
 export default function PersistentLauncher() {
+  console.log("FAB RENDERED");
+
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const phoneFrameEnabled = useSyncExternalStore(subscribePhoneFrameEnabled, getPhoneFrameEnabled, getPhoneFrameEnabled);
-  const [fabPosition, setFabPosition] = useState({ right: FAB_INSET, bottom: FAB_INSET });
+  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const target =
+      document.querySelector("[data-phone-frame-inner]") ||
+      document.getElementById("screen-ui-layer") ||
+      document.body;
+    setPortalTarget(target as HTMLElement);
+  }, [mounted]);
 
   useEffect(() => {
     setMounted(true);
@@ -35,59 +31,6 @@ export default function PersistentLauncher() {
     }
   }, []);
 
-  useEffect(() => {
-    if (process.env.NODE_ENV !== "development" || !mounted) return;
-    const run = () => {
-      const fab = document.querySelector("[data-play-fab]");
-      const frame = document.querySelector("[data-phone-frame]");
-      if (!fab || !(fab instanceof HTMLElement)) return;
-      const rect = fab.getBoundingClientRect();
-      const cs = window.getComputedStyle(fab);
-      const chain: Array<{ el: string; offsetLeft: number; offsetTop: number }> = [];
-      let el: HTMLElement | null = fab;
-      while (el) {
-        chain.push({ el: el.tagName + (el.id ? "#" + el.id : ""), offsetLeft: el.offsetLeft, offsetTop: el.offsetTop });
-        el = el.offsetParent as HTMLElement | null;
-      }
-      console.group("[Step A] Play FAB");
-      console.log("getBoundingClientRect", { left: rect.left, top: rect.top, width: rect.width, height: rect.height, right: rect.right, bottom: rect.bottom });
-      console.log("computed position", cs.position, "zIndex", cs.zIndex);
-      console.log("offsetParent chain", chain);
-      if (frame) {
-        console.log("phone frame rect", frame.getBoundingClientRect());
-      }
-      console.groupEnd();
-    };
-    const t = setTimeout(run, 150);
-    return () => clearTimeout(t);
-  }, [mounted]);
-
-  useEffect(() => {
-    const update = () => {
-      if (!phoneFrameEnabled) {
-        setFabPosition({ right: FAB_INSET, bottom: FAB_INSET });
-        return;
-      }
-      const frame = document.querySelector("[data-phone-frame]");
-      if (!frame) {
-        setFabPosition({ right: FAB_INSET, bottom: FAB_INSET });
-        return;
-      }
-      const r = frame.getBoundingClientRect();
-      setFabPosition({
-        right: window.innerWidth - r.right + FAB_INSET,
-        bottom: window.innerHeight - r.bottom + FAB_INSET + 48,
-      });
-    };
-    update();
-    const t = phoneFrameEnabled ? setTimeout(update, 150) : undefined;
-    window.addEventListener("resize", update);
-    return () => {
-      if (t) clearTimeout(t);
-      window.removeEventListener("resize", update);
-    };
-  }, [phoneFrameEnabled]);
-
   const toggleLauncher = () => {
     setIsOpen((prev) => !prev);
     if (process.env.NODE_ENV === "development") {
@@ -95,27 +38,52 @@ export default function PersistentLauncher() {
     }
   };
 
-  if (!mounted) return null;
+  // Temporarily commented so FAB always renders for visibility debugging.
+  // if (!mounted) return null;
+
+  // Force visibility for debugging: fixed, bottom-right, blue, high z-index.
+  const fabStyle: React.CSSProperties = {
+    position: "fixed",
+    right: 24,
+    bottom: 24,
+    zIndex: 9999,
+    background: "blue",
+    width: "56px",
+    height: "56px",
+    minWidth: "56px",
+    minHeight: "56px",
+    borderRadius: "50%",
+    border: "none",
+    boxShadow: "0 4px 24px rgba(102, 126, 234, 0.4)",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    pointerEvents: "auto",
+    padding: "0",
+    margin: "0",
+    outline: "none",
+  };
+
+  const panelStyle: React.CSSProperties = {
+    position: "fixed",
+    right: 24,
+    bottom: 24 + 56 + 16,
+    zIndex: 9999,
+    background: "#ffffff",
+    borderRadius: "12px",
+    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.24)",
+    padding: "16px",
+    minWidth: "200px",
+    pointerEvents: "auto",
+    border: "1px solid #e0e0e0",
+  };
 
   const content = (
-    <>
+    <div data-render-source="shell" data-shell-layer="fab" style={{ position: "relative", display: "inline-block" }}>
       {/* Expanded Panel - shows when open */}
       {isOpen && (
-        <div
-          style={{
-            position: "fixed",
-            right: `${fabPosition.right}px`,
-            bottom: `${fabPosition.bottom + 56 + 16}px`,
-            zIndex: 99999,
-            background: "#ffffff",
-            borderRadius: "12px",
-            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.24)",
-            padding: "16px",
-            minWidth: "200px",
-            pointerEvents: "auto",
-            border: "1px solid #e0e0e0",
-          }}
-        >
+        <div style={panelStyle}>
           <nav
             style={{
               display: "flex",
@@ -220,29 +188,7 @@ export default function PersistentLauncher() {
         data-play-fab
         onClick={toggleLauncher}
         title="Quick Launch Menu"
-        style={{
-          position: "fixed",
-          right: `${fabPosition.right}px`,
-          bottom: `${fabPosition.bottom}px`,
-          zIndex: 100000,
-          width: "56px",
-          height: "56px",
-          minWidth: "56px",
-          minHeight: "56px",
-          borderRadius: "50%",
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-          border: "none",
-          boxShadow: "0 4px 24px rgba(102, 126, 234, 0.4)",
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          transition: "all 0.3s ease",
-          pointerEvents: "auto",
-          padding: "0",
-          margin: "0",
-          outline: "none",
-        }}
+        style={fabStyle}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = "scale(1.1)";
           e.currentTarget.style.boxShadow = "0 6px 32px rgba(102, 126, 234, 0.6)";
@@ -273,8 +219,8 @@ export default function PersistentLauncher() {
           />
         </svg>
       </button>
-    </>
+    </div>
   );
 
-  return createPortal(content, document.body);
+  return createPortal(content, portalTarget ?? document.body);
 }

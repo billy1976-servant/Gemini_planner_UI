@@ -4,8 +4,6 @@ import React from "react";
 import { useSyncExternalStore } from "react";
 import JsonRenderer from "@/engine/core/json-renderer";
 import { getState, subscribeState, dispatchState } from "@/state/state-store";
-import GlobalAppSkin from "../../../04_Presentation/shells/GlobalAppSkin";
-
 export type ExperienceRendererProps = {
   node: any;
   defaultState?: any;
@@ -75,7 +73,6 @@ export default function ExperienceRenderer({
   }, [experience, node, sectionKeys.length]);
   // #endregion
 
-  const BottomNav = (GlobalAppSkin as typeof GlobalAppSkin & { BottomNavOnly: React.FC }).BottomNavOnly;
   const rendererContent = (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
       <div style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
@@ -97,7 +94,6 @@ export default function ExperienceRenderer({
           paletteOverride={paletteOverride}
         />
       </div>
-      {BottomNav && <BottomNav />}
     </div>
   );
 

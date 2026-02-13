@@ -794,32 +794,69 @@ export default function Page() {
       jsonContent
     );
 
-  // PURE ISOLATION: app branch returns ONLY a full-height container + JsonRenderer (experience="website"). No shells, overlay, sidebar, section collapsing.
-  // No z-index on this wrapper so TSX bottom nav (e.g. GlobalAppSkin) stays on top stacking layer.
+  // App branch: same content but with PreviewStage + RightFloatingSidebar so sidebar never disappears when switching modes.
   if (experience === "app") {
     return (
-      <div
-        data-proof="pure-json-app"
-        style={{
-          height: "100vh",
-          width: "100vw",
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-          background: "#fff",
-        }}
-      >
-        <div style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
-          <JsonRenderer
-            node={treeForRender}
-            experience="website"
-            defaultState={json?.state}
-            profileOverride={effectiveProfile}
-            screenId={screenKey}
-            behaviorProfile={behaviorProfile}
-          />
+      <PreviewStage>
+        {overlay}
+        <div
+          data-proof="pure-json-app"
+          style={{
+            height: "100%",
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+            background: "#fff",
+          }}
+        >
+          <div style={{ flex: 1, minHeight: 0, overflow: "auto", paddingRight: contentPaddingRight }}>
+            <JsonRenderer
+              node={treeForRender}
+              experience="website"
+              defaultState={json?.state}
+              profileOverride={effectiveProfile}
+              screenId={screenKey}
+              behaviorProfile={behaviorProfile}
+            />
+          </div>
         </div>
-      </div>
+        <RightFloatingSidebar
+          layoutPanelContent={
+            <OrganPanel
+              sectionKeysForPreset={sectionKeysForPreset}
+              sectionLabels={sectionLabels}
+              sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
+              onSectionLayoutPresetOverride={handleSectionLayoutPresetOverride}
+              cardLayoutPresetOverrides={cardLayoutPresetOverrides}
+              onCardLayoutPresetOverride={handleCardLayoutPresetOverride}
+              sectionPresetOptions={sectionPresetOptions}
+              sectionHeights={sectionHeights}
+              organIdBySectionKey={organIdBySectionKey}
+              organInternalLayoutOverrides={organInternalLayoutOverridesProp}
+              onOrganInternalLayoutOverride={handleOrganInternalLayoutOverride}
+              sectionNodesByKey={sectionByKey}
+              screenModel={treeForRender}
+              defaultState={json?.state}
+              profileOverride={effectiveProfile}
+              screenKey={screenKey}
+            />
+          }
+          palettePreviewScreen={treeForRender}
+          palettePreviewProps={{
+            defaultState: json?.state,
+            profileOverride: effectiveProfile,
+            sectionLayoutPresetOverrides,
+            cardLayoutPresetOverrides,
+            organInternalLayoutOverrides: organInternalLayoutOverridesProp,
+            screenKey,
+            behaviorProfile,
+            experience,
+            sectionKeys: sectionKeysFromTree,
+            sectionLabels,
+          }}
+        />
+      </PreviewStage>
     );
   }
   if (experience === "learning") {

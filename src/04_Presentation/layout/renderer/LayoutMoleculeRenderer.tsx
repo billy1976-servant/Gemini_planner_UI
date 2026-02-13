@@ -2,6 +2,7 @@
 
 import React from "react";
 import { SurfaceAtom, TextAtom, SequenceAtom, CollectionAtom } from "@/components/atoms";
+import { OriginTraceProvider } from "@/03_Runtime/diagnostics/OriginTraceContext";
 import { usePreviewTile } from "@/04_Presentation/contexts/PreviewTileContext";
 import { resolveParams } from "@/engine/core/palette-resolver";
 import { resolveMoleculeLayout, getSectionLayoutIds } from "@/layout";
@@ -585,14 +586,16 @@ export default function LayoutMoleculeRenderer({
         };
 
   return (
-    <div
-      data-section-id={id}
-      data-section-layout={layoutPresetId ?? undefined}
-      data-layout-2
-      data-container-width={rawWidth ?? undefined}
-      style={combinedOuterStyle}
-    >
-      <SurfaceAtom params={surfaceWithVariant}>{innerContent}</SurfaceAtom>
-    </div>
+    <OriginTraceProvider value={{ layoutId: layoutId ?? undefined }}>
+      <div
+        data-section-id={id}
+        data-section-layout={layoutPresetId ?? undefined}
+        data-layout-2
+        data-container-width={rawWidth ?? undefined}
+        style={combinedOuterStyle}
+      >
+        <SurfaceAtom params={surfaceWithVariant}>{innerContent}</SurfaceAtom>
+      </div>
+    </OriginTraceProvider>
   );
 }

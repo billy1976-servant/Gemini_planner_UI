@@ -50,6 +50,8 @@ import { installBehaviorListener } from "@/engine/core/behavior-listener";
 import presentationProfiles from "@/lib/layout/presentation-profiles.json";
 import CascadingScreenMenu from "@/app/components/CascadingScreenMenu";
 import PersistentLauncher from "@/components/global/PersistentLauncher";
+import { BottomNavOnly } from "@/04_Presentation/shells/GlobalAppSkin";
+import { NAV_STRIP_HEIGHT } from "@/app/shell-ui-constants";
 
 
 /* ============================================================
@@ -221,7 +223,7 @@ export default function RootLayout({ children }: any) {
           <div id="section-layout-panel" className="app-section-layout-panel" />
         )}
 
-        <div ref={contentRef} className="app-content" style={{ padding: 0 }}>
+        <div ref={contentRef} className="app-content" style={{ padding: 0, overflow: "visible" }}>
           {phoneFrameEnabled ? (
             <div
               style={{
@@ -230,6 +232,7 @@ export default function RootLayout({ children }: any) {
                 alignItems: "center",
                 minHeight: "100vh",
                 background: "#111",
+                overflow: "visible",
               }}
             >
               <div
@@ -246,50 +249,74 @@ export default function RootLayout({ children }: any) {
                   alignItems: "center",
                 }}
               >
-              <div
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  borderRadius: "28px",
-                  background: "#fff",
-                  overflowY: "auto",
-                  overflowX: "hidden",
-                  display: "block",
-                  boxSizing: "border-box",
-                  maxWidth: "100%",
-                }}
-              >
                 <div
+                  data-phone-frame-inner
                   style={{
+                    position: "relative",
                     width: "100%",
+                    height: "100%",
+                    borderRadius: "28px",
+                    background: "#fff",
+                    overflow: "visible",
                     display: "flex",
                     flexDirection: "column",
+                    boxSizing: "border-box",
+                    maxWidth: "100%",
                   }}
                 >
-                  {children}
+                  <div style={{ flex: 1, minHeight: 0, overflowY: "auto", overflowX: "hidden", paddingBottom: 80 }}>
+                    {children}
+                  </div>
+                  <div
+                    id="screen-ui-layer"
+                    data-screen-ui-layer
+                    style={{
+                      position: "relative",
+                      width: "100%",
+                      height: NAV_STRIP_HEIGHT,
+                      flex: "none",
+                      overflow: "visible",
+                    }}
+                  >
+                    <BottomNavOnly />
+                  </div>
                 </div>
-              </div>
               </div>
             </div>
           ) : (
             <div
               style={{
+                position: "relative",
                 display: "flex",
-                justifyContent: "center",
+                flexDirection: "column",
                 width: "100%",
                 minHeight: "100vh",
                 boxSizing: "border-box",
                 maxWidth: "100%",
-                overflowX: "hidden",
+                overflow: "visible",
               }}
             >
-              {children}
+              <div style={{ flex: 1, minHeight: 0, overflowY: "auto", overflowX: "hidden", paddingBottom: 80 }}>
+                {children}
+              </div>
+              <div
+                id="screen-ui-layer"
+                data-screen-ui-layer
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  height: NAV_STRIP_HEIGHT,
+                  flex: "none",
+                  overflow: "visible",
+                }}
+              >
+                <BottomNavOnly />
+              </div>
             </div>
           )}
         </div>
-        {process.env.NODE_ENV === "development" && <InteractionTracerPanel />}
-        
-        {/* Global persistent launcher - renders via portal */}
+        {process.env.NODE_ENV === "development" && <InteractionTracerPanel defaultCollapsed={phoneFrameEnabled} />}
+
         <PersistentLauncher />
       </body>
     </html>

@@ -1250,9 +1250,10 @@ function LiveStateView({ snapshot }: { snapshot: PipelineDebugSnapshot }) {
   );
 }
 
-export default function InteractionTracerPanel() {
+type InteractionTracerPanelProps = { defaultCollapsed?: boolean };
+export default function InteractionTracerPanel({ defaultCollapsed = false }: InteractionTracerPanelProps = {}) {
   const [events, setEvents] = useState<TraceEvent[]>([]);
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(!defaultCollapsed);
   const [panelHeight, setPanelHeight] = useState(60); // Percentage of viewport height (legacy)
   const [panelHeightPx, setPanelHeightPx] = useState(300); // Expanded height in px (40–300)
   const [isResizing, setIsResizing] = useState(false);
@@ -1769,9 +1770,9 @@ export default function InteractionTracerPanel() {
         bottom: 0,
         left: 0,
         right: 0,
-        height: expanded ? `${panelHeightPx}px` : "40px",
-        maxHeight: "90vh",
-        zIndex: 50000,
+        height: expanded ? `min(${panelHeightPx}px, 40vh)` : "24px",
+        maxHeight: "40vh",
+        zIndex: 5000,
         overflow: "hidden",
         background: "rgba(0,0,0,0.92)",
         borderTop: "2px solid #00ff88",
@@ -1815,7 +1816,7 @@ export default function InteractionTracerPanel() {
       <div
         onClick={() => setExpanded(!expanded)}
         style={{
-          height: 40,
+          height: 24,
           display: "flex",
           alignItems: "center",
           padding: "0 12px",
@@ -1850,7 +1851,7 @@ export default function InteractionTracerPanel() {
         <div
           style={{
             overflow: "auto",
-            height: `${panelHeightPx - 48}px`,
+            flex: 1,
             minHeight: 0,
             padding: 8,
             color: "#0f0",
