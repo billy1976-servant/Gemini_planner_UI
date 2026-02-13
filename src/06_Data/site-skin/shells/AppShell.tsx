@@ -53,7 +53,8 @@ export default function AppShell({
             zIndex: 0 /* TEMP: neutralized to isolate nav dropdown blocker */,
             borderBottom: "1px solid var(--color-border)",
             background: "var(--color-bg-primary)",
-            padding: "8px 16px",
+            paddingTop: 8,
+            paddingBottom: 8,
           }}
         >
           {header}
@@ -64,7 +65,8 @@ export default function AppShell({
             display: "grid",
             gridTemplateColumns: sidebar ? "minmax(0, 1fr) 360px" : "minmax(0, 1fr)",
             gap: 16,
-            padding: 16,
+            paddingTop: 16,
+            paddingBottom: 16,
             alignItems: "start",
             minWidth: 0,
           }}
@@ -76,7 +78,8 @@ export default function AppShell({
                 border: "1px solid var(--color-border)",
                 background: "var(--color-bg-secondary)",
                 borderRadius: "var(--radius-lg)",
-                padding: 12,
+                paddingTop: 12,
+                paddingBottom: 12,
                 minHeight: 120,
               }}
             >
@@ -89,7 +92,8 @@ export default function AppShell({
           style={{
             borderTop: "1px solid var(--color-border)",
             background: "var(--color-bg-primary)",
-            padding: "12px 16px",
+            paddingTop: 12,
+            paddingBottom: 12,
           }}
         >
           {actions}
