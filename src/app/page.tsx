@@ -26,7 +26,7 @@ import {
   loadOrganVariant,
 } from "@/components/organs";
 import OrganPanel from "@/components/organs/OrganPanel";
-import RightFloatingSidebar, { SIDEBAR_TOTAL_WIDTH } from "@/app/ui/control-dock/RightFloatingSidebar";
+import RightFloatingSidebar from "@/app/ui/control-dock/RightFloatingSidebar";
 import {
   getSectionLayoutPresetOverrides,
   getOverridesForScreen,
@@ -213,9 +213,6 @@ export default function Page() {
   const layoutModeFromState = stateSnapshot?.values?.layoutMode;
   const paletteName = (stateSnapshot?.values?.paletteName ?? getPaletteName()) || "default";
   
-  // Sidebar offset only (not general content inset): 0 when phone frame or tablet/phone preview, otherwise SIDEBAR_TOTAL_WIDTH so content is not hidden behind right sidebar.
-  const contentPaddingRight = (phoneFrameEnabled || devicePreviewMode === "phone" || devicePreviewMode === "tablet") ? 0 : SIDEBAR_TOTAL_WIDTH;
-
   /** Section/card/organ overrides from state.layoutByScreen[screenKey]. Do not use state.values for layout presets. */
   const getLayoutOverridesFromState = (screenKey: string) => {
     const byScreen = stateSnapshot?.layoutByScreen?.[screenKey];
@@ -810,7 +807,7 @@ export default function Page() {
             background: "#fff",
           }}
         >
-          <div style={{ flex: 1, minHeight: 0, overflow: "auto", paddingRight: contentPaddingRight }}>
+          <div style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
             <JsonRenderer
               node={treeForRender}
               experience="website"
@@ -863,7 +860,7 @@ export default function Page() {
     return (
       <PreviewStage>
         {overlay}
-        <LearningShell content={<div style={{ paddingRight: contentPaddingRight }}>{jsonContent}</div>} />
+        <LearningShell content={<div>{jsonContent}</div>} />
         <RightFloatingSidebar />
       </PreviewStage>
     );
@@ -873,7 +870,7 @@ export default function Page() {
       {overlay}
       <WebsiteShell
         content={
-          <div ref={contentRef} style={{ width: "100%", minHeight: "100vh", overflowY: "visible", paddingRight: contentPaddingRight }}>
+          <div ref={contentRef} style={{ width: "100%", minHeight: "100vh", overflowY: "visible" }}>
             {wrappedContent}
           </div>
         }

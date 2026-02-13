@@ -11,6 +11,7 @@ import "@/styles/site-theme.css";
 import InteractionTracerPanel from "@/devtools/InteractionTracerPanel";
 import DevicePreviewToggle from "@/dev/DevicePreviewToggle";
 import { getPhoneFrameEnabled, subscribePhoneFrameEnabled } from "@/dev/phone-frame-store";
+import { getDevicePreviewMode, subscribeDevicePreviewMode } from "@/dev/device-preview-store";
 
 /* ============================================================
    🎨 PALETTE ENGINE (state is source of truth; palette-store used only as fallback)
@@ -52,6 +53,11 @@ import CascadingScreenMenu from "@/app/components/CascadingScreenMenu";
 import PersistentLauncher from "@/components/global/PersistentLauncher";
 import { BottomNavOnly } from "@/04_Presentation/shells/GlobalAppSkin";
 import { NAV_STRIP_HEIGHT } from "@/app/shell-ui-constants";
+
+/** Stage max-width by device mode (centered; does not include sidebar area). */
+const STAGE_MAX_WIDTH_PHONE = 420;
+const STAGE_MAX_WIDTH_TABLET = 768;
+const STAGE_MAX_WIDTH_DESKTOP = 1100;
 
 
 /* ============================================================
@@ -95,7 +101,15 @@ export default function RootLayout({ children }: any) {
   const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
   const layoutSnapshot = useSyncExternalStore(subscribeLayout, getLayout, getLayout);
   const phoneFrameEnabled = useSyncExternalStore(subscribePhoneFrameEnabled, getPhoneFrameEnabled, getPhoneFrameEnabled);
+  const devicePreviewMode = useSyncExternalStore(subscribeDevicePreviewMode, getDevicePreviewMode, getDevicePreviewMode);
   const templateList = getTemplateList();
+
+  const stageMaxWidth =
+    devicePreviewMode === "phone"
+      ? STAGE_MAX_WIDTH_PHONE
+      : devicePreviewMode === "tablet"
+        ? STAGE_MAX_WIDTH_TABLET
+        : STAGE_MAX_WIDTH_DESKTOP;
 
   // State is source of truth; fall back to layout-store / palette-store when key is missing
   const experience = (stateSnapshot?.values?.experience ?? (layoutSnapshot as { experience?: string })?.experience) ?? "website";
@@ -162,9 +176,6 @@ export default function RootLayout({ children }: any) {
         setIndex([]);
       });
   }, []);
-
-  console.log("LAYOUT RENDER");
-  console.log("APP VIEWPORT EXISTS:", typeof document !== "undefined" && !!document.getElementById("app-viewport"));
 
   return (
     <html>
@@ -273,53 +284,89 @@ export default function RootLayout({ children }: any) {
                     id="screen-ui-layer"
                     data-screen-ui-layer
                     style={{
-                      position: "relative",
-                      width: "100%",
+                      position: "absolute",
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
                       height: NAV_STRIP_HEIGHT,
-                      flex: "none",
                       overflow: "visible",
                     }}
                   >
                     <BottomNavOnly />
                   </div>
+                  <PersistentLauncher />
                 </div>
               </div>
             </div>
           ) : (
             <div
+              className="app-shell"
               style={{
                 position: "relative",
-                display: "flex",
-                flexDirection: "column",
                 width: "100%",
                 minHeight: "100vh",
-                boxSizing: "border-box",
-                maxWidth: "100%",
                 overflow: "visible",
               }}
             >
-              <div style={{ flex: 1, minHeight: 0, overflowY: "auto", overflowX: "hidden", paddingBottom: 80 }}>
-                {children}
-              </div>
               <div
-                id="screen-ui-layer"
-                data-screen-ui-layer
+                className="stage-center"
                 style={{
-                  position: "relative",
-                  width: "100%",
-                  height: NAV_STRIP_HEIGHT,
-                  flex: "none",
-                  overflow: "visible",
+                  position: "absolute",
+                  inset: 0,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "stretch",
+                  pointerEvents: "none",
                 }}
               >
-                <BottomNavOnly />
+                <div
+                  className="json-stage"
+                  data-json-stage
+                  style={{
+                    pointerEvents: "auto",
+                    width: "100%",
+                    maxWidth: stageMaxWidth,
+                    height: "100%",
+                    minHeight: "100vh",
+                    position: "relative",
+                    boxSizing: "border-box",
+                    overflow: "visible",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  <div
+                    style={{
+                      flex: 1,
+                      minHeight: 0,
+                      overflowY: "auto",
+                      overflowX: "hidden",
+                      paddingBottom: 80,
+                    }}
+                  >
+                    {children}
+                  </div>
+                  <div
+                    id="screen-ui-layer"
+                    data-screen-ui-layer
+                    style={{
+                      position: "absolute",
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      height: NAV_STRIP_HEIGHT,
+                      overflow: "visible",
+                    }}
+                  >
+                    <BottomNavOnly />
+                  </div>
+                  <PersistentLauncher />
+                </div>
               </div>
             </div>
           )}
         </div>
         {process.env.NODE_ENV === "development" && <InteractionTracerPanel defaultCollapsed={phoneFrameEnabled} />}
-
-        <PersistentLauncher />
       </body>
     </html>
   );

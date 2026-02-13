@@ -1,54 +1,27 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
+import { useState } from "react";
 
 /**
- * PersistentLauncher - FAB portaled to document.body only.
- * Does not depend on app-viewport, screen-ui-layer, phone frame, or any layout container.
+ * PersistentLauncher - FAB inside json-stage (desktop) or phone-frame-inner (phone frame on).
+ * position: absolute; right: 16px; bottom: 16px relative to stage.
  */
 
 export default function PersistentLauncher() {
   const [isOpen, setIsOpen] = useState(false);
-  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
 
-  console.log("FAB render");
-  console.log("FAB target:", portalTarget);
-  console.log("FAB mounted:", !!portalTarget);
-  if (typeof document !== "undefined") {
-    console.log("FAB app-viewport:", document.getElementById("app-viewport"));
-  }
+  const toggleLauncher = () => setIsOpen((prev) => !prev);
 
-  useEffect(() => {
-    if (typeof document !== "undefined") {
-      setPortalTarget(document.body);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (process.env.NODE_ENV === "development") {
-      console.log("[PersistentLauncher] Component mounted");
-    }
-    return () => {
-      console.log("FAB unmounted");
-    };
-  }, []);
-
-  const toggleLauncher = () => {
-    setIsOpen((prev) => !prev);
-    if (process.env.NODE_ENV === "development") {
-      console.log("[PersistentLauncher] Toggle:", !isOpen);
-    }
+  const wrapperStyle: React.CSSProperties = {
+    position: "absolute",
+    bottom: 16,
+    right: 16,
+    zIndex: 999999,
+    pointerEvents: "auto",
+    display: "inline-block",
   };
 
-  // Temporarily commented so FAB always renders for visibility debugging.
-  if (!portalTarget) return null;
-
   const fabStyle: React.CSSProperties = {
-    position: "fixed",
-    right: 24,
-    bottom: 24,
-    zIndex: 999999,
     background: "blue",
     width: "56px",
     height: "56px",
@@ -68,10 +41,10 @@ export default function PersistentLauncher() {
   };
 
   const panelStyle: React.CSSProperties = {
-    position: "fixed",
-    right: 24,
-    bottom: 24 + 56 + 16,
-    zIndex: 999999,
+    position: "absolute",
+    right: 0,
+    bottom: 56 + 16,
+    zIndex: 20,
     background: "#ffffff",
     borderRadius: "12px",
     boxShadow: "0 8px 32px rgba(0, 0, 0, 0.24)",
@@ -82,7 +55,7 @@ export default function PersistentLauncher() {
   };
 
   const content = (
-    <div data-render-source="shell" data-shell-layer="fab" style={{ position: "relative", display: "inline-block" }}>
+    <div data-render-source="shell" data-shell-layer="fab" style={wrapperStyle}>
       {/* Expanded Panel - shows when open */}
       {isOpen && (
         <div style={panelStyle}>
@@ -224,5 +197,5 @@ export default function PersistentLauncher() {
     </div>
   );
 
-  return createPortal(content, portalTarget ?? document.body);
+  return content;
 }

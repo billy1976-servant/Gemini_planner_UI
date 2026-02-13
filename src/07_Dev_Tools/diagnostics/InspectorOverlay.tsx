@@ -16,6 +16,23 @@ const COMPUTED_KEYS = [
   "gap", "borderRadius", "boxShadow", "width", "height", "objectFit",
 ];
 
+/** Diagnostic only: layer/portal info for inspect mode (no layout changes). */
+export type LayerPortalInfo = {
+  tag: string;
+  id: string;
+  class: string;
+  parentTag: string;
+  parentId: string;
+  parentClass: string;
+  rootNodeType: string;
+  zIndex: string;
+  position: string;
+  pointerEvents: string;
+  insideScreenLayer: boolean;
+  insideAppViewport: boolean;
+  insideBody: boolean;
+};
+
 function stepOutPreview(out: unknown): string {
   if (out === undefined) return "undefined";
   if (out === null) return "null";
@@ -41,6 +58,7 @@ export default function InspectorOverlay({
   const [highlightRect, setHighlightRect] = useState<DOMRect | null>(null);
   const [trace, setTrace] = useState<TraceRecord | undefined>(undefined);
   const [computedStyles, setComputedStyles] = useState<Record<string, string>>({});
+  const [layerInfo, setLayerInfo] = useState<LayerPortalInfo | null>(null);
   const tokenTraceView = React.useSyncExternalStore(subscribe, getTokenTraceView, getTokenTraceView);
 
   const activeId = pinnedId ?? hoveredId;
@@ -50,16 +68,37 @@ export default function InspectorOverlay({
       setHighlightRect(null);
       setTrace(undefined);
       setComputedStyles({});
+      setLayerInfo(null);
       return;
     }
     const el = document.querySelector(`[data-hi-id="${activeId}"]`);
     if (!el || !(el instanceof HTMLElement)) {
       setHighlightRect(null);
       setTrace(undefined);
+      setLayerInfo(null);
       return;
     }
+    const parent = el.parentElement;
+    const rootNode = el.getRootNode?.();
+    const style = window.getComputedStyle(el);
+    const portalInfo: LayerPortalInfo = {
+      tag: el.tagName,
+      id: el.id ?? "",
+      class: el.className ?? "",
+      parentTag: parent?.tagName ?? "—",
+      parentId: parent?.id ?? "",
+      parentClass: parent?.className ?? "",
+      rootNodeType: rootNode?.constructor?.name ?? "—",
+      zIndex: style.zIndex,
+      position: style.position,
+      pointerEvents: style.pointerEvents,
+      insideScreenLayer: !!el.closest("#screen-ui-layer"),
+      insideAppViewport: !!el.closest("#app-viewport"),
+      insideBody: !!el.closest("body"),
+    };
     setHighlightRect(el.getBoundingClientRect());
     setTrace(getTraceByElementId(activeId));
+    setLayerInfo(portalInfo);
     const computed: Record<string, string> = {};
     const s = getComputedStyle(el);
     for (const key of COMPUTED_KEYS) {
@@ -68,6 +107,16 @@ export default function InspectorOverlay({
     }
     setComputedStyles(computed);
     setComputedForElement(activeId, computed);
+    // Diagnostic: temporary red outline on the actual DOM node (visual proof of mount location)
+    const prevOutline = el.style.outline;
+    el.style.outline = "3px solid red";
+    const t = setTimeout(() => {
+      el.style.outline = prevOutline;
+    }, 400);
+    return () => {
+      clearTimeout(t);
+      el.style.outline = prevOutline;
+    };
   }, [enabled, activeId]);
 
   // Update highlight rect on scroll/resize when element is pinned or hovered
@@ -207,6 +256,38 @@ export default function InspectorOverlay({
                   <div>path: {trace?.screenPath ?? "—"}</div>
                 </div>
               </div>
+              {layerInfo && (
+                <>
+                  <div style={{ marginBottom: 10 }}>
+                    <div style={{ fontWeight: 600, color: "#111", marginBottom: 4 }}>LAYER INFO</div>
+                    <div style={{ fontFamily: "ui-monospace, monospace", fontSize: 10, color: "#374151", whiteSpace: "pre" }}>
+                      {`z-index: ${layerInfo.zIndex}\nposition: ${layerInfo.position}\npointer-events: ${layerInfo.pointerEvents}`}
+                    </div>
+                  </div>
+                  <div style={{ marginBottom: 10 }}>
+                    <div style={{ fontWeight: 600, color: "#111", marginBottom: 4 }}>PARENT</div>
+                    <div style={{ fontFamily: "ui-monospace, monospace", fontSize: 10, color: "#374151" }}>
+                      <div>tag: {layerInfo.parentTag}</div>
+                      <div>id: {layerInfo.parentId || "—"}</div>
+                      <div>class: {layerInfo.parentClass || "—"}</div>
+                    </div>
+                  </div>
+                  <div style={{ marginBottom: 10 }}>
+                    <div style={{ fontWeight: 600, color: "#111", marginBottom: 4 }}>ROOT</div>
+                    <div style={{ fontFamily: "ui-monospace, monospace", fontSize: 10, color: "#374151" }}>
+                      rootNode: {layerInfo.rootNodeType}
+                    </div>
+                  </div>
+                  <div style={{ marginBottom: 10 }}>
+                    <div style={{ fontWeight: 600, color: "#111", marginBottom: 4 }}>MOUNT CONTEXT</div>
+                    <div style={{ fontFamily: "ui-monospace, monospace", fontSize: 10, color: "#374151" }}>
+                      <div>inside #screen-ui-layer: {layerInfo.insideScreenLayer ? "true" : "false"}</div>
+                      <div>inside #app-viewport: {layerInfo.insideAppViewport ? "true" : "false"}</div>
+                      <div>inside body: {layerInfo.insideBody ? "true" : "false"}</div>
+                    </div>
+                  </div>
+                </>
+              )}
               <div style={{ marginBottom: 10 }}>
                 <div style={{ fontWeight: 600, color: "#111", marginBottom: 4 }}>Computed</div>
                 <div style={{ fontFamily: "ui-monospace, monospace", fontSize: 10, color: "#374151" }}>

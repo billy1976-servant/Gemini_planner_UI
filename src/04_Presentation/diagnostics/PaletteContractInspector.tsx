@@ -7,6 +7,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { resolveToken } from "@/engine/core/palette-resolve-token";
 import { inspectPaletteToken, type TokenProbeResult, type TraceStep } from "./paletteTokenInspector";
 import TokenProbeHost, { type TokenProbeHostRef } from "./TokenProbeHost";
@@ -499,6 +500,8 @@ export default function PaletteContractInspector({ palette, paletteName, pipelin
   const lastOutlinedRef = useRef<HTMLElement | null>(null);
   const lastHoverRunRef = useRef(0);
   const pinnedRef = useRef<HoverDiagnostic | null>(null);
+  const pinnedElementRef = useRef<HTMLElement | null>(null);
+  const [highlightRect, setHighlightRect] = useState<DOMRect | null>(null);
   const HOVER_THROTTLE_MS = 60;
   pinnedRef.current = pinnedDiagnostic;
 
@@ -509,7 +512,9 @@ export default function PaletteContractInspector({ palette, paletteName, pipelin
       setHoverDiagnostic(null);
       setPinnedDiagnostic(null);
       setPanelPinPos(null);
+      setHighlightRect(null);
       pinnedRef.current = null;
+      pinnedElementRef.current = null;
       if (lastOutlinedRef.current) {
         lastOutlinedRef.current.style.outline = "";
         lastOutlinedRef.current = null;
@@ -529,10 +534,12 @@ export default function PaletteContractInspector({ palette, paletteName, pipelin
       }
       if (!el) {
         setHoverDiagnostic(null);
+        setHighlightRect(null);
         return;
       }
       const diag = buildHoverDiagnostic(el, palette);
       setHoverDiagnostic(diag);
+      setHighlightRect(el.getBoundingClientRect());
       const anyFail = diag && Object.values(diag.statuses).some((v) => !v);
       el.style.outline = anyFail ? "2px solid #dc2626" : "2px solid #22c55e";
       lastOutlinedRef.current = el;
@@ -545,7 +552,9 @@ export default function PaletteContractInspector({ palette, paletteName, pipelin
       if (diag) {
         setPinnedDiagnostic(diag);
         pinnedRef.current = diag;
+        pinnedElementRef.current = htmlEl;
         setPanelPinPos({ x: e.clientX, y: e.clientY });
+        setHighlightRect(htmlEl.getBoundingClientRect());
       }
       const computedStyle: Record<string, string> = {};
       if (el instanceof Element) {
@@ -574,16 +583,31 @@ export default function PaletteContractInspector({ palette, paletteName, pipelin
         setPinnedDiagnostic(null);
         setPanelPinPos(null);
         pinnedRef.current = null;
+        pinnedElementRef.current = null;
+        setHighlightRect(null);
+      }
+    };
+    const updateHighlightFromTarget = () => {
+      const target = pinnedElementRef.current ?? lastOutlinedRef.current;
+      if (target && document.contains(target)) {
+        setHighlightRect(target.getBoundingClientRect());
+      } else if (!pinnedRef.current) {
+        setHighlightRect(null);
       }
     };
     document.addEventListener("mousemove", onMove);
     document.addEventListener("click", onClick);
     document.addEventListener("keydown", onKeyDown);
+    window.addEventListener("scroll", updateHighlightFromTarget, true);
+    window.addEventListener("resize", updateHighlightFromTarget);
     return () => {
       document.removeEventListener("mousemove", onMove);
       document.removeEventListener("click", onClick);
       document.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("scroll", updateHighlightFromTarget, true);
+      window.removeEventListener("resize", updateHighlightFromTarget);
       setHoverDiagnostic(null);
+      setHighlightRect(null);
       if (lastOutlinedRef.current) {
         lastOutlinedRef.current.style.outline = "";
         lastOutlinedRef.current = null;
@@ -876,6 +900,25 @@ export default function PaletteContractInspector({ palette, paletteName, pipelin
 
   return (
     <div style={{ marginBottom: 10 }}>
+      {inspectMode && highlightRect &&
+        createPortal(
+          <div
+            aria-hidden
+            style={{
+              position: "fixed",
+              left: highlightRect.left,
+              top: highlightRect.top,
+              width: highlightRect.width,
+              height: highlightRect.height,
+              border: "2px solid #3B82F6",
+              background: "rgba(59, 130, 246, 0.08)",
+              pointerEvents: "none",
+              zIndex: 999999,
+              boxSizing: "border-box",
+            }}
+          />,
+          document.body
+        )}
       <TokenProbeHost ref={probeHostRef} />
 
       <button
