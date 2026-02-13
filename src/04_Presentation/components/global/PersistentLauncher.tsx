@@ -4,31 +4,34 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 
 /**
- * PersistentLauncher - FAB anchored to phone-frame-inner or screen-ui-layer (restored anchor model).
- * Portal target priority: [data-phone-frame-inner] → #screen-ui-layer → body.
+ * PersistentLauncher - FAB portaled to document.body only.
+ * Does not depend on app-viewport, screen-ui-layer, phone frame, or any layout container.
  */
 
 export default function PersistentLauncher() {
-  console.log("FAB RENDERED");
-
   const [isOpen, setIsOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
 
-  useEffect(() => {
-    if (typeof document === "undefined") return;
-    const target =
-      document.querySelector("[data-phone-frame-inner]") ||
-      document.getElementById("screen-ui-layer") ||
-      document.body;
-    setPortalTarget(target as HTMLElement);
-  }, [mounted]);
+  console.log("FAB render");
+  console.log("FAB target:", portalTarget);
+  console.log("FAB mounted:", !!portalTarget);
+  if (typeof document !== "undefined") {
+    console.log("FAB app-viewport:", document.getElementById("app-viewport"));
+  }
 
   useEffect(() => {
-    setMounted(true);
+    if (typeof document !== "undefined") {
+      setPortalTarget(document.body);
+    }
+  }, []);
+
+  useEffect(() => {
     if (process.env.NODE_ENV === "development") {
       console.log("[PersistentLauncher] Component mounted");
     }
+    return () => {
+      console.log("FAB unmounted");
+    };
   }, []);
 
   const toggleLauncher = () => {
@@ -39,14 +42,13 @@ export default function PersistentLauncher() {
   };
 
   // Temporarily commented so FAB always renders for visibility debugging.
-  // if (!mounted) return null;
+  if (!portalTarget) return null;
 
-  // Force visibility for debugging: fixed, bottom-right, blue, high z-index.
   const fabStyle: React.CSSProperties = {
     position: "fixed",
     right: 24,
     bottom: 24,
-    zIndex: 9999,
+    zIndex: 999999,
     background: "blue",
     width: "56px",
     height: "56px",
@@ -69,7 +71,7 @@ export default function PersistentLauncher() {
     position: "fixed",
     right: 24,
     bottom: 24 + 56 + 16,
-    zIndex: 9999,
+    zIndex: 999999,
     background: "#ffffff",
     borderRadius: "12px",
     boxShadow: "0 8px 32px rgba(0, 0, 0, 0.24)",

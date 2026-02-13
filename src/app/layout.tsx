@@ -163,6 +163,8 @@ export default function RootLayout({ children }: any) {
       });
   }, []);
 
+  console.log("LAYOUT RENDER");
+  console.log("APP VIEWPORT EXISTS:", typeof document !== "undefined" && !!document.getElementById("app-viewport"));
 
   return (
     <html>
