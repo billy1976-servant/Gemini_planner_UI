@@ -146,6 +146,7 @@
             {
               "id": "thinkInput",
               "type": "field",
+              "variant": "richtext",
               "when": {
                 "state": "currentView",
                 "equals": "think"
@@ -159,12 +160,15 @@
                   "multiline": true,
                   "rows": 4,
                   "fieldKey": "journal.think"
-                }
+                },
+                "placeholder": "Write your thoughts...",
+                "toolbar": ["bold", "italic", "underline", "bullet", "number", "indent"]
               }
             },
             {
               "id": "repentInput",
               "type": "field",
+              "variant": "richtext",
               "when": {
                 "state": "currentView",
                 "equals": "repent"
@@ -178,12 +182,15 @@
                   "multiline": true,
                   "rows": 4,
                   "fieldKey": "journal.repent"
-                }
+                },
+                "placeholder": "Write your thoughts...",
+                "toolbar": ["bold", "italic", "underline", "bullet", "number", "indent"]
               }
             },
             {
               "id": "askInput",
               "type": "field",
+              "variant": "richtext",
               "when": {
                 "state": "currentView",
                 "equals": "ask"
@@ -197,12 +204,15 @@
                   "multiline": true,
                   "rows": 4,
                   "fieldKey": "journal.ask"
-                }
+                },
+                "placeholder": "Write your thoughts...",
+                "toolbar": ["bold", "italic", "underline", "bullet", "number", "indent"]
               }
             },
             {
               "id": "conformInput",
               "type": "field",
+              "variant": "richtext",
               "when": {
                 "state": "currentView",
                 "equals": "conform"
@@ -216,12 +226,15 @@
                   "multiline": true,
                   "rows": 4,
                   "fieldKey": "journal.conform"
-                }
+                },
+                "placeholder": "Write your thoughts...",
+                "toolbar": ["bold", "italic", "underline", "bullet", "number", "indent"]
               }
             },
             {
               "id": "keepInput",
               "type": "field",
+              "variant": "richtext",
               "when": {
                 "state": "currentView",
                 "equals": "keep"
@@ -235,7 +248,9 @@
                   "multiline": true,
                   "rows": 4,
                   "fieldKey": "journal.keep"
-                }
+                },
+                "placeholder": "Write your thoughts...",
+                "toolbar": ["bold", "italic", "underline", "bullet", "number", "indent"]
               }
             },
             {
