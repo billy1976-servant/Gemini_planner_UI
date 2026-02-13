@@ -29,10 +29,10 @@ export default function LearningShell({
           zIndex: 0 /* TEMP: neutralized to isolate nav dropdown blocker */,
         }}
       >
-        <div style={{ maxWidth: 820, margin: "0 auto", padding: "16px 16px" }}>{header}</div>
+        <div style={{ maxWidth: 820, margin: "0 auto", paddingTop: 16, paddingBottom: 16 }}>{header}</div>
       </header>
 
-      <main style={{ maxWidth: 820, margin: "0 auto", padding: "32px 16px 40px" }}>
+      <main style={{ maxWidth: 820, margin: "0 auto", paddingTop: 32, paddingBottom: 40 }}>
         <div style={{ marginBottom: 32 }}>{content}</div>
         {actions ? (
           <div
@@ -48,7 +48,7 @@ export default function LearningShell({
       </main>
 
       <footer style={{ borderTop: "1px solid var(--color-border)", background: "var(--color-bg-secondary)" }}>
-        <div style={{ maxWidth: 820, margin: "0 auto", padding: "16px 16px" }}>{footer}</div>
+        <div style={{ maxWidth: 820, margin: "0 auto", paddingTop: 16, paddingBottom: 16 }}>{footer}</div>
       </footer>
     </div>
   );
