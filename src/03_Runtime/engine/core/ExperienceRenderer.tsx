@@ -43,6 +43,7 @@ export default function ExperienceRenderer({
   sectionLabels = {},
   paletteOverride,
 }: ExperienceRendererProps) {
+  console.log("ExperienceRenderer rendering");
   const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
   const experience = experienceProp ?? (stateSnapshot?.values?.experience as string) ?? "website";
 
@@ -74,40 +75,42 @@ export default function ExperienceRenderer({
   }, [experience, node, sectionKeys.length]);
   // #endregion
 
+  const BottomNav = (GlobalAppSkin as typeof GlobalAppSkin & { BottomNavOnly: React.FC }).BottomNavOnly;
   const rendererContent = (
-    <GlobalAppSkin>
-      <JsonRenderer
-        node={node}
-        defaultState={defaultState}
-        profileOverride={profileOverride}
-        sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
-        cardLayoutPresetOverrides={cardLayoutPresetOverrides}
-        organInternalLayoutOverrides={organInternalLayoutOverrides}
-        screenId={screenId}
-        behaviorProfile={behaviorProfile}
-        experience={experience}
-        currentStepIndex={clampedStep}
-        sectionKeys={sectionKeys}
-        activeSectionKey={experience === "app" ? activeSectionKey : undefined}
-        onSelectSection={experience === "app" ? setActiveSection : undefined}
-        sectionLabels={sectionLabels}
-        paletteOverride={paletteOverride}
-      />
-    </GlobalAppSkin>
+    <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+      <div style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
+        <JsonRenderer
+          node={node}
+          defaultState={defaultState}
+          profileOverride={profileOverride}
+          sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
+          cardLayoutPresetOverrides={cardLayoutPresetOverrides}
+          organInternalLayoutOverrides={organInternalLayoutOverrides}
+          screenId={screenId}
+          behaviorProfile={behaviorProfile}
+          experience={experience}
+          currentStepIndex={clampedStep}
+          sectionKeys={sectionKeys}
+          activeSectionKey={experience === "app" ? activeSectionKey : undefined}
+          onSelectSection={experience === "app" ? setActiveSection : undefined}
+          sectionLabels={sectionLabels}
+          paletteOverride={paletteOverride}
+        />
+      </div>
+      {BottomNav && <BottomNav />}
+    </div>
   );
 
   // ---- PHASE 5: Visual identity wrappers (styling only, no layout IDs) ----
   const websiteWrapperStyle: React.CSSProperties = {
     display: "flex",
     flexDirection: "column",
-    gap: "var(--spacing-8)",
     width: "100%",
   };
 
   const appWrapperStyle: React.CSSProperties = {
     display: "flex",
     flexDirection: "column",
-    gap: "var(--spacing-4)",
     width: "100%",
     maxWidth: "100%",
     paddingTop: "var(--spacing-4)",
@@ -200,7 +203,6 @@ export default function ExperienceRenderer({
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            gap: "var(--spacing-4)",
             padding: "var(--spacing-4) var(--spacing-6)",
             background: "var(--color-bg-primary, #fff)",
             borderTop: "1px solid var(--color-border, #e0e0e0)",

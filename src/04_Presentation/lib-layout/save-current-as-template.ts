@@ -42,7 +42,7 @@ export function buildTemplateFromTree(
     id?: string;
     label?: string;
     containerWidth?: "contained" | "edge-to-edge" | "narrow" | "wide" | "full" | "split";
-    visualPreset?: "default" | "compact" | "spacious" | "editorial" | "prominent";
+    visualPreset?: string;
   } = {}
 ): Omit<TemplateProfile, "id" | "label"> & { id: string; label: string } {
   const nodes = Array.isArray((root as any)?.children)

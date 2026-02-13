@@ -22,7 +22,7 @@ export default function SurfaceAtom({ params = {}, children }: SurfaceAtomProps)
     borderRadius: resolveToken(params.radius),
     boxShadow: resolveToken(params.shadow),
     opacity: params.opacity ?? 1,
-    padding: resolveToken(params.padding),
+    ...(params.padding != null && { padding: resolveToken(params.padding) }),
     transition: typeof transitionVal === "string" ? transitionVal : undefined,
 
 

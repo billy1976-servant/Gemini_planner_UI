@@ -34,7 +34,6 @@ export default function SequenceAtom({ params = {}, children }: SequenceAtomProp
 
 
   const gap = tok(p.gap);
-  const padding = tok(p.padding);
 
 
   // 🔹 GRID MODE
@@ -53,7 +52,7 @@ export default function SequenceAtom({ params = {}, children }: SequenceAtomProp
       display: "grid",
       gridTemplateColumns: finalColumns ? `repeat(${finalColumns}, minmax(0, 1fr))` : undefined,
       gap,
-      padding,
+      ...(p.padding != null && { padding: tok(p.padding) }),
       alignItems: p.align ?? (STRICT_JSON_MODE ? undefined : "stretch"),
       justifyItems: p.justify ?? (STRICT_JSON_MODE ? undefined : "stretch"),
       overflowY: p.scrollable ? "auto" : "visible",
@@ -75,7 +74,7 @@ export default function SequenceAtom({ params = {}, children }: SequenceAtomProp
     alignItems: p.align ?? (STRICT_JSON_MODE ? undefined : "flex-start"),
     justifyContent: p.justify ?? (STRICT_JSON_MODE ? undefined : "flex-start"),
     gap,
-    padding,
+    ...(p.padding != null && { padding: tok(p.padding) }),
     flexWrap: p.wrap ? "wrap" : "nowrap",
     overflowY: p.scrollable ? "auto" : "visible",
   };

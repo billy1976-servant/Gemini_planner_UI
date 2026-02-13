@@ -886,6 +886,7 @@
     "experience": "website",
     "visualPreset": "editorial",
     "containerWidth": "contained",
+    "defaultSectionLayoutId": "content-stack",
     "sections": {
       "header": {
         "type": "row",
@@ -2036,13 +2037,14 @@
     "spacingScale": "default",
     "cardPreset": "borderless",
     "containerWidth": "narrow",
+    "sectionBackgroundPattern": "alternate",
     "layoutVariants": {
       "writing": {
         "layoutId": "content-narrow",
         "containerWidth": "narrow",
         "params": {
-          "gap": "0.5rem",
-          "padding": "2rem 0",
+          "gap": "1rem",
+          "padding": "3rem 0",
           "maxWidth": "65ch"
         }
       },
@@ -2050,15 +2052,15 @@
         "layoutId": "content-narrow",
         "containerWidth": "narrow",
         "params": {
-          "gap": "0.75rem",
-          "padding": "1.5rem 0"
+          "gap": "1.25rem",
+          "padding": "2.5rem 0"
         }
       },
       "track": {
         "layoutId": "content-stack",
-        "containerWidth": "narrow",
+        "containerWidth": "contained",
         "params": {
-          "gap": "0.5rem"
+          "gap": "0.75rem"
         }
       }
     },
@@ -2066,21 +2068,80 @@
       "writing": {
         "type": "column",
         "params": {
-          "gap": "0.5rem",
+          "gap": "1rem",
           "align": "stretch"
         }
       },
       "focus": {
         "type": "column",
         "params": {
-          "gap": "0.75rem",
+          "gap": "1.25rem",
           "align": "stretch"
         }
       },
       "track": {
         "type": "row",
         "params": {
-          "gap": "0.5rem",
+          "gap": "0.75rem",
+          "justify": "center"
+        }
+      }
+    }
+  },
+  {
+    "id": "focus-writing-apple",
+    "label": "Focus Writing (Apple)",
+    "experience": "journal",
+    "visualPreset": "apple-floating-journal",
+    "spacingScale": "default",
+    "cardPreset": "borderless",
+    "containerWidth": "narrow",
+    "sectionBackgroundPattern": "alternate",
+    "layoutVariants": {
+      "writing": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "1rem",
+          "padding": "3rem 0",
+          "maxWidth": "65ch"
+        }
+      },
+      "focus": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "1.25rem",
+          "padding": "2.5rem 0"
+        }
+      },
+      "track": {
+        "layoutId": "content-stack",
+        "containerWidth": "contained",
+        "params": {
+          "gap": "0.75rem"
+        }
+      }
+    },
+    "sections": {
+      "writing": {
+        "type": "column",
+        "params": {
+          "gap": "1rem",
+          "align": "stretch"
+        }
+      },
+      "focus": {
+        "type": "column",
+        "params": {
+          "gap": "1.25rem",
+          "align": "stretch"
+        }
+      },
+      "track": {
+        "type": "row",
+        "params": {
+          "gap": "0.75rem",
           "justify": "center"
         }
       }

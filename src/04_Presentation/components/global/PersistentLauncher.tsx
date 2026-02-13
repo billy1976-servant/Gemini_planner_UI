@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
+import { getPhoneFrameEnabled, subscribePhoneFrameEnabled } from "@/dev/phone-frame-store";
 
 /**
  * PersistentLauncher - Global UI overlay that persists across all screens
@@ -18,18 +20,79 @@ import { createPortal } from "react-dom";
  * - On click: expand panel with 4 links
  * - Fixed position with high z-index
  */
+const FAB_INSET = 24;
+
 export default function PersistentLauncher() {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const phoneFrameEnabled = useSyncExternalStore(subscribePhoneFrameEnabled, getPhoneFrameEnabled, getPhoneFrameEnabled);
+  const [fabPosition, setFabPosition] = useState({ right: FAB_INSET, bottom: FAB_INSET });
 
   useEffect(() => {
     setMounted(true);
-    console.log("[PersistentLauncher] Component mounted");
+    if (process.env.NODE_ENV === "development") {
+      console.log("[PersistentLauncher] Component mounted");
+    }
   }, []);
+
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "development" || !mounted) return;
+    const run = () => {
+      const fab = document.querySelector("[data-play-fab]");
+      const frame = document.querySelector("[data-phone-frame]");
+      if (!fab || !(fab instanceof HTMLElement)) return;
+      const rect = fab.getBoundingClientRect();
+      const cs = window.getComputedStyle(fab);
+      const chain: Array<{ el: string; offsetLeft: number; offsetTop: number }> = [];
+      let el: HTMLElement | null = fab;
+      while (el) {
+        chain.push({ el: el.tagName + (el.id ? "#" + el.id : ""), offsetLeft: el.offsetLeft, offsetTop: el.offsetTop });
+        el = el.offsetParent as HTMLElement | null;
+      }
+      console.group("[Step A] Play FAB");
+      console.log("getBoundingClientRect", { left: rect.left, top: rect.top, width: rect.width, height: rect.height, right: rect.right, bottom: rect.bottom });
+      console.log("computed position", cs.position, "zIndex", cs.zIndex);
+      console.log("offsetParent chain", chain);
+      if (frame) {
+        console.log("phone frame rect", frame.getBoundingClientRect());
+      }
+      console.groupEnd();
+    };
+    const t = setTimeout(run, 150);
+    return () => clearTimeout(t);
+  }, [mounted]);
+
+  useEffect(() => {
+    const update = () => {
+      if (!phoneFrameEnabled) {
+        setFabPosition({ right: FAB_INSET, bottom: FAB_INSET });
+        return;
+      }
+      const frame = document.querySelector("[data-phone-frame]");
+      if (!frame) {
+        setFabPosition({ right: FAB_INSET, bottom: FAB_INSET });
+        return;
+      }
+      const r = frame.getBoundingClientRect();
+      setFabPosition({
+        right: window.innerWidth - r.right + FAB_INSET,
+        bottom: window.innerHeight - r.bottom + FAB_INSET + 48,
+      });
+    };
+    update();
+    const t = phoneFrameEnabled ? setTimeout(update, 150) : undefined;
+    window.addEventListener("resize", update);
+    return () => {
+      if (t) clearTimeout(t);
+      window.removeEventListener("resize", update);
+    };
+  }, [phoneFrameEnabled]);
 
   const toggleLauncher = () => {
     setIsOpen((prev) => !prev);
-    console.log("[PersistentLauncher] Toggle:", !isOpen);
+    if (process.env.NODE_ENV === "development") {
+      console.log("[PersistentLauncher] Toggle:", !isOpen);
+    }
   };
 
   if (!mounted) return null;
@@ -41,9 +104,9 @@ export default function PersistentLauncher() {
         <div
           style={{
             position: "fixed",
-            right: "24px",
-            bottom: "88px",
-            zIndex: "9998",
+            right: `${fabPosition.right}px`,
+            bottom: `${fabPosition.bottom + 56 + 16}px`,
+            zIndex: 99999,
             background: "#ffffff",
             borderRadius: "12px",
             boxShadow: "0 8px 32px rgba(0, 0, 0, 0.24)",
@@ -154,13 +217,14 @@ export default function PersistentLauncher() {
 
       {/* Play Button - always visible */}
       <button
+        data-play-fab
         onClick={toggleLauncher}
         title="Quick Launch Menu"
         style={{
           position: "fixed",
-          right: "24px",
-          bottom: "24px",
-          zIndex: "9999",
+          right: `${fabPosition.right}px`,
+          bottom: `${fabPosition.bottom}px`,
+          zIndex: 100000,
           width: "56px",
           height: "56px",
           minWidth: "56px",

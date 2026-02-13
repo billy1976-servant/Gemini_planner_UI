@@ -233,6 +233,7 @@ export default function RootLayout({ children }: any) {
               }}
             >
               <div
+                data-phone-frame
                 style={{
                   width: "390px",
                   height: "844px",

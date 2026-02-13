@@ -25,7 +25,7 @@
           "type": "Stepper",
           "children": [],
           "params": {
-            "variant": "tab-underline"
+            "variant": "tab-segment"
           },
           "content": {
             "steps": [
@@ -101,6 +101,7 @@
             {
               "id": "|ThinkPrompt",
               "type": "Card",
+              "variant": "prompt",
               "children": [],
               "when": {
                 "state": "currentView",
@@ -114,6 +115,7 @@
             {
               "id": "|RepentPrompt",
               "type": "Card",
+              "variant": "prompt",
               "children": [],
               "when": {
                 "state": "currentView",
@@ -127,6 +129,7 @@
             {
               "id": "|AskPrompt",
               "type": "Card",
+              "variant": "prompt",
               "children": [],
               "when": {
                 "state": "currentView",
@@ -140,6 +143,7 @@
             {
               "id": "|ConformPrompt",
               "type": "Card",
+              "variant": "prompt",
               "children": [],
               "when": {
                 "state": "currentView",
@@ -153,6 +157,7 @@
             {
               "id": "|KeepPrompt",
               "type": "Card",
+              "variant": "prompt",
               "children": [],
               "when": {
                 "state": "currentView",

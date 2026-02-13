@@ -134,30 +134,35 @@ function resolveResponsive(layout: LayoutDefinition["layout"]) {
 // =====================================================
 // 🔑 PUBLIC RESOLVER (SINGLE ENTRY POINT)
 // =====================================================
+const MINIMAL_LAYOUT_CONTRACT: Record<string, any> = {
+  type: "column",
+  flow: "vertical",
+  gap: "var(--spacing-2)",
+  display: "flex",
+  direction: "column",
+};
+
 export function resolveMoleculeLayout(
   flow?: string,
   preset?: string | null,
   params?: Record<string, any>
 ): Record<string, any> {
-  // STRICT: Log when flow is missing
   if (!flow) {
     if (STRICT_JSON_MODE) {
-      warnDefault("flow", "undefined (returning params only)", "molecule-layout-resolver.ts:133");
+      warnDefault("flow", "undefined (returning minimal contract)", "molecule-layout-resolver.ts:133");
     }
-    return params ?? {};
+    return { ...MINIMAL_LAYOUT_CONTRACT, ...(params ?? {}) };
   }
-
 
   const normalized = flow.toLowerCase() as LayoutFlow;
   const def = LAYOUT_DEFINITIONS[normalized];
-
 
   if (!def) {
     logOnce(`unknown:${flow}`, "❌ Unknown layout flow:", flow);
     if (STRICT_JSON_MODE) {
       warnDefault("flow", flow, "molecule-layout-resolver.ts:140 (unknown flow)");
     }
-    return params ?? {};
+    return { ...MINIMAL_LAYOUT_CONTRACT, ...(params ?? {}) };
   }
 
 

@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useSyncExternalStore } from "react";
 import ExperienceRenderer from "@/engine/core/ExperienceRenderer";
+import JsonRenderer from "@/engine/core/json-renderer";
 import PreviewStage from "@/components/stage/PreviewStage";
 import { recordStage } from "@/engine/debug/pipelineStageTrace";
 import { PipelineDebugStore } from "@/devtools/pipeline-debug-store";
@@ -247,7 +248,12 @@ export default function Page() {
       ? organInternalLayoutFromState
       : getOrganInternalLayoutOverridesForScreen(screenKey);
 
-  const effectiveTemplateId = templateIdFromState ?? (layoutSnapshot as { templateId?: string })?.templateId ?? "";
+  // TEMPORARY TEST OVERRIDE: Force journal template for verification (journal_track/journal_replicate).
+  const forcedTemplateId = "focus-writing-apple";
+  const effectiveTemplateId =
+    templateIdFromState ??
+    (layoutSnapshot as { templateId?: string })?.templateId ??
+    forcedTemplateId;
   const effectiveLayoutMode = layoutModeFromState ?? (layoutSnapshot as { mode?: "template" | "custom" })?.mode ?? "template";
   const experienceProfile = getExperienceProfile(experience);
   const templateProfile = getTemplateProfile(effectiveTemplateId);
@@ -305,6 +311,7 @@ export default function Page() {
         id: templateProfile.id,
         sections: templateProfile.sections,
         defaultSectionLayoutId: templateProfile.defaultSectionLayoutId,
+        layoutVariants: (templateProfile as { layoutVariants?: Record<string, unknown> }).layoutVariants,
         visualPreset: templateProfile.visualPreset,
         containerWidth: templateProfile.containerWidth,
         widthByRole: templateProfile.widthByRole,
@@ -591,7 +598,18 @@ export default function Page() {
       sectionKeys: Object.keys(sectionLayoutPresetFromState).slice(0, 8),
     });
   }
-  const { sectionKeys: sectionKeysFromTree, sectionByKey } = collectSectionKeysAndNodes(treeForRender?.children ?? []);
+  let { sectionKeys: sectionKeysFromTree, sectionByKey } = collectSectionKeysAndNodes(treeForRender?.children ?? []);
+  if (sectionKeysFromTree.length === 0 && treeForRender != null) {
+    console.warn("AUTO_SECTION_WRAP_TRIGGERED");
+    const wrapped = {
+      type: "section",
+      id: "auto-root",
+      children: Array.isArray(treeForRender.children) ? treeForRender.children : [treeForRender],
+    } as typeof treeForRender;
+    treeForRender = wrapped;
+    sectionKeysFromTree = ["auto-root"];
+    sectionByKey = { "auto-root": wrapped };
+  }
   const sectionKeysForPreset = sectionKeysFromTree;
   sectionKeysRef.current = sectionKeysForPreset;
   const sectionLabels = collectSectionLabels(sectionKeysForPreset, sectionByKey);
@@ -766,7 +784,6 @@ export default function Page() {
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "var(--spacing-8)",
           width: "100%",
           overflowY: "visible",
         }}
@@ -777,53 +794,32 @@ export default function Page() {
       jsonContent
     );
 
+  // PURE ISOLATION: app branch returns ONLY a full-height container + JsonRenderer (experience="website"). No shells, overlay, sidebar, section collapsing.
+  // No z-index on this wrapper so TSX bottom nav (e.g. GlobalAppSkin) stays on top stacking layer.
   if (experience === "app") {
     return (
-      <PreviewStage>
-        {overlay}
-        <AppShell
-          primary={
-            <div ref={contentRef} style={{ width: "100%", minHeight: "100%", overflowY: "visible", paddingRight: contentPaddingRight }}>
-              {jsonContent}
-            </div>
-          }
-        />
-        <RightFloatingSidebar
-          layoutPanelContent={
-            <OrganPanel
-              sectionKeysForPreset={sectionKeysForPreset}
-              sectionLabels={sectionLabels}
-              sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
-              onSectionLayoutPresetOverride={handleSectionLayoutPresetOverride}
-              cardLayoutPresetOverrides={cardLayoutPresetOverrides}
-              onCardLayoutPresetOverride={handleCardLayoutPresetOverride}
-              sectionPresetOptions={sectionPresetOptions}
-              sectionHeights={sectionHeights}
-              organIdBySectionKey={organIdBySectionKey}
-              organInternalLayoutOverrides={organInternalLayoutOverridesProp}
-              onOrganInternalLayoutOverride={handleOrganInternalLayoutOverride}
-              sectionNodesByKey={sectionByKey}
-              screenModel={treeForRender}
-              defaultState={json?.state}
-              profileOverride={effectiveProfile}
-              screenKey={screenKey}
-            />
-          }
-          palettePreviewScreen={treeForRender}
-          palettePreviewProps={{
-            defaultState: json?.state,
-            profileOverride: effectiveProfile,
-            sectionLayoutPresetOverrides,
-            cardLayoutPresetOverrides,
-            organInternalLayoutOverrides: organInternalLayoutOverridesProp,
-            screenKey,
-            behaviorProfile,
-            experience,
-            sectionKeys: sectionKeysFromTree,
-            sectionLabels,
-          }}
-        />
-      </PreviewStage>
+      <div
+        data-proof="pure-json-app"
+        style={{
+          height: "100vh",
+          width: "100vw",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+          background: "#fff",
+        }}
+      >
+        <div style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
+          <JsonRenderer
+            node={treeForRender}
+            experience="website"
+            defaultState={json?.state}
+            profileOverride={effectiveProfile}
+            screenId={screenKey}
+            behaviorProfile={behaviorProfile}
+          />
+        </div>
+      </div>
     );
   }
   if (experience === "learning") {

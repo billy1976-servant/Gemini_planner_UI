@@ -49,7 +49,7 @@ export function SummaryCard({ restoreState }: CardProps) {
           <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>
             What You Learned
           </div>
-          <ul style={{ margin: 0, paddingLeft: 18, opacity: 0.95 }}>
+          <ul style={{ margin: 0, opacity: 0.95 }}>
             {education.learned.map((x: string, i: number) => (
               <li key={i} style={{ marginBottom: 6 }}>
                 {x}

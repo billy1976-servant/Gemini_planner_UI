@@ -4,12 +4,35 @@ import React from "react";
 import { SurfaceAtom, TextAtom, SequenceAtom, CollectionAtom } from "@/components/atoms";
 import { usePreviewTile } from "@/04_Presentation/contexts/PreviewTileContext";
 import { resolveParams } from "@/engine/core/palette-resolver";
-import { resolveMoleculeLayout } from "@/layout";
+import { resolveMoleculeLayout, getSectionLayoutIds } from "@/layout";
 import type { LayoutDefinition } from "@/layout/resolver";
 
-// Safe layout rendering: missing values warn but don't block
+const LAYOUT_RECOVERY_MODE = true;
+
+function recoveryFallbackForKey(name: string): any {
+  if (name.includes("display")) return "flex";
+  if (name.includes("flexDirection") || name.includes("direction")) return "column";
+  if (name.includes("gap")) return "var(--spacing-2)";
+  if (name.includes("width") || name.includes("Width")) return "100%";
+  if (name.includes("minHeight")) return "0";
+  if (name.includes("overflow")) return "hidden";
+  if (name.includes("alignItems")) return "stretch";
+  if (name.includes("minWidth")) return "0";
+  if (name.includes("maxWidth") || name.includes("maxHeight")) return "100%";
+  if (name.includes("objectFit")) return "contain";
+  if (name.includes("gridTemplateColumns")) return "1fr 1fr";
+  if (name.includes("mediaSlot")) return "right";
+  return "var(--spacing-2)";
+}
+
+// Safe layout rendering: in LAYOUT_RECOVERY_MODE never block; use fallback and warn.
 function requireLayoutValue(name: string, value: any, layoutId: string | null) {
   if (value === undefined || value === null) {
+    if (LAYOUT_RECOVERY_MODE) {
+      const fallback = recoveryFallbackForKey(name);
+      console.warn("LAYOUT_RECOVERY_MODE_USING_FALLBACK", name);
+      return fallback;
+    }
     console.warn("[LAYOUT SAFE DEFAULT]", name);
     return undefined;
   }
@@ -33,32 +56,35 @@ function renderWithDefaults(layout: any, children: React.ReactNode) {
   );
 }
 
-// Safe defaults helper: provides fallback values ONLY when layoutId exists but token is missing
+// Safe defaults helper: in LAYOUT_RECOVERY_MODE never block; always return safeDefault when value missing
 function getLayoutValueWithSafeDefault(
   name: string,
   value: any,
   layoutId: string | null,
   safeDefault: any
 ): any {
-  // If value exists, use it (never override existing values)
   if (value !== undefined && value !== null) {
     return value;
   }
-  
-  // If layoutId exists but value is missing, provide safe default
+  if (LAYOUT_RECOVERY_MODE) {
+    console.warn("LAYOUT_RECOVERY_MODE_USING_FALLBACK", name);
+    return safeDefault;
+  }
   if (layoutId != null) {
     console.warn("[LAYOUT SAFE DEFAULT]", { layoutId, missing: name, defaultValue: safeDefault });
     return safeDefault;
   }
-  
-  // If no layoutId, return undefined (no layout context)
   return undefined;
 }
 
 function isMediaChild(child: React.ReactNode): child is React.ReactElement {
   if (!React.isValidElement(child)) return false;
   const p: any = child.props;
-  return p.content?.media != null || p.node?.content?.media != null;
+  return (
+    p["data-media-url"] != null ||
+    p.content?.media != null ||
+    p.node?.content?.media != null
+  );
 }
 
 function partitionChildren(children: React.ReactNode): {
@@ -78,11 +104,23 @@ function partitionChildren(children: React.ReactNode): {
   return { contentChildren, mediaChild };
 }
 
-function getMediaUrl(mediaChild: React.ReactElement | null): string | null {
-  if (!mediaChild || !React.isValidElement(mediaChild)) return null;
+function getRawMedia(mediaChild: React.ReactElement | null): unknown {
+  if (!mediaChild || !React.isValidElement(mediaChild)) return undefined;
   const p = mediaChild.props as any;
-  const url = p?.content?.media ?? p?.node?.content?.media;
-  return typeof url === "string" ? url : null;
+  return p?.["data-media-url"] ?? p?.content?.media ?? p?.node?.content?.media;
+}
+
+/** Resolve media to a string URL: supports media as string or media as { url: string }. */
+function resolveMediaSrc(media: unknown): string {
+  if (typeof media === "string") return media;
+  if (media != null && typeof media === "object" && "url" in media && typeof (media as { url?: string }).url === "string") {
+    return (media as { url: string }).url;
+  }
+  return "";
+}
+
+function getMediaUrl(mediaChild: React.ReactElement | null): string {
+  return resolveMediaSrc(getRawMedia(mediaChild));
 }
 
 export type LayoutMoleculeRendererProps = {
@@ -113,12 +151,33 @@ export default function LayoutMoleculeRenderer({
   children,
 }: LayoutMoleculeRendererProps) {
   const { isPreviewTile } = usePreviewTile();
-  if (layout == null) {
+  const FORCED_BASE_LAYOUT: LayoutDefinition = {
+    containerWidth: "full",
+    moleculeLayout: { type: "column", params: { gap: "var(--spacing-2)" } },
+    container: { width: "100%", boxSizing: "border-box", overflowX: "hidden", contentInsetX: "var(--spacing-4)" },
+  } as LayoutDefinition;
+  const effectiveLayout = layout == null && LAYOUT_RECOVERY_MODE ? FORCED_BASE_LAYOUT : layout;
+  if (layout == null && !LAYOUT_RECOVERY_MODE) {
     return <>{children}</>;
   }
+  layout = effectiveLayout as LayoutDefinition;
 
+  const layoutType = (layout as any)?.moleculeLayout?.type ?? "column";
   const layoutId = layoutPresetId ?? (layout as any)?.id ?? null;
-  
+  const nodeId = id ?? "";
+  const nodeType = "section";
+  const validLayoutIds = getSectionLayoutIds();
+  const layoutIdExistsInDefinitions = layoutId != null && validLayoutIds.includes(layoutId);
+  console.log("[LAYOUT CONTRACT DIAGNOSTIC]", {
+    nodeId,
+    nodeType,
+    resolvedLayoutId: layoutId,
+    layoutIdExistsInDefinitions,
+  });
+  if (layoutId == null || !layoutIdExistsInDefinitions) {
+    console.log("MISSING_LAYOUT_CONTRACT:", { nodeId, nodeType, layoutId });
+  }
+
   // PHASE 6: Debug signal - confirm contract is complete
   const sectionKey = id ?? "";
   const hasContainerObject = layout?.container != null;
@@ -194,7 +253,12 @@ export default function LayoutMoleculeRenderer({
   if (contentColumnGap !== undefined) contentColumnStyle.gap = contentColumnGap;
   if (contentColumnAlignItems !== undefined) contentColumnStyle.alignItems = contentColumnAlignItems;
   if (contentColumnMinWidth !== undefined) contentColumnStyle.minWidth = contentColumnMinWidth;
-  
+  if (LAYOUT_RECOVERY_MODE) {
+    contentColumnStyle.display = contentColumnStyle.display ?? "flex";
+    contentColumnStyle.flexDirection = contentColumnStyle.flexDirection ?? "column";
+    contentColumnStyle.width = contentColumnStyle.width ?? "100%";
+  }
+
   const contentColumn = (
     <div style={contentColumnStyle}>
       {slotContent}
@@ -202,7 +266,9 @@ export default function LayoutMoleculeRenderer({
     </div>
   );
 
-  const mediaUrl = getMediaUrl(mediaChild);
+  const rawMedia = getRawMedia(mediaChild);
+  const mediaSrc = resolveMediaSrc(rawMedia);
+  console.log("MEDIA_SRC_RESOLVED", rawMedia, mediaSrc);
   const mediaColumnLayout = (layout as any)?.mediaColumn ?? {};
   const mediaColumnStyle: React.CSSProperties = {};
   
@@ -265,10 +331,10 @@ export default function LayoutMoleculeRenderer({
         data-layout-2-media
         style={mediaColumnStyle}
       >
-        {mediaUrl ? (
+        {mediaSrc ? (
           <div style={mediaImageWrapperStyle}>
             <img
-              src={mediaUrl}
+              src={mediaSrc}
               alt=""
               style={mediaImageStyle}
             />
@@ -285,18 +351,27 @@ export default function LayoutMoleculeRenderer({
   const padding: string | undefined = requireLayoutValue("moleculeLayout.params.padding", mlParams.padding, layoutId) as string | undefined;
 
   const hasMoleculeType = typeof moleculeLayout?.type === "string" && moleculeLayout.type.trim().length > 0;
-  const resolved = hasMoleculeType
+  let resolved = hasMoleculeType
     ? resolveMoleculeLayout(
         moleculeLayout!.type as "column" | "row" | "grid" | "stacked",
         moleculeLayout?.preset ?? null,
         { ...(moleculeLayout?.params ?? {}) }
       )
     : null;
+  if (LAYOUT_RECOVERY_MODE && (resolved == null || (resolved.display == null && resolved.direction == null))) {
+    resolved = { display: "flex", direction: "column", width: "100%", gap: "var(--spacing-2)" };
+  }
 
   // DEBUG: Stripped all debug borders/backgrounds to see raw layout
   const splitContentWrapper = { border: "none", background: "transparent" as const, padding: 0, margin: 0 };
   const splitMediaWrapper = { border: "none", background: "transparent" as const, padding: 0, margin: 0 };
-  const nonSplitWrapper = { border: "none", background: "transparent" as const, padding: 0, margin: 0 };
+  const nonSplitWrapperBase: React.CSSProperties = { border: "none", background: "transparent", padding: 0, margin: 0 };
+  if (LAYOUT_RECOVERY_MODE) {
+    nonSplitWrapperBase.display = "flex";
+    nonSplitWrapperBase.flexDirection = "column";
+    nonSplitWrapperBase.width = "100%";
+  }
+  const nonSplitWrapper = nonSplitWrapperBase;
 
   // STRICT: Only apply split layout styles if explicitly provided in JSON
   const splitLayout = (layout as any)?.splitLayout ?? {};
@@ -314,7 +389,11 @@ export default function LayoutMoleculeRenderer({
   if (splitMaxWidth !== undefined) splitLayoutStyle.maxWidth = splitMaxWidth;
   if (splitMinWidth !== undefined) splitLayoutStyle.minWidth = splitMinWidth;
   if (gap !== undefined) splitLayoutStyle.gap = gap;
-  if (padding !== undefined) splitLayoutStyle.padding = padding;
+  // Phase D: only horizontal padding from moleculeLayout.params.padding (no vertical)
+  if (padding !== undefined) {
+    splitLayoutStyle.paddingLeft = padding;
+    splitLayoutStyle.paddingRight = padding;
+  }
   
   const innerContent = isSplit ? (
     <div style={splitLayoutStyle}>
@@ -423,6 +502,12 @@ export default function LayoutMoleculeRenderer({
     if (containerLayout.overflowX !== undefined) outerStyle.overflowX = containerLayout.overflowX as React.CSSProperties['overflowX'];
     // Use containerWidth semantic token for maxWidth (preserved semantic layer)
     if (containerVar !== undefined) outerStyle.maxWidth = containerVar;
+    // Phase D: single horizontal padding owner — apply layout contentInsetX at top container only
+    const contentInsetX = (containerLayout as Record<string, unknown>).contentInsetX as string | undefined;
+    if (contentInsetX !== undefined && contentInsetX !== null) {
+      outerStyle.paddingLeft = contentInsetX;
+      outerStyle.paddingRight = contentInsetX;
+    }
   } else {
     // IF layout.container missing → only use safe defaults as neutral protection (not layout shaping)
     // This should rarely happen after Phase 1, but provides neutral protection for edge cases
@@ -480,24 +565,23 @@ export default function LayoutMoleculeRenderer({
     slotCount: Object.keys((layout as any)?.slots ?? {}).length,
   });
 
-  // Ensure section outer has display and boxSizing so layout doesn't collapse (lost when debugStyle was removed).
-  // DEBUG: Force strip all container constraints
+  // Ensure section outer has display and boxSizing so layout doesn't collapse.
+  // Phase D: allow layout-provided horizontal padding (contentInsetX) to pass through; strip only accidental vertical and other constraints.
+  // Phase G: layout is sole authority for containerWidth, maxWidth, marginLeft/marginRight (centering); no DEBUG override.
   const combinedOuterStyle =
     Object.keys(outerStyle).length > 0
-      ? { 
-          display: "block" as const, 
-          boxSizing: "border-box" as const, 
+      ? {
+          display: "block" as const,
+          boxSizing: "border-box" as const,
           ...outerStyle,
-          padding: 0, /* DEBUG: Stripped */
-          margin: 0, /* DEBUG: Stripped */
-          border: "none", /* DEBUG: Stripped */
-          maxWidth: "none" /* DEBUG: Stripped */
+          paddingTop: 0,
+          paddingBottom: 0,
+          border: "none"
         }
       : {
-          padding: 0, /* DEBUG: Stripped */
-          margin: 0, /* DEBUG: Stripped */
-          border: "none", /* DEBUG: Stripped */
-          maxWidth: "none" /* DEBUG: Stripped */
+          paddingTop: 0,
+          paddingBottom: 0,
+          border: "none"
         };
 
   return (

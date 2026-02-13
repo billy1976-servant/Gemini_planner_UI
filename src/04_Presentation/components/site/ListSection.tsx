@@ -69,7 +69,6 @@ export default function ListSection({
               key={index}
               style={{
                 padding: "var(--spacing-3) 0",
-                paddingLeft: "var(--spacing-6)",
                 position: "relative",
                 fontSize: "var(--font-size-base)",
                 lineHeight: "var(--line-height-relaxed)",

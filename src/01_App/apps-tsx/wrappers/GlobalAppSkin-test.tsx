@@ -4,10 +4,14 @@ import React from "react";
 
 /**
  * GlobalAppSkin Test - Fixed Icon Rendering
- * 
+ *
  * This is a standalone test version of GlobalAppSkin with all icon issues fixed.
  * All SVGs are now inline React components for reliable rendering in Next.js.
- * 
+ *
+ * Icons only: this screen does not use JSON or content.media. To test JSON-driven
+ * content images (mediaImageWrapper), use a JSON app with a split section layout
+ * (e.g. hero-split) and a section child that has content.media (image URL).
+ *
  * View this file at: /screens/wrappers/GlobalAppSkin-test
  */
 

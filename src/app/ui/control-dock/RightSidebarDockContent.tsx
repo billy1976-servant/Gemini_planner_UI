@@ -11,7 +11,7 @@ import AppIcon, { getAppIconNameForPanel } from "@/04_Presentation/icons/AppIcon
 import CreateNewInterfacePanel from "@/app/ui/control-dock/CreateNewInterfacePanel";
 
 const MODES = ["template", "custom"] as const;
-const STYLING_PRESETS = ["default", "clean", "minimal", "bold", "soft"];
+const STYLING_PRESETS = ["default", "clean", "minimal", "bold", "soft", "apple"];
 const BEHAVIOR_PROFILES = ["default", "calm", "fast", "educational", "interactive"];
 const EXPERIENCES = [
   { id: "website", label: "Website" },

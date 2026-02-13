@@ -1,39 +1,16 @@
-// src/palettes/index.ts
-
-
-import defaultPalette from "./default.json";
-import darkPalette from "./dark.json";
-import kidsPalette from "./kids.json";
-import playfulPalette from "./playful.json";
-import elderlyPalette from "./elderly.json";
-import frenchPalette from "./french.json";
-import spanishPalette from "./spanish.json";
-import premiumPalette from "./premium.json";
-import crazyPalette from "./crazy.json";
-import hiclarifyPalette from "./hiclarify.json";
-
-
 /**
- * Single registry of all UI palettes
- * Keys here are the ONLY valid palette names
+ * Palette set derived from all JSON files in this directory.
+ * Add a new palette by adding a new .json file; no code changes required.
  */
-export const palettes = {
-  default: defaultPalette,
-  dark: darkPalette,
-  kids: kidsPalette,
-  playful: playfulPalette,
-  elderly: elderlyPalette,
-  french: frenchPalette,
-  spanish: spanishPalette,
-  premium: premiumPalette,
-  crazy: crazyPalette,
-  hiclarify: hiclarifyPalette,
-} as const;
+const context = (require as any).context(".", false, /\.json$/);
 
+const palettesRaw: Record<string, unknown> = {};
+context.keys().forEach((key: string) => {
+  const name = key.replace(/^\.\//, "").replace(/\.json$/, "");
+  const mod = context(key);
+  palettesRaw[name] = mod?.default ?? mod;
+});
 
-/**
- * Palette name union (auto-derived)
- */
+export const palettes = palettesRaw as Record<string, Record<string, unknown>>;
+
 export type PaletteName = keyof typeof palettes;
-
-

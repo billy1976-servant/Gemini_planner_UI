@@ -21,6 +21,7 @@ import StylingLivePreview from "@/app/ui/control-dock/StylingLivePreview";
 import CreateNewInterfacePanel from "@/app/ui/control-dock/CreateNewInterfacePanel";
 import ExperienceRenderer from "@/engine/core/ExperienceRenderer";
 import { applyPaletteToElement } from "@/lib/site-renderer/palette-bridge";
+import PaletteContractInspector from "@/04_Presentation/diagnostics/PaletteContractInspector";
 
 /** Wraps content and applies a specific palette's CSS variables to the wrapper so the content renders in that palette. */
 function PaletteFullPreviewFrame({
@@ -62,7 +63,7 @@ function PaletteFullPreviewFrame({
 
 const PALETTE_NAMES = Object.keys(palettes) as string[];
 const MODES = ["template", "custom"] as const;
-const STYLING_PRESETS = ["default", "clean", "minimal", "bold", "soft"];
+const STYLING_PRESETS = ["default", "clean", "minimal", "bold", "soft", "apple"];
 const BEHAVIOR_PROFILES = ["default", "calm", "fast", "educational", "interactive"];
 const EXPERIENCES = [
   { id: "website", label: "Website" },
@@ -161,7 +162,6 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
   const currentHref = typeof window !== "undefined" ? window.location.href : "";
   useSyncExternalStore(subscribePalette, getPaletteName, () => "default");
   const [paletteViewMode, setPaletteViewMode] = useState<"live" | "swatches">("swatches");
-
   const experience = (stateSnapshot?.values?.experience ?? "website") as string;
   const layoutMode = (stateSnapshot?.values?.layoutMode ?? "template") as string;
   const templateId = (stateSnapshot?.values?.templateId ?? "") as string;
@@ -169,6 +169,8 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
   const stylingPreset = (stateSnapshot?.values?.stylingPreset ?? "default") as string;
   const behaviorProfile = (stateSnapshot?.values?.behaviorProfile ?? "default") as string;
   const templateList = getTemplateList();
+
+  const activePalette = (palettes as Record<string, any>)[paletteName] ?? null;
 
   const setValue = (key: string, value: string) => {
     dispatchState("state.update", { key, value });
@@ -291,6 +293,7 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
             )}
             {openPanel === "palette" && (
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                <PaletteContractInspector palette={activePalette} />
                 {palettePreviewScreen != null && palettePreviewProps != null && (
                   <div style={{ display: "flex", gap: "var(--spacing-2)", alignItems: "center", flexWrap: "wrap" }}>
                     <span style={{ fontSize: 12, color: GOOGLE.textSecondary, fontWeight: 500 }}>Mode:</span>

@@ -24,7 +24,7 @@ export default function JournalHistory({ params }: JournalHistoryProps) {
       <div style={{ fontSize: 12, opacity: 0.7, marginBottom: 6 }}>
         Saved entries
       </div>
-      <ul style={{ margin: 0, paddingLeft: 18 }}>
+      <ul style={{ margin: 0 }}>
         {entries.map((e, i) => (
           <li key={i} style={{ marginBottom: 6 }}>
             {e}

@@ -38,12 +38,16 @@ import { emitRendererTrace } from "@/engine/debug/renderer-trace";
 import { getExperienceVisibility } from "@/engine/core/experience-visibility";
 import { pushTrace } from "@/devtools/runtime-trace-store";
 import { addTraceEvent, endInteraction } from "@/03_Runtime/debug/pipeline-trace-aggregator";
+import { startTrace, endTrace, isEnabled } from "@/diagnostics/traceStore";
 
 
 /* ======================================================
    LAYOUT INVESTIGATION KILL SWITCH
 ====================================================== */
 const DISABLE_ENGINE_LAYOUT = false; // Re-enabled: engine overrides and template resolution active
+
+/** When true: ignore missing layout warnings, always render content, never block slots. */
+const LAYOUT_RECOVERY_MODE = true;
 
 
 /* ======================================================
@@ -180,15 +184,33 @@ function logParamsDiagnostic(typeKey: string, id: string | undefined, params: an
   console.log(msg);
 }
 
-function MaybeDebugWrapper({ node, children }: any) {
+function MaybeDebugWrapper({ node, children, screenPath }: { node: any; children: React.ReactNode; screenPath?: string }) {
   // Default: real UI (no debug boxes)
   // Opt-in: `?debug=1` brings back DebugWrapper overlays
   if (isDebugMode()) return <DebugWrapper node={node}>{children}</DebugWrapper>;
 
   // Preserve `data-node-id` for tooling (e.g. visual-proof selectors) without affecting layout.
+  // `data-media-url` lets LayoutMoleculeRenderer partitionChildren find the media child when section uses split layout.
   // `display: contents` avoids extra box-model impact.
+  // Inspector: data-hi-* for diagnostic overlay (element id, path, molecule).
+  const media = node?.content?.media;
+  const mediaUrl =
+    typeof media === "string"
+      ? media
+      : (media as { url?: string })?.url
+        ? (media as { url: string }).url
+        : undefined;
+  const stableId = node?.id ?? node?.role ?? (screenPath ?? "");
   return (
-    <div data-node-id={node?.id} style={{ display: "contents" }}>
+    <div
+      data-node-id={node?.id}
+      data-media-url={mediaUrl}
+      data-hi-element="true"
+      data-hi-id={stableId}
+      data-hi-path={screenPath ?? stableId}
+      data-hi-molecule={node?.type ?? ""}
+      style={{ display: "contents" }}
+    >
       {children}
     </div>
   );
@@ -450,6 +472,9 @@ function applyProfileToNode(
     
     next.layout = finalLayoutId;
     (next as any)._effectiveLayoutPreset = layoutId;
+    // PROOF: Hard-force every section to use layoutId "content-stack" to confirm layout binding. Remove after testing.
+    next.layout = "content-stack";
+    (next as any)._effectiveLayoutPreset = "content-stack";
     // Merge variantContainerWidth into variantParams so it's applied during params resolution
     (next as any)._variantParams = variantContainerWidth 
       ? { ...variantParams, containerWidth: variantContainerWidth }
@@ -707,14 +732,16 @@ export function renderNode(
   experienceContext?: ExperienceContext | null,
   depth: number = 0,
   forceCardCompatibility?: boolean,
-  paletteOverride?: string
+  paletteOverride?: string,
+  nodePath?: string
 ): any {
   if (!node) return null;
+  const effectivePath = nodePath ?? (node?.id ?? node?.role ?? `n_${depth}`);
 
   // ✅ JSON-SKIN ENGINE INTEGRATION (ONLY for json-skin type)
   if (node.type === "json-skin") {
     return (
-      <MaybeDebugWrapper node={node}>
+      <MaybeDebugWrapper node={node} screenPath={node?.id ?? node?.role ?? "json-skin"}>
         <JsonSkinEngine screen={node} />
       </MaybeDebugWrapper>
     );
@@ -817,6 +844,9 @@ export function renderNode(
       ? getCardPreset(profile.cardPreset)
       : {};
 
+  const elementId = profiledNode.id ?? profiledNode.role ?? effectivePath;
+  if (isEnabled()) startTrace("render", elementId, effectivePath, profiledNode.type ?? typeKey);
+
   const resolvedParams = resolveParams(
     { ...visualPresetOverlay, ...cardPresetOverlay },
     variantPreset,
@@ -835,21 +865,41 @@ export function renderNode(
       ? deepMergeParams(resolvedParams, sectionPresetLayoutOverlay)
       : resolvedParams;
 
-  // Template visual architecture: spacing scale overlay for Section
-  const spacingOverlay =
+  // Template visual architecture: spacing scale overlay for Section (PHASE I: section gap from layout-definitions only)
+  const spacingOverlayRaw =
     typeKey === "section" && profile?.spacingScale
       ? getSpacingForScale(profile.spacingScale, "section")
       : {};
+  const spacingOverlay =
+    typeKey === "section" && spacingOverlayRaw?.layout && "gap" in spacingOverlayRaw.layout
+      ? (() => {
+          const { layout, ...rest } = spacingOverlayRaw;
+          const { gap: _sectionGap, ...layoutRest } = layout as Record<string, unknown>;
+          return { ...rest, layout: layoutRest };
+        })()
+      : spacingOverlayRaw;
   let paramsAfterSpacing =
     Object.keys(spacingOverlay).length > 0
       ? deepMergeParams(paramsAfterSectionLayout, spacingOverlay)
       : paramsAfterSectionLayout;
-  
-  // Template layoutVariants: Apply variant params if present (Option D)
-  const variantParamsOverlay = 
+
+  // Template layoutVariants: Apply variant params if present; PHASE I: do not merge gap for section (layout-definitions is authority)
+  const rawVariantParams =
     typeKey === "section" && (profiledNode as any)._variantParams
       ? (profiledNode as any)._variantParams
       : {};
+  const variantParamsOverlay =
+    typeKey === "section" && rawVariantParams && (rawVariantParams.gap != null || (rawVariantParams as any).layout?.gap != null)
+      ? (() => {
+          const { gap: _g, layout, ...rest } = rawVariantParams as Record<string, unknown>;
+          const out: Record<string, unknown> = { ...rest };
+          if (layout && typeof layout === "object" && layout !== null) {
+            const { gap: _lg, ...layoutRest } = layout as Record<string, unknown>;
+            out.layout = layoutRest;
+          }
+          return out;
+        })()
+      : rawVariantParams;
   let finalParams =
     Object.keys(variantParamsOverlay).length > 0
       ? deepMergeParams(paramsAfterSpacing, variantParamsOverlay)
@@ -877,7 +927,7 @@ export function renderNode(
       message: `Missing registry entry: ${resolvedNode.type}`,
     });
     return (
-      <MaybeDebugWrapper node={resolvedNode}>
+      <MaybeDebugWrapper node={resolvedNode} screenPath={effectivePath}>
         <div style={{ color: "red" }}>
           Missing registry entry: <b>{resolvedNode.type}</b>
         </div>
@@ -978,14 +1028,14 @@ export function renderNode(
       if (cardPresetId) itemNode.layout = cardPresetId;
 
       const uniqueKey = item.id || `item-${i}`;
-      return renderNode({ ...itemNode, key: uniqueKey }, profile, stateSnapshot, defaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides, experienceContext, depth + 1, forceCardCompatibility, paletteOverride);
+      return renderNode({ ...itemNode, key: uniqueKey }, profile, stateSnapshot, defaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides, experienceContext, depth + 1, forceCardCompatibility, paletteOverride, `${effectivePath}.items[${i}]`);
     });
   } else if (Array.isArray(resolvedNode.children)) {
     // Normal mode: render children
     renderedChildren = resolvedNode.children.map((child: any, i: number) => {
       // 🔑 Use child.id if available, otherwise use index + type for unique key
       const uniqueKey = child.id || `${child.type}-${i}`;
-      return renderNode({ ...child, key: uniqueKey }, profile, stateSnapshot, defaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides, experienceContext, depth + 1, forceCardCompatibility, paletteOverride);
+      return renderNode({ ...child, key: uniqueKey }, profile, stateSnapshot, defaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides, experienceContext, depth + 1, forceCardCompatibility, paletteOverride, `${effectivePath}.children[${i}]`);
     });
   }
 
@@ -1106,6 +1156,8 @@ export function renderNode(
   if (typeKey === "section") {
     if (resolvedNode.layout != null) {
       (props as any).layout = resolvedNode.layout;
+    } else if (LAYOUT_RECOVERY_MODE) {
+      (props as any).layout = "content-stack";
     }
     // Pass templateId for context-based layout resolution (template role mapping)
     const templateId = profile?.id;
@@ -1124,8 +1176,10 @@ export function renderNode(
     component: componentName,
   });
 
+  if (isEnabled()) endTrace();
+
   const content = (
-    <MaybeDebugWrapper node={resolvedNode}>
+    <MaybeDebugWrapper node={resolvedNode} screenPath={effectivePath}>
       <Component {...props}>{renderedChildren}</Component>
     </MaybeDebugWrapper>
   );
@@ -1232,6 +1286,12 @@ export default function JsonRenderer({
 
 
   beginCycle();
+
+  // Proof diagnostic: section keys passed from page (from collectSectionKeysAndNodes on tree children).
+  console.log("SECTION_KEYS_DETECTED", sectionKeys ?? []);
+  if (!sectionKeys || sectionKeys.length === 0) {
+    console.log("NO_SECTIONS_FOUND_IN_TREE");
+  }
 
   if (process.env.NODE_ENV === "development") {
     const templateId = profileOverride?.id ?? null;
@@ -1368,7 +1428,7 @@ export default function JsonRenderer({
       : null;
 
   PipelineDebugStore.startRenderPass();
-  const result = renderNode(node, profile, stateSnapshot, effectiveDefaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides, experienceContext, 0, forceCardCompatibility, paletteOverride);
+  const result = renderNode(node, profile, stateSnapshot, effectiveDefaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides, experienceContext, 0, forceCardCompatibility, paletteOverride, node?.id ?? node?.role ?? "root");
   PipelineDebugStore.endRenderPass();
   recordStage("render", "pass", "Render cycle completed");
   

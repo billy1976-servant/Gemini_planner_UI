@@ -57,17 +57,14 @@ function useIsMobile() {
 function applyMobileTabOptimization(params: any, isMobile: boolean) {
   if (!isMobile) return params;
   
-  // Scale down padding for mobile
   const mobileSurface = {
     ...params.surface,
-    padding: "padding.xs", // 6px instead of 20px
   };
-  
+
   const mobileSurfaceActive = {
     ...params.surfaceActive,
-    padding: "padding.xs",
   };
-  
+
   const mobileText = {
     ...params.text,
     size: "textSize.sm", // 14px instead of 16px

@@ -158,16 +158,25 @@ export default function CardCompound({
     contentAlign === "center" ? "center" : contentAlign === "end" ? "right" : "left";
 
   const media = content?.media;
+  const mediaSrc =
+    typeof media === "string"
+      ? media
+      : (media && typeof media === "object"
+          ? (media as { url?: string; src?: string; path?: string }).url ||
+            (media as { url?: string; src?: string; path?: string }).src ||
+            (media as { url?: string; src?: string; path?: string }).path ||
+            ""
+          : "") ?? "";
   const isPrimaryMedia =
-    typeof media === "string" &&
-    !media.includes("avatar") &&
-    !media.includes("profile") &&
-    !media.includes("icon") &&
-    !media.includes("thumb");
+    !!mediaSrc &&
+    !mediaSrc.includes("avatar") &&
+    !mediaSrc.includes("profile") &&
+    !mediaSrc.includes("icon") &&
+    !mediaSrc.includes("thumb");
   const hasLayoutMedia = isPrimaryMedia && finalMediaPosition;
 
   const isHeroMedia =
-    (params?.heroMediaFill || params?.variant === "hero-media") && isPrimaryMedia && media;
+    (params?.heroMediaFill || params?.variant === "hero-media") && isPrimaryMedia && mediaSrc;
   if (isHeroMedia) {
     return (
       <div
@@ -181,7 +190,7 @@ export default function CardCompound({
         }}
       >
         <img
-          src={media}
+          src={mediaSrc}
           alt=""
           style={{
             width: "100%",
@@ -195,10 +204,10 @@ export default function CardCompound({
     );
   }
 
-  const mediaChunk = isPrimaryMedia && media && typeof media === "string" ? (
+  const mediaChunk = isPrimaryMedia && mediaSrc ? (
     <MediaAtom
       params={resolveParams(params.media)}
-      src={media}
+      src={mediaSrc}
     />
   ) : null;
 
@@ -211,9 +220,9 @@ export default function CardCompound({
   }
   const textChunk = (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-2)", textAlign, minWidth: 0 }}>
-      {!isPrimaryMedia && media && typeof media === "string" && (
+      {!isPrimaryMedia && mediaSrc && (
         <div style={{ width: 32, height: 32, borderRadius: "50%", overflow: "hidden", flexShrink: 0 }}>
-          <MediaAtom src={media} params={{ aspectRatio: "1", radius: "999px" }} />
+          <MediaAtom src={mediaSrc} params={{ aspectRatio: "1", radius: "999px" }} />
         </div>
       )}
       {content.title && (

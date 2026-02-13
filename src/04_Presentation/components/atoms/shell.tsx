@@ -13,7 +13,7 @@ type ShellAtomProps = {
 export default function ShellAtom({ params = {}, children }: ShellAtomProps) {
   const style: React.CSSProperties = {
     background: resolveToken(params.background),
-    padding: resolveToken(params.padding),
+    ...(params.padding != null && { padding: resolveToken(params.padding) }),
     overflowY: params.scrollable ? "auto" : "visible",
   };
 

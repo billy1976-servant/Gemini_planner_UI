@@ -537,7 +537,6 @@ const whyTitle: React.CSSProperties = {
 
 const whyList: React.CSSProperties = {
   margin: 0,
-  paddingLeft: 20,
   color: "#cbd5e1",
   fontSize: 13,
   marginBottom: 16,

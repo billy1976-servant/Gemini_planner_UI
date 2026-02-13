@@ -34,7 +34,7 @@ export default function CollectionAtom({ params = {}, children }: CollectionAtom
       display: "grid",
       gridTemplateColumns: params.gridTemplateColumns,
       gap: toCssGapOrPadding(params.gap),
-      padding: toCssGapOrPadding(params.padding),
+      ...(params.padding != null && { padding: toCssGapOrPadding(params.padding) }),
       overflowY: params.scrollable ? "auto" : "visible",
     };
     if (params.align !== undefined) style.alignItems = params.align;
@@ -51,7 +51,7 @@ export default function CollectionAtom({ params = {}, children }: CollectionAtom
     display: "flex",
     flexDirection: params.direction ?? (STRICT_JSON_MODE ? undefined : "row"),
     gap: toCssGapOrPadding(params.gap),
-    padding: toCssGapOrPadding(params.padding),
+    ...(params.padding != null && { padding: toCssGapOrPadding(params.padding) }),
     overflowY: params.scrollable ? "auto" : "visible",
   };
 

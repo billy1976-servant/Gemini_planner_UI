@@ -16,7 +16,7 @@
         {
           "id": "trackNav",
           "type": "Stepper",
-          "variant": "tab-underline",
+          "variant": "tab-segment",
           "steps": [
             {
               "content": {

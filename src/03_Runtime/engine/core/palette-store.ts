@@ -3,7 +3,7 @@
 
 /**
  * Palette list and resolution: single source is @/palettes (palettes object and PaletteName type).
- * Do not hardcode palette names; add new palettes in src/palettes/index.ts only.
+ * Palette set is derived from JSON files in the palettes folder; no manual registration in code.
  */
 import { palettes } from "@/palettes";
 

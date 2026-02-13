@@ -55,7 +55,7 @@ export type TemplateProfile = {
   label: string;
   /** Experience type: filters templates by use case (website, journal, app, learning, dashboard) */
   experience?: ExperienceType;
-  visualPreset: "default" | "compact" | "spacious" | "editorial" | "prominent";
+  visualPreset: string;
   /** Section role → layout (type + params). Template overrides organ defaults at render time. */
   sections: Record<string, LayoutDef>;
   /** Layout variants: per-role layout overrides with params (Option D approach) */

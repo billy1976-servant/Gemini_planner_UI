@@ -9,12 +9,14 @@ type ScreensIndex = {
   folders: Record<string, string[]>;
 };
 
-/** Format screen path for pill: "File: journal_track/app-1.json" (readable, no clipping) */
+/** Format screen path for pill: "File: journal_track/app-1.json" or "File: wrappers/GlobalAppSkin-test.tsx" (readable, no clipping) */
 function formatScreenPillLabel(screen: string): string {
   if (!screen.trim()) return "";
+  const isTsx = /^tsx:/i.test(screen);
   const normalized = screen.replace(/^tsx-screens\/|^tsx:/i, "").trim();
   const hasExt = /\.(tsx|json)$/i.test(normalized);
-  const path = hasExt ? normalized : `${normalized}.json`;
+  const ext = isTsx ? ".tsx" : ".json";
+  const path = hasExt ? normalized : `${normalized}${ext}`;
   return `File: ${path}`;
 }
 

@@ -1,5 +1,6 @@
 // src/engine/core/palette-resolve-token.ts
 import { getPalette } from "@/engine/core/palette-store";
+import { isEnabled, recordStep } from "@/diagnostics/traceStore";
 
 const MAX_RESOLVE_DEPTH = 5;
 
@@ -25,8 +26,12 @@ export function resolveToken(path?: any, depth = 0, paletteOverride?: Record<str
   const result = path
     .split(".")
     .reduce((acc: any, key: string) => acc?.[key], palette) ?? path;
+  if (depth === 0 && isEnabled()) recordStep({ label: "read palette path", in: path, out: result, meta: { paletteOverride: !!paletteOverride } });
   if (looksLikeTokenPath(result)) {
-    return resolveToken(result, depth + 1, paletteOverride);
+    const resolved = resolveToken(result, depth + 1, paletteOverride);
+    if (depth === 0 && isEnabled()) recordStep({ label: "resolve refs", in: result, out: resolved });
+    return resolved;
   }
+  if (depth === 0 && isEnabled()) recordStep({ label: "resolve refs", in: result, out: result });
   return result;
 }

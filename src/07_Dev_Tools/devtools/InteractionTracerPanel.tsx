@@ -1253,7 +1253,8 @@ function LiveStateView({ snapshot }: { snapshot: PipelineDebugSnapshot }) {
 export default function InteractionTracerPanel() {
   const [events, setEvents] = useState<TraceEvent[]>([]);
   const [expanded, setExpanded] = useState(false);
-  const [panelHeight, setPanelHeight] = useState(60); // Percentage of viewport height
+  const [panelHeight, setPanelHeight] = useState(60); // Percentage of viewport height (legacy)
+  const [panelHeightPx, setPanelHeightPx] = useState(300); // Expanded height in px (40–300)
   const [isResizing, setIsResizing] = useState(false);
   const [mode, setMode] = useState<"live" | "log">("live");
   const [hiddenFilters, setHiddenFilters] = useState<Set<FilterKey>>(new Set());
@@ -1345,11 +1346,9 @@ export default function InteractionTracerPanel() {
     if (!isResizing) return;
 
     const handleMouseMove = (e: MouseEvent) => {
-      const viewportHeight = window.innerHeight;
-      const newHeight = ((viewportHeight - e.clientY) / viewportHeight) * 100;
-      // Clamp between 10% and 90% of viewport
-      const clampedHeight = Math.max(10, Math.min(90, newHeight));
-      setPanelHeight(clampedHeight);
+      const newHeightPx = window.innerHeight - e.clientY;
+      const clampedPx = Math.max(40, Math.min(300, newHeightPx));
+      setPanelHeightPx(clampedPx);
     };
 
     const handleMouseUp = () => {
@@ -1770,9 +1769,9 @@ export default function InteractionTracerPanel() {
         bottom: 0,
         left: 0,
         right: 0,
-        zIndex: 0 /* TEMP: neutralized to isolate nav dropdown blocker */,
-        height: expanded ? `${panelHeight}vh` : "42px",
+        height: expanded ? `${panelHeightPx}px` : "40px",
         maxHeight: "90vh",
+        zIndex: 50000,
         overflow: "hidden",
         background: "rgba(0,0,0,0.92)",
         borderTop: "2px solid #00ff88",
@@ -1782,7 +1781,7 @@ export default function InteractionTracerPanel() {
         pointerEvents: "auto",
       }}
     >
-      {/* Resize grip */}
+      {/* Expand handle: top-center grab bar — drag to resize 40px–300px */}
       {expanded && (
         <div
           onMouseDown={(e) => {
@@ -1800,7 +1799,7 @@ export default function InteractionTracerPanel() {
             flexShrink: 0,
             userSelect: "none",
           }}
-          title="Drag to resize panel height"
+          title="Drag to resize panel height (40px–300px)"
         >
           <div
             style={{
@@ -1816,7 +1815,7 @@ export default function InteractionTracerPanel() {
       <div
         onClick={() => setExpanded(!expanded)}
         style={{
-          height: 42,
+          height: 40,
           display: "flex",
           alignItems: "center",
           padding: "0 12px",
@@ -1850,8 +1849,8 @@ export default function InteractionTracerPanel() {
       {expanded && (
         <div
           style={{
-            overflowY: "auto",
-            height: `calc(${panelHeight}vh - 42px)`,
+            overflow: "auto",
+            height: `${panelHeightPx - 48}px`,
             minHeight: 0,
             padding: 8,
             color: "#0f0",

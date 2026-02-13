@@ -45,7 +45,7 @@ export default function FieldAtom({ params = {}, children }: FieldAtomProps) {
     borderWidth: params.borderWidth ?? 1,
     borderStyle: "solid",
     borderRadius: resolveToken(params.radius),
-    padding: resolveToken(params.padding),
+    ...(params.padding != null && { padding: resolveToken(params.padding) }),
   };
 
 
