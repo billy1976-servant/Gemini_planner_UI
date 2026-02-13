@@ -110,7 +110,8 @@ export default function ExperienceRenderer({
     gap: "var(--spacing-4)",
     width: "100%",
     maxWidth: "100%",
-    padding: "var(--spacing-4)",
+    paddingTop: "var(--spacing-4)",
+    paddingBottom: "var(--spacing-4)",
   };
 
   const learningWrapperStyle: React.CSSProperties = {
@@ -121,7 +122,8 @@ export default function ExperienceRenderer({
     width: "100%",
     maxWidth: "min(820px, 100%)",
     margin: "0 auto",
-    padding: "var(--spacing-8)",
+    paddingTop: "var(--spacing-8)",
+    paddingBottom: "var(--spacing-8)",
   };
 
   // ---- Experience-specific composition ----
