@@ -363,7 +363,7 @@ export default function ControlDock({
               onToggle={() => togglePanel("styling")}
             >
               <div style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-2)" }}>
-                {["default", "clean", "minimal", "bold", "soft"].map((preset) => (
+                {["default", "clean", "minimal", "bold", "soft", "apple"].map((preset) => (
                   <button
                     key={preset}
                     type="button"

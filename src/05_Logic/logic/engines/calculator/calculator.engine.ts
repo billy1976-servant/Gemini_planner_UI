@@ -9,7 +9,7 @@
  */
 
 import type { EducationFlow } from "@/logic/flows/flow-loader";
-import type { EngineFlow } from "./learning.engine";
+import type { EngineFlow } from "../learning.engine";
 import type { PresentationModel } from "./presentation-types";
 
 export function calculatorEngine(flow: EducationFlow): EngineFlow {

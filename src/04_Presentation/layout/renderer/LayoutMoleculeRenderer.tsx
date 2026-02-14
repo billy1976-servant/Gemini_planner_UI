@@ -1,6 +1,13 @@
 "use client";
 
+/**
+ * SYSTEM LAW — Vertical spacing pipeline:
+ *   Layout Engine → Sequence/Collection gap + padding → DOM.
+ * Nothing else is allowed. If spacingMode=none, EVERY vertical value must be 0.
+ */
+
 import React from "react";
+import { useSearchParams } from "next/navigation";
 import { SurfaceAtom, TextAtom, SequenceAtom, CollectionAtom } from "@/components/atoms";
 import { OriginTraceProvider } from "@/03_Runtime/diagnostics/OriginTraceContext";
 import { usePreviewTile } from "@/04_Presentation/contexts/PreviewTileContext";
@@ -10,10 +17,68 @@ import type { LayoutDefinition } from "@/layout/resolver";
 
 const LAYOUT_RECOVERY_MODE = true;
 
+/** Spacing mode → base token for engine-driven section spacing. */
+const SPACING_MODE_TOKEN: Record<string, string> = {
+  tight: "var(--spacing-6)",
+  normal: "var(--spacing-10)",
+  airy: "var(--spacing-16)",
+  none: "0",
+};
+
+export type SectionSpacingContext = {
+  index: number;
+  totalSections: number;
+  hasMultipleSections: boolean;
+  stackingDirection?: "column" | "row";
+  layoutDensityMode?: "tight" | "normal" | "airy" | "none";
+};
+
+/**
+ * Engine-owned section spacing: context-aware padding and gap.
+ * Only vertical padding is computed; horizontal remains from container contentInsetX.
+ *
+ * Layout engine is the ONLY vertical spacing authority.
+ * All external spacing must be ignored.
+ */
+export function resolveSectionSpacing(context: SectionSpacingContext): {
+  paddingTop: string;
+  paddingBottom: string;
+  gap: string;
+} {
+  const { index, totalSections, layoutDensityMode = "normal" } = context;
+
+  // Hard override: spacingMode=none must produce completely collapsed stack (0 padding, 0 gap everywhere).
+  if (layoutDensityMode === "none") {
+    return { paddingTop: "0", paddingBottom: "0", gap: "0" };
+  }
+
+  const S = SPACING_MODE_TOKEN[layoutDensityMode] ?? SPACING_MODE_TOKEN.normal;
+  if (S === "0") {
+    return { paddingTop: "0", paddingBottom: "0", gap: "0" };
+  }
+
+  if (totalSections <= 0) {
+    return { paddingTop: "0", paddingBottom: "0", gap: "0" };
+  }
+
+  if (totalSections === 1) {
+    return { paddingTop: S, paddingBottom: S, gap: `calc(${S} * 0.5)` };
+  }
+
+  const half = `calc(${S} * 0.5)`;
+  if (index === 0) {
+    return { paddingTop: S, paddingBottom: half, gap: half };
+  }
+  if (index === totalSections - 1) {
+    return { paddingTop: half, paddingBottom: S, gap: half };
+  }
+  return { paddingTop: half, paddingBottom: half, gap: half };
+}
+
 function recoveryFallbackForKey(name: string): any {
   if (name.includes("display")) return "flex";
   if (name.includes("flexDirection") || name.includes("direction")) return "column";
-  if (name.includes("gap")) return "var(--spacing-2)";
+  if (name.includes("gap")) return "0";
   if (name.includes("width") || name.includes("Width")) return "100%";
   if (name.includes("minHeight")) return "0";
   if (name.includes("overflow")) return "hidden";
@@ -23,7 +88,7 @@ function recoveryFallbackForKey(name: string): any {
   if (name.includes("objectFit")) return "contain";
   if (name.includes("gridTemplateColumns")) return "1fr 1fr";
   if (name.includes("mediaSlot")) return "right";
-  return "var(--spacing-2)";
+  return "0";
 }
 
 // Safe layout rendering: in LAYOUT_RECOVERY_MODE never block; use fallback and warn.
@@ -130,6 +195,12 @@ export type LayoutMoleculeRendererProps = {
   layoutPresetId?: string | null;
   id?: string;
   role?: string;
+  /** Section index (0-based) among siblings for engine-driven spacing. */
+  sectionIndex?: number;
+  /** Total number of sections for engine-driven spacing. */
+  totalSections?: number;
+  /** Density: tight | normal | airy | none. Overridable by URL ?spacingMode=. */
+  spacingMode?: "tight" | "normal" | "airy" | "none";
   params?: {
     surface?: any;
     title?: any;
@@ -147,14 +218,23 @@ export default function LayoutMoleculeRenderer({
   layout,
   layoutPresetId,
   id,
+  sectionIndex = 0,
+  totalSections = 1,
+  spacingMode: spacingModeProp,
   params = {},
   content = {},
   children,
 }: LayoutMoleculeRendererProps) {
   const { isPreviewTile } = usePreviewTile();
+  const searchParams = useSearchParams();
+  const layoutNoneFromUrl = searchParams?.get("layout") === "none";
+  const spacingModeFromUrl = searchParams?.get("spacingMode") as "tight" | "normal" | "airy" | "none" | null;
+  const spacingMode = spacingModeFromUrl ?? spacingModeProp ?? "normal";
+  const effectiveLayoutId = layoutPresetId ?? (layout as any)?.id ?? null;
+  const isNoLayoutMode = layoutNoneFromUrl || effectiveLayoutId === "none";
   const FORCED_BASE_LAYOUT: LayoutDefinition = {
     containerWidth: "full",
-    moleculeLayout: { type: "column", params: { gap: "var(--spacing-2)" } },
+    moleculeLayout: { type: "column", params: { gap: "0" } },
     container: { width: "100%", boxSizing: "border-box", overflowX: "hidden", contentInsetX: "var(--spacing-4)" },
   } as LayoutDefinition;
   const effectiveLayout = layout == null && LAYOUT_RECOVERY_MODE ? FORCED_BASE_LAYOUT : layout;
@@ -201,6 +281,12 @@ export default function LayoutMoleculeRenderer({
     backgroundVariant: variant,
     moleculeLayout,
   } = layout;
+
+  console.log("MOLECULE_INPUT", {
+    layoutId: layoutPresetId ?? (layout as any)?.id ?? null,
+    containerWidth: layout?.containerWidth ?? rawWidth,
+    params,
+  });
 
   const surfaceParams = resolveParams(params.surface);
   const surfaceWithVariant =
@@ -347,10 +433,6 @@ export default function LayoutMoleculeRenderer({
     ) : null;
 
   const mlParams = (moleculeLayout?.params ?? {}) as Record<string, unknown>;
-  // STRICT: Only use gap if explicitly provided in JSON
-  const gap = requireLayoutValue("moleculeLayout.params.gap", mlParams.gap, layoutId) as string | undefined;
-  const padding: string | undefined = requireLayoutValue("moleculeLayout.params.padding", mlParams.padding, layoutId) as string | undefined;
-
   const hasMoleculeType = typeof moleculeLayout?.type === "string" && moleculeLayout.type.trim().length > 0;
   let resolved = hasMoleculeType
     ? resolveMoleculeLayout(
@@ -360,7 +442,21 @@ export default function LayoutMoleculeRenderer({
       )
     : null;
   if (LAYOUT_RECOVERY_MODE && (resolved == null || (resolved.display == null && resolved.direction == null))) {
-    resolved = { display: "flex", direction: "column", width: "100%", gap: "var(--spacing-2)" };
+    resolved = { display: "flex", direction: "column", width: "100%", gap: "0" };
+  }
+
+  // Engine-owned spacing: compute from context (section index, total, density) or force zero when ?layout=none / layout=none
+  const engineSpacing = resolveSectionSpacing({
+    index: sectionIndex,
+    totalSections: Math.max(1, totalSections),
+    hasMultipleSections: totalSections > 1,
+    layoutDensityMode: isNoLayoutMode ? "none" : spacingMode,
+  });
+  // Section vertical spacing is engine-only; template/preset spacing is intentionally ignored. This overwrite always wins.
+  const gap = isNoLayoutMode ? "0" : engineSpacing.gap;
+  const padding = isNoLayoutMode ? "0" : `${engineSpacing.paddingTop} 0 ${engineSpacing.paddingBottom}`;
+  if (resolved != null) {
+    resolved = { ...resolved, gap, padding };
   }
 
   // DEBUG: Stripped all debug borders/backgrounds to see raw layout
@@ -390,10 +486,15 @@ export default function LayoutMoleculeRenderer({
   if (splitMaxWidth !== undefined) splitLayoutStyle.maxWidth = splitMaxWidth;
   if (splitMinWidth !== undefined) splitLayoutStyle.minWidth = splitMinWidth;
   if (gap !== undefined) splitLayoutStyle.gap = gap;
-  // Phase D: only horizontal padding from moleculeLayout.params.padding (no vertical)
-  if (padding !== undefined) {
-    splitLayoutStyle.paddingLeft = padding;
-    splitLayoutStyle.paddingRight = padding;
+  // Vertical padding on split container (horizontal stays on outer via contentInsetX)
+  splitLayoutStyle.paddingTop = engineSpacing.paddingTop;
+  splitLayoutStyle.paddingBottom = engineSpacing.paddingBottom;
+  splitLayoutStyle.paddingLeft = 0;
+  splitLayoutStyle.paddingRight = 0;
+  // Apply moleculeLayout params that affect split container (e.g. minHeight)
+  const splitMinHeight = (mlParams.minHeight as string | undefined);
+  if (splitMinHeight !== undefined && splitMinHeight !== null) {
+    splitLayoutStyle.minHeight = splitMinHeight;
   }
   
   const innerContent = isSplit ? (

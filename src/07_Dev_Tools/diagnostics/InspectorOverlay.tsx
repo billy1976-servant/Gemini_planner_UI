@@ -46,6 +46,8 @@ export type InspectorOverlayProps = {
   pinnedId: string | null;
   onPin: (id: string | null) => void;
   onClear: () => void;
+  /** When true, render panel inline (e.g. inside left rail) instead of fixed right. */
+  embedded?: boolean;
 };
 
 export default function InspectorOverlay({
@@ -54,6 +56,7 @@ export default function InspectorOverlay({
   pinnedId,
   onPin,
   onClear,
+  embedded = false,
 }: InspectorOverlayProps) {
   const [highlightRect, setHighlightRect] = useState<DOMRect | null>(null);
   const [trace, setTrace] = useState<TraceRecord | undefined>(undefined);
@@ -179,19 +182,23 @@ export default function InspectorOverlay({
         />
       )}
 
-      {/* Right panel */}
+      {/* Panel: fixed right when not embedded, inline when embedded */}
       <div
         style={{
-          position: "fixed",
-          right: 0,
-          top: 56,
-          bottom: 0,
-          width: 320,
-          maxWidth: "90vw",
+          ...(embedded
+            ? { width: "100%", minHeight: 200, border: "1px solid #e5e7eb", borderRadius: 8 }
+            : {
+                position: "fixed",
+                right: 0,
+                top: 56,
+                bottom: 0,
+                width: 320,
+                maxWidth: "90vw",
+                zIndex: 9999,
+              }),
           background: "#fff",
-          borderLeft: "1px solid #e5e7eb",
-          boxShadow: "-2px 0 8px rgba(0,0,0,0.06)",
-          zIndex: 9999,
+          borderLeft: embedded ? undefined : "1px solid #e5e7eb",
+          boxShadow: embedded ? "0 1px 3px rgba(0,0,0,0.06)" : "-2px 0 8px rgba(0,0,0,0.06)",
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",

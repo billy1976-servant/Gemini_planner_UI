@@ -42,6 +42,12 @@ export type SectionCompoundProps = {
   _effectiveLayoutPreset?: string | null;
   /** Template id for context-based layout resolution (template role mapping). */
   templateId?: string;
+  /** Section index (0-based) for engine-owned spacing. Set by json-renderer when section is direct child of screen. */
+  sectionIndex?: number;
+  /** Total sections for engine-owned spacing. */
+  totalSections?: number;
+  /** Spacing density: tight | normal | airy | none. Overridable by URL ?spacingMode=. */
+  spacingMode?: "tight" | "normal" | "airy" | "none";
   params?: {
     surface?: any;
     title?: any;
@@ -87,6 +93,9 @@ export default function SectionCompound({
   content = {},
   children,
   templateId,
+  sectionIndex = 0,
+  totalSections = 1,
+  spacingMode,
 }: SectionCompoundProps) {
   if (typeof window !== "undefined") {
     const sectionKey = id ?? role ?? "";
@@ -144,7 +153,9 @@ export default function SectionCompound({
   // Organ internal layout: when this section is an organ, inner arrangement from organ layout resolver + variant JSON; does not use section layout for inner moleculeLayout.
   const organIds = getOrganLayoutOrganIds();
   const isOrgan = role != null && organIds.includes(role);
-  const effectiveDef =
+  // Template authority: params.containerWidth (from layoutVariants[role] or profile.widthByRole[role]) overrides layout-definition containerWidth.
+  const templateContainerWidth = params?.containerWidth;
+  const baseDef =
     layoutDef != null && isOrgan
       ? (() => {
           const internalLayoutId = resolveInternalLayoutId(role, params.internalLayoutId);
@@ -171,6 +182,10 @@ export default function SectionCompound({
           };
         })()
       : layoutDef;
+  const effectiveDef =
+    baseDef != null && templateContainerWidth != null
+      ? { ...baseDef, containerWidth: templateContainerWidth }
+      : baseDef;
   if (effectiveDef) {
     const layoutPresetId = typeof layout === "string" && layout.trim() ? layout.trim() : null;
     const sectionKey = id ?? role ?? "";
@@ -185,6 +200,9 @@ export default function SectionCompound({
         layoutPresetId={layoutPresetId}
         id={id}
         role={role}
+        sectionIndex={sectionIndex}
+        totalSections={totalSections}
+        spacingMode={spacingMode}
         params={params}
         content={content}
       >

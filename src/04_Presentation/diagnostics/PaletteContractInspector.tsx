@@ -1280,7 +1280,7 @@ export default function PaletteContractInspector({ palette, paletteName, pipelin
                           </span>
                           <button
                             type="button"
-                            onClick={(e) => { e.stopPropagation(); if (detail) setTokenTraceView({ keyPath: t.path, steps: detail.trace, resolved: detail.resolved, pass: detail.pass }); }}
+                            onClick={(e) => { e.stopPropagation(); if (detail) setTokenTraceView({ keyPath: t.path, steps: detail.trace.map((s) => ({ label: s.step, in: s.input, out: s.output })), resolved: detail.resolved, pass: detail.pass }); }}
                             style={{ padding: "2px 6px", fontSize: 10, borderRadius: 4, border: "1px solid #d1d5db", background: "#f9fafb", cursor: "pointer" }}
                           >
                             View Trace
@@ -1313,7 +1313,7 @@ export default function PaletteContractInspector({ palette, paletteName, pipelin
                             <div style={{ marginTop: 4 }}>
                               <button
                                 type="button"
-                                onClick={() => setTokenTraceView({ keyPath: detail.key, steps: detail.trace, resolved: detail.resolved, pass: detail.pass })}
+                                onClick={() => setTokenTraceView({ keyPath: detail.key, steps: detail.trace.map((s) => ({ label: s.step, in: s.input, out: s.output })), resolved: detail.resolved, pass: detail.pass })}
                                 style={{ padding: "2px 8px", fontSize: 10, borderRadius: 4, border: "1px solid #d1d5db", background: "#f9fafb", cursor: "pointer" }}
                               >
                                 View Trace in panel

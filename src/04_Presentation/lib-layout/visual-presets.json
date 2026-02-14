@@ -85,5 +85,30 @@
     "chip": { "surface": { "background": "surface.variant", "radius": "radius.pill" }, "text": { "size": "textSize.sm", "weight": "textWeight.semibold", "color": "color.onSurface" } },
     "field": { "field": { "radius": "radius.lg", "padding": "padding.md" }, "label": { "size": "textRole.label.size", "weight": "textRole.label.weight", "lineHeight": "textRole.label.lineHeight", "color": "color.outlineStrong" } },
     "list": { "collection": { "gap": "spacing.stackGap" }, "layout": { "gap": "spacing.inlineGap" }, "surface": {} }
+  },
+  "clean": {
+    "section": { "surface": { "background": "surface.section", "shadow": "elevation.low", "radius": "radius.md", "transition": "transition.fast" }, "title": { "size": "textRole.title.size", "weight": "textRole.title.weight", "lineHeight": "textRole.title.lineHeight", "color": "color.onSurface", "fontFamily": "fontFamily.heading" } },
+    "card": { "surface": { "background": "surface.card", "shadow": "elevation.mid", "radius": "radius.md", "transition": "transition.fast" }, "title": { "size": "textRole.title.size", "weight": "textRole.title.weight", "lineHeight": "textRole.title.lineHeight", "color": "color.onSurface", "fontFamily": "fontFamily.heading" }, "body": { "size": "textRole.body.size", "weight": "textRole.body.weight", "lineHeight": "textRole.body.lineHeight", "color": "color.onSurface", "fontFamily": "fontFamily.sans" } },
+    "button": { "surface": { "radius": "radius.md", "transition": "transition.fast" } },
+    "stepper": { "surface": { "background": "surface.elevated", "radius": "radius.pill", "shadow": "elevation.mid", "transition": "transition.fast" }, "step": { "radius": "radius.pill", "transition": "transition.fast" }, "activeStep": { "background": "color.primary", "color": "color.onPrimary", "shadow": "elevation.low" } },
+    "list": { "collection": { "gap": "spacing.stackGap" }, "layout": { "gap": "spacing.inlineGap" }, "surface": {} }
+  },
+  "minimal": {
+    "section": { "surface": { "background": "surface.section", "shadow": "elevation.low", "radius": "radius.md", "transition": "transition.fast" }, "title": { "size": "textRole.title.size", "weight": "textRole.title.weight", "lineHeight": "textRole.title.lineHeight", "color": "color.onSurface", "fontFamily": "fontFamily.heading" } },
+    "card": { "surface": { "background": "surface.card", "shadow": "elevation.mid", "radius": "radius.md", "transition": "transition.fast" }, "title": { "size": "textRole.title.size", "weight": "textRole.title.weight", "lineHeight": "textRole.title.lineHeight", "color": "color.onSurface", "fontFamily": "fontFamily.heading" }, "body": { "size": "textRole.body.size", "weight": "textRole.body.weight", "lineHeight": "textRole.body.lineHeight", "color": "color.onSurface", "fontFamily": "fontFamily.sans" } },
+    "button": { "surface": { "radius": "radius.md", "transition": "transition.fast" } },
+    "stepper": { "surface": { "background": "surface.elevated", "radius": "radius.pill", "shadow": "elevation.mid", "transition": "transition.fast" }, "step": { "radius": "radius.pill", "transition": "transition.fast" }, "activeStep": { "background": "color.primary", "color": "color.onPrimary", "shadow": "elevation.low" } },
+    "list": { "collection": { "gap": "spacing.stackGap" }, "layout": { "gap": "spacing.inlineGap" }, "surface": {} }
+  },
+  "bold": {
+    "button": { "surface": { "background": "prominence.primary.background", "color": "prominence.primary.color", "shadow": "elevation.mid" }, "text": { "color": "prominence.primary.color" } },
+    "card": { "surface": { "background": "prominence.primary.background", "shadow": "elevation.strong", "radius": "radius.lg" }, "title": { "color": "prominence.primary.color", "size": "textRole.title.size", "weight": "textRole.title.weight" }, "body": { "color": "prominence.primary.color" } },
+    "chip": { "surface": { "background": "prominence.primary.background" }, "text": { "color": "prominence.primary.color" } },
+    "section": { "surface": { "background": "surface.hero", "shadow": "elevation.low" } }
+  },
+  "soft": {
+    "section": { "surface": { "background": "surface.section", "shadow": "elevation.low", "radius": "radius.lg", "transition": "transition.base" } },
+    "card": { "surface": { "background": "surface.elevated", "shadow": "elevation.mid", "radius": "radius.lg", "transition": "transition.base" } },
+    "navigation": { "surface": { "background": "surface.elevated", "shadow": "elevation.strong" } }
   }
 }

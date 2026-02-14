@@ -48,6 +48,8 @@ export type FieldCompoundProps = {
     label?: any;
     field?: any; // ⚠️ MUST PASS THROUGH UNTOUCHED
     error?: any;
+    placeholder?: any;
+    toolbar?: any;
     moleculeLayout?: {
       type: string;
       preset?: string;
@@ -98,6 +100,14 @@ export default function FieldCompound(props: FieldCompoundProps) {
     }
   }
 
+  // Forward variant, placeholder, toolbar and existing params.field into the atom
+  const variant = (props as Record<string, unknown>).variant as string | undefined;
+  const fieldParams = {
+    ...(params.field ?? {}),
+    ...(variant != null && { variant }),
+    ...(params.placeholder != null && { placeholder: params.placeholder }),
+    ...(params.toolbar != null && { toolbar: params.toolbar }),
+  };
 
   /* ======================================================
      INTERNAL SLOT CONTENT (PURE, STATE-SAFE)
@@ -109,7 +119,7 @@ export default function FieldCompound(props: FieldCompoundProps) {
           {content.label}
         </TextAtom>
       )}
-      <FieldAtom params={params.field}>{children ?? null}</FieldAtom>
+      <FieldAtom params={fieldParams}>{children ?? null}</FieldAtom>
       {content.error && (
         <TextAtom params={resolveParams(params.error ?? (params as Record<string, unknown>).errorStyle)}>
           {content.error}

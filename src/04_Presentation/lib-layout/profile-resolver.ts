@@ -7,7 +7,7 @@ const PROFILES: Record<string, any> = presentationProfiles as Record<string, any
 
 /**
  * Return the raw experience profile JSON (sections/defaults).
- * Useful when a renderer needs section-role mapping data, not just a single resolved section.
+ * Used as fallback when no template is selected; template profile overrides in page.tsx effectiveProfile.
  */
 export function getExperienceProfile(profileId: string) {
   return PROFILES[profileId] ?? null;

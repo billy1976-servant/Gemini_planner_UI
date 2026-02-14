@@ -8,10 +8,16 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useSyncExternalStore } from "react";
 
 import "@/styles/site-theme.css";
-import InteractionTracerPanel from "@/devtools/InteractionTracerPanel";
 import DevicePreviewToggle from "@/dev/DevicePreviewToggle";
+import VerticalSpacingReport from "@/diagnostics/VerticalSpacingReport";
+import PipelineDiagnosticsRail from "@/app/ui/control-dock/PipelineDiagnosticsRail";
 import { getPhoneFrameEnabled, subscribePhoneFrameEnabled } from "@/dev/phone-frame-store";
 import { getDevicePreviewMode, subscribeDevicePreviewMode } from "@/dev/device-preview-store";
+
+/** Stage max-width by device mode (Desktop / Tablet / Phone buttons). Locked dimensions. */
+const STAGE_MAX_WIDTH_PHONE = 420;
+const STAGE_MAX_WIDTH_TABLET = 768;
+const STAGE_MAX_WIDTH_DESKTOP = 1100;
 
 /* ============================================================
    🎨 PALETTE ENGINE (state is source of truth; palette-store used only as fallback)
@@ -50,15 +56,8 @@ import { installBehaviorListener } from "@/engine/core/behavior-listener";
 ============================================================ */
 import presentationProfiles from "@/lib/layout/presentation-profiles.json";
 import CascadingScreenMenu from "@/app/components/CascadingScreenMenu";
-import PersistentLauncher from "@/components/global/PersistentLauncher";
 import { BottomNavOnly } from "@/04_Presentation/shells/GlobalAppSkin";
 import { NAV_STRIP_HEIGHT } from "@/app/shell-ui-constants";
-
-/** Stage max-width by device mode (centered; does not include sidebar area). */
-const STAGE_MAX_WIDTH_PHONE = 420;
-const STAGE_MAX_WIDTH_TABLET = 768;
-const STAGE_MAX_WIDTH_DESKTOP = 1100;
-
 
 /* ============================================================
    🔒 STATIC REGISTRIES
@@ -233,7 +232,9 @@ export default function RootLayout({ children }: any) {
 
 
         {showSections && (
-          <div id="section-layout-panel" className="app-section-layout-panel" />
+          <div id="section-layout-panel" className="app-section-layout-panel">
+            <VerticalSpacingReport />
+          </div>
         )}
 
         <div ref={contentRef} className="app-content" style={{ padding: 0, overflow: "visible" }}>
@@ -256,7 +257,7 @@ export default function RootLayout({ children }: any) {
                   borderRadius: "38px",
                   background: "#000",
                   boxShadow: "0 40px 120px rgba(0,0,0,0.6)",
-                  padding: "12px",
+                  padding: "0 12px",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
@@ -270,14 +271,14 @@ export default function RootLayout({ children }: any) {
                     height: "100%",
                     borderRadius: "28px",
                     background: "#fff",
-                    overflow: "visible",
+                    overflow: "hidden",
                     display: "flex",
                     flexDirection: "column",
                     boxSizing: "border-box",
                     maxWidth: "100%",
                   }}
                 >
-                  <div style={{ flex: 1, minHeight: 0, overflowY: "auto", overflowX: "hidden", paddingBottom: 80 }}>
+                  <div style={{ flex: 1, minHeight: 0, overflowY: "auto", overflowX: "hidden", padding: 0, margin: 0 }}>
                     {children}
                   </div>
                   <div
@@ -288,13 +289,14 @@ export default function RootLayout({ children }: any) {
                       bottom: 0,
                       left: 0,
                       right: 0,
+                      width: "100%",
                       height: NAV_STRIP_HEIGHT,
+                      zIndex: 50,
                       overflow: "visible",
                     }}
                   >
                     <BottomNavOnly />
                   </div>
-                  <PersistentLauncher />
                 </div>
               </div>
             </div>
@@ -325,12 +327,12 @@ export default function RootLayout({ children }: any) {
                   style={{
                     pointerEvents: "auto",
                     width: "100%",
-                    maxWidth: stageMaxWidth,
+                    maxWidth: `min(100%, ${stageMaxWidth}px)`,
                     height: "100%",
                     minHeight: "100vh",
                     position: "relative",
                     boxSizing: "border-box",
-                    overflow: "visible",
+                    overflow: "hidden",
                     display: "flex",
                     flexDirection: "column",
                   }}
@@ -341,7 +343,8 @@ export default function RootLayout({ children }: any) {
                       minHeight: 0,
                       overflowY: "auto",
                       overflowX: "hidden",
-                      paddingBottom: 80,
+                      padding: 0,
+                      margin: 0,
                     }}
                   >
                     {children}
@@ -354,19 +357,20 @@ export default function RootLayout({ children }: any) {
                       bottom: 0,
                       left: 0,
                       right: 0,
+                      width: "100%",
                       height: NAV_STRIP_HEIGHT,
+                      zIndex: 50,
                       overflow: "visible",
                     }}
                   >
                     <BottomNavOnly />
                   </div>
-                  <PersistentLauncher />
                 </div>
               </div>
             </div>
           )}
         </div>
-        {process.env.NODE_ENV === "development" && <InteractionTracerPanel defaultCollapsed={phoneFrameEnabled} />}
+        {process.env.NODE_ENV === "development" && <PipelineDiagnosticsRail />}
       </body>
     </html>
   );

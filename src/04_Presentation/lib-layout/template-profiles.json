@@ -101,6 +101,46 @@
           "gap": "2rem"
         }
       }
+    },
+    "layoutVariants": {
+      "nav": {
+        "layoutId": "content-stack"
+      },
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered",
+        "containerWidth": "wide"
+      },
+      "content": {
+        "layoutId": "content-narrow",
+        "containerWidth": "contained"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
     }
   },
   {
@@ -192,6 +232,41 @@
           "gap": "2rem"
         }
       }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-split"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
     }
   },
   {
@@ -274,6 +349,41 @@
           "align": "center",
           "gap": "2rem"
         }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
       }
     }
   },
@@ -358,6 +468,41 @@
           "align": "center",
           "gap": "2rem"
         }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
       }
     }
   },
@@ -448,6 +593,41 @@
           "gap": "1rem"
         }
       }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
     }
   },
   {
@@ -532,6 +712,41 @@
           "columns": 4,
           "gap": "2rem"
         }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
       }
     }
   },
@@ -626,6 +841,42 @@
           "gap": "2rem"
         }
       }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered",
+        "containerWidth": "edge-to-edge"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
     }
   },
   {
@@ -706,6 +957,41 @@
           "align": "center",
           "gap": "1rem"
         }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
       }
     }
   },
@@ -793,6 +1079,41 @@
           "gap": "1.5rem"
         }
       }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
     }
   },
   {
@@ -878,6 +1199,41 @@
           "gap": "3rem"
         }
       }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
     }
   },
   {
@@ -962,6 +1318,41 @@
           "columns": 3,
           "gap": "2rem"
         }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
       }
     }
   },
@@ -1051,6 +1442,41 @@
           "gap": "1rem"
         }
       }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
     }
   },
   {
@@ -1136,6 +1562,41 @@
           "gap": "2rem"
         }
       }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
     }
   },
   {
@@ -1218,6 +1679,41 @@
           "columns": 4,
           "gap": "2rem"
         }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
       }
     }
   },
@@ -1305,6 +1801,41 @@
           "gap": "2rem"
         }
       }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
     }
   },
   {
@@ -1386,6 +1917,41 @@
           "columns": 3,
           "gap": "1.5rem"
         }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
       }
     }
   },
@@ -1471,6 +2037,41 @@
           "gap": "2rem"
         }
       }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-split"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
     }
   },
   {
@@ -1555,6 +2156,41 @@
           "gap": "1.5rem"
         }
       }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
     }
   },
   {
@@ -1637,6 +2273,41 @@
           "columns": 3,
           "gap": "3rem"
         }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
       }
     }
   },
@@ -1722,6 +2393,41 @@
           "gap": "2rem"
         }
       }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
     }
   },
   {
@@ -1804,6 +2510,41 @@
           "columns": 4,
           "gap": "1.5rem"
         }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
       }
     }
   },
@@ -1890,6 +2631,41 @@
           "gap": "2rem"
         }
       }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
     }
   },
   {
@@ -1973,6 +2749,41 @@
           "gap": "2.5rem"
         }
       }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
     }
   },
   {
@@ -2027,6 +2838,26 @@
           "gap": "2rem"
         }
       }
+    },
+    "layoutVariants": {
+      "nav": {
+        "layoutId": "content-stack"
+      },
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "actions": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      }
     }
   },
   {
@@ -2057,7 +2888,7 @@
         }
       },
       "track": {
-        "layoutId": "content-stack",
+        "layoutId": "content-narrow",
         "containerWidth": "contained",
         "params": {
           "gap": "0.75rem"
@@ -2116,7 +2947,7 @@
         }
       },
       "track": {
-        "layoutId": "content-stack",
+        "layoutId": "content-narrow",
         "containerWidth": "contained",
         "params": {
           "gap": "0.75rem"
@@ -2157,7 +2988,7 @@
     "containerWidth": "contained",
     "layoutVariants": {
       "writing": {
-        "layoutId": "content-stack",
+        "layoutId": "content-narrow",
         "containerWidth": "contained",
         "params": {
           "gap": "1.5rem",
@@ -2165,14 +2996,14 @@
         }
       },
       "focus": {
-        "layoutId": "content-stack",
+        "layoutId": "content-narrow",
         "containerWidth": "contained",
         "params": {
           "gap": "1.25rem"
         }
       },
       "track": {
-        "layoutId": "content-stack",
+        "layoutId": "content-narrow",
         "containerWidth": "contained",
         "params": {
           "gap": "1rem"
@@ -2230,7 +3061,7 @@
         }
       },
       "track": {
-        "layoutId": "content-stack",
+        "layoutId": "content-narrow",
         "containerWidth": "narrow",
         "params": {
           "gap": "2rem"
@@ -2271,21 +3102,21 @@
     "containerWidth": "contained",
     "layoutVariants": {
       "writing": {
-        "layoutId": "content-stack",
+        "layoutId": "content-narrow",
         "containerWidth": "contained",
         "params": {
           "gap": "1rem"
         }
       },
       "focus": {
-        "layoutId": "content-stack",
+        "layoutId": "content-narrow",
         "containerWidth": "contained",
         "params": {
           "gap": "0.75rem"
         }
       },
       "track": {
-        "layoutId": "content-stack",
+        "layoutId": "content-narrow",
         "containerWidth": "contained",
         "params": {
           "gap": "0.5rem"
@@ -2343,7 +3174,7 @@
         }
       },
       "track": {
-        "layoutId": "content-stack",
+        "layoutId": "content-narrow",
         "containerWidth": "narrow",
         "params": {
           "gap": "0.25rem"
@@ -2400,7 +3231,7 @@
         }
       },
       "track": {
-        "layoutId": "content-stack",
+        "layoutId": "content-narrow",
         "containerWidth": "narrow",
         "params": {
           "gap": "1rem"
@@ -2441,7 +3272,7 @@
     "containerWidth": "contained",
     "layoutVariants": {
       "writing": {
-        "layoutId": "content-stack",
+        "layoutId": "content-narrow",
         "containerWidth": "contained",
         "params": {
           "gap": "2.5rem",
@@ -2449,7 +3280,7 @@
         }
       },
       "focus": {
-        "layoutId": "content-stack",
+        "layoutId": "content-narrow",
         "containerWidth": "contained",
         "params": {
           "gap": "2rem",
@@ -2457,7 +3288,7 @@
         }
       },
       "track": {
-        "layoutId": "content-stack",
+        "layoutId": "content-narrow",
         "containerWidth": "contained",
         "params": {
           "gap": "1.5rem"
@@ -2515,7 +3346,7 @@
         }
       },
       "track": {
-        "layoutId": "content-stack",
+        "layoutId": "content-narrow",
         "containerWidth": "narrow",
         "params": {
           "gap": "1rem"

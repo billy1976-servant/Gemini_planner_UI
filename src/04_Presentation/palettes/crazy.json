@@ -1,4 +1,5 @@
 {
+  "page": { "background": "#FFF0F8", "foreground": "#1F0F35" },
   "color": {
     "surface": "#FFF0F8",
     "surfaceVariant": "#FFD6EB",
@@ -7,9 +8,26 @@
     "onPrimary": "#FFFFFF",
     "onSurface": "#1F0F35",
     "outline": "#9B2D95",
+    "outlineVariant": "#CE93D8",
+    "outlineStrong": "#7B0054",
     "secondary": "#3D0066",
     "error": "#D6007A"
   },
+  "surface": {
+    "app": "#FFF0F8",
+    "section": "#FFF5F9",
+    "card": "#FFFFFF",
+    "elevated": "#FFFFFF",
+    "base": "#FFF0F8",
+    "variant": "#FFD6EB",
+    "hero": "#FFE4F0",
+    "primary": "#FFFFFF",
+    "secondary": "#FFF5F9",
+    "raised": "#FFFFFF"
+  },
+  "text": { "primary": "#1F0F35", "muted": "#3D0066", "strong": "#1F0F35" },
+  "accent": { "primary": "#AD0077", "soft": "#FFD6EB" },
+  "border": { "soft": "#9B2D95", "strong": "#7B0054" },
   "radius": {
     "none": 0,
     "sm": 8,
@@ -100,7 +118,9 @@
     "1": "0 2px 8px rgba(199, 21, 133, 0.25), 0 4px 12px rgba(75, 0, 130, 0.2)",
     "2": "0 6px 16px rgba(199, 21, 133, 0.35), 0 4px 12px rgba(75, 0, 130, 0.25)",
     "3": "0 12px 28px rgba(199, 21, 133, 0.4), 0 8px 20px rgba(75, 0, 130, 0.3)",
-    "4": "0 20px 48px rgba(199, 21, 133, 0.5), 0 12px 28px rgba(75, 0, 130, 0.35)"
+    "4": "0 20px 48px rgba(199, 21, 133, 0.5), 0 12px 28px rgba(75, 0, 130, 0.35)",
+    "shadowSoft": "0 2px 8px rgba(199, 21, 133, 0.25), 0 4px 12px rgba(75, 0, 130, 0.2)",
+    "shadowStrong": "0 12px 28px rgba(199, 21, 133, 0.4), 0 8px 20px rgba(75, 0, 130, 0.3)"
   },
   "prominence": {
     "primary": { "background": "color.primary", "color": "color.onPrimary" },

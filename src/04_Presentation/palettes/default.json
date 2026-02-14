@@ -1,4 +1,8 @@
 {
+  "page": {
+    "background": "#F2F2F4",
+    "foreground": "#1A1D21"
+  },
   "color": {
     "surface": "#FFFFFF",
     "surfaceVariant": "#E8EAED",
@@ -23,10 +27,24 @@
     "elevated": "#FCFCFD",
     "base": "#FFFFFF",
     "variant": "#E0E2E5",
-    "hero": "#EEF4FF"
+    "hero": "#EEF4FF",
+    "primary": "#FFFFFF",
+    "secondary": "#E6E6E8",
+    "raised": "#FCFCFD"
   },
-  
-  
+  "text": {
+    "primary": "#1A1D21",
+    "muted": "#4A4D52",
+    "strong": "#1A1D21"
+  },
+  "accent": {
+    "primary": "#1A6BD4",
+    "soft": "#E8EAED"
+  },
+  "border": {
+    "soft": "#D0D2D6",
+    "strong": "#6B6E76"
+  },
   "radius": {
     "none": 0,
     "sm": 8,
@@ -166,7 +184,9 @@
     "low": "0 3px 6px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.08)",
     "mid": "0 8px 16px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.10)",
     "strong": "0 20px 40px rgba(0,0,0,0.14), 0 10px 20px rgba(0,0,0,0.12)",
-    "float": "0 28px 56px rgba(0,0,0,0.18), 0 14px 28px rgba(0,0,0,0.14)"
+    "float": "0 28px 56px rgba(0,0,0,0.18), 0 14px 28px rgba(0,0,0,0.14)",
+    "shadowSoft": "0 2px 4px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)",
+    "shadowStrong": "0 8px 16px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.08)"
   },
 
     "prominence": {

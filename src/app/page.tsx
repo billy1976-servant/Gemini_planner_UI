@@ -300,6 +300,7 @@ export default function Page() {
    * --- */
 
   const stylingOverride = stateSnapshot?.values?.stylingPreset as string | undefined;
+  // Template wins for layout/preset (defaultSectionLayoutId, layoutVariants, widthByRole, visualPreset, etc.); experience is fallback when no template.
   const effectiveProfile = useMemo(
     () => {
       if (!templateProfile) return { ...experienceProfile, mode: effectiveLayoutMode };
@@ -324,6 +325,13 @@ export default function Page() {
     },
     [experience, effectiveTemplateId, effectiveLayoutMode, experienceProfile, templateProfile, stylingOverride]
   );
+
+  console.log("PROFILE_FINAL", {
+    behavior: stateSnapshot?.values?.behaviorProfile,
+    palette: paletteName,
+    template: effectiveProfile?.id,
+    widthByRole: effectiveProfile?.widthByRole,
+  });
 
   const sectionLayoutPresetOverrides = useMemo(
     () =>

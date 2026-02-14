@@ -22,11 +22,15 @@ const d = defaultPalette as Record<string, any>;
 function setPaletteVarsOnElement(root: HTMLElement, palette: Record<string, any>) {
   if (!palette) return;
 
+  const page = palette.page ?? d?.page;
+  if (page?.background != null) {
+    root.style.setProperty("--color-bg-primary", page.background);
+  }
   const c = palette.color ?? d?.color;
   if (c) {
     root.style.setProperty("--color-primary", c.primary ?? d?.color?.primary);
     root.style.setProperty("--color-primary-hover", c.primaryVariant ?? c.primary ?? d?.color?.primaryVariant ?? d?.color?.primary);
-    root.style.setProperty("--color-bg-primary", c.surface ?? d?.color?.surface);
+    if (page?.background == null) root.style.setProperty("--color-bg-primary", c.surface ?? d?.color?.surface);
     root.style.setProperty("--color-bg-secondary", c.surfaceVariant ?? d?.color?.surfaceVariant);
     // Compatibility aliases: ExperienceRenderer and others use these names for background/surface.
     root.style.setProperty("--color-surface-1", c.surface ?? d?.color?.surface);

@@ -10,6 +10,7 @@
 "use client";
 import React from "react";
 import { readEngineState } from "@/logic/runtime/engine-bridge";
+import type { EngineState } from "@/logic/runtime/engine-state";
 import { buildDecisionLedger, downloadPdf } from "@/logic/products/export-pdf";
 import type { Product } from "@/logic/products/product-types";
 import type { ComparisonMatrix } from "@/logic/products/product-types";
@@ -38,9 +39,9 @@ export function ExportButton({
         return;
       }
 
-      // Build decision ledger
+      // Build decision ledger (engine bridge returns Record; cast to EngineState for export contract)
       const ledger = buildDecisionLedger(
-        engineState,
+        engineState as EngineState,
         products,
         selectedProductIds,
         comparison,

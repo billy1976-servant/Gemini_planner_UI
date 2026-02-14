@@ -109,8 +109,8 @@ export default function ExperienceRenderer({
     flexDirection: "column",
     width: "100%",
     maxWidth: "100%",
-    paddingTop: "var(--spacing-4)",
-    paddingBottom: "var(--spacing-4)",
+    padding: 0,
+    margin: 0,
   };
 
   const learningWrapperStyle: React.CSSProperties = {
@@ -120,9 +120,8 @@ export default function ExperienceRenderer({
     justifyContent: "flex-start",
     width: "100%",
     maxWidth: "min(820px, 100%)",
-    margin: "0 auto",
-    paddingTop: "var(--spacing-8)",
-    paddingBottom: "var(--spacing-8)",
+    margin: 0,
+    padding: 0,
   };
 
   // ---- Experience-specific composition ----
@@ -199,7 +198,7 @@ export default function ExperienceRenderer({
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            padding: "var(--spacing-4) var(--spacing-6)",
+            padding: "0 var(--spacing-6)",
             background: "var(--color-bg-primary, #fff)",
             borderTop: "1px solid var(--color-border, #e0e0e0)",
             boxShadow: "0 -2px 8px rgba(0,0,0,0.06)",
@@ -211,7 +210,7 @@ export default function ExperienceRenderer({
             disabled={clampedStep <= 0}
             aria-label="Previous step"
             style={{
-              padding: "var(--spacing-2) var(--spacing-4)",
+              padding: "0 var(--spacing-4)",
               cursor: clampedStep <= 0 ? "not-allowed" : "pointer",
               opacity: clampedStep <= 0 ? 0.5 : 1,
               fontWeight: 500,
@@ -228,7 +227,7 @@ export default function ExperienceRenderer({
             disabled={clampedStep >= maxStep}
             aria-label="Next step"
             style={{
-              padding: "var(--spacing-2) var(--spacing-4)",
+              padding: "0 var(--spacing-4)",
               cursor: clampedStep >= maxStep ? "not-allowed" : "pointer",
               opacity: clampedStep >= maxStep ? 0.5 : 1,
               fontWeight: 500,

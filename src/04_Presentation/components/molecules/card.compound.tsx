@@ -211,15 +211,25 @@ export default function CardCompound({
     />
   ) : null;
 
-  // STRICT: Log hard-coded text chunk styles
-  if (STRICT_JSON_MODE) {
+  // Prompt / small content: tight, form-like (minimal padding, reduced line-height, no extra vertical space).
+  const isPromptLike = params?.variant === "prompt" || (!content?.title && !!content?.body && !isPrimaryMedia);
+  const textChunkGap = isPromptLike ? 0 : "var(--spacing-2)";
+  const textChunkLineHeight = isPromptLike ? 1.25 : undefined;
+  if (STRICT_JSON_MODE && !isPromptLike) {
     warnDefault("display", "flex", "card.compound.tsx:179");
     warnDefault("flexDirection", "column", "card.compound.tsx:179");
     warnDefault("gap", "var(--spacing-2)", "card.compound.tsx:179");
     warnDefault("minWidth", 0, "card.compound.tsx:179");
   }
   const textChunk = (
-    <div style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-2)", textAlign, minWidth: 0 }}>
+    <div style={{
+      display: "flex",
+      flexDirection: "column",
+      gap: textChunkGap,
+      textAlign,
+      minWidth: 0,
+      ...(textChunkLineHeight != null && { lineHeight: textChunkLineHeight }),
+    }}>
       {!isPrimaryMedia && mediaSrc && (
         <div style={{ width: 32, height: 32, borderRadius: "50%", overflow: "hidden", flexShrink: 0 }}>
           <MediaAtom src={mediaSrc} params={{ aspectRatio: "1", radius: "999px" }} />
@@ -294,12 +304,17 @@ export default function CardCompound({
   /* ======================================================
      FINAL RENDER
      ====================================================== */
+  const surfaceParams = resolveParams(params.surface);
+  const compactSurface = isPromptLike
+    ? { ...surfaceParams, padding: surfaceParams?.padding ?? 0, borderRadius: "var(--radius-md)" }
+    : surfaceParams;
+
   return (
     <TriggerAtom
       params={params.trigger}
       onTap={onTap || behavior ? handleTap : undefined}
     >
-      <SurfaceAtom params={resolveParams(params.surface)}>
+      <SurfaceAtom params={compactSurface}>
         {laidOutSlots}
         {children}
       </SurfaceAtom>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { SCREEN_GUTTER_X, NAV_STRIP_HEIGHT, SCREEN_UI_BREAKPOINT_PX } from "@/app/shell-ui-constants";
+import { NAV_STRIP_HEIGHT, SCREEN_UI_BREAKPOINT_PX } from "@/app/shell-ui-constants";
 
 /**
  * GlobalAppSkin - PURE VISUAL WRAPPER
@@ -108,9 +108,23 @@ function renderNavItem(iconKey: string) {
   );
 }
 
+const LAUNCHER_BUTTON_SIZE = Math.round(56 * (2 / 3)); // 2/3 of original FAB (56px)
+const LAUNCHER_LINK_STYLE: React.CSSProperties = {
+  padding: "12px 16px",
+  borderRadius: "8px",
+  textDecoration: "none",
+  color: "#1a1a1a",
+  background: "#f5f5f5",
+  fontWeight: 500,
+  fontSize: "14px",
+  transition: "background 0.2s ease",
+  display: "block",
+};
+
 /** Bottom nav: anchored to AppViewport (persistent in both phone frame and desktop). */
 export function BottomNavOnly() {
   const navRootRef = React.useRef<HTMLDivElement>(null);
+  const [launcherOpen, setLauncherOpen] = useState(false);
   const [isDesktopOrTablet, setIsDesktopOrTablet] = useState(
     typeof window !== "undefined" ? window.matchMedia(`(min-width: ${SCREEN_UI_BREAKPOINT_PX}px)`).matches : true
   );
@@ -235,11 +249,11 @@ export function BottomNavOnly() {
         className="w-full px-2"
         style={{
           width: "100%",
-          maxWidth: isDesktopOrTablet ? "none" : 420,
-          margin: isDesktopOrTablet ? 0 : "0 auto",
-          marginLeft: isDesktopOrTablet ? SCREEN_GUTTER_X : undefined,
+          maxWidth: "100%",
+          margin: "0 auto",
           display: "flex",
-          justifyContent: isDesktopOrTablet ? "flex-start" : "space-around",
+          justifyContent: "center",
+          alignItems: "center",
           gap: "0.5rem",
           padding: "0.25rem 0",
         }}
@@ -249,12 +263,68 @@ export function BottomNavOnly() {
           style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: isDesktopOrTablet ? "flex-start" : "space-around",
+            justifyContent: "space-evenly",
             width: "100%",
+            position: "relative",
           }}
         >
           {leftItems.map(renderNavItem)}
-          {centerItem && renderNavItem(centerItem)}
+          {/* Center: orange launcher button (2/3 FAB size) — same links as original blue FAB */}
+          <div style={{ position: "relative" }}>
+            {launcherOpen && (
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "100%",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  marginBottom: 0,
+                  zIndex: 10000,
+                  background: "#ffffff",
+                  borderRadius: "12px",
+                  boxShadow: "0 8px 32px rgba(0,0,0,0.24)",
+                  padding: "16px",
+                  minWidth: "200px",
+                  pointerEvents: "auto",
+                  border: "1px solid #e0e0e0",
+                }}
+              >
+                <nav style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                  <a href="/?screen=journal" style={LAUNCHER_LINK_STYLE} onMouseEnter={(e) => { e.currentTarget.style.background = "#e8e8e8"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "#f5f5f5"; }}>📔 Journal</a>
+                  <a href="/?screen=learn" style={LAUNCHER_LINK_STYLE} onMouseEnter={(e) => { e.currentTarget.style.background = "#e8e8e8"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "#f5f5f5"; }}>📚 Learn</a>
+                  <a href="/?screen=apps" style={LAUNCHER_LINK_STYLE} onMouseEnter={(e) => { e.currentTarget.style.background = "#e8e8e8"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "#f5f5f5"; }}>🎯 Apps</a>
+                  <a href="/" style={LAUNCHER_LINK_STYLE} onMouseEnter={(e) => { e.currentTarget.style.background = "#e8e8e8"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "#f5f5f5"; }}>🏠 Home</a>
+                </nav>
+              </div>
+            )}
+            <button
+              type="button"
+              data-shell-icon="Overview"
+              data-nav-item="Overview"
+              aria-label="Quick Launch Menu"
+              title="Quick Launch Menu"
+              onClick={() => setLauncherOpen((prev) => !prev)}
+              style={{
+                width: LAUNCHER_BUTTON_SIZE,
+                height: LAUNCHER_BUTTON_SIZE,
+                minWidth: LAUNCHER_BUTTON_SIZE,
+                minHeight: LAUNCHER_BUTTON_SIZE,
+                borderRadius: "50%",
+                border: "none",
+                background: "orange",
+                boxShadow: "0 4px 24px rgba(255, 140, 0, 0.4)",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: 0,
+              }}
+            >
+              <svg width={Math.round(24 * (2 / 3))} height={Math.round(24 * (2 / 3))} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ transform: launcherOpen ? "rotate(90deg)" : "rotate(0deg)", transition: "transform 0.3s ease" }}>
+                <path d="M8 5v14l11-7L8 5z" fill="white" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          </div>
           {rightItems.map(renderNavItem)}
         </div>
       </nav>
@@ -323,7 +393,7 @@ function GlobalAppSkin({ children }: GlobalAppSkinProps) {
           overflowX: "hidden",
           padding: 0,
           margin: 0,
-          paddingBottom: "72px",
+          paddingBottom: 0,
           border: "none",
         }}
       >

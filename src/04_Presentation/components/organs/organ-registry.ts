@@ -1,9 +1,15 @@
 /**
  * Sync loader for organ variant JSON.
  * Single source for organ list and variant map: VARIANTS and getOrganIds/getVariantIds.
- * Extend-only: to add an organ, add imports and an entry in VARIANTS; add label in getOrganLabel.
- * Do not duplicate organ list or variant map elsewhere.
+ * Extend-only for static organs: add imports and an entry in VARIANTS; add label in getOrganLabel.
+ * App-layer organs: any JSON in src/01_App/organs/{organId}.json is auto-loaded by organId (no registry edits).
  */
+
+/** App-layer organ JSON: require.context so organs in 01_App/organs/*.json are loadable by organId without editing this file. */
+const APP_ORGANS_CONTEXT =
+  typeof require !== "undefined"
+    ? (require as any).context("../../../01_App/organs", false, /\.json$/)
+    : null;
 
 import headerDefault from "./header/variants/default.json";
 import headerStickySplit from "./header/variants/sticky-split.json";
@@ -170,27 +176,46 @@ const VARIANTS: Record<string, Record<string, unknown>> = {
 
 /**
  * Load organ variant by id. Returns the variant root node (compound tree root) or null if not found.
+ * 1) Static VARIANTS (this file) — used first.
+ * 2) App-layer fallback: src/01_App/organs/{organId}.json — loaded via require.context; variantId ignored (single JSON per organ).
  */
 export function loadOrganVariant(organId: string, variantId: string): unknown {
   const normalizedOrgan = (organId ?? "").toLowerCase().trim();
   const normalizedVariant = (variantId ?? "default").toLowerCase().trim();
   const organVariants = VARIANTS[normalizedOrgan];
-  if (!organVariants) return null;
-  const variant = organVariants[normalizedVariant] ?? organVariants["default"];
-  return variant ?? null;
+  if (organVariants) {
+    const variant = organVariants[normalizedVariant] ?? organVariants["default"];
+    if (variant != null) return variant;
+  }
+  // App-layer fallback: 01_App/organs/{organId}.json (safe filename only)
+  if (APP_ORGANS_CONTEXT && /^[a-z0-9_-]+$/.test(normalizedOrgan)) {
+    const key = `./${normalizedOrgan}.json`;
+    if (APP_ORGANS_CONTEXT.keys().indexOf(key) !== -1) {
+      const mod = APP_ORGANS_CONTEXT(key);
+      const def = mod?.default ?? mod;
+      return def != null ? asRecord(def) : null;
+    }
+  }
+  return null;
 }
 
-/** Organ IDs that have registered variants (for right-panel dropdowns). */
+/** Organ IDs that have registered variants (static + app-layer 01_App/organs/*.json). */
 export function getOrganIds(): string[] {
-  return Object.keys(VARIANTS);
+  const staticIds = Object.keys(VARIANTS);
+  if (!APP_ORGANS_CONTEXT) return staticIds;
+  const appIds = APP_ORGANS_CONTEXT.keys().map((k: string) => k.replace(/^\.\//, "").replace(/\.json$/, ""));
+  const set = new Set([...staticIds, ...appIds]);
+  return Array.from(set);
 }
 
-/** Variant IDs for a given organ (for right-panel dropdown options). */
+/** Variant IDs for a given organ (for right-panel dropdown options). App-layer organs have a single "default" variant. */
 export function getVariantIds(organId: string): string[] {
   const normalized = (organId ?? "").toLowerCase().trim();
   const organVariants = VARIANTS[normalized];
-  if (!organVariants) return [];
-  return Object.keys(organVariants);
+  if (organVariants) return Object.keys(organVariants);
+  if (APP_ORGANS_CONTEXT && /^[a-z0-9_-]+$/.test(normalized) && APP_ORGANS_CONTEXT.keys().indexOf(`./${normalized}.json`) !== -1)
+    return ["default"];
+  return [];
 }
 
 /** Human-readable label for organ id (e.g. "header" -> "Header"). */

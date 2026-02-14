@@ -1,4 +1,5 @@
 {
+  "page": { "background": "#F5F5F7", "foreground": "#1C1C1E" },
   "color": {
     "surface": "#FFFFFF",
     "surfaceVariant": "#E5E5EA",
@@ -22,8 +23,14 @@
     "elevated": "#FFFFFF",
     "base": "#FFFFFF",
     "variant": "#E5E5EA",
-    "hero": "#F5F5F7"
+    "hero": "#F5F5F7",
+    "primary": "#FFFFFF",
+    "secondary": "#F5F5F7",
+    "raised": "#FFFFFF"
   },
+  "text": { "primary": "#1C1C1E", "muted": "#48484A", "strong": "#1C1C1E" },
+  "accent": { "primary": "#007AFF", "soft": "#E5E5EA" },
+  "border": { "soft": "#C6C6C8", "strong": "#636366" },
   "radius": { "none": 0, "sm": 8, "md": 10, "lg": 12, "xl": 16, "pill": 999 },
   "padding": { "none": 0, "xs": 8, "sm": 12, "md": 16, "lg": 24, "xl": 40, "2xl": 64, "3xl": 96 },
   "gap": { "xs": 8, "sm": 12, "md": 16, "lg": 24, "xl": 40, "2xl": 64, "3xl": 96 },
@@ -44,7 +51,7 @@
   },
   "surfaceTier": { "base": { "background": "color.surface", "shadow": "shadow.none" }, "raised": { "background": "color.surface", "shadow": "shadow.sm" }, "overlay": { "background": "color.surface", "shadow": "shadow.md" }, "floating": { "background": "color.surface", "shadow": "shadow.lg" } },
   "shadow": { "none": "none", "sm": "0 1px 3px rgba(0,0,0,0.04)", "md": "0 2px 6px rgba(0,0,0,0.05)", "lg": "0 4px 12px rgba(0,0,0,0.06)" },
-  "elevation": { "0": "none", "1": "0 1px 3px rgba(0,0,0,0.04)", "2": "0 2px 8px rgba(0,0,0,0.06)", "3": "0 8px 24px rgba(0,0,0,0.08)", "4": "0 12px 40px rgba(0,0,0,0.10)", "none": "none", "low": "0 1px 3px rgba(0,0,0,0.04)", "mid": "0 2px 8px rgba(0,0,0,0.06)", "strong": "0 8px 24px rgba(0,0,0,0.08)", "float": "0 12px 40px rgba(0,0,0,0.10)" },
+  "elevation": { "0": "none", "1": "0 1px 3px rgba(0,0,0,0.04)", "2": "0 2px 8px rgba(0,0,0,0.06)", "3": "0 8px 24px rgba(0,0,0,0.08)", "4": "0 12px 40px rgba(0,0,0,0.10)", "none": "none", "low": "0 1px 3px rgba(0,0,0,0.04)", "mid": "0 2px 8px rgba(0,0,0,0.06)", "strong": "0 8px 24px rgba(0,0,0,0.08)", "float": "0 12px 40px rgba(0,0,0,0.10)", "shadowSoft": "0 1px 3px rgba(0,0,0,0.04)", "shadowStrong": "0 4px 12px rgba(0,0,0,0.06)" },
   "prominence": { "primary": { "background": "color.primary", "color": "color.onPrimary" }, "secondary": { "background": "color.surfaceVariant", "color": "color.onSurface" }, "tertiary": { "background": "color.surface", "color": "color.onSurface" } },
   "fontFamily": { "base": "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', sans-serif", "sans": "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif", "heading": "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', sans-serif", "mono": "ui-monospace, 'SF Mono', Menlo, monospace" },
   "transition": { "fast": "180ms ease", "base": "220ms ease", "slow": "320ms ease", "none": "none" },

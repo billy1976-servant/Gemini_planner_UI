@@ -14,14 +14,15 @@ export function runCalculator(action: any, state: Record<string, any>) {
   }
 
 
-  const inputState = state[inputKey] ?? {};
-  const results = runCalculators([calculator], inputState);
-
+  type CalcDef = { id: string; output: string; [key: string]: any };
+  const calc = calculator as CalcDef;
+  const inputState = (state[inputKey] ?? {}) as Record<string, any>;
+  const results = runCalculators([calc], inputState);
 
   // 🔴 EXISTING RESULT WRITE (unchanged)
   dispatchState("state.update", {
     key: outputKey,
-    value: results[calculator.output],
+    value: results[calc.output],
   });
 
 

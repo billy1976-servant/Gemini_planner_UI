@@ -1,6 +1,7 @@
 "use client";
 import { resolveToken } from "@/engine/core/palette-resolve-token";
 
+// Spacing must come ONLY from layout engine. If params missing → enforce gap=0, padding=0.
 // STRICT JSON MODE: If true, NO fallback values allowed. Renderer must obey JSON 100%.
 const STRICT_JSON_MODE = true;
 
@@ -33,7 +34,10 @@ export default function SequenceAtom({ params = {}, children }: SequenceAtomProp
   const p = params.params ?? params; // <-- key fix
 
 
-  const gap = tok(p.gap);
+  // NEVER inject spacing unless provided by layout engine.
+  let gap = p.gap != null ? tok(p.gap) : "0";
+  if (!p?.gap) gap = "0";
+  if (!p?.padding) { /* padding: 0 below */ }
 
 
   // 🔹 GRID MODE
@@ -52,7 +56,7 @@ export default function SequenceAtom({ params = {}, children }: SequenceAtomProp
       display: "grid",
       gridTemplateColumns: finalColumns ? `repeat(${finalColumns}, minmax(0, 1fr))` : undefined,
       gap,
-      ...(p.padding != null && { padding: tok(p.padding) }),
+      ...(p.padding != null ? { padding: tok(p.padding) } : { padding: 0 }),
       alignItems: p.align ?? (STRICT_JSON_MODE ? undefined : "stretch"),
       justifyItems: p.justify ?? (STRICT_JSON_MODE ? undefined : "stretch"),
       overflowY: p.scrollable ? "auto" : "visible",
@@ -74,7 +78,7 @@ export default function SequenceAtom({ params = {}, children }: SequenceAtomProp
     alignItems: p.align ?? (STRICT_JSON_MODE ? undefined : "flex-start"),
     justifyContent: p.justify ?? (STRICT_JSON_MODE ? undefined : "flex-start"),
     gap,
-    ...(p.padding != null && { padding: tok(p.padding) }),
+    ...(p.padding != null ? { padding: tok(p.padding) } : { padding: 0 }),
     flexWrap: p.wrap ? "wrap" : "nowrap",
     overflowY: p.scrollable ? "auto" : "visible",
   };

@@ -15,6 +15,7 @@ const TEMPLATE_OPTIONAL_ROLES: readonly string[] = (
 
 export type LayoutDef = {
   type: "row" | "column" | "grid" | "stack";
+  /** Section vertical spacing is engine-only; gap/padding here are stripped for sections and do not reach DOM. */
   params?: {
     gap?: string;
     columns?: number;
@@ -47,6 +48,7 @@ export type ExperienceType = "website" | "journal" | "app" | "learning" | "dashb
 export type LayoutVariant = {
   layoutId: string;
   containerWidth?: ContainerWidth;
+  /** Section vertical spacing is engine-only; params.gap and params.layout.gap are stripped for sections. */
   params?: Record<string, unknown>;
 };
 

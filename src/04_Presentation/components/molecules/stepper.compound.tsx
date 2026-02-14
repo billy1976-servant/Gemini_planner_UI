@@ -89,6 +89,7 @@ function applyMobileTabOptimization(params: any, isMobile: boolean) {
    3) PROPS CONTRACT
    ====================================================== */
 export type StepperCompoundProps = {
+  variant?: string;
   params?: {
     moleculeLayout?: {
       type: string;
@@ -127,7 +128,22 @@ export type StepperCompoundProps = {
 /* ======================================================
    4) MOLECULE IMPLEMENTATION
    ====================================================== */
+/** Compact tab styling: reduced padding, smaller font, minimal height (journal / form-like). */
+function applyCompactTabParams(params: any, variant: string | undefined) {
+  const isCompact = variant === "tab-segment" || variant === "tab-segment-mobile";
+  if (!isCompact) return params;
+  return {
+    ...params,
+    surface: { ...params.surface, padding: "2px 8px", minHeight: 0 },
+    surfaceActive: { ...params.surfaceActive, padding: "2px 8px", minHeight: 0 },
+    text: { ...params.text, size: "textSize.xs" },
+    textActive: { ...params.textActive, size: "textSize.xs" },
+    moleculeLayout: { ...params.moleculeLayout, params: { ...params.moleculeLayout?.params, gap: "0" } },
+  };
+}
+
 export default function StepperCompound({
+  variant,
   params = {},
   steps = [],
   activeValue,
@@ -136,7 +152,8 @@ export default function StepperCompound({
      RESPONSIVE MOBILE OPTIMIZATION
      ====================================================== */
   const isMobile = useIsMobile();
-  const responsiveParams = applyMobileTabOptimization(params, isMobile);
+  let responsiveParams = applyMobileTabOptimization(params, isMobile);
+  responsiveParams = applyCompactTabParams(responsiveParams, variant);
   
   /* ======================================================
      STEP ITEMS (BUTTON-LIKE, INTERACTIVE)

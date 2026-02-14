@@ -1250,12 +1250,12 @@ function LiveStateView({ snapshot }: { snapshot: PipelineDebugSnapshot }) {
   );
 }
 
-type InteractionTracerPanelProps = { defaultCollapsed?: boolean };
-export default function InteractionTracerPanel({ defaultCollapsed = false }: InteractionTracerPanelProps = {}) {
+type InteractionTracerPanelProps = { defaultCollapsed?: boolean; /** When true, render only content for embedding in another panel (e.g. tab); no fixed strip, no green border */ embedded?: boolean };
+export default function InteractionTracerPanel({ defaultCollapsed = false, embedded = false }: InteractionTracerPanelProps = {}) {
   const [events, setEvents] = useState<TraceEvent[]>([]);
-  const [expanded, setExpanded] = useState(!defaultCollapsed);
+  const [expanded, setExpanded] = useState(!defaultCollapsed || embedded);
   const [panelHeight, setPanelHeight] = useState(60); // Percentage of viewport height (legacy)
-  const [panelHeightPx, setPanelHeightPx] = useState(300); // Expanded height in px (40–300)
+  const [panelWidthPx, setPanelWidthPx] = useState(360); // Expanded width in px (280–600)
   const [isResizing, setIsResizing] = useState(false);
   const [mode, setMode] = useState<"live" | "log">("live");
   const [hiddenFilters, setHiddenFilters] = useState<Set<FilterKey>>(new Set());
@@ -1342,14 +1342,14 @@ export default function InteractionTracerPanel({ defaultCollapsed = false }: Int
     });
   }, []);
 
-  // Resize handler
+  // Resize handler (left sidebar width)
   useEffect(() => {
     if (!isResizing) return;
 
     const handleMouseMove = (e: MouseEvent) => {
-      const newHeightPx = window.innerHeight - e.clientY;
-      const clampedPx = Math.max(40, Math.min(300, newHeightPx));
-      setPanelHeightPx(clampedPx);
+      const newWidthPx = e.clientX;
+      const clampedPx = Math.max(280, Math.min(600, newWidthPx));
+      setPanelWidthPx(clampedPx);
     };
 
     const handleMouseUp = () => {
@@ -1761,104 +1761,110 @@ export default function InteractionTracerPanel({ defaultCollapsed = false }: Int
     );
   }, []);
 
+  const showContent = expanded || embedded;
+
+  const flexStyle = {
+    flex: 1,
+    display: "flex" as const,
+    flexDirection: "column" as const,
+    minWidth: 0,
+  };
+  const headerStyle = {
+    height: 24,
+    display: "flex" as const,
+    alignItems: "center" as const,
+    padding: "0 8px",
+    flexShrink: 0,
+    fontWeight: 600 as const,
+    color: "#00ff88",
+    fontSize: 11,
+  };
+  const scrollableStyle = {
+    overflow: "auto" as const,
+    flex: 1,
+    minHeight: 0,
+    padding: 8,
+    color: embedded ? "#e5e5e5" : "#0f0",
+    fontSize: 11,
+    display: "flex" as const,
+    flexDirection: "column" as const,
+    background: embedded ? "#0d0d0d" : undefined,
+  };
+
+  function DebuggerPanelWrap({ embedded: emb, children }: { embedded: boolean; children: React.ReactNode }) {
+    if (emb) return <>{children}</>;
+    return (
+      <div style={flexStyle}>
+        <div style={headerStyle}>PIPELINE DEBUGGER</div>
+        {children}
+      </div>
+    );
+  }
+
   return (
     <div
       id="pipeline-debugger-root"
       {...{ [PANEL_ATTR]: true }}
-      style={{
-        position: "fixed",
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: expanded ? `min(${panelHeightPx}px, 40vh)` : "24px",
-        maxHeight: "40vh",
-        zIndex: 5000,
-        overflow: "hidden",
-        background: "rgba(0,0,0,0.92)",
-        borderTop: "2px solid #00ff88",
-        transition: isResizing ? "none" : "height 0.18s ease",
-        display: "flex",
-        flexDirection: "column",
-        pointerEvents: "auto",
-      }}
+      style={
+        embedded
+          ? {
+              display: "flex",
+              flexDirection: "column",
+              height: "100%",
+              minHeight: 0,
+              overflow: "hidden",
+              background: "#0d0d0d",
+              color: "#e5e5e5",
+            }
+          : {
+              position: "fixed",
+              left: 0,
+              top: 0,
+              bottom: 0,
+              width: expanded ? panelWidthPx : 28,
+              zIndex: 5000,
+              overflow: "hidden",
+              background: "rgba(0,0,0,0.92)",
+              borderRight: "2px solid #00ff88",
+              transition: isResizing ? "none" : "width 0.18s ease",
+              display: "flex",
+              flexDirection: "row",
+              pointerEvents: "auto",
+            }
+      }
     >
-      {/* Expand handle: top-center grab bar — drag to resize 40px–300px */}
-      {expanded && (
-        <div
-          onMouseDown={(e) => {
-            e.preventDefault();
-            setIsResizing(true);
-          }}
-          style={{
-            height: 8,
-            cursor: "ns-resize",
-            background: "rgba(0,255,136,0.2)",
-            borderTop: "1px solid #00ff88",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-            userSelect: "none",
-          }}
-          title="Drag to resize panel height (40px–300px)"
-        >
+      {!embedded && (
+        <>
+          {/* Tab / header: always visible — click to expand/collapse */}
           <div
+            onClick={() => setExpanded(!expanded)}
             style={{
-              width: 40,
-              height: 3,
-              background: "#00ff88",
-              borderRadius: 2,
-              opacity: 0.6,
+              width: expanded ? 24 : 28,
+              minWidth: expanded ? 24 : 28,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: expanded ? "8px 0" : "12px 0",
+              cursor: "pointer",
+              fontWeight: 600,
+              color: "#00ff88",
+              fontSize: 10,
+              flexShrink: 0,
+              writingMode: expanded ? "horizontal-tb" : "vertical-rl",
+              textOrientation: "mixed",
+              letterSpacing: "0.05em",
             }}
-          />
-        </div>
+            title={expanded ? "Collapse panel" : "Expand Pipeline Debugger"}
+          >
+            {expanded ? "◀" : "PIPELINE DEBUGGER"}
+          </div>
+        </>
       )}
-      <div
-        onClick={() => setExpanded(!expanded)}
-        style={{
-          height: 24,
-          display: "flex",
-          alignItems: "center",
-          padding: "0 12px",
-          cursor: "pointer",
-          fontWeight: 600,
-          color: "#00ff88",
-          fontSize: 11,
-          flexShrink: 0,
-        }}
-      >
-        PIPELINE DEBUGGER {expanded ? "▼" : "▲"}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            setExpanded(true);
-          }}
-          style={{
-            marginLeft: 12,
-            padding: "2px 6px",
-            cursor: "pointer",
-            background: "#222",
-            color: "#00ff88",
-            border: "1px solid #00ff88",
-            fontSize: 10,
-          }}
-        >
-          MAX
-        </button>
-      </div>
-      {expanded && (
+      {showContent && (
+        <>
+          <DebuggerPanelWrap embedded={embedded}>
         <div
-          style={{
-            overflow: "auto",
-            flex: 1,
-            minHeight: 0,
-            padding: 8,
-            color: "#0f0",
-            fontSize: 11,
-            display: "flex",
-            flexDirection: "column",
-          }}
+          style={scrollableStyle}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
             <button
@@ -2450,6 +2456,25 @@ export default function InteractionTracerPanel({ defaultCollapsed = false }: Int
             </div>
           )}
         </div>
+          </DebuggerPanelWrap>
+          {!embedded && (
+            <div
+              onMouseDown={(e) => {
+                e.preventDefault();
+                setIsResizing(true);
+              }}
+              style={{
+                width: 6,
+                cursor: "ew-resize",
+                background: "rgba(0,255,136,0.2)",
+                borderLeft: "1px solid #00ff88",
+                flexShrink: 0,
+                userSelect: "none",
+              }}
+              title="Drag to resize panel width (280px–600px)"
+            />
+          )}
+        </>
       )}
     </div>
   );

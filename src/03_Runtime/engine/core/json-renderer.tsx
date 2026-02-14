@@ -167,7 +167,7 @@ function SectionLayoutDebugOverlay({ node, children }: { node: any; children: Re
         <span>containerWidth: {String(containerWidth)}</span>
         <span>layoutType: {String(layoutType)}</span>
       </div>
-      <div style={{ paddingTop: "var(--spacing-6)" }}>{children}</div>
+      <div style={{ padding: 0, margin: 0 }}>{children}</div>
     </div>
   );
 }
@@ -371,6 +371,7 @@ function applyProfileToNode(
   const layoutMode = profile?.mode ?? "template";
 
   // Layout from Layout Engine / Preset only — never from node. Strip layout keys from section params so JSON cannot supply layout.
+  // Section vertical spacing is engine-only; template/preset spacing is intentionally ignored.
   if (isSection && next.params && typeof next.params === "object") {
     const p = next.params as Record<string, unknown>;
     delete p.moleculeLayout;
@@ -379,6 +380,8 @@ function applyProfileToNode(
     delete p.containerWidth;
     delete p.backgroundVariant;
     delete p.split;
+    delete p.gap;
+    delete p.padding;
   }
   // Per-section: set a single layout-2 string id (OrganPanel overrides, explicit node.layout, template default).
   // Single authority: layout.getSectionLayoutId (override → node.layout → template role → template default).
@@ -473,14 +476,14 @@ function applyProfileToNode(
     
     next.layout = finalLayoutId;
     (next as any)._effectiveLayoutPreset = layoutId;
-    // PROOF: Hard-force every section to use layoutId "content-stack" to confirm layout binding. Remove after testing.
-    next.layout = "content-stack";
-    (next as any)._effectiveLayoutPreset = "content-stack";
-    // Merge variantContainerWidth into variantParams so it's applied during params resolution
-    (next as any)._variantParams = variantContainerWidth 
-      ? { ...variantParams, containerWidth: variantContainerWidth }
+    // Template authority: containerWidth from layoutVariants[role] else profile.widthByRole[role]; merged into params for SectionCompound/layout.
+    const nodeRole = (node.role ?? "").toString().trim();
+    const containerWidthFromProfile = (profile as { widthByRole?: Record<string, string> } | null)?.widthByRole?.[nodeRole];
+    const effectiveContainerWidth = variantContainerWidth ?? containerWidthFromProfile ?? undefined;
+    (next as any)._variantParams = effectiveContainerWidth
+      ? { ...variantParams, containerWidth: effectiveContainerWidth }
       : variantParams;
-    (next as any)._variantContainerWidth = variantContainerWidth;
+    (next as any)._variantContainerWidth = variantContainerWidth ?? undefined;
     if (process.env.NODE_ENV === "development") {
       PipelineDebugStore.mark("json-renderer", "applyProfileToNode.section", {
         sectionKey,
@@ -722,6 +725,9 @@ export type ExperienceContext = {
   sectionLabels?: Record<string, string>;
 };
 
+/** Passed when rendering a section as child of screen for engine-owned spacing. */
+export type SectionContext = { sectionIndex: number; totalSections: number };
+
 export function renderNode(
   node: any,
   profile: any,
@@ -734,7 +740,8 @@ export function renderNode(
   depth: number = 0,
   forceCardCompatibility?: boolean,
   paletteOverride?: string,
-  nodePath?: string
+  nodePath?: string,
+  sectionContext?: SectionContext | null
 ): any {
   if (!node) return null;
   const effectivePath = nodePath ?? (node?.id ?? node?.role ?? `n_${depth}`);
@@ -781,7 +788,8 @@ export function renderNode(
             }
           }}
           style={{
-            padding: "var(--spacing-3)",
+            padding: 0,
+            margin: 0,
             background: "var(--color-surface-2, #f5f5f5)",
             borderRadius: "var(--radius-2, 6px)",
             border: "1px solid var(--color-border, #e0e0e0)",
@@ -871,6 +879,7 @@ export function renderNode(
     typeKey === "section" && profile?.spacingScale
       ? getSpacingForScale(profile.spacingScale, "section")
       : {};
+  // Section vertical spacing is engine-only; template/preset spacing is intentionally ignored. Strip spacing-scale section.layout.gap.
   const spacingOverlay =
     typeKey === "section" && spacingOverlayRaw?.layout && "gap" in spacingOverlayRaw.layout
       ? (() => {
@@ -884,7 +893,7 @@ export function renderNode(
       ? deepMergeParams(paramsAfterSectionLayout, spacingOverlay)
       : paramsAfterSectionLayout;
 
-  // Template layoutVariants: Apply variant params if present; PHASE I: do not merge gap for section (layout-definitions is authority)
+  // Section vertical spacing is engine-only; template/preset spacing is intentionally ignored. Strip layoutVariants gap/layout.gap.
   const rawVariantParams =
     typeKey === "section" && (profiledNode as any)._variantParams
       ? (profiledNode as any)._variantParams
@@ -1033,10 +1042,28 @@ export function renderNode(
     });
   } else if (Array.isArray(resolvedNode.children)) {
     // Normal mode: render children
+    const isScreen = depth === 0 && (typeKey === "screen" || resolvedNode.type === "screen");
     renderedChildren = resolvedNode.children.map((child: any, i: number) => {
-      // 🔑 Use child.id if available, otherwise use index + type for unique key
       const uniqueKey = child.id || `${child.type}-${i}`;
-      return renderNode({ ...child, key: uniqueKey }, profile, stateSnapshot, defaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides, experienceContext, depth + 1, forceCardCompatibility, paletteOverride, `${effectivePath}.children[${i}]`);
+      const childSectionContext =
+        isScreen && (child.type?.toLowerCase?.() === "section")
+          ? { sectionIndex: i, totalSections: resolvedNode.children.length }
+          : undefined;
+      return renderNode(
+        { ...child, key: uniqueKey },
+        profile,
+        stateSnapshot,
+        defaultState,
+        sectionLayoutPresetOverrides,
+        cardLayoutPresetOverrides,
+        organInternalLayoutOverrides,
+        experienceContext,
+        depth + 1,
+        forceCardCompatibility,
+        paletteOverride,
+        `${effectivePath}.children[${i}]`,
+        childSectionContext ?? undefined
+      );
     });
   }
 
@@ -1160,11 +1187,13 @@ export function renderNode(
     } else if (LAYOUT_RECOVERY_MODE) {
       (props as any).layout = "content-stack";
     }
-    // Pass templateId for context-based layout resolution (template role mapping)
     const templateId = profile?.id;
     if (templateId) {
       (props as any).templateId = templateId;
     }
+    // Engine-owned spacing: pass section index and total for context-aware padding/gap
+    (props as any).sectionIndex = sectionContext?.sectionIndex ?? 0;
+    (props as any).totalSections = sectionContext?.totalSections ?? 1;
   }
 
   const nodeIdForTrace = resolvedNode.id ?? resolvedNode.role ?? "anonymous";
@@ -1224,6 +1253,13 @@ function getBehaviorTransitionHint(profile: string): string {
   if (profile === "calm") return "calm";
   if (profile === "fast") return "fast";
   return "default";
+}
+
+/** Motion duration scale from behavior profile: calm=slower, fast=snappier, others=1. Single source for --motion-duration-scale. */
+function getMotionDurationScale(profile: string): number {
+  if (profile === "calm") return 1.25;
+  if (profile === "fast") return 0.85;
+  return 1;
 }
 
 export default function JsonRenderer({
@@ -1440,6 +1476,14 @@ export default function JsonRenderer({
   const behaviorProfile = behaviorProfileProp ?? (rawState?.values?.behaviorProfile as string) ?? "default";
   const behaviorTransition = getBehaviorTransitionHint(behaviorProfile);
 
+  console.log("SYSTEM_STATE", {
+    behavior: rawState?.values?.behaviorProfile,
+    template: rawState?.values?.templateId ?? profile?.id,
+    palette: rawState?.values?.paletteName ?? (typeof getPaletteName === "function" ? getPaletteName() : undefined),
+    styling: rawState?.values?.stylingPreset,
+    layoutOverride: screenId ? rawState?.layoutByScreen?.[screenId] : rawState?.layoutByScreen,
+  });
+
   const experienceContext: ExperienceContext | null =
     experience && sectionKeys
       ? {
@@ -1463,6 +1507,17 @@ export default function JsonRenderer({
   }
 
   const rootJsonPath = node?.id ?? node?.role ?? "root";
+  const isJournalScreen = typeof screenId === "string" && screenId.toLowerCase().includes("journal");
+  const rootClassName = [
+    `behavior-${behaviorProfile}`,
+    isJournalScreen ? "compact-form" : "",
+  ].filter(Boolean).join(" ");
+
+  console.log("BEHAVIOR_SCALE", {
+    behaviorProfile,
+    scale: getMotionDurationScale(behaviorProfile),
+  });
+
   return (
     <OriginTraceProvider value={{ screenId: screenId ?? undefined, jsonPath: rootJsonPath }}>
       <div
@@ -1471,13 +1526,14 @@ export default function JsonRenderer({
         data-json-path={rootJsonPath}
         data-behavior-profile={behaviorProfile}
         data-behavior-transition={behaviorTransition}
-        className={`behavior-${behaviorProfile}`}
+        className={rootClassName}
         style={{
           display: "flex",
           flexDirection: "column",
           width: "100%",
           marginLeft: "auto",
           marginRight: "auto",
+          ["--motion-duration-scale" as string]: String(getMotionDurationScale(behaviorProfile)),
         }}
       >
         {result}

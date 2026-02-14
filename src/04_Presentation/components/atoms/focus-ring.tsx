@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { resolveToken } from "@/engine/core/palette-resolve-token";
+import { withMotionScale } from "@/engine/core/motion-scale";
 
 
 type FocusRingAtomProps = {
@@ -67,7 +68,7 @@ export default function FocusRingAtom({ params = {}, children, onFocus, onBlur }
     outlineOffset: isFocused && isKeyboardFocus && focusRingOffset
       ? focusRingOffset
       : undefined,
-    transition: resolveToken("transition.fast") ?? "150ms ease",
+    transition: withMotionScale(resolveToken("transition.fast") ?? "150ms ease") ?? "150ms ease",
   };
 
   const tabIndex = params.disabled ? -1 : (params.tabIndex ?? 0);

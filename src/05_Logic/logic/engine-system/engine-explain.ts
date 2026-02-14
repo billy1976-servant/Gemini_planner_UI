@@ -4,7 +4,7 @@
  */
 
 import type { EducationFlow } from "@/logic/flows/flow-loader";
-import { resolveNextStep } from "./flow-router";
+import { resolveNextStep } from "@/logic/engines/flow-router";
 
 export type EngineExplainEvent = {
   currentStepId: string;

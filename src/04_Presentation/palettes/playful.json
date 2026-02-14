@@ -1,4 +1,5 @@
 {
+    "page": { "background": "#FFF0F5", "foreground": "#1A1218" },
     "color": {
       "surface": "#FFF5F9",
       "surfaceVariant": "#FFD6E8",
@@ -7,13 +8,16 @@
       "onPrimary": "#FFFFFF",
       "onSurface": "#1A1218",
       "outline": "#F06292",
+      "outlineVariant": "#F8BBD9",
+      "outlineStrong": "#AD1457",
       "secondary": "#6A1B9A",
       "error": "#C2185B",
       "errorContainer": "#FFCDD2",
       "onErrorContainer": "#5D0000"
     },
-  
-  
+    "text": { "primary": "#1A1218", "muted": "#6A1B9A", "strong": "#1A1218" },
+    "accent": { "primary": "#D81B60", "soft": "#FFD6E8" },
+    "border": { "soft": "#F06292", "strong": "#AD1457" },
     "radius": {
       "none": 0,
       "sm": 8,
@@ -142,7 +146,10 @@
     "elevated": "#FFFFFF",
     "base": "#FFFFFF",
     "variant": "#FFD6E8",
-    "hero": "#FFE4F0"
+    "hero": "#FFE4F0",
+    "primary": "#FFFFFF",
+    "secondary": "#FFF5F9",
+    "raised": "#FFFFFF"
   },
 
     "surfaceTier": {
@@ -162,7 +169,9 @@
       "low": "0 1px 3px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.08)",
       "mid": "0 4px 12px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.1)",
       "strong": "0 12px 24px rgba(0,0,0,0.15), 0 4px 8px rgba(0,0,0,0.1)",
-      "float": "0 20px 40px rgba(0,0,0,0.18), 0 8px 16px rgba(0,0,0,0.12)"
+      "float": "0 20px 40px rgba(0,0,0,0.18), 0 8px 16px rgba(0,0,0,0.12)",
+      "shadowSoft": "0px 2px 4px rgba(0,0,0,0.12)",
+      "shadowStrong": "0px 8px 20px rgba(0,0,0,0.25)"
     },
 
     "prominence": {

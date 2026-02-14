@@ -210,6 +210,13 @@ export function getSectionLayoutId(
     },
   });
 
+  console.log("SECTION_DECISION", {
+    role: nodeRole,
+    templateLayout: templateProfile?.layoutVariants?.[nodeRole]?.layoutId,
+    defaultLayout: templateDefaultLayoutId,
+    nodeLayout: existingLayoutId,
+    chosen: layoutId,
+  });
 
   if (opts?.includeRule) {
     return { layoutId, ruleApplied, variantParams, variantContainerWidth };

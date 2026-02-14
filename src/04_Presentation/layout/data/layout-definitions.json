@@ -16,10 +16,15 @@
         "type": "split",
         "mediaSlot": "right"
       },
+      "splitLayout": {
+        "display": "grid",
+        "gridTemplateColumns": "1fr 1fr",
+        "alignItems": "center"
+      },
       "contentColumn": {
         "display": "flex",
         "flexDirection": "column",
-        "gap": "var(--spacing-6)",
+        "gap": "0",
         "alignItems": "flex-start",
         "minWidth": "0"
       },
@@ -55,10 +60,15 @@
         "type": "split",
         "mediaSlot": "right"
       },
+      "splitLayout": {
+        "display": "grid",
+        "gridTemplateColumns": "1fr 1fr",
+        "alignItems": "center"
+      },
       "contentColumn": {
         "display": "flex",
         "flexDirection": "column",
-        "gap": "var(--spacing-6)",
+        "gap": "0",
         "alignItems": "flex-start",
         "minWidth": "0"
       },
@@ -94,10 +104,15 @@
         "type": "split",
         "mediaSlot": "left"
       },
+      "splitLayout": {
+        "display": "grid",
+        "gridTemplateColumns": "1fr 1fr",
+        "alignItems": "center"
+      },
       "contentColumn": {
         "display": "flex",
         "flexDirection": "column",
-        "gap": "var(--spacing-6)",
+        "gap": "0",
         "alignItems": "flex-start",
         "minWidth": "0"
       },
@@ -204,6 +219,15 @@
         "overflowX": "hidden",
         "contentInsetX": "var(--spacing-6)"
       }
+    },
+    "none": {
+      "containerWidth": "contained",
+      "container": {
+        "width": "100%",
+        "boxSizing": "border-box",
+        "overflowX": "hidden",
+        "contentInsetX": "var(--spacing-6)"
+      }
     }
   },
   "templates": {
@@ -218,17 +242,17 @@
       "type": "column",
       "preset": null,
       "params": {
-        "gap": "var(--spacing-10)",
+        "gap": "0",
         "align": "center",
         "justify": "center",
-        "padding": "var(--spacing-16) 0"
+        "padding": "0"
       }
     },
     "hero-split": {
       "type": "row",
       "preset": null,
       "params": {
-        "gap": "var(--spacing-12)",
+        "gap": "0",
         "align": "center",
         "justify": "space-between",
         "padding": "var(--spacing-20) 0",
@@ -239,7 +263,7 @@
       "type": "row",
       "preset": null,
       "params": {
-        "gap": "var(--spacing-12)",
+        "gap": "0",
         "align": "center",
         "justify": "space-between",
         "padding": "var(--spacing-20) 0",
@@ -250,7 +274,7 @@
       "type": "row",
       "preset": null,
       "params": {
-        "gap": "var(--spacing-12)",
+        "gap": "0",
         "align": "center",
         "justify": "space-between",
         "padding": "var(--spacing-20) 0",
@@ -261,10 +285,10 @@
       "type": "column",
       "preset": null,
       "params": {
-        "gap": "var(--spacing-6)",
+        "gap": "0",
         "align": "center",
         "justify": "center",
-        "padding": "var(--spacing-16) 0",
+        "padding": "0",
         "minHeight": "420px",
         "maxHeight": "70vh",
         "display": "flex",
@@ -276,7 +300,7 @@
       "type": "column",
       "preset": null,
       "params": {
-        "gap": "var(--spacing-8)",
+        "gap": "0",
         "align": "stretch",
         "padding": "var(--spacing-10) 0"
       }
@@ -285,7 +309,7 @@
       "type": "column",
       "preset": null,
       "params": {
-        "gap": "var(--spacing-8)",
+        "gap": "0",
         "align": "stretch",
         "padding": "var(--spacing-10) 0"
       }
@@ -294,10 +318,10 @@
       "type": "row",
       "preset": null,
       "params": {
-        "gap": "var(--spacing-8)",
+        "gap": "0",
         "align": "center",
         "justify": "flex-start",
-        "padding": "var(--spacing-8) 0"
+        "padding": "0"
       }
     },
     "features-grid-3": {
@@ -305,15 +329,15 @@
       "preset": null,
       "params": {
         "columns": 3,
-        "gap": "var(--spacing-8)",
-        "padding": "var(--spacing-12) 0"
+        "gap": "0",
+        "padding": "0"
       }
     },
     "testimonial-band": {
       "type": "row",
       "preset": null,
       "params": {
-        "gap": "var(--spacing-8)",
+        "gap": "0",
         "align": "stretch",
         "justify": "center",
         "padding": "var(--spacing-10) 0"
@@ -323,10 +347,19 @@
       "type": "column",
       "preset": null,
       "params": {
-        "gap": "var(--spacing-8)",
+        "gap": "0",
         "align": "center",
         "justify": "center",
-        "padding": "var(--spacing-12) 0"
+        "padding": "0"
+      }
+    },
+    "none": {
+      "type": "column",
+      "preset": null,
+      "params": {
+        "gap": "0",
+        "align": "stretch",
+        "padding": "0"
       }
     }
   }

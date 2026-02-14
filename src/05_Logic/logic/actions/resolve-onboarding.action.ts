@@ -31,6 +31,8 @@ export function resolveOnboardingAction(action: any, state: Record<string, any>)
 
   // Resolve the specific view for this flow
   const derivedState: DerivedState = {
+    journal: {},
+    rawCount: 0,
     interactions: fullState?.interactions ?? [],
   };
   const view = resolveView(flow, derivedState);
@@ -42,7 +44,7 @@ export function resolveOnboardingAction(action: any, state: Record<string, any>)
     onboardingDecision: {
       flow,
       view,
-      intentScore: mergedState?.intentScore,
+      intentScore: (mergedState as Record<string, unknown>)?.intentScore,
     },
   });
 

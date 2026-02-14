@@ -13,7 +13,7 @@
  * - assumptions: Input assumptions with sources
  */
 
-import type { Product } from "../products/product-types";
+import type { Product } from "@/logic/products/product-types";
 import type { CalcInput, CalcResult } from "./types";
 
 export type ProductCalculatorInput = CalcInput & {

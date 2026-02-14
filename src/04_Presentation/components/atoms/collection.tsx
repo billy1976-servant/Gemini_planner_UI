@@ -3,6 +3,7 @@
 
 import { resolveToken } from "@/engine/core/palette-resolve-token";
 
+// Spacing must come ONLY from layout engine. If params missing → enforce gap=0, padding=0.
 // STRICT JSON MODE: If true, NO fallback values allowed. Renderer must obey JSON 100%.
 const STRICT_JSON_MODE = true;
 
@@ -27,14 +28,18 @@ function toCssGapOrPadding(v: any) {
 
 export default function CollectionAtom({ params = {}, children }: CollectionAtomProps) {
   const isGrid = params.display === "grid";
+  // NEVER inject spacing unless provided by layout engine.
+  let gap = params?.gap != null ? toCssGapOrPadding(params.gap) : "0";
+  if (!params?.gap) gap = "0";
+  if (!params?.padding) { /* padding: 0 in style */ }
 
   if (isGrid) {
     // Grid branch: resolver supplies display, gridTemplateColumns, gap, padding, align, justify
     const style: React.CSSProperties = {
       display: "grid",
       gridTemplateColumns: params.gridTemplateColumns,
-      gap: toCssGapOrPadding(params.gap),
-      ...(params.padding != null && { padding: toCssGapOrPadding(params.padding) }),
+      gap,
+      ...(params.padding != null ? { padding: toCssGapOrPadding(params.padding) } : { padding: 0 }),
       overflowY: params.scrollable ? "auto" : "visible",
     };
     if (params.align !== undefined) style.alignItems = params.align;
@@ -50,8 +55,8 @@ export default function CollectionAtom({ params = {}, children }: CollectionAtom
   const style: React.CSSProperties = {
     display: "flex",
     flexDirection: params.direction ?? (STRICT_JSON_MODE ? undefined : "row"),
-    gap: toCssGapOrPadding(params.gap),
-    ...(params.padding != null && { padding: toCssGapOrPadding(params.padding) }),
+    gap,
+    ...(params.padding != null ? { padding: toCssGapOrPadding(params.padding) } : { padding: 0 }),
     overflowY: params.scrollable ? "auto" : "visible",
   };
 

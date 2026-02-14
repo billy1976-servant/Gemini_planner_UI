@@ -46,8 +46,8 @@ export default function WebsiteShell({
       <main
         className="site-container-inner"
         style={{
-          paddingTop: "var(--spacing-6)",
-          paddingBottom: "var(--spacing-16)",
+          padding: 0,
+          margin: 0,
           boxSizing: "border-box",
           width: "100%",
           maxWidth: "100%",

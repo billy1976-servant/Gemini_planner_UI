@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import { resolveToken } from "@/engine/core/palette-resolve-token";
+import { withMotionScale } from "@/engine/core/motion-scale";
 
 
 type TriggerAtomProps = {
@@ -70,11 +71,12 @@ export default function TriggerAtom({ params = {}, onTap, children }: TriggerAto
   }
 
   const transitionVal = params.transition != null ? resolveToken(params.transition) : resolveToken("transition.base");
+  const transitionScaled = withMotionScale(typeof transitionVal === "string" ? transitionVal : undefined);
 
   const style: React.CSSProperties = {
     cursor: params.disabled ? "not-allowed" : (params.cursor || "pointer"),
     opacity,
-    ...(typeof transitionVal === "string" && transitionVal ? { transition: `opacity ${transitionVal}, transform ${transitionVal}` } : {}),
+    ...(transitionScaled ? { transition: `opacity ${transitionScaled}, transform ${transitionScaled}` } : {}),
     ...(transforms.length > 0 ? { transform: transforms.join(" ") } : {}),
   };
 
