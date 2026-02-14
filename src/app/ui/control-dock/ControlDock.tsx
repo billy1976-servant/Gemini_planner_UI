@@ -127,7 +127,10 @@ export default function ControlDock({
               behavior: "Behavior",
               layout: "Layout",
               newInterface: "New Interface",
+<<<<<<< HEAD
               tsx: "TSX",
+=======
+>>>>>>> e4b6a15 (Checkpoint: auth wiring, env setup, dev/app route split, capacitor config updates)
               expand: "Expand",
             };
             return (

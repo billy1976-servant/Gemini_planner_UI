@@ -22,11 +22,19 @@ export interface TakePictureResult {
 export async function takePhoto(): Promise<TakePhotoResult> {
   if (isNativePlatform()) {
     try {
+<<<<<<< HEAD
       const { Camera, CameraResultType } = await import("@capacitor/camera");
       const photo = await Camera.getPhoto({
         quality: 90,
         allowEditing: false,
         resultType: CameraResultType.Uri,
+=======
+      const { Camera } = await import("@capacitor/camera");
+      const photo = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: false,
+        resultType: "uri",
+>>>>>>> e4b6a15 (Checkpoint: auth wiring, env setup, dev/app route split, capacitor config updates)
       });
       return {
         webPath: photo.webPath,
@@ -43,11 +51,19 @@ export async function takePhoto(): Promise<TakePhotoResult> {
 export async function takePicture(): Promise<TakePictureResult> {
   if (!isNativePlatform()) return { error: "unsupported on web" };
   try {
+<<<<<<< HEAD
     const { Camera, CameraResultType } = await import("@capacitor/camera");
     const photo = await Camera.getPhoto({
       quality: 90,
       allowEditing: false,
       resultType: CameraResultType.Base64,
+=======
+    const { Camera } = await import("@capacitor/camera");
+    const photo = await Camera.getPhoto({
+      quality: 90,
+      allowEditing: false,
+      resultType: "base64",
+>>>>>>> e4b6a15 (Checkpoint: auth wiring, env setup, dev/app route split, capacitor config updates)
     });
     return {
       webPath: photo.webPath,
@@ -62,12 +78,21 @@ export async function takePicture(): Promise<TakePictureResult> {
 export async function pickFromGallery(): Promise<TakePictureResult> {
   if (!isNativePlatform()) return { error: "unsupported on web" };
   try {
+<<<<<<< HEAD
     const { Camera, CameraResultType, CameraSource } = await import("@capacitor/camera");
     const photo = await Camera.getPhoto({
       quality: 90,
       allowEditing: false,
       resultType: CameraResultType.Base64,
       source: CameraSource.Photos,
+=======
+    const { Camera } = await import("@capacitor/camera");
+    const photo = await Camera.getPhoto({
+      quality: 90,
+      allowEditing: false,
+      resultType: "base64",
+      source: "photos",
+>>>>>>> e4b6a15 (Checkpoint: auth wiring, env setup, dev/app route split, capacitor config updates)
     });
     return {
       webPath: photo.webPath,

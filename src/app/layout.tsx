@@ -70,10 +70,13 @@ import { BottomNavOnly } from "@/04_Presentation/shells/GlobalAppSkin";
 import BottomNavBar_Text from "@/04_Presentation/shells/BottomNavBar_Text";
 import { NAV_STRIP_HEIGHT } from "@/app/shell-ui-constants";
 import MobileShell from "@/mobile/MobileShell";
+<<<<<<< HEAD
 import MobileLayout from "@/mobile/MobileLayout";
 import OsbMinimalTopBar from "@/04_Presentation/shells/OsbMinimalTopBar";
 import { useDevMobileMode } from "@/app/dev/useDevMobileMode";
 import DevHome from "@/app/dev/DevHome";
+=======
+>>>>>>> e4b6a15 (Checkpoint: auth wiring, env setup, dev/app route split, capacitor config updates)
 
 /* ============================================================
    🔒 STATIC REGISTRIES
@@ -98,6 +101,16 @@ const EXPERIENCES: Record<string, any> = {
 };
 
 
+<<<<<<< HEAD
+=======
+type ScreensIndex = {
+  category: string;
+  directFiles?: string[];
+  folders: Record<string, string[]>;
+};
+
+
+>>>>>>> e4b6a15 (Checkpoint: auth wiring, env setup, dev/app route split, capacitor config updates)
 function RootLayoutBody({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -221,7 +234,10 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
 
   return (
     <>
+<<<<<<< HEAD
         <DevHome />
+=======
+>>>>>>> e4b6a15 (Checkpoint: auth wiring, env setup, dev/app route split, capacitor config updates)
         {/* Navigator: no key — identity stable; palette changes only update CSS, never remount. */}
         <div className={navCompactDesktop ? "nav-compact-desktop" : undefined}>
         <div className="app-chrome">
@@ -436,12 +452,17 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
             </div>
           )}
         </div>
+<<<<<<< HEAD
         <OSBCaptureModal />
+=======
+        {process.env.NODE_ENV === "development" && <PipelineDiagnosticsRail />}
+>>>>>>> e4b6a15 (Checkpoint: auth wiring, env setup, dev/app route split, capacitor config updates)
         <MobileShell />
     </>
   );
 }
 
+<<<<<<< HEAD
 const HOME_VIEW = "HiClarify/home/home_screen";
 
 /** User/mobile mode (/) — minimal top bar; bottom nav hidden on home (OSB V2). */
@@ -470,19 +491,41 @@ function UserLayoutChrome({ children }: { children: React.ReactNode }) {
       <OSBCaptureModal />
     </>
   );
+=======
+/** User mode (/) — no navigator, no dev chrome; only palette and children. */
+function UserLayoutChrome({ children }: { children: React.ReactNode }) {
+  usePaletteCSS();
+  useEffect(() => {
+    installBehaviorListener((to: string) => {
+      if (typeof to === "string" && to.startsWith("|")) {
+        dispatchState("state:currentView", { value: to });
+      }
+      // Screen-path nav from user app stays in-app; builder is at /dev
+    });
+  }, []);
+  return <>{children}</>;
+>>>>>>> e4b6a15 (Checkpoint: auth wiring, env setup, dev/app route split, capacitor config updates)
 }
 
 export default function RootLayout({ children }: any) {
   const pathname = usePathname();
+<<<<<<< HEAD
   const isUserMode = pathname === "/" || !pathname?.startsWith("/dev");
+=======
+  const isUserMode = pathname === "/";
+>>>>>>> e4b6a15 (Checkpoint: auth wiring, env setup, dev/app route split, capacitor config updates)
 
   return (
     <html>
       <head>
+<<<<<<< HEAD
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <link rel="icon" href={`${getBaseUrl()}/icons/icon-192.png`} type="image/png" sizes="192x192" />
         <link rel="apple-touch-icon" href={`${getBaseUrl()}/icons/icon-192.png`} />
         <link rel="manifest" href="/manifest" />
+=======
+        <link rel="manifest" href="/manifest.json" />
+>>>>>>> e4b6a15 (Checkpoint: auth wiring, env setup, dev/app route split, capacitor config updates)
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link

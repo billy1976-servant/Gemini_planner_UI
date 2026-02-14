@@ -528,7 +528,6 @@ export default function DevPage() {
           const validation = validateScreenJson(screen, data);
           logScreenJsonValidation(validation);
         }
-
         setTsxMeta(null);
         setTsxComponent(null);
         setError(null);
