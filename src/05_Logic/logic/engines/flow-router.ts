@@ -1,7 +1,7 @@
 // src/logic/engines/flow-router.ts
 // Content-only routing layer - engine decides next step based on signals
 
-import type { EducationFlow } from "../content/flow-loader";
+import type { EducationFlow } from "@/logic/flows/flow-loader";
 import type { EngineState } from "../runtime/engine-state";
 import { deriveEngineState } from "../runtime/engine-state";
 import type { PresentationModel } from "./presentation-types";

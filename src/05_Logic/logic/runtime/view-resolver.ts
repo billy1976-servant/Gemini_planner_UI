@@ -2,8 +2,8 @@
 // Multi-format view resolver - ImmediateView, ExpandedView, ExportView
 // Used by summary/export flows when decision engine is active. Not on main JSON screen path; legacy/secondary.
 
-import type { DecisionState, UIBlock, ExpandedBlock, DocumentBlock } from "../engines/decision-types";
-import { resolveBusinessProfile } from "../config/business-profiles";
+import type { DecisionState, UIBlock, ExpandedBlock, DocumentBlock } from "@/logic/engines/decision/decision-types";
+import { resolveBusinessProfile } from "@/logic/config/business-profiles";
 
 /**
  * Resolve ImmediateView (mobile-first, compressed)

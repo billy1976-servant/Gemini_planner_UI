@@ -10,7 +10,7 @@
 
 import type { EducationFlow } from "@/logic/flows/flow-loader";
 import type { EngineFlow } from "../learning.engine";
-import type { PresentationModel } from "./presentation-types";
+import type { PresentationModel } from "../presentation-types";
 
 export function calculatorEngine(flow: EducationFlow): EngineFlow {
   // Calculator engine: Filter to steps that produce numeric outputs

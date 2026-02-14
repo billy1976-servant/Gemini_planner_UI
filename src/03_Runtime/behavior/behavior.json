@@ -1,4 +1,9 @@
 {
+  "motionPresets": {
+    "calm": { "motionScale": 1.4 },
+    "default": { "motionScale": 1.0 },
+    "fast": { "motionScale": 0.7 }
+  },
   "interactions": {
     "tap": "interact.tap",
     "double": "interact.double",

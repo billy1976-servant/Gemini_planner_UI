@@ -384,7 +384,7 @@ function StateDiffBlock({ snapshot }: { snapshot: PipelineDebugSnapshot }) {
 
 function SectionRenderTableBlock({ rows }: { rows: SectionRenderRow[] }) {
   const tableWrap = { overflow: "auto", maxHeight: 220, marginTop: 6 };
-  const th = { textAlign: "left", padding: "4px 6px", borderBottom: "1px solid #333", fontSize: 10 };
+  const th = { textAlign: "left" as const, padding: "4px 6px", borderBottom: "1px solid #333", fontSize: 10 };
   const td = { padding: "4px 6px", borderBottom: "1px solid #222", fontSize: 10 };
   const pre = { margin: "2px 0", fontFamily: "monospace", fontSize: 9, whiteSpace: "pre-wrap" as const };
   return (
@@ -1370,7 +1370,7 @@ export default function InteractionTracerPanel({ defaultCollapsed = false, embed
 
     const handler = (e: Event) => {
       const target = e.target as Node;
-      if (target?.closest?.(`[${PANEL_ATTR}]`)) return;
+      if ((target as Element)?.closest?.(`[${PANEL_ATTR}]`)) return;
 
       const nodeId = (e.target as HTMLElement)?.dataset?.nodeId ?? getComponentId(e.target) ?? "unknown";
       

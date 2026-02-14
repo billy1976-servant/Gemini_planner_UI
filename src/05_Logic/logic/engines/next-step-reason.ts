@@ -4,7 +4,7 @@
  * No persistence, no analytics, no API - pure deterministic logic
  */
 
-import type { EngineExplainEvent } from "./summary/engine-explain";
+import type { EngineExplainEvent } from "@/logic/engine-system/engine-explain";
 
 /**
  * NextStepReason - Canonical type for explaining why a particular step was chosen

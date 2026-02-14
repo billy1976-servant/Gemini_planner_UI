@@ -29,12 +29,13 @@ export function JsonSkinEngine({ screen }: { screen: any }) {
     readEngineState
   );
 
-  // Merge both state sources
+  // Merge both state sources (currentView from global; currentFlow if present on global)
+  const g = globalState as { currentView?: string; currentFlow?: unknown } | null;
   const state = {
     ...globalState?.values,
     ...engineState,
-    currentView: globalState?.currentView ?? engineState?.currentView,
-    currentFlow: globalState?.currentFlow ?? engineState?.currentFlow,
+    currentView: g?.currentView,
+    currentFlow: g?.currentFlow,
   };
 
   // 🔒 AUTHORITATIVE SCREEN SELECTION

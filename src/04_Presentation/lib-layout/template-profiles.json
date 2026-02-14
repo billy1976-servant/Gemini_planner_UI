@@ -5,10 +5,10 @@
     "experience": "website",
     "defaultSectionLayoutId": "content-narrow",
     "visualPreset": "default",
-    "containerWidth": "contained",
+    "containerWidth": "narrow",
     "widthByRole": {
-      "hero": "wide",
-      "content": "contained"
+      "hero": "narrow",
+      "content": "narrow"
     },
     "spacingScale": "default",
     "cardPreset": "soft",
@@ -111,11 +111,11 @@
       },
       "hero": {
         "layoutId": "hero-centered",
-        "containerWidth": "wide"
+        "containerWidth": "narrow"
       },
       "content": {
         "layoutId": "content-narrow",
-        "containerWidth": "contained"
+        "containerWidth": "narrow"
       },
       "features": {
         "layoutId": "content-stack"
@@ -147,9 +147,13 @@
     "id": "startup-split-hero",
     "label": "Startup Split Hero",
     "experience": "website",
-    "defaultSectionLayoutId": "content-narrow",
+    "defaultSectionLayoutId": "content-stack",
     "visualPreset": "prominent",
     "containerWidth": "contained",
+    "widthByRole": {
+      "hero": "wide",
+      "content": "contained"
+    },
     "spacingScale": "saas",
     "cardPreset": "elevated",
     "heroMode": "split",
@@ -238,10 +242,12 @@
         "layoutId": "content-stack"
       },
       "hero": {
-        "layoutId": "hero-split"
+        "layoutId": "hero-split",
+        "containerWidth": "wide"
       },
       "content": {
-        "layoutId": "content-narrow"
+        "layoutId": "content-stack",
+        "containerWidth": "contained"
       },
       "features": {
         "layoutId": "content-stack"
@@ -275,6 +281,10 @@
     "experience": "website",
     "visualPreset": "editorial",
     "containerWidth": "narrow",
+    "widthByRole": {
+      "hero": "narrow",
+      "content": "narrow"
+    },
     "spacingScale": "magazine",
     "cardPreset": "borderless",
     "heroMode": "centered",
@@ -755,9 +765,10 @@
     "label": "Agency Bold",
     "experience": "website",
     "visualPreset": "prominent",
-    "containerWidth": "contained",
+    "containerWidth": "wide",
     "widthByRole": {
-      "hero": "edge-to-edge"
+      "hero": "edge-to-edge",
+      "content": "wide"
     },
     "spacingScale": "default",
     "cardPreset": "elevated",
@@ -847,14 +858,15 @@
         "layoutId": "content-stack"
       },
       "hero": {
-        "layoutId": "hero-centered",
+        "layoutId": "hero-split",
         "containerWidth": "edge-to-edge"
       },
       "content": {
-        "layoutId": "content-narrow"
+        "layoutId": "content-wide",
+        "containerWidth": "wide"
       },
       "features": {
-        "layoutId": "content-stack"
+        "layoutId": "content-wide"
       },
       "gallery": {
         "layoutId": "content-stack"

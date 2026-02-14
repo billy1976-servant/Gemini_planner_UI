@@ -46,7 +46,7 @@
     "subtitle": { "size": "textSize.lg", "weight": "textWeight.medium", "lineHeight": "lineHeight.normal", "color": "color.secondary" },
     "bodyLg": { "size": "textSize.bodyLg", "weight": "textWeight.regular", "lineHeight": "lineHeight.relaxed" },
     "body": { "size": "textSize.body", "weight": "textWeight.regular", "lineHeight": "lineHeight.relaxed" },
-    "label": { "size": "textSize.sm", "weight": "textWeight.medium", "lineHeight": "lineHeight.normal", "letterSpacing": "letterSpacing.loose", "color": "color.outlineStrong" },
+    "label": { "size": "textSize.sm", "weight": "textWeight.semibold", "lineHeight": "lineHeight.normal", "letterSpacing": "letterSpacing.loose", "color": "color.outlineStrong" },
     "caption": { "size": "textSize.caption", "weight": "textWeight.regular", "lineHeight": "lineHeight.normal", "color": "color.secondary" }
   },
   "surfaceTier": { "base": { "background": "color.surface", "shadow": "shadow.none" }, "raised": { "background": "color.surface", "shadow": "shadow.sm" }, "overlay": { "background": "color.surface", "shadow": "shadow.md" }, "floating": { "background": "color.surface", "shadow": "shadow.lg" } },

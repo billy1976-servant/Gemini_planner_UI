@@ -62,10 +62,7 @@ export async function POST(request: Request) {
 
     // Validate with Google Ads API (dry-run)
     try {
-      await customer.mutateResources({
-        operations,
-        validate_only: true,
-      });
+      await customer.mutateResources(operations, { validate_only: true });
 
       return NextResponse.json({
         validated: true,

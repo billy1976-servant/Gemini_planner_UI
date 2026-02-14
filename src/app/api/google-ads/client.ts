@@ -83,7 +83,7 @@ export async function createGoogleAdsClient(options?: {
     refresh_token: readEnv("GOOGLE_ADS_REFRESH_TOKEN")!,
     access_token: accessToken,
     login_customer_id: loginCustomerId?.replace(/-/g, ""),
-  });
+  } as any);
 
   return { customer, customerId };
 }

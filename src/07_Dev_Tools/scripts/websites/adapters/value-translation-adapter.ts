@@ -7,7 +7,9 @@
 import { translateValue } from "@/logic/engines/comparison/value-translation.engine";
 import { getDefaultActiveDimensions } from "@/logic/engines/comparison/value-dimensions";
 import type { ProductGraph } from "@/logic/products/product-types";
-import type { ResearchBundle, ValueModel } from "../compile-website";
+import type { ResearchBundle } from "./research-adapter";
+
+export type ValueModel = Record<string, unknown>;
 
 /**
  * Run value translation on product graph with research bundle

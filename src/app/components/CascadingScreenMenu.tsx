@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 type ScreensIndex = {
   category: string;
@@ -28,18 +28,21 @@ type CascadingScreenMenuProps = {
 
 export default function CascadingScreenMenu({ index, currentScreen = "" }: CascadingScreenMenuProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const containerRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [hoveredFolder, setHoveredFolder] = useState<string | null>(null);
 
+  const base = pathname?.startsWith("/dev") ? "/dev" : "/";
+
   const navigate = (category: string, folder: string, file?: string) => {
     if (file === undefined) {
       const screenPath = `${category}/${folder}`;
-      router.replace(`/?screen=${encodeURIComponent(screenPath)}`);
+      router.replace(`${base}?screen=${encodeURIComponent(screenPath)}`);
     } else {
       const screenPath = `${category}/${folder}/${file}`;
-      router.replace(`/?screen=${encodeURIComponent(screenPath)}`);
+      router.replace(`${base}?screen=${encodeURIComponent(screenPath)}`);
     }
     setOpen(false);
     setHoveredCategory(null);

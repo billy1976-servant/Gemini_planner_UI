@@ -126,6 +126,8 @@ export default function ControlDock({
               styling: "Styling",
               behavior: "Behavior",
               layout: "Layout",
+              newInterface: "New Interface",
+              expand: "Expand",
             };
             return (
               <button

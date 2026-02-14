@@ -12,7 +12,7 @@
  */
 import fs from "fs";
 import path from "path";
-import { compileProductDataToScreen } from "@/lib/product-screen-adapter";
+import { compileProductDataToScreen } from "@/06_Data/product-screen-adapter";
 
 const COMPILED_SITES = path.join(process.cwd(), "content", "compiled", "sites");
 const RAW_SITES = path.join(process.cwd(), "src", "content", "sites", "raw");

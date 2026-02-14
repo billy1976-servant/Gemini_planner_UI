@@ -192,7 +192,7 @@ export function renderLayoutBlock({ block, siteData, experience = "website", hel
   // Nav and footer handle their own layout
   if (block.type === "nav" || block.type === "footer") {
     // Still add ID for consistency
-    return blockId ? React.cloneElement(rendered, { id: blockId }) : rendered;
+    return blockId ? React.cloneElement(rendered, { id: blockId } as React.HTMLAttributes<HTMLElement>) : rendered;
   }
   
   // Get layout styles for this section - SINGLE SOURCE OF LAYOUT TRUTH
@@ -217,7 +217,7 @@ export function renderLayoutBlock({ block, siteData, experience = "website", hel
  * 
  * Components should return ONLY content, no wrappers or layout styles.
  */
-function renderBlockContent(block: SiteLayout, siteData: NormalizedSite, experience: "website" | "app" | "learning" = "website"): React.ReactElement | null {
+function renderBlockContent(block: SiteLayout, siteData: NormalizedSite, experience: "website" | "app" | "learning" = "website", helpers?: RuntimeHelpers): React.ReactElement | null {
   switch (block.type) {
     case "hero":
       return (
@@ -522,6 +522,9 @@ function renderBlockContent(block: SiteLayout, siteData: NormalizedSite, experie
           data={block.data}
         />
       );
+
+    case "featuredProductGrid":
+      return null;
 
     default:
       // TypeScript exhaustiveness check

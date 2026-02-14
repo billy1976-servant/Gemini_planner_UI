@@ -95,7 +95,8 @@
 
   "exclude": [
     "node_modules",
-    "src/01_App/apps-tsx/tsx-screens/generated/**/*"
+    "src/01_App/apps-tsx/tsx-screens/generated/**/*",
+    "src/999_Cleanup/**/*"
   ]
 }
 
