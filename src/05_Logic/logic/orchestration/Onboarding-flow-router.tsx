@@ -12,7 +12,7 @@
  */
 
 
-import { run25X } from "./25x.engine";
+import { run25X } from "@/logic/engines/25x.engine";
 
 
 /* -------------------------------------------------- */

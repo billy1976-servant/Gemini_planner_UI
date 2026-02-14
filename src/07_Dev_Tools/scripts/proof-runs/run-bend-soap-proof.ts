@@ -14,11 +14,11 @@
  * - Optional calculations
  */
 
-import { translateValue } from "../../logic/engines/comparison/value-translation.engine";
-import { compareProducts } from "../../logic/engines/comparison/value-comparison.engine";
-import { getResearchFact } from "../../logic/research/research-fact-library";
-import { getIndustryModel } from "../../logic/value/assumption-library";
-import { getDefaultActiveDimensions } from "../../logic/engines/comparison/value-dimensions";
+import { translateValue } from "@/logic/engines/comparison/value-translation.engine";
+import { compareProducts } from "@/logic/engines/comparison/value-comparison.engine";
+import { getResearchFact } from "@/logic/research/research-fact-library";
+import { getIndustryModel } from "@/logic/value/assumption-library";
+import { getDefaultActiveDimensions } from "@/logic/engines/comparison/value-dimensions";
 
 interface ProofRunResult {
   productUrl: string;
@@ -63,8 +63,7 @@ export async function runBendSoapProof(productUrl: string): Promise<ProofRunResu
       siteData,
       industryModel: "skincare" as const,
       userIntent: {
-        industryModel: "skincare",
-        priorities: {},
+        industryModel: "skincare" as const,
         context: {},
       },
       activeDimensions: getDefaultActiveDimensions(),

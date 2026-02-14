@@ -131,7 +131,7 @@ function buildExportView(
     blocks.push({
       type: "action-plan",
       title: "Recommended Actions",
-      content: actionItems.join("\n"),
+      content: { text: actionItems.join("\n") },
       format: "text",
     } as DocumentBlock);
   }

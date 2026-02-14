@@ -9,12 +9,23 @@
 
 import { normalizeProduct } from "@/logic/products/product-normalizer";
 import { extractProduct } from "@/logic/products/extractors/extract-product";
-import type { SiteSnapshot } from "../compile-website";
 import type {
   ProductGraph,
   Product,
   CategoryExtraction,
+  RawExtraction,
 } from "@/logic/products/product-types";
+
+/** Shape returned by scanWebsite, consumed by normalizeToProductGraph */
+export type SiteSnapshot = {
+  url?: string;
+  rawData?: {
+    type?: string;
+    productRip?: unknown;
+    extraction?: unknown;
+    v2?: { pages?: unknown[] };
+  };
+};
 
 /**
  * Extract category path from URL
@@ -409,7 +420,7 @@ export async function normalizeToProductGraph(
       siteSnapshot.rawData?.type === "product" &&
       siteSnapshot.rawData?.extraction
     ) {
-      const rawExtraction = siteSnapshot.rawData.extraction;
+      const rawExtraction = siteSnapshot.rawData.extraction as RawExtraction;
       const normalized = normalizeProduct(rawExtraction);
 
       if (normalized.product) {

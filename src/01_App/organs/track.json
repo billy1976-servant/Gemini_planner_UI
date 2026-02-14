@@ -1,0 +1,59 @@
+{
+  "id": "trackJournal",
+  "type": "section",
+  "role": "writing",
+  "content": { "title": "TRACK Journal" },
+  "children": [
+    {
+      "id": "trackHeader",
+      "type": "card",
+      "variant": "section-header",
+      "content": { "title": "TRACK" }
+    },
+    {
+      "id": "trackNav",
+      "type": "Stepper",
+      "variant": "tab-segment",
+      "params": { "ui": { "style": "segmented-clean" } },
+      "steps": [
+        { "content": { "label": "Think" }, "behavior": { "type": "Action", "params": { "name": "state:currentView", "value": "think" } } },
+        { "content": { "label": "Repent" }, "behavior": { "type": "Action", "params": { "name": "state:currentView", "value": "repent" } } },
+        { "content": { "label": "Ask" }, "behavior": { "type": "Action", "params": { "name": "state:currentView", "value": "ask" } } },
+        { "content": { "label": "Conform" }, "behavior": { "type": "Action", "params": { "name": "state:currentView", "value": "conform" } } },
+        { "content": { "label": "Keep" }, "behavior": { "type": "Action", "params": { "name": "state:currentView", "value": "keep" } } }
+      ]
+    },
+    {
+      "id": "sharedJournalSection",
+      "type": "section",
+      "role": "focus",
+      "children": [
+        { "id": "thinkTitle", "type": "card", "variant": "section-header", "when": { "state": "currentView", "equals": "think" }, "content": { "title": "THINK" } },
+        { "id": "thinkPrompt", "type": "card", "when": { "state": "currentView", "equals": "think" }, "content": { "body": "What stands out to you from this Scripture?" }, "params": { "ui": { "density": "tight" } } },
+        { "id": "thinkInput", "type": "field", "variant": "richtext", "when": { "state": "currentView", "equals": "think" }, "state": { "mode": "two-way", "key": "journal.think" }, "params": { "field": { "multiline": true, "rows": 5, "fieldKey": "journal.think" }, "placeholder": "Write your thoughts...", "toolbar": ["bold", "italic", "underline", "bullet", "number", "indent"], "ui": { "density": "tight" } } },
+        { "id": "thinkSave", "type": "button", "when": { "state": "currentView", "equals": "think" }, "content": { "label": "Save Think Entry" }, "behavior": { "type": "Action", "params": { "name": "state:journal.add", "track": "think", "key": "entry", "valueFrom": "input", "fieldKey": "journal.think" } } },
+        { "id": "thinkViewer", "type": "UserInputViewer", "when": { "state": "currentView", "equals": "think" }, "params": { "track": "think", "stateKey": "journal.think" } },
+        { "id": "repentTitle", "type": "card", "variant": "section-header", "when": { "state": "currentView", "equals": "repent" }, "content": { "title": "REPENT" } },
+        { "id": "repentPrompt", "type": "card", "when": { "state": "currentView", "equals": "repent" }, "content": { "body": "What do you need to confess or turn away from?" }, "params": { "ui": { "density": "tight" } } },
+        { "id": "repentInput", "type": "field", "variant": "richtext", "when": { "state": "currentView", "equals": "repent" }, "state": { "mode": "two-way", "key": "journal.repent" }, "params": { "field": { "multiline": true, "rows": 5, "fieldKey": "journal.repent" }, "placeholder": "Write your thoughts...", "toolbar": ["bold", "italic", "underline", "bullet", "number", "indent"], "ui": { "density": "tight" } } },
+        { "id": "repentSave", "type": "button", "when": { "state": "currentView", "equals": "repent" }, "content": { "label": "Save Repent Entry" }, "behavior": { "type": "Action", "params": { "name": "state:journal.add", "track": "repent", "key": "entry", "valueFrom": "input", "fieldKey": "journal.repent" } } },
+        { "id": "repentViewer", "type": "UserInputViewer", "when": { "state": "currentView", "equals": "repent" }, "params": { "track": "repent", "stateKey": "journal.repent" } },
+        { "id": "askTitle", "type": "card", "variant": "section-header", "when": { "state": "currentView", "equals": "ask" }, "content": { "title": "ASK" } },
+        { "id": "askPrompt", "type": "card", "when": { "state": "currentView", "equals": "ask" }, "content": { "body": "What are you asking God for wisdom about?" }, "params": { "ui": { "density": "tight" } } },
+        { "id": "askInput", "type": "field", "variant": "richtext", "when": { "state": "currentView", "equals": "ask" }, "state": { "mode": "two-way", "key": "journal.ask" }, "params": { "field": { "multiline": true, "rows": 5, "fieldKey": "journal.ask" }, "placeholder": "Write your thoughts...", "toolbar": ["bold", "italic", "underline", "bullet", "number", "indent"], "ui": { "density": "tight" } } },
+        { "id": "askSave", "type": "button", "when": { "state": "currentView", "equals": "ask" }, "content": { "label": "Save Ask Entry" }, "behavior": { "type": "Action", "params": { "name": "state:journal.add", "track": "ask", "key": "entry", "valueFrom": "input", "fieldKey": "journal.ask" } } },
+        { "id": "askViewer", "type": "UserInputViewer", "when": { "state": "currentView", "equals": "ask" }, "params": { "track": "ask", "stateKey": "journal.ask" } },
+        { "id": "conformTitle", "type": "card", "variant": "section-header", "when": { "state": "currentView", "equals": "conform" }, "content": { "title": "CONFORM" } },
+        { "id": "conformPrompt", "type": "card", "when": { "state": "currentView", "equals": "conform" }, "content": { "body": "How will you live differently?" }, "params": { "ui": { "density": "tight" } } },
+        { "id": "conformInput", "type": "field", "variant": "richtext", "when": { "state": "currentView", "equals": "conform" }, "state": { "mode": "two-way", "key": "journal.conform" }, "params": { "field": { "multiline": true, "rows": 5, "fieldKey": "journal.conform" }, "placeholder": "Write your thoughts...", "toolbar": ["bold", "italic", "underline", "bullet", "number", "indent"], "ui": { "density": "tight" } } },
+        { "id": "conformSave", "type": "button", "when": { "state": "currentView", "equals": "conform" }, "content": { "label": "Save Conform Entry" }, "behavior": { "type": "Action", "params": { "name": "state:journal.add", "track": "conform", "key": "entry", "valueFrom": "input", "fieldKey": "journal.conform" } } },
+        { "id": "conformViewer", "type": "UserInputViewer", "when": { "state": "currentView", "equals": "conform" }, "params": { "track": "conform", "stateKey": "journal.conform" } },
+        { "id": "keepTitle", "type": "card", "variant": "section-header", "when": { "state": "currentView", "equals": "keep" }, "content": { "title": "KEEP" } },
+        { "id": "keepPrompt", "type": "card", "when": { "state": "currentView", "equals": "keep" }, "content": { "body": "What will you guard against?" }, "params": { "ui": { "density": "tight" } } },
+        { "id": "keepInput", "type": "field", "variant": "richtext", "when": { "state": "currentView", "equals": "keep" }, "state": { "mode": "two-way", "key": "journal.keep" }, "params": { "field": { "multiline": true, "rows": 5, "fieldKey": "journal.keep" }, "placeholder": "Write your thoughts...", "toolbar": ["bold", "italic", "underline", "bullet", "number", "indent"], "ui": { "density": "tight" } } },
+        { "id": "keepSave", "type": "button", "when": { "state": "currentView", "equals": "keep" }, "content": { "label": "Save Keep Entry" }, "behavior": { "type": "Action", "params": { "name": "state:journal.add", "track": "keep", "key": "entry", "valueFrom": "input", "fieldKey": "journal.keep" } } },
+        { "id": "keepViewer", "type": "UserInputViewer", "when": { "state": "currentView", "equals": "keep" }, "params": { "track": "keep", "stateKey": "journal.keep" } }
+      ]
+    }
+  ]
+}

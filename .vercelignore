@@ -1,0 +1,12 @@
+node_modules
+.next
+.git
+.cursor
+.vercel
+*.log
+.env*.local
+playwright-report
+test-results
+coverage
+*.tsbuildinfo
+public/manifests

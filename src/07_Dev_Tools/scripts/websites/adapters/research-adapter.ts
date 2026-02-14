@@ -7,7 +7,11 @@
 import { getResearchFactsByIndustry } from "@/logic/research/research-fact-library";
 import { getIndustryModel } from "@/logic/value/assumption-library";
 import type { ProductGraph } from "@/logic/products/product-types";
-import type { ResearchBundle } from "../compile-website";
+
+export type ResearchBundle = {
+  researchFacts: string[];
+  bindings: Record<string, string[]>;
+};
 
 /**
  * Attach research facts to product graph

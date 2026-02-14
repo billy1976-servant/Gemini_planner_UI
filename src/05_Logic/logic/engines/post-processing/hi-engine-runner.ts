@@ -70,9 +70,9 @@ export function runHIEngines(
       const decisionState = processDecisionState(engineState, [], {});
       hiResult.decisionState = decisionState;
       hiResult.outputs = {
-        recommendations: decisionState.recommendations || [],
-        explanations: decisionState.explanations || [],
-        confidence: decisionState.confidence || 0,
+        recommendations: decisionState.recommendedNextSteps?.map((s) => s.reason) || [],
+        explanations: decisionState.signals || [],
+        confidence: 0,
       };
       break;
 

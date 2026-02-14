@@ -13,11 +13,14 @@ export function resolveLandingPage() {
   const state = getState();
   const engineState = readEngineState();
 
-  // Try to get answers from state or engine state
+  // Try to get answers from state or engine state (state may have answers in values or legacy shape)
+  const stateWithAnswers = state as { answers?: Record<string, any>; values?: Record<string, any> };
+  const engineWithAnswers = engineState as { answers?: Record<string, any>; calculatorInput?: Record<string, any> } | null;
   const answers =
-    state?.answers ??
-    engineState?.answers ??
-    engineState?.calculatorInput ??
+    stateWithAnswers?.answers ??
+    stateWithAnswers?.values ??
+    engineWithAnswers?.answers ??
+    engineWithAnswers?.calculatorInput ??
     {};
 
   // If no answers yet, return default landing page content

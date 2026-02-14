@@ -9,7 +9,7 @@
  * CONTRACT-BOUNDARY: Do not change shape without updating SystemContract.ts
  */
 
-import type { ValueImpactBlock } from "./value-translation.engine";
+import type { ValueImpactBlock } from "@/logic/engines/comparison/value-translation.engine";
 import type { ResearchFact } from "../research/research-fact-library";
 import { getResearchFact } from "../research/research-fact-library";
 

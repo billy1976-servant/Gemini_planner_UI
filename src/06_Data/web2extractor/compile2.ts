@@ -146,10 +146,10 @@ async function main(): Promise<void> {
   const products = deduplicateVariants(results);
   const catalog: ProductCatalog = { products };
 
-  const outPath = path.join(process.cwd(), "web2-results.json");
-  fs.writeFileSync(outPath, JSON.stringify(catalog, null, 2), "utf-8");
+  const catalogOutPath = path.join(process.cwd(), "web2-results.json");
+  fs.writeFileSync(catalogOutPath, JSON.stringify(catalog, null, 2), "utf-8");
   console.log("");
-  console.log("Wrote", catalog.products.length, "product entries to", outPath);
+  console.log("Wrote", catalog.products.length, "product entries to", catalogOutPath);
 }
 
 main().catch((err) => {

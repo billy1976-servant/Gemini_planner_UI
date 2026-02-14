@@ -9,9 +9,9 @@
  * CONTRACT-BOUNDARY: Do not change shape without updating SystemContract.ts
  */
 
-import type { ValueTranslationInput, ValueTranslationOutput } from "./value-translation.engine";
-import { translateValue } from "./value-translation.engine";
-import { getDefaultActiveDimensions } from "./value-dimensions";
+import type { ValueTranslationInput, ValueTranslationOutput } from "@/logic/engines/comparison/value-translation.engine";
+import { translateValue } from "@/logic/engines/comparison/value-translation.engine";
+import { getDefaultActiveDimensions } from "@/logic/engines/comparison/value-dimensions";
 import type { EducationFlow } from "../flows/flow-loader";
 
 export interface AnnotatedFlow extends EducationFlow {
@@ -47,9 +47,8 @@ export function annotateFlowWithValue(
     products: [], // No products in flow compilation context
     siteData: {}, // No site data in flow compilation context
     industryModel,
-    userIntent: userIntent || {
+    userIntent: userIntent ?? {
       industryModel,
-      priorities: {},
       context: {},
     },
     activeDimensions,

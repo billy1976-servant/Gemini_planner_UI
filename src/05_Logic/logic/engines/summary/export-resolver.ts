@@ -3,7 +3,7 @@
 
 import type { DecisionState, UIBlock, DocumentBlock } from "../decision/decision-types";
 import type { EngineState, ExportSlice } from "../../runtime/engine-state";
-import { resolveBusinessProfile } from "../config/business-profiles";
+import { resolveBusinessProfile } from "@/logic/config/business-profiles";
 
 /**
  * Resolve immediate view blocks (mobile-first, decisive)

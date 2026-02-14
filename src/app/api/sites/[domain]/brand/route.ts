@@ -16,10 +16,9 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ domain: string }> | { domain: string } }
 ) {
+  const resolvedParams = await Promise.resolve(params);
+  const domain = resolvedParams.domain;
   try {
-    // Handle both Next.js 14 and 15 param formats
-    const resolvedParams = await Promise.resolve(params);
-    const domain = resolvedParams.domain;
     
     // Read from exports directory
     const brandPath = path.join(
@@ -42,7 +41,7 @@ export async function GET(
     
     return NextResponse.json(brand);
   } catch (error: any) {
-    console.error(`[API] Error loading brand for ${params.domain}:`, error);
+    console.error(`[API] Error loading brand for ${domain}:`, error);
     return NextResponse.json(
       { 
         error: error.message || "Failed to load brand info",

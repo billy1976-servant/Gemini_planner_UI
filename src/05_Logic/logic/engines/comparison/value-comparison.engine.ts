@@ -13,7 +13,7 @@
  * CONTRACT-BOUNDARY: Do not change shape without updating SystemContract.ts
  */
 
-import type { Product } from "../products/product-types";
+import type { Product } from "@/logic/products/product-types";
 import type { ValueDimensionId } from "./value-dimensions";
 import type { ValueImpactBlock } from "./value-translation.engine";
 
@@ -101,8 +101,6 @@ function compareDimension(
       return compareQuality(productA, productB);
     case "risk":
       return compareRisk(productA, productB);
-    case "longevity":
-      return compareLongevity(productA, productB);
     default:
       return null; // Skip dimensions that don't support comparison
   }
@@ -239,7 +237,7 @@ function compareLongevity(productA: Product, productB: Product): ProductComparis
       return {
         productA,
         productB,
-        dimension: "longevity",
+        dimension: "quality",
         winner: "A",
         statement: `${productA.name} has a longer expected lifespan (${aLifespan} years vs ${bLifespan} years)`,
         delta: {
@@ -257,7 +255,7 @@ function compareLongevity(productA: Product, productB: Product): ProductComparis
       return {
         productA,
         productB,
-        dimension: "longevity",
+        dimension: "quality",
         winner: "B",
         statement: `${productB.name} has a longer expected lifespan (${bLifespan} years vs ${aLifespan} years)`,
         delta: {

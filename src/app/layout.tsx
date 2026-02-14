@@ -3,8 +3,9 @@
 // Palette = visual only
 // Layout = structural only
 // Palette must never mutate layout config, dropdowns, or layout persistence.
-import { useEffect, useRef, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+// / = user app only (no navigator/chrome). /dev = full builder with navigator and tools.
+import { Suspense, useEffect, useRef, useState } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useSyncExternalStore } from "react";
 
 import "@/styles/site-theme.css";
@@ -58,6 +59,7 @@ import presentationProfiles from "@/lib/layout/presentation-profiles.json";
 import CascadingScreenMenu from "@/app/components/CascadingScreenMenu";
 import { BottomNavOnly } from "@/04_Presentation/shells/GlobalAppSkin";
 import { NAV_STRIP_HEIGHT } from "@/app/shell-ui-constants";
+import MobileShell from "@/mobile/MobileShell";
 
 /* ============================================================
    🔒 STATIC REGISTRIES
@@ -89,7 +91,7 @@ type ScreensIndex = {
 };
 
 
-export default function RootLayout({ children }: any) {
+function RootLayoutBody({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentScreen = searchParams.get("screen") ?? "";
@@ -143,7 +145,7 @@ export default function RootLayout({ children }: any) {
 
   /* ============================================================
      🔁 INSTALL BEHAVIOR ROUTER (ONCE)
-     ❗ NO STATE REPLAY HERE
+     Developer workspace: screen nav goes to /dev?screen=...
   ============================================================ */
   useEffect(() => {
     installBehaviorListener((to: string) => {
@@ -151,7 +153,7 @@ export default function RootLayout({ children }: any) {
         dispatchState("state:currentView", { value: to });
         return;
       }
-      router.replace(`/?screen=${encodeURIComponent(to)}`);
+      router.replace(`/dev?screen=${encodeURIComponent(to)}`);
     });
   }, [router]);
 
@@ -177,16 +179,7 @@ export default function RootLayout({ children }: any) {
   }, []);
 
   return (
-    <html>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Poppins:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className="app-body">
+    <>
         {/* Navigator: no key — identity stable; palette changes only update CSS, never remount. */}
         <div className="app-chrome">
           <b>HIclarify Navigator</b>
@@ -371,6 +364,48 @@ export default function RootLayout({ children }: any) {
           )}
         </div>
         {process.env.NODE_ENV === "development" && <PipelineDiagnosticsRail />}
+        <MobileShell />
+    </>
+  );
+}
+
+/** User mode (/) — no navigator, no dev chrome; only palette and children. */
+function UserLayoutChrome({ children }: { children: React.ReactNode }) {
+  usePaletteCSS();
+  useEffect(() => {
+    installBehaviorListener((to: string) => {
+      if (typeof to === "string" && to.startsWith("|")) {
+        dispatchState("state:currentView", { value: to });
+      }
+      // Screen-path nav from user app stays in-app; builder is at /dev
+    });
+  }, []);
+  return <>{children}</>;
+}
+
+export default function RootLayout({ children }: any) {
+  const pathname = usePathname();
+  const isUserMode = pathname === "/";
+
+  return (
+    <html>
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Poppins:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="app-body">
+        <Suspense fallback={<div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>Loading...</div>}>
+          {isUserMode ? (
+            <UserLayoutChrome>{children}</UserLayoutChrome>
+          ) : (
+            <RootLayoutBody>{children}</RootLayoutBody>
+          )}
+        </Suspense>
       </body>
     </html>
   );

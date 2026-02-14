@@ -59,17 +59,27 @@
     "sm": 36,
     "md": 48,
     "lg": 64,
-    "xl": 80
+    "xl": 80,
+    "display": 64,
+    "headline": 44,
+    "title": 30,
+    "bodyLg": 18,
+    "body": 16,
+    "caption": 14
   },
   "textWeight": {
     "regular": 400,
     "medium": 600,
+    "semibold": 600,
     "bold": 900
   },
   "lineHeight": {
     "tight": 1.0,
     "normal": 1.8,
-    "relaxed": 2.4
+    "relaxed": 2.4,
+    "display": 1.05,
+    "headline": 1.15,
+    "title": 1.25
   },
   "letterSpacing": {
     "tight": -0.5,
@@ -99,13 +109,14 @@
     "lg": 192
   },
   "textRole": {
-    "display": { "size": "textSize.display", "weight": "textWeight.bold", "lineHeight": "lineHeight.tight" },
-    "headline": { "size": "textSize.headline", "weight": "textWeight.semibold", "lineHeight": "lineHeight.tight" },
-    "title": { "size": "textSize.title", "weight": "textWeight.semibold", "lineHeight": "lineHeight.normal" },
-    "bodyLg": { "size": "textSize.bodyLg", "weight": "textWeight.regular", "lineHeight": "lineHeight.normal" },
-    "body": { "size": "textSize.body", "weight": "textWeight.regular", "lineHeight": "lineHeight.normal" },
-    "label": { "size": "textSize.sm", "weight": "textWeight.medium", "lineHeight": "lineHeight.normal" },
-    "caption": { "size": "textSize.caption", "weight": "textWeight.regular", "lineHeight": "lineHeight.normal" }
+    "display": { "size": "textSize.display", "weight": "textWeight.bold", "lineHeight": "lineHeight.display", "letterSpacing": "letterSpacing.tight" },
+    "headline": { "size": "textSize.headline", "weight": "textWeight.bold", "lineHeight": "lineHeight.headline", "letterSpacing": "letterSpacing.tight" },
+    "title": { "size": "textSize.title", "weight": "textWeight.semibold", "lineHeight": "lineHeight.title" },
+    "subtitle": { "size": "textSize.lg", "weight": "textWeight.medium", "lineHeight": "lineHeight.normal", "color": "color.secondary" },
+    "bodyLg": { "size": "textSize.bodyLg", "weight": "textWeight.regular", "lineHeight": "lineHeight.relaxed" },
+    "body": { "size": "textSize.body", "weight": "textWeight.regular", "lineHeight": "lineHeight.relaxed" },
+    "label": { "size": "textSize.sm", "weight": "textWeight.semibold", "lineHeight": "lineHeight.normal" },
+    "caption": { "size": "textSize.caption", "weight": "textWeight.regular", "lineHeight": "lineHeight.normal", "color": "color.secondary" }
   },
   "surfaceTier": {
     "base": { "background": "color.surface", "shadow": "shadow.none" },
@@ -141,5 +152,10 @@
   },
   "transform": {
     "hoverLift": "translateY(-8px)"
+  },
+  "interaction": {
+    "hover": { "opacity": 0.92, "scale": 1.02, "lift": "translateY(-2px)" },
+    "press": { "opacity": 0.85, "scale": 0.98 },
+    "disabled": { "opacity": 0.38 }
   }
 }

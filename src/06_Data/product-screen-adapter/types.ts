@@ -10,6 +10,7 @@
 export type ScreenTreeNode = {
   id?: string;
   type: string;
+  role?: string;
   content?: Record<string, unknown>;
   params?: Record<string, unknown>;
   variant?: string;

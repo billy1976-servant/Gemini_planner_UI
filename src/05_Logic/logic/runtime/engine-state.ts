@@ -6,7 +6,7 @@
  * CONTRACT-BOUNDARY: Do not change shape without updating SystemContract.ts
  */
 
-import type { EducationFlow } from "../content/flow-loader";
+import type { EducationFlow } from "../flows/flow-loader";
 import type { PresentationModel } from "../engines/presentation-types";
 import type { EngineStateContract, ExportSliceContract } from "@/contracts/SystemContract";
 
