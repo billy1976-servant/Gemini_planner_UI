@@ -1,7 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { NAV_STRIP_HEIGHT, SCREEN_UI_BREAKPOINT_PX } from "@/app/shell-ui-constants";
+
+const LAUNCHER_DROPDOWN_GAP_PX = 8;
 
 /**
  * GlobalAppSkin - PURE VISUAL WRAPPER
@@ -123,8 +126,10 @@ const LAUNCHER_LINK_STYLE: React.CSSProperties = {
 
 /** Bottom nav: anchored to AppViewport (persistent in both phone frame and desktop). */
 export function BottomNavOnly() {
-  const navRootRef = React.useRef<HTMLDivElement>(null);
+  const navRootRef = useRef<HTMLDivElement>(null);
+  const launcherButtonRef = useRef<HTMLButtonElement>(null);
   const [launcherOpen, setLauncherOpen] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState<{ left: number; bottom: number } | null>(null);
   const [isDesktopOrTablet, setIsDesktopOrTablet] = useState(
     typeof window !== "undefined" ? window.matchMedia(`(min-width: ${SCREEN_UI_BREAKPOINT_PX}px)`).matches : true
   );
@@ -214,6 +219,26 @@ export function BottomNavOnly() {
     };
   }, []);
 
+  // Position launcher dropdown from button bounds (fixed; not clipped by overflow, centered on icon).
+  const updateDropdownPosition = () => {
+    const btn = launcherButtonRef.current;
+    if (!btn) return;
+    const rect = btn.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const bottomPx = NAV_STRIP_HEIGHT + LAUNCHER_DROPDOWN_GAP_PX;
+    setDropdownPosition({ left: centerX, bottom: bottomPx });
+  };
+  useLayoutEffect(() => {
+    if (!launcherOpen) {
+      setDropdownPosition(null);
+      return;
+    }
+    updateDropdownPosition();
+    const onResize = () => updateDropdownPosition();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [launcherOpen]);
+
   const navItems = [...leftItems, ...(centerItem ? [centerItem] : []), ...rightItems];
   if (process.env.NODE_ENV === "development") {
     console.log("NAV ITEMS:", navItems.length);
@@ -269,35 +294,39 @@ export function BottomNavOnly() {
           }}
         >
           {leftItems.map(renderNavItem)}
-          {/* Center: orange launcher button (2/3 FAB size) — same links as original blue FAB */}
+          {/* Center: orange launcher button (2/3 FAB size) — dropdown positioned via portal + getBoundingClientRect (fixed, centered on icon). */}
           <div style={{ position: "relative" }}>
-            {launcherOpen && (
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: "100%",
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  marginBottom: 0,
-                  zIndex: 10000,
-                  background: "#ffffff",
-                  borderRadius: "12px",
-                  boxShadow: "0 8px 32px rgba(0,0,0,0.24)",
-                  padding: "16px",
-                  minWidth: "200px",
-                  pointerEvents: "auto",
-                  border: "1px solid #e0e0e0",
-                }}
-              >
-                <nav style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                  <a href="/?screen=journal" style={LAUNCHER_LINK_STYLE} onMouseEnter={(e) => { e.currentTarget.style.background = "#e8e8e8"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "#f5f5f5"; }}>📔 Journal</a>
-                  <a href="/?screen=learn" style={LAUNCHER_LINK_STYLE} onMouseEnter={(e) => { e.currentTarget.style.background = "#e8e8e8"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "#f5f5f5"; }}>📚 Learn</a>
-                  <a href="/?screen=apps" style={LAUNCHER_LINK_STYLE} onMouseEnter={(e) => { e.currentTarget.style.background = "#e8e8e8"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "#f5f5f5"; }}>🎯 Apps</a>
-                  <a href="/" style={LAUNCHER_LINK_STYLE} onMouseEnter={(e) => { e.currentTarget.style.background = "#e8e8e8"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "#f5f5f5"; }}>🏠 Home</a>
-                </nav>
-              </div>
-            )}
+            {launcherOpen &&
+              dropdownPosition &&
+              typeof document !== "undefined" &&
+              createPortal(
+                <div
+                  style={{
+                    position: "fixed",
+                    left: dropdownPosition.left,
+                    transform: "translateX(-50%)",
+                    bottom: dropdownPosition.bottom,
+                    zIndex: 10000,
+                    background: "#ffffff",
+                    borderRadius: "12px",
+                    boxShadow: "0 8px 32px rgba(0,0,0,0.24)",
+                    padding: "16px",
+                    minWidth: "200px",
+                    pointerEvents: "auto",
+                    border: "1px solid #e0e0e0",
+                  }}
+                >
+                  <nav style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                    <a href="/?screen=journal" style={LAUNCHER_LINK_STYLE} onMouseEnter={(e) => { e.currentTarget.style.background = "#e8e8e8"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "#f5f5f5"; }}>📔 Journal</a>
+                    <a href="/?screen=learn" style={LAUNCHER_LINK_STYLE} onMouseEnter={(e) => { e.currentTarget.style.background = "#e8e8e8"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "#f5f5f5"; }}>📚 Learn</a>
+                    <a href="/?screen=apps" style={LAUNCHER_LINK_STYLE} onMouseEnter={(e) => { e.currentTarget.style.background = "#e8e8e8"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "#f5f5f5"; }}>🎯 Apps</a>
+                    <a href="/" style={LAUNCHER_LINK_STYLE} onMouseEnter={(e) => { e.currentTarget.style.background = "#e8e8e8"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "#f5f5f5"; }}>🏠 Home</a>
+                  </nav>
+                </div>,
+                document.body
+              )}
             <button
+              ref={launcherButtonRef}
               type="button"
               data-shell-icon="Overview"
               data-nav-item="Overview"

@@ -60,6 +60,7 @@ import CascadingScreenMenu from "@/app/components/CascadingScreenMenu";
 import { BottomNavOnly } from "@/04_Presentation/shells/GlobalAppSkin";
 import { NAV_STRIP_HEIGHT } from "@/app/shell-ui-constants";
 import MobileShell from "@/mobile/MobileShell";
+import MobileLayout from "@/mobile/MobileLayout";
 
 /* ============================================================
    🔒 STATIC REGISTRIES
@@ -369,7 +370,7 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** User mode (/) — no navigator, no dev chrome; only palette and children. */
+/** User/mobile mode (/) — no navigator, no dev chrome; app UI + fixed bottom nav only. */
 function UserLayoutChrome({ children }: { children: React.ReactNode }) {
   usePaletteCSS();
   useEffect(() => {
@@ -380,16 +381,17 @@ function UserLayoutChrome({ children }: { children: React.ReactNode }) {
       // Screen-path nav from user app stays in-app; builder is at /dev
     });
   }, []);
-  return <>{children}</>;
+  return <MobileLayout>{children}</MobileLayout>;
 }
 
 export default function RootLayout({ children }: any) {
   const pathname = usePathname();
-  const isUserMode = pathname === "/";
+  const isUserMode = pathname === "/" || !pathname?.startsWith("/dev");
 
   return (
     <html>
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
