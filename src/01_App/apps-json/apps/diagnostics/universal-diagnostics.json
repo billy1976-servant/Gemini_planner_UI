@@ -1,0 +1,359 @@
+{
+  "id": "diagnosticsRoot",
+  "type": "screen",
+  "capabilities": {},
+  "state": {},
+  "children": [
+    {
+      "id": "sectionLevelControls",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "Capability Level Controls" },
+      "children": [
+        {
+          "id": "cardLevelIntro",
+          "type": "card",
+          "content": { "body": "Set level per domain (runtime override). Then run tests below to see allowed/blocked and payloads." },
+          "children": []
+        },
+        {
+          "id": "selectAuth",
+          "type": "select",
+          "params": { "domain": "auth", "options": ["off", "lite", "basic", "on", "full", "advanced"] }
+        },
+        {
+          "id": "selectExport",
+          "type": "select",
+          "params": { "domain": "export", "options": ["off", "lite", "basic", "on", "full", "advanced"] }
+        },
+        {
+          "id": "selectSensors",
+          "type": "select",
+          "params": { "domain": "sensors", "options": ["off", "lite", "basic", "on", "full", "advanced"] }
+        },
+        {
+          "id": "selectCamera",
+          "type": "select",
+          "params": { "domain": "camera", "options": ["off", "lite", "basic", "on", "full", "advanced"] }
+        },
+        {
+          "id": "selectMedia",
+          "type": "select",
+          "params": { "domain": "media", "options": ["off", "lite", "basic", "on", "full", "advanced"] }
+        },
+        {
+          "id": "selectSharing",
+          "type": "select",
+          "params": { "domain": "sharing", "options": ["off", "lite", "basic", "on", "full", "advanced"] }
+        },
+        {
+          "id": "selectNotifications",
+          "type": "select",
+          "params": { "domain": "notifications", "options": ["off", "lite", "basic", "on", "full", "advanced"] }
+        },
+        {
+          "id": "selectMessaging",
+          "type": "select",
+          "params": { "domain": "messaging", "options": ["off", "lite", "basic", "on", "full", "advanced"] }
+        },
+        {
+          "id": "selectContacts",
+          "type": "select",
+          "params": { "domain": "contacts", "options": ["off", "lite", "basic", "on", "full", "advanced"] }
+        },
+        {
+          "id": "selectDevice",
+          "type": "select",
+          "params": { "domain": "device", "options": ["off", "lite", "basic", "on", "full", "advanced"] }
+        },
+        {
+          "id": "selectTimeline",
+          "type": "select",
+          "params": { "domain": "timeline", "options": ["off", "lite", "basic", "on", "full", "advanced"] }
+        },
+        {
+          "id": "selectVoice",
+          "type": "select",
+          "params": { "domain": "voice", "options": ["off", "lite", "basic", "on", "full", "advanced", "keyboard-native"] }
+        },
+        {
+          "id": "selectPresence",
+          "type": "select",
+          "params": { "domain": "presence", "options": ["off", "lite", "basic", "on", "full", "advanced"] }
+        },
+        {
+          "id": "btnRefreshProfile",
+          "type": "button",
+          "content": { "label": "Refresh Profile" },
+          "behavior": { "type": "Action", "params": { "name": "diagnostics:resolveProfile" } }
+        },
+        {
+          "id": "viewerEffectiveProfile",
+          "type": "diagnostics-value",
+          "stateKey": "diagnostics_effectiveProfile"
+        }
+      ]
+    },
+    {
+      "id": "sectionProfile",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "1) Capability Profile Viewer" },
+      "children": [
+        {
+          "id": "cardResolveProfile",
+          "type": "card",
+          "content": { "body": "Resolve effective profile (Level A+B+C+D)." },
+          "children": [
+            { "id": "btnResolveProfile", "type": "button", "content": { "label": "Resolve profile" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:resolveProfile" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_effectiveProfile" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sectionDomains",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "2) Domain Resolution Tests" },
+      "children": [
+        {
+          "id": "cardDomainAuth",
+          "type": "card",
+          "content": { "body": "Auth domain." },
+          "children": [
+            { "id": "btnDomainAuth", "type": "button", "content": { "label": "Test auth" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:capabilityDomain", "domain": "auth" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_domain_auth" }
+          ]
+        },
+        {
+          "id": "cardDomainExport",
+          "type": "card",
+          "content": { "body": "Export domain." },
+          "children": [
+            { "id": "btnDomainExport", "type": "button", "content": { "label": "Test export" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:capabilityDomain", "domain": "export" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_domain_export" }
+          ]
+        },
+        {
+          "id": "cardDomainSensors",
+          "type": "card",
+          "content": { "body": "Sensors domain." },
+          "children": [
+            { "id": "btnDomainSensors", "type": "button", "content": { "label": "Test sensors" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:capabilityDomain", "domain": "sensors" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_domain_sensors" }
+          ]
+        },
+        {
+          "id": "cardDomainVoice",
+          "type": "card",
+          "content": { "body": "Voice / Presence." },
+          "children": [
+            { "id": "btnDomainVoice", "type": "button", "content": { "label": "Test voice" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:capabilityDomain", "domain": "voice" } } },
+            { "id": "btnDomainPresence", "type": "button", "content": { "label": "Test presence" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:capabilityDomain", "domain": "presence" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_domain_voice" },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_domain_presence" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sectionSensors",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "3) Sensor Tests" },
+      "children": [
+        {
+          "id": "cardSensorCamera",
+          "type": "card",
+          "content": { "body": "Camera sensor." },
+          "children": [
+            { "id": "btnSensorCamera", "type": "button", "content": { "label": "Read camera" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "camera" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_camera" }
+          ]
+        },
+        {
+          "id": "cardSensorDevice",
+          "type": "card",
+          "content": { "body": "Device / screen / location." },
+          "children": [
+            { "id": "btnSensorDevice", "type": "button", "content": { "label": "Device" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "device" } } },
+            { "id": "btnSensorScreen", "type": "button", "content": { "label": "Screen" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "screen" } } },
+            { "id": "btnSensorLocation", "type": "button", "content": { "label": "Location" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "location" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_device" },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_screen" },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_location" }
+          ]
+        },
+        {
+          "id": "cardSensorMotion",
+          "type": "card",
+          "content": { "body": "Motion / orientation / battery / network / audio." },
+          "children": [
+            { "id": "btnSensorMotion", "type": "button", "content": { "label": "Motion" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "motion" } } },
+            { "id": "btnSensorOrientation", "type": "button", "content": { "label": "Orientation" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "orientation" } } },
+            { "id": "btnSensorBattery", "type": "button", "content": { "label": "Battery" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "battery" } } },
+            { "id": "btnSensorNetwork", "type": "button", "content": { "label": "Network" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "network" } } },
+            { "id": "btnSensorAudio", "type": "button", "content": { "label": "Audio" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "audio" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_motion" },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_orientation" },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_battery" },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_network" },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_audio" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sectionSystem7",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "4) System7 Channel Tests" },
+      "children": [
+        {
+          "id": "cardChannelIdentity",
+          "type": "card",
+          "content": { "body": "Identity channel (auth)." },
+          "children": [
+            { "id": "btnChannelIdentity", "type": "button", "content": { "label": "Route identity" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:system7Route", "channel": "identity" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_system7_identity" }
+          ]
+        },
+        {
+          "id": "cardChannelMedia",
+          "type": "card",
+          "content": { "body": "Media channel." },
+          "children": [
+            { "id": "btnChannelMedia", "type": "button", "content": { "label": "Route media" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:system7Route", "channel": "media" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_system7_media" }
+          ]
+        },
+        {
+          "id": "cardChannelEnvironment",
+          "type": "card",
+          "content": { "body": "Environment channel." },
+          "children": [
+            { "id": "btnChannelEnvironment", "type": "button", "content": { "label": "Route environment" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:system7Route", "channel": "environment" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_system7_environment" }
+          ]
+        },
+        {
+          "id": "cardChannelParams",
+          "type": "card",
+          "content": { "body": "Parameters / timeline / content / style." },
+          "children": [
+            { "id": "btnChannelParams", "type": "button", "content": { "label": "Parameters" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:system7Route", "channel": "parameters" } } },
+            { "id": "btnChannelTimeline", "type": "button", "content": { "label": "Timeline" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:system7Route", "channel": "timeline" } } },
+            { "id": "btnChannelContent", "type": "button", "content": { "label": "Content" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:system7Route", "channel": "content" } } },
+            { "id": "btnChannelStyle", "type": "button", "content": { "label": "Style" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:system7Route", "channel": "style" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_system7_parameters" },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_system7_timeline" },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_system7_content" },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_system7_style" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sectionActionGating",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "5) Action Gating Tests" },
+      "children": [
+        {
+          "id": "cardGatingShare",
+          "type": "card",
+          "content": { "body": "logic:share (sharing)." },
+          "children": [
+            { "id": "btnGatingShare", "type": "button", "content": { "label": "Test share" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:actionGating", "actionName": "logic:share" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_action_logic_share" }
+          ]
+        },
+        {
+          "id": "cardGatingExport",
+          "type": "card",
+          "content": { "body": "logic:exportPdf / logic:export." },
+          "children": [
+            { "id": "btnGatingExportPdf", "type": "button", "content": { "label": "Test exportPdf" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:actionGating", "actionName": "logic:exportPdf" } } },
+            { "id": "btnGatingExport", "type": "button", "content": { "label": "Test export" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:actionGating", "actionName": "logic:export" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_action_logic_exportPdf" },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_action_logic_export" }
+          ]
+        },
+        {
+          "id": "cardGatingComms",
+          "type": "card",
+          "content": { "body": "Contacts / notifications / messaging." },
+          "children": [
+            { "id": "btnGatingContacts", "type": "button", "content": { "label": "Contacts" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:actionGating", "actionName": "logic:contacts" } } },
+            { "id": "btnGatingNotify", "type": "button", "content": { "label": "Notify" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:actionGating", "actionName": "logic:notify" } } },
+            { "id": "btnGatingMessage", "type": "button", "content": { "label": "Message" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:actionGating", "actionName": "logic:message" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_action_logic_contacts" },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_action_logic_notify" },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_action_logic_message" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sectionExport",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "6) Export Pipeline Tests" },
+      "children": [
+        {
+          "id": "cardExportPdf",
+          "type": "card",
+          "content": { "body": "Export PDF (generateChecklist)." },
+          "children": [
+            { "id": "btnExportPdf", "type": "button", "content": { "label": "Test PDF export" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:exportPdf" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_exportPdf" }
+          ]
+        },
+        {
+          "id": "cardExportSummary",
+          "type": "card",
+          "content": { "body": "Export summary (generateContractorSummary)." },
+          "children": [
+            { "id": "btnExportSummary", "type": "button", "content": { "label": "Test summary export" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:exportSummary" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_exportSummary" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sectionMedia",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "7) Media + Camera Tests" },
+      "children": [
+        {
+          "id": "cardMediaPayload",
+          "type": "card",
+          "content": { "body": "Media payload hook (getMediaPayload)." },
+          "children": [
+            { "id": "btnMediaPayload", "type": "button", "content": { "label": "Get media payload" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:mediaPayloadHook" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_mediaPayload" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sectionEnvironment",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "8) Environment Bridge Tests" },
+      "children": [
+        {
+          "id": "cardEnvBridge",
+          "type": "card",
+          "content": { "body": "System7 environment channel." },
+          "children": [
+            { "id": "btnEnvRoute", "type": "button", "content": { "label": "Route environment" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:system7Route", "channel": "environment" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_system7_environment" }
+          ]
+        }
+      ]
+    }
+  ]
+}

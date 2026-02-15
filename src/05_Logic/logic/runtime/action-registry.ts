@@ -4,6 +4,17 @@
 import { runCalculator } from "@/logic/actions/run-calculator.action";
 import { run25X } from "@/logic/engines/25x.engine";
 import { resolveOnboardingAction } from "@/logic/actions/resolve-onboarding.action";
+import {
+  runDiagnosticsCapabilityDomain,
+  runDiagnosticsSensorRead,
+  runDiagnosticsSystem7Route,
+  runDiagnosticsActionGating,
+  runDiagnosticsResolveProfile,
+  runDiagnosticsMediaPayloadHook,
+  runDiagnosticsExportPdf,
+  runDiagnosticsExportSummary,
+  runDiagnosticsSetCapabilityLevel,
+} from "@/logic/actions/diagnostics.actions";
 
 
 /**
@@ -36,6 +47,17 @@ const registry: Record<string, ActionHandler> = {
 
   // ✅ NEW: Onboarding flow resolver
   "logic:resolveOnboarding": resolveOnboardingAction,
+
+  // ✅ Diagnostics (additive; write only to state.values.diagnostics_*)
+  "diagnostics:capabilityDomain": runDiagnosticsCapabilityDomain,
+  "diagnostics:sensorRead": runDiagnosticsSensorRead,
+  "diagnostics:system7Route": runDiagnosticsSystem7Route,
+  "diagnostics:actionGating": runDiagnosticsActionGating,
+  "diagnostics:resolveProfile": runDiagnosticsResolveProfile,
+  "diagnostics:mediaPayloadHook": runDiagnosticsMediaPayloadHook,
+  "diagnostics:exportPdf": runDiagnosticsExportPdf,
+  "diagnostics:exportSummary": runDiagnosticsExportSummary,
+  "diagnostics:setCapabilityLevel": runDiagnosticsSetCapabilityLevel,
 };
 
 

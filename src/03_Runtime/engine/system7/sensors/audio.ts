@@ -1,8 +1,46 @@
 import { isSensorAllowed } from "./sensor-capability-gate";
 
-export function readAudio() {
+export function readAudio(): Promise<{
+  active: boolean;
+  stream: MediaStream | null;
+  available: boolean;
+  error?: string;
+}> {
   if (!isSensorAllowed("audio")) {
-    return { active: false, amplitude: 0, available: false };
+    return Promise.resolve({
+      active: false,
+      stream: null,
+      available: false,
+    });
   }
-  return { active: false, amplitude: 0, available: true };
+  try {
+    if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
+      return Promise.resolve({
+        active: false,
+        stream: null,
+        available: false,
+        error: "getUserMedia not supported",
+      });
+    }
+    return navigator.mediaDevices
+      .getUserMedia({ audio: true })
+      .then((stream) => ({
+        active: true,
+        stream,
+        available: true,
+      }))
+      .catch((err: unknown) => ({
+        active: false,
+        stream: null,
+        available: false,
+        error: err instanceof Error ? err.message : "Permission denied or error",
+      }));
+  } catch (e) {
+    return Promise.resolve({
+      active: false,
+      stream: null,
+      available: false,
+      error: e instanceof Error ? e.message : "Unknown error",
+    });
+  }
 }
