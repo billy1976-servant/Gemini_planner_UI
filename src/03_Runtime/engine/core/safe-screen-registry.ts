@@ -32,6 +32,10 @@ const JSON_SCREEN_PATHS: { id: string; path: string }[] = [
   { id: "generated/contractor-jones/app", path: "generated/contractor-jones/app.json" },
   // Universal diagnostics (capability + System7 + sensors + action gating)
   { id: "diagnostics/universal", path: "diagnostics/universal-diagnostics.json" },
+  // 09_Integrations — Integration Lab (facade test harness)
+  { id: "09_Integrations/integration-lab", path: "integration-lab.json" },
+  // System Signals V2 hub (battery, network, device, screen)
+  { id: "diagnostics/system-signals-hub", path: "diagnostics/system-signals-hub.json" },
 ];
 
 const REGISTRY: ScreenRef[] = [

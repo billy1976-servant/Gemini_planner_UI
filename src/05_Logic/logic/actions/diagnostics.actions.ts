@@ -19,17 +19,11 @@ import type { CapabilityDomain } from "@/03_Runtime/capability/capability.types"
 import { getActionHandler } from "@/logic/engine-system/engine-contract";
 import { applyUniversalEngine } from "@/logic/engine-system/universal-engine-adapter";
 import { getMediaPayload } from "@/engine/system7/media-payload-bridge";
-import { isSensorAllowed } from "@/engine/system7/sensors/sensor-capability-gate";
-import type { SensorId } from "@/engine/system7/sensors/sensor-capability-gate";
-import { readCamera } from "@/engine/system7/sensors/camera";
-import { readDevice } from "@/engine/system7/sensors/device";
-import { readScreen } from "@/engine/system7/sensors/screen";
-import { readLocation } from "@/engine/system7/sensors/location";
-import { readMotion } from "@/engine/system7/sensors/motion";
-import { readOrientation } from "@/engine/system7/sensors/orientation";
-import { readBattery } from "@/engine/system7/sensors/battery";
-import { readNetwork } from "@/engine/system7/sensors/network";
-import { readAudio } from "@/engine/system7/sensors/audio";
+import { Integrations, type SensorId } from "@/09_Integrations/04_FACADE/integrations";
+import { fireTrigger } from "@/09_Integrations/capture";
+import { getLatestInterpreted } from "@/09_Integrations/interpret";
+import { getLogSnapshot } from "@/09_Integrations/input-log";
+import { getSystemSnapshot, SYSTEM_SIGNAL_IDS } from "@/09_Integrations/system-signals-v2";
 import {
   generateChecklist,
   generateContractorSummary,
@@ -73,20 +67,17 @@ function isActionAllowedByCapability(actionName: string): boolean {
   return true;
 }
 
-const SENSOR_READERS: Record<
-  SensorId,
-  () => Record<string, unknown> | Promise<Record<string, unknown>>
-> = {
-  camera: readCamera,
-  device: readDevice,
-  screen: readScreen,
-  location: readLocation,
-  motion: readMotion,
-  orientation: readOrientation,
-  battery: readBattery,
-  network: readNetwork,
-  audio: readAudio,
-};
+const KNOWN_SENSOR_IDS: SensorId[] = [
+  "orientation",
+  "motion",
+  "location",
+  "camera",
+  "audio",
+  "battery",
+  "network",
+  "device",
+  "screen",
+];
 
 const MINIMAL_ENGINE_STATE: EngineState = {
   orderedStepIds: [],
@@ -122,20 +113,21 @@ export function runDiagnosticsSensorRead(
   _state: Record<string, any>
 ): void {
   const sensorId = (action.sensorId ?? "device") as SensorId;
-  if (!SENSOR_READERS[sensorId]) {
+  if (!KNOWN_SENSOR_IDS.includes(sensorId)) {
     write(`sensor_${sensorId}`, { allowed: false, value: null, error: "Unknown sensor" });
     return;
   }
-  const allowed = isSensorAllowed(sensorId);
-  const result = SENSOR_READERS[sensorId]();
-  const then = result && typeof (result as Promise<unknown>).then === "function";
-  if (then) {
-    (result as Promise<Record<string, unknown>>).then((value) =>
-      write(`sensor_${sensorId}`, { allowed, value })
-    );
-    return;
-  }
-  write(`sensor_${sensorId}`, { allowed, value: result as Record<string, unknown> });
+  void (async () => {
+    const result = await fireTrigger(sensorId, { triggerId: "lab_button" });
+    const interpreted = getLatestInterpreted(sensorId);
+    write(`sensor_${sensorId}`, {
+      allowed: result.allowed ?? false,
+      value: interpreted?.value ?? result.value ?? null,
+      t: interpreted?.t,
+      source: interpreted?.source,
+      confidence: interpreted?.confidence,
+    });
+  })();
 }
 
 export function runDiagnosticsSystem7Route(
@@ -227,4 +219,69 @@ export function runDiagnosticsSetCapabilityLevel(
   const next = { ...profile, [domain]: level };
   setCapabilityProfile(next);
   write(`set_${domain}`, { domain, level });
+}
+
+const LOG_SNAPSHOT_N = 10;
+
+function sanitizeForLogSnapshot(payload: Record<string, unknown>): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(payload)) {
+    if (v != null && typeof v === "object" && typeof (v as MediaStream).getTracks === "function") {
+      out[k] = "[MediaStream]";
+    } else if (v != null && typeof v === "object") {
+      try {
+        JSON.stringify(v);
+        out[k] = v;
+      } catch {
+        out[k] = String(v);
+      }
+    } else {
+      out[k] = v;
+    }
+  }
+  return out;
+}
+
+export function runDiagnosticsInputLogSnapshot(
+  _action: unknown,
+  _state: Record<string, any>
+): void {
+  const snapshot = getLogSnapshot();
+  const lastN = snapshot.slice(-LOG_SNAPSHOT_N);
+  const events = lastN.map((evt) => ({
+    id: evt.id,
+    kind: evt.kind,
+    timestamp: evt.timestamp,
+    source: evt.source,
+    payload: sanitizeForLogSnapshot(evt.payload),
+  }));
+  write("inputLogSnapshot", { events, count: events.length });
+}
+
+/**
+ * System Signals V2 — write unified snapshot (battery, network, device, screen) to state.
+ */
+export function runDiagnosticsSystemSnapshot(
+  _action: unknown,
+  _state: Record<string, any>
+): void {
+  const snapshot = getSystemSnapshot();
+  write("systemSnapshot", snapshot);
+}
+
+/**
+ * System Signals V2 — fireTrigger for each system signal, collect interpreted results.
+ */
+export function runDiagnosticsSystemSignalsReadAll(
+  _action: unknown,
+  _state: Record<string, any>
+): void {
+  void (async () => {
+    const results: Record<string, ReturnType<typeof getLatestInterpreted>> = {};
+    for (const id of SYSTEM_SIGNAL_IDS) {
+      await fireTrigger(id, { triggerId: "systemSignalsReadAll" });
+      results[id] = getLatestInterpreted(id);
+    }
+    write("systemSignalsReadAll", { results, t: Date.now() });
+  })();
 }

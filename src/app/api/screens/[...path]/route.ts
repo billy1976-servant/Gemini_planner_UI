@@ -18,6 +18,17 @@ const SCREENS_ROOT = path.join(
 );
 
 /**
+ * 09_Integrations test screens (Integration Lab).
+ * When path is integration-lab.json, serve from here.
+ */
+const INTEGRATIONS_TEST_ROOT = path.join(
+  process.cwd(),
+  "src",
+  "09_Integrations",
+  "05_TESTS"
+);
+
+/**
  * Generated apps root (module-system output).
  * Paths starting with "generated/" resolve from here.
  * Actual location: src/01_App/apps-json/generated
@@ -67,6 +78,42 @@ export async function GET(
     }
 
     const requestedPath = params.path.join("/");
+
+    /* ===============================
+       0️⃣ 09_INTEGRATIONS LAB (single path)
+       integration-lab.json → 09_Integrations/05_TESTS/IntegrationLab.screen.json
+    =============================== */
+    const isIntegrationLab =
+      requestedPath === "integration-lab.json" ||
+      requestedPath === "integration-lab";
+    if (isIntegrationLab) {
+      const labPath = path.join(INTEGRATIONS_TEST_ROOT, "IntegrationLab.screen.json");
+      if (fs.existsSync(labPath)) {
+        const fileContent = fs.readFileSync(labPath, "utf8");
+        if (!fileContent.trim()) {
+          return NextResponse.json(
+            { error: "File is empty", path: labPath },
+            { status: 500 }
+          );
+        }
+        try {
+          const json = JSON.parse(fileContent);
+          return NextResponse.json(json, {
+            headers: {
+              "Cache-Control": "no-cache, no-store, must-revalidate",
+              "Pragma": "no-cache",
+              "Expires": "0",
+            },
+          });
+        } catch (parseError: unknown) {
+          const message = parseError instanceof Error ? parseError.message : String(parseError);
+          return NextResponse.json(
+            { error: `Invalid JSON: ${message}`, path: labPath },
+            { status: 500 }
+          );
+        }
+      }
+    }
 
     /* ===============================
        1️⃣ JSON PATH (FIXED)

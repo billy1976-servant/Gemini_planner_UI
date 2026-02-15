@@ -14,6 +14,9 @@ import {
   runDiagnosticsExportPdf,
   runDiagnosticsExportSummary,
   runDiagnosticsSetCapabilityLevel,
+  runDiagnosticsInputLogSnapshot,
+  runDiagnosticsSystemSnapshot,
+  runDiagnosticsSystemSignalsReadAll,
 } from "@/logic/actions/diagnostics.actions";
 
 
@@ -58,6 +61,9 @@ const registry: Record<string, ActionHandler> = {
   "diagnostics:exportPdf": runDiagnosticsExportPdf,
   "diagnostics:exportSummary": runDiagnosticsExportSummary,
   "diagnostics:setCapabilityLevel": runDiagnosticsSetCapabilityLevel,
+  "diagnostics:inputLogSnapshot": runDiagnosticsInputLogSnapshot,
+  "diagnostics:systemSnapshot": runDiagnosticsSystemSnapshot,
+  "diagnostics:systemSignalsReadAll": runDiagnosticsSystemSignalsReadAll,
 };
 
 

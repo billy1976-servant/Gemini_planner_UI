@@ -133,6 +133,28 @@ export default function PersistentLauncher() {
               🎯 Apps
             </a>
             <a
+              href="/dev"
+              style={{
+                padding: "12px 16px",
+                borderRadius: "8px",
+                textDecoration: "none",
+                color: "#1a1a1a",
+                background: "#f5f5f5",
+                fontWeight: 500,
+                fontSize: "14px",
+                transition: "background 0.2s ease",
+                display: "block",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "#e8e8e8";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "#f5f5f5";
+              }}
+            >
+              🔧 Diagnostics
+            </a>
+            <a
               href="/"
               style={{
                 padding: "12px 16px",
