@@ -1,0 +1,182 @@
+{
+  "id": "sensorHubV3",
+  "type": "screen",
+  "title": "Unified Sensor Hub",
+  "capabilities": {},
+  "state": {},
+  "children": [
+    {
+      "id": "sectionOrientationGyro",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "Orientation / Gyro" },
+      "children": [
+        {
+          "id": "cardOrientationLevel",
+          "type": "card",
+          "content": { "body": "Level" },
+          "children": [
+            { "id": "btnOrientationLevel", "type": "button", "content": { "label": "Read" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "orientation" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_orientation" }
+          ]
+        },
+        {
+          "id": "cardOrientationTilt",
+          "type": "card",
+          "content": { "body": "Tilt" },
+          "children": [
+            { "id": "btnOrientationTilt", "type": "button", "content": { "label": "Read" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "orientation" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_orientation" }
+          ]
+        },
+        {
+          "id": "cardOrientationStability",
+          "type": "card",
+          "content": { "body": "Stability" },
+          "children": [
+            { "id": "btnOrientationStability", "type": "button", "content": { "label": "Read" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "orientation" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_orientation" }
+          ]
+        },
+        {
+          "id": "cardOrientationAlignment",
+          "type": "card",
+          "content": { "body": "Alignment" },
+          "children": [
+            { "id": "btnOrientationAlignment", "type": "button", "content": { "label": "Read" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "orientation" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_orientation" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sectionMotion",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "Motion" },
+      "children": [
+        {
+          "id": "cardMotion",
+          "type": "card",
+          "content": { "body": "Device motion (acceleration, rotation)." },
+          "children": [
+            { "id": "btnMotion", "type": "button", "content": { "label": "Read Motion" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "motion" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_motion" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sectionCamera",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "Camera" },
+      "children": [
+        {
+          "id": "cardCamera",
+          "type": "card",
+          "content": { "body": "Camera (getUserMedia video)." },
+          "children": [
+            { "id": "btnCamera", "type": "button", "content": { "label": "Read Camera" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "camera" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_camera" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sectionAudio",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "Audio" },
+      "children": [
+        {
+          "id": "cardAudio",
+          "type": "card",
+          "content": { "body": "Audio (getUserMedia audio)." },
+          "children": [
+            { "id": "btnAudio", "type": "button", "content": { "label": "Read Audio" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "audio" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_audio" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sectionLocation",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "Location" },
+      "children": [
+        {
+          "id": "cardLocation",
+          "type": "card",
+          "content": { "body": "GPS / geolocation." },
+          "children": [
+            { "id": "btnLocation", "type": "button", "content": { "label": "Read Location" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "location" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_location" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sectionSystem",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "System — Power / Device" },
+      "children": [
+        {
+          "id": "cardBattery",
+          "type": "card",
+          "content": { "body": "Battery" },
+          "children": [
+            { "id": "btnBattery", "type": "button", "content": { "label": "Read Battery" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "battery" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_battery" }
+          ]
+        },
+        {
+          "id": "cardNetwork",
+          "type": "card",
+          "content": { "body": "Network" },
+          "children": [
+            { "id": "btnNetwork", "type": "button", "content": { "label": "Read Network" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "network" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_network" }
+          ]
+        },
+        {
+          "id": "cardDevice",
+          "type": "card",
+          "content": { "body": "Device (platform, userAgent)." },
+          "children": [
+            { "id": "btnDevice", "type": "button", "content": { "label": "Read Device" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "device" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_device" }
+          ]
+        },
+        {
+          "id": "cardScreen",
+          "type": "card",
+          "content": { "body": "Screen" },
+          "children": [
+            { "id": "btnScreen", "type": "button", "content": { "label": "Read Screen" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "screen" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_screen" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sectionCombinedView",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "Combined View" },
+      "children": [
+        {
+          "id": "cardLogSnapshot",
+          "type": "card",
+          "content": { "body": "Latest input log events (capture → log)." },
+          "children": [
+            { "id": "btnInputLogSnapshot", "type": "button", "content": { "label": "Show Latest Log Snapshot" }, "behavior": { "type": "Action", "params": { "name": "diagnostics:inputLogSnapshot" } } },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_inputLogSnapshot" }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -320,6 +320,7 @@ export function BottomNavOnly() {
                     <a href="/?screen=journal" style={LAUNCHER_LINK_STYLE} onMouseEnter={(e) => { e.currentTarget.style.background = "#e8e8e8"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "#f5f5f5"; }}>📔 Journal</a>
                     <a href="/?screen=learn" style={LAUNCHER_LINK_STYLE} onMouseEnter={(e) => { e.currentTarget.style.background = "#e8e8e8"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "#f5f5f5"; }}>📚 Learn</a>
                     <a href="/?screen=apps" style={LAUNCHER_LINK_STYLE} onMouseEnter={(e) => { e.currentTarget.style.background = "#e8e8e8"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "#f5f5f5"; }}>🎯 Apps</a>
+                    <a href="/dev" style={LAUNCHER_LINK_STYLE} onMouseEnter={(e) => { e.currentTarget.style.background = "#e8e8e8"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "#f5f5f5"; }}>🔧 Diagnostics</a>
                     <a href="/" style={LAUNCHER_LINK_STYLE} onMouseEnter={(e) => { e.currentTarget.style.background = "#e8e8e8"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "#f5f5f5"; }}>🏠 Home</a>
                   </nav>
                 </div>,

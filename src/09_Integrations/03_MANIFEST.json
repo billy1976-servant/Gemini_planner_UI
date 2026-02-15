@@ -1,0 +1,127 @@
+{
+  "version": "1.0",
+  "generated": "2025-02-15",
+  "authority": "src/09_Integrations/04_FACADE/integrations.ts",
+  "integrations": [
+    {
+      "id": "orientation",
+      "category": "Motion/Orientation",
+      "current_file_path": "src/03_Runtime/engine/system7/sensors/orientation.ts",
+      "exported_functions": ["readOrientation"],
+      "notes": "deviceorientation listener; sync return",
+      "wrapped": true
+    },
+    {
+      "id": "motion",
+      "category": "Motion/Orientation",
+      "current_file_path": "src/03_Runtime/engine/system7/sensors/motion.ts",
+      "exported_functions": ["readMotion"],
+      "notes": "devicemotion listener; sync return",
+      "wrapped": true
+    },
+    {
+      "id": "location",
+      "category": "Location",
+      "current_file_path": "src/03_Runtime/engine/system7/sensors/location.ts",
+      "exported_functions": ["readLocation"],
+      "notes": "Promise; navigator.geolocation",
+      "wrapped": true
+    },
+    {
+      "id": "camera",
+      "category": "Camera",
+      "current_file_path": "src/03_Runtime/engine/system7/sensors/camera.ts",
+      "exported_functions": ["readCamera"],
+      "notes": "Promise; getUserMedia video",
+      "wrapped": true
+    },
+    {
+      "id": "audio",
+      "category": "Microphone/Audio",
+      "current_file_path": "src/03_Runtime/engine/system7/sensors/audio.ts",
+      "exported_functions": ["readAudio"],
+      "notes": "Promise; getUserMedia audio",
+      "wrapped": true
+    },
+    {
+      "id": "battery",
+      "category": "Battery/Thermals/Network",
+      "current_file_path": "src/03_Runtime/engine/system7/sensors/battery.ts",
+      "exported_functions": ["readBattery"],
+      "notes": "Promise; navigator.getBattery",
+      "wrapped": true
+    },
+    {
+      "id": "network",
+      "category": "Battery/Thermals/Network",
+      "current_file_path": "src/03_Runtime/engine/system7/sensors/network.ts",
+      "exported_functions": ["readNetwork"],
+      "notes": "Sync; navigator.onLine, connection",
+      "wrapped": true
+    },
+    {
+      "id": "device",
+      "category": "Battery/Thermals/Network",
+      "current_file_path": "src/03_Runtime/engine/system7/sensors/device.ts",
+      "exported_functions": ["readDevice"],
+      "notes": "Sync; platform, userAgent",
+      "wrapped": true
+    },
+    {
+      "id": "screen",
+      "category": "Battery/Thermals/Network",
+      "current_file_path": "src/03_Runtime/engine/system7/sensors/screen.ts",
+      "exported_functions": ["readScreen"],
+      "notes": "Sync; innerWidth, innerHeight, devicePixelRatio",
+      "wrapped": true
+    },
+    {
+      "id": "lidar",
+      "category": "Other",
+      "current_file_path": "src/03_Runtime/engine/system7/sensors/lidar.ts",
+      "exported_functions": ["readLidar"],
+      "notes": "Stub only",
+      "wrapped": false
+    },
+    {
+      "id": "sensor-capability-gate",
+      "category": "Gates",
+      "current_file_path": "src/03_Runtime/engine/system7/sensors/sensor-capability-gate.ts",
+      "exported_functions": ["isSensorAllowed"],
+      "notes": "Capability store; SensorId type",
+      "wrapped": true
+    },
+    {
+      "id": "environment-bridge",
+      "category": "System7 Bridges",
+      "current_file_path": "src/03_Runtime/engine/system7/environment-bridge.ts",
+      "exported_functions": ["getEnvironmentPayload"],
+      "notes": "Aggregates device, location, screen, battery, network",
+      "wrapped": false
+    },
+    {
+      "id": "media-payload-bridge",
+      "category": "System7 Bridges",
+      "current_file_path": "src/03_Runtime/engine/system7/media-payload-bridge.ts",
+      "exported_functions": ["getMediaPayload"],
+      "notes": "Default empty; pluggable",
+      "wrapped": false
+    },
+    {
+      "id": "identity-auth-bridge",
+      "category": "System7 Bridges",
+      "current_file_path": "src/03_Runtime/engine/system7/identity-auth-bridge.ts",
+      "exported_functions": ["getIdentityPayload", "installIdentityAuthBridge"],
+      "notes": "Auth snapshot for identity channel",
+      "wrapped": false
+    },
+    {
+      "id": "universal-engine-adapter",
+      "category": "Adapter",
+      "current_file_path": "src/05_Logic/logic/engine-system/universal-engine-adapter.ts",
+      "exported_functions": ["applyUniversalEngine"],
+      "notes": "Payload injection into System7 channels",
+      "wrapped": false
+    }
+  ]
+}

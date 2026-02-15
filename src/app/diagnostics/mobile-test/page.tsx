@@ -387,8 +387,12 @@ export default function MobileTestPage() {
           charging: b.charging,
           supported: true,
         });
-        b.addEventListener("levelchange", () => setBattery((prev) => ({ ...prev, level: b.level })));
-        b.addEventListener("chargingchange", () => setBattery((prev) => ({ ...prev, charging: b.charging })));
+        (b as any).addEventListener("levelchange", () =>
+          setBattery(prev => ({ ...prev, level: b.level }))
+        );
+        (b as any).addEventListener("chargingchange", () =>
+          setBattery(prev => ({ ...prev, charging: b.charging }))
+        );
       })
       .catch((e) => setBattery({ level: null, charging: null, supported: false, error: String(e) }));
   }, []);
