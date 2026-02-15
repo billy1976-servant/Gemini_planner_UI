@@ -22,11 +22,11 @@ export interface TakePictureResult {
 export async function takePhoto(): Promise<TakePhotoResult> {
   if (isNativePlatform()) {
     try {
-      const { Camera } = await import("@capacitor/camera");
+      const { Camera, CameraResultType } = await import("@capacitor/camera");
       const photo = await Camera.getPhoto({
         quality: 90,
         allowEditing: false,
-        resultType: "uri",
+        resultType: CameraResultType.Uri,
       });
       return {
         webPath: photo.webPath,
@@ -43,11 +43,11 @@ export async function takePhoto(): Promise<TakePhotoResult> {
 export async function takePicture(): Promise<TakePictureResult> {
   if (!isNativePlatform()) return { error: "unsupported on web" };
   try {
-    const { Camera } = await import("@capacitor/camera");
+    const { Camera, CameraResultType } = await import("@capacitor/camera");
     const photo = await Camera.getPhoto({
       quality: 90,
       allowEditing: false,
-      resultType: "base64",
+      resultType: CameraResultType.Base64,
     });
     return {
       webPath: photo.webPath,
@@ -62,11 +62,11 @@ export async function takePicture(): Promise<TakePictureResult> {
 export async function pickFromGallery(): Promise<TakePictureResult> {
   if (!isNativePlatform()) return { error: "unsupported on web" };
   try {
-    const { Camera } = await import("@capacitor/camera");
+    const { Camera, CameraResultType } = await import("@capacitor/camera");
     const photo = await Camera.getPhoto({
       quality: 90,
       allowEditing: false,
-      resultType: "base64",
+      resultType: CameraResultType.Base64,
       source: "photos",
     });
     return {
