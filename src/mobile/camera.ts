@@ -62,12 +62,12 @@ export async function takePicture(): Promise<TakePictureResult> {
 export async function pickFromGallery(): Promise<TakePictureResult> {
   if (!isNativePlatform()) return { error: "unsupported on web" };
   try {
-    const { Camera, CameraResultType } = await import("@capacitor/camera");
+    const { Camera, CameraResultType, CameraSource } = await import("@capacitor/camera");
     const photo = await Camera.getPhoto({
       quality: 90,
       allowEditing: false,
       resultType: CameraResultType.Base64,
-      source: "photos",
+      source: CameraSource.Photos,
     });
     return {
       webPath: photo.webPath,
