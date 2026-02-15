@@ -19,6 +19,14 @@ import {
 import { hasLayoutNodeType, collapseLayoutNodes } from "@/engine/core/collapse-layout-nodes";
 import { applySkinBindings } from "@/logic/bridges/skinBindings.apply";
 import { collectSectionKeysAndNodes, collectSectionLabels } from "@/layout";
+import {
+  loadGlobalCapabilities,
+  resolveCapabilityProfile,
+  setCapabilityProfile,
+  CapabilityProvider,
+  getDomainMicroLoaders,
+  type ResolveCapabilityProfileOptions,
+} from "@/03_Runtime/capability";
 
 const USER_APP_SCREEN_PATH = "apps/journal_track/journal_replicate-2";
 
@@ -55,7 +63,23 @@ export default function Page() {
     stateSnapshot?.values?.layoutMode ?? (layoutSnapshot as { mode?: "template" | "custom" })?.mode ?? "template";
 
   const experienceProfile = getExperienceProfile(experience);
-  const templateProfile = getTemplateProfile(effectiveTemplateId);
+  const templateProfile = getTemplateProfile(effectiveTemplateId ?? "");
+
+  // Capability hub: resolve and write to store on screen/template change
+  useEffect(() => {
+    if (!json) return;
+    const global = loadGlobalCapabilities();
+    const options: ResolveCapabilityProfileOptions = {
+      global,
+      domainMicroLoaders: getDomainMicroLoaders(),
+      templateId: effectiveTemplateId ?? undefined,
+      templateProfile: templateProfile ? { capabilities: templateProfile.capabilities } : undefined,
+      screenCapabilities: (json as { capabilities?: Record<string, string> })?.capabilities ?? undefined,
+    };
+    const profile = resolveCapabilityProfile(options);
+    setCapabilityProfile(profile);
+  }, [json, effectiveTemplateId, templateProfile]);
+
   const effectiveProfile = useMemo(
     () => {
       if (!templateProfile) return { ...experienceProfile, mode: effectiveLayoutMode };
@@ -133,18 +157,19 @@ export default function Page() {
   const sectionBackgroundPattern = (effectiveProfile as { sectionBackgroundPattern?: string } | null)?.sectionBackgroundPattern;
 
   return (
-    <div
-      data-section-background-pattern={sectionBackgroundPattern ?? "none"}
-      className={sectionBackgroundPattern === "alternate" ? "template-section-alternate" : sectionBackgroundPattern === "dark-bands" ? "template-section-dark-bands" : undefined}
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        width: "100%",
-        minHeight: "100vh",
-        overflowY: "visible",
-      }}
-    >
-      <ExperienceRenderer
+    <CapabilityProvider>
+      <div
+        data-section-background-pattern={sectionBackgroundPattern ?? "none"}
+        className={sectionBackgroundPattern === "alternate" ? "template-section-alternate" : sectionBackgroundPattern === "dark-bands" ? "template-section-dark-bands" : undefined}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
+          minHeight: "100vh",
+          overflowY: "visible",
+        }}
+      >
+        <ExperienceRenderer
         key={screenContainerKey}
         node={treeForRender}
         defaultState={json?.state}
@@ -158,6 +183,7 @@ export default function Page() {
         sectionKeys={sectionKeysFromTree}
         sectionLabels={sectionLabels}
       />
-    </div>
+      </div>
+    </CapabilityProvider>
   );
 }

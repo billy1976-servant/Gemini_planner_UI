@@ -51,6 +51,12 @@ import { dispatchState, getState, subscribeState } from "@/state/state-store";
 ============================================================ */
 import { installBehaviorListener } from "@/engine/core/behavior-listener";
 
+/* ============================================================
+   🪪 IDENTITY–AUTH BRIDGE (System7.identity when auth capability on)
+============================================================ */
+import { installIdentityAuthBridge } from "@/engine/system7/identity-auth-bridge";
+import { installCapabilityDebug } from "@/03_Runtime/capability/capability-debug";
+
 
 /* ============================================================
    📐 EXPERIENCE PROFILES (single JSON authority)
@@ -124,6 +130,8 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     console.log("[MOUNT]", "RootLayout");
+    installIdentityAuthBridge();
+    installCapabilityDebug();
     return () => console.log("[UNMOUNT]", "RootLayout");
   }, []);
 

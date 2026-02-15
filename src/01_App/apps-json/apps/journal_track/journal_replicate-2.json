@@ -1,6 +1,9 @@
 {
   "id": "screenRoot",
   "type": "screen",
+  "capabilities": {
+    "camera": "off"
+  },
   "state": {
     "currentView": "think"
   },

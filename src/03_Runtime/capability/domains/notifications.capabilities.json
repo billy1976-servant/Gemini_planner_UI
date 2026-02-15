@@ -1,0 +1,4 @@
+{
+  "off": { "push": false, "local": false, "subscription": false, "alerts": false },
+  "on": { "push": true, "local": true, "subscription": true, "alerts": true }
+}

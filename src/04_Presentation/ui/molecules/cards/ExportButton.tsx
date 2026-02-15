@@ -15,6 +15,7 @@ import { buildDecisionLedger, downloadPdf } from "@/logic/products/export-pdf";
 import type { Product } from "@/logic/products/product-types";
 import type { ComparisonMatrix } from "@/logic/products/product-types";
 import type { ProductCalculatorResult } from "@/logic/engines/calculator/calcs/product-calculator";
+import { getCapabilityLevel } from "@/03_Runtime/capability";
 
 type ExportButtonProps = {
   products: Product[];
@@ -32,6 +33,10 @@ export function ExportButton({
   disabled = false,
 }: ExportButtonProps) {
   const handleExport = () => {
+    const exportLevel = getCapabilityLevel("export");
+    const exportStr = typeof exportLevel === "string" ? exportLevel : (exportLevel as Record<string, string>)?.level ?? "off";
+    if (exportStr === "off") return;
+
     try {
       const engineState = readEngineState();
       if (!engineState) {
@@ -56,18 +61,24 @@ export function ExportButton({
     }
   };
 
+  const exportLevel = getCapabilityLevel("export");
+  const exportStr = typeof exportLevel === "string" ? exportLevel : (exportLevel as Record<string, string>)?.level ?? "off";
+  const exportDisabled = exportStr === "off";
+
   return (
     <button
       onClick={handleExport}
-      disabled={disabled || selectedProductIds.length === 0}
+      disabled={disabled || exportDisabled || selectedProductIds.length === 0}
       style={{
         ...button,
-        ...(disabled || selectedProductIds.length === 0 ? buttonDisabled : {}),
+        ...(disabled || exportDisabled || selectedProductIds.length === 0 ? buttonDisabled : {}),
       }}
       title={
-        selectedProductIds.length === 0
-          ? "Select products to enable export"
-          : "Download PDF report"
+        exportStr === "off"
+          ? "Export is disabled"
+          : selectedProductIds.length === 0
+            ? "Select products to enable export"
+            : "Download PDF report"
       }
     >
       📄 Download PDF

@@ -1,0 +1,11 @@
+{
+  "loginModes": ["email", "anonymous"],
+  "identityProviders": ["firebase"],
+  "roleResolution": "single",
+  "sharedWith": [],
+  "lite": {},
+  "full": {
+    "identityProviders": ["firebase", "google"],
+    "roleResolution": "multi"
+  }
+}

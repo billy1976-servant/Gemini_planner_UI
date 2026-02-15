@@ -1,0 +1,5 @@
+{
+  "off": { "camera": false, "video": false, "audio": false, "gallery": false, "fileUpload": false },
+  "capture": { "camera": true, "video": false, "audio": false, "gallery": true, "fileUpload": true },
+  "capture+analyze": { "camera": true, "video": true, "audio": true, "gallery": true, "fileUpload": true }
+}

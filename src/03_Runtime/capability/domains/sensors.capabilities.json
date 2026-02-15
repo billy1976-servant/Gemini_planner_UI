@@ -1,0 +1,5 @@
+{
+  "lite": ["device", "screen", "location"],
+  "full": ["device", "screen", "location", "camera", "audio", "motion", "orientation", "battery", "network"],
+  "allowed": ["device", "screen", "location"]
+}
