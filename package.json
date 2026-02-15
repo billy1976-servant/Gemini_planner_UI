@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "postinstall": "npm install --legacy-peer-deps",
     "validate:paths": "node scripts/validate-paths.js",
     "verify:atoms": "ts-node scripts/verify-atoms-manifest.ts",
     "verify:compounds": "ts-node scripts/verify-compounds-manifest.ts",
