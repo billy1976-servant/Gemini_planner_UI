@@ -8,12 +8,11 @@ import { isNativePlatform } from "./nativeCapabilities";
 export async function readFile(name: string): Promise<{ data?: string; error?: string }> {
   if (isNativePlatform()) {
     try {
-      const { Filesystem } = await import("@capacitor/filesystem");
-      const { Directory } = await import("@capacitor/filesystem");
+      const { Filesystem, Directory, Encoding } = await import("@capacitor/filesystem");
       const result = await Filesystem.readFile({
         path: name,
         directory: Directory.Documents,
-        encoding: "utf-8",
+        encoding: Encoding.UTF8,
       });
       return { data: result.data as string };
     } catch (e) {
@@ -26,8 +25,8 @@ export async function readFile(name: string): Promise<{ data?: string; error?: s
 export async function writeFile(path: string, data: string): Promise<{ path?: string; error?: string }> {
   if (isNativePlatform()) {
     try {
-      const { Filesystem } = await import("@capacitor/filesystem");
-      await Filesystem.writeFile({ path, data, encoding: "utf-8" });
+      const { Filesystem, Encoding } = await import("@capacitor/filesystem");
+      await Filesystem.writeFile({ path, data, encoding: Encoding.UTF8 });
       return { path };
     } catch (e) {
       return { error: e instanceof Error ? e.message : "Write failed" };
@@ -40,13 +39,12 @@ export async function writeFile(path: string, data: string): Promise<{ path?: st
 export async function saveFile(name: string, data: string): Promise<{ path?: string; error?: string }> {
   if (!isNativePlatform()) return { error: "web fallback: use browser download or localStorage" };
   try {
-    const { Filesystem } = await import("@capacitor/filesystem");
-    const { Directory } = await import("@capacitor/filesystem");
+    const { Filesystem, Directory, Encoding } = await import("@capacitor/filesystem");
     await Filesystem.writeFile({
       path: name,
       data,
       directory: Directory.Documents,
-      encoding: "utf-8",
+      encoding: Encoding.UTF8,
     });
     return { path: name };
   } catch (e) {
