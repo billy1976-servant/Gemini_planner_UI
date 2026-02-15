@@ -1,5 +1,6 @@
 "use client";
 export const dynamic = "force-dynamic";
+// Path contract: TSX resolution uses require.context("../01_App/apps-tsx", ...) (see scripts/validate-paths.js)
 import React, { useEffect, useMemo, useState } from "react";
 import { useSyncExternalStore } from "react";
 import ExperienceRenderer from "@/engine/core/ExperienceRenderer";
