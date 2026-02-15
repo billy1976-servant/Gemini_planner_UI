@@ -30,6 +30,8 @@ const JSON_SCREEN_PATHS: { id: string; path: string }[] = [
   // Module-system generated (apps-json/generated/<slug>/app.json)
   { id: "generated/dentist-smith/app", path: "generated/dentist-smith/app.json" },
   { id: "generated/contractor-jones/app", path: "generated/contractor-jones/app.json" },
+  // Universal diagnostics (capability + System7 + sensors + action gating)
+  { id: "diagnostics/universal", path: "diagnostics/universal-diagnostics.json" },
 ];
 
 const REGISTRY: ScreenRef[] = [

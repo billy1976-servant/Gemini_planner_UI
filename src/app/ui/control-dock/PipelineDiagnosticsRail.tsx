@@ -22,6 +22,7 @@ import PaletteContractInspector from "@/04_Presentation/diagnostics/PaletteContr
 import PipelineFlowPanel from "@/diagnostics/PipelineFlowPanel";
 import LayoutDiagnosticsPanel from "@/diagnostics/LayoutDiagnosticsPanel";
 import SpacingAuditPanel from "@/diagnostics/SpacingAuditPanel";
+import IntegrationsPanel from "@/diagnostics/IntegrationsPanel";
 import InspectorOverlay from "@/diagnostics/InspectorOverlay";
 import InteractionTracerPanel from "@/devtools/InteractionTracerPanel";
 
@@ -33,13 +34,14 @@ const HEADER_HEIGHT = 56;
 export type PanelId = "diagnostics" | "inspector" | "debugger";
 
 /** Tab inside the Diagnostics panel */
-export type TabId = "pipeline" | "layout" | "palette" | "spacing";
+export type TabId = "pipeline" | "layout" | "palette" | "spacing" | "integrations";
 
 const DIAGNOSTICS_TABS: Array<{ id: TabId; label: string }> = [
   { id: "pipeline", label: "Pipeline" },
   { id: "layout", label: "Layout" },
   { id: "palette", label: "Palette" },
   { id: "spacing", label: "Spacing" },
+  { id: "integrations", label: "Integrations" },
 ];
 
 /** Left sidebar rail buttons: Diagnostics, Inspector, Debugger */
@@ -152,8 +154,10 @@ export default function PipelineDiagnosticsRail() {
         paletteName={paletteName}
         pipelineContext={pipelineContext}
       />
-    ) : (
+    ) : diagnosticsTab === "spacing" ? (
       <SpacingAuditPanel />
+    ) : (
+      <IntegrationsPanel />
     );
 
   const panelContent =

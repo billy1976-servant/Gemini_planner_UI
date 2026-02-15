@@ -28,6 +28,8 @@ import { getCompoundComponent } from "@/components/molecules";
 // =====================================================
 import userInputViewer from "@/ui/user-input-viewer";
 import JournalHistory from "@/ui/molecules/JournalHistory";
+import DiagnosticsValueViewer from "@/ui/dev/DiagnosticsValueViewer";
+import DiagnosticsLevelSelect from "@/ui/dev/DiagnosticsLevelSelect";
 // =====================================================
 // LAYOUT MOLECULES (STRUCTURAL ONLY)
 // =====================================================
@@ -136,6 +138,11 @@ export const Registry = {
   journalViewer: JournalHistory,
   journalhistory: JournalHistory,
 
+  // 🔹 Diagnostics (dev only; inline result viewer + level control)
+  "diagnostics-value": DiagnosticsValueViewer,
+  DiagnosticsValue: DiagnosticsValueViewer,
+  select: DiagnosticsLevelSelect,
+  Select: DiagnosticsLevelSelect,
 
   // 🔹 Layout molecules (screen-level)
   row: RowLayout,

@@ -1,14 +1,34 @@
 import { isSensorAllowed } from "./sensor-capability-gate";
 
-export function readDevice() {
+export function readDevice(): {
+  platform: string;
+  userAgent: string;
+  available: boolean;
+  error?: string;
+} {
   if (!isSensorAllowed("device")) {
-    return { platform: "unknown", battery: null, orientation: "portrait", available: false };
+    return { platform: "unknown", userAgent: "", available: false };
   }
-  return {
-    platform: typeof navigator !== "undefined" ? navigator.userAgent : "unknown",
-    battery: null,
-    orientation: "portrait",
-    available: true,
-  };
+  try {
+    if (typeof navigator === "undefined") {
+      return {
+        platform: "unknown",
+        userAgent: "",
+        available: false,
+        error: "navigator not available",
+      };
+    }
+    return {
+      platform: navigator.platform ?? "unknown",
+      userAgent: navigator.userAgent ?? "",
+      available: true,
+    };
+  } catch (e) {
+    return {
+      platform: "unknown",
+      userAgent: "",
+      available: false,
+      error: e instanceof Error ? e.message : "Unknown error",
+    };
+  }
 }
-  
