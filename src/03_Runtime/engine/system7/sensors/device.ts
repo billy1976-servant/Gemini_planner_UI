@@ -1,8 +1,14 @@
+import { isSensorAllowed } from "./sensor-capability-gate";
+
 export function readDevice() {
-    return {
-      platform: typeof navigator !== "undefined" ? navigator.userAgent : "unknown",
-      battery: null,
-      orientation: "portrait"
-    };
+  if (!isSensorAllowed("device")) {
+    return { platform: "unknown", battery: null, orientation: "portrait", available: false };
   }
+  return {
+    platform: typeof navigator !== "undefined" ? navigator.userAgent : "unknown",
+    battery: null,
+    orientation: "portrait",
+    available: true,
+  };
+}
   

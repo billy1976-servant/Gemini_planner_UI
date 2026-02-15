@@ -1,0 +1,17 @@
+{
+  "auth": "off",
+  "identity": "off",
+  "messaging": "off",
+  "sharing": "off",
+  "voice": "keyboard-native",
+  "camera": "off",
+  "media": "off",
+  "contacts": "off",
+  "notifications": "off",
+  "sensors": "off",
+  "environment": "off",
+  "export": "basic",
+  "presence": "off",
+  "device": "lite",
+  "timeline": "off"
+}

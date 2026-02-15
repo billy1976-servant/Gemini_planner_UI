@@ -13,6 +13,10 @@
     "spacingScale": "default",
     "cardPreset": "soft",
     "heroMode": "centered",
+    "capabilities": {
+      "export": "advanced",
+      "sharing": "on"
+    },
     "sections": {
       "nav": {
         "type": "row",
@@ -2881,6 +2885,10 @@
     "cardPreset": "borderless",
     "containerWidth": "narrow",
     "sectionBackgroundPattern": "alternate",
+    "capabilities": {
+      "timeline": "on",
+      "export": "advanced"
+    },
     "layoutVariants": {
       "writing": {
         "layoutId": "content-narrow",

@@ -1,3 +1,8 @@
+import { isSensorAllowed } from "./sensor-capability-gate";
+
 export function readCamera() {
-  return { active: false, lastCapture: null };
+  if (!isSensorAllowed("camera")) {
+    return { active: false, lastCapture: null, available: false };
+  }
+  return { active: false, lastCapture: null, available: true };
 }

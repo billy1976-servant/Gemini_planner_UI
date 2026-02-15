@@ -76,6 +76,8 @@ export type TemplateProfile = {
   heroMode?: HeroMode;
   /** Section background pattern: alternate / hero-accent / dark-bands. */
   sectionBackgroundPattern?: SectionBackgroundPattern;
+  /** Optional capability overrides (Level C). Domain → level; only listed keys override global. */
+  capabilities?: Partial<Record<string, string>>;
 };
 
 import templatesData from "./template-profiles.json";

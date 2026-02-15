@@ -1,9 +1,11 @@
 // src/logic/runtime/export-resolver.ts
 // Export resolver - generates immediateView and exportView from EngineState.exportSlices
+// Callers should ensure export capability is on (e.g. via action gating or getCapabilityLevel).
 
 import type { DecisionState, UIBlock, DocumentBlock } from "../decision/decision-types";
 import type { EngineState, ExportSlice } from "../../runtime/engine-state";
 import { resolveBusinessProfile } from "@/logic/config/business-profiles";
+import { getCapabilityLevel } from "@/03_Runtime/capability";
 
 /**
  * Resolve immediate view blocks (mobile-first, decisive)
@@ -44,10 +46,19 @@ export function resolveExportView(decisionState: DecisionState): DocumentBlock[]
   });
 }
 
+function isExportAllowed(): boolean {
+  const level = getCapabilityLevel("export");
+  const s = typeof level === "string" ? level : (level as Record<string, string>)?.level ?? "off";
+  return s !== "off";
+}
+
 /**
  * Generate checklist export from EngineState.exportSlices
  */
 export function generateChecklist(engineState: EngineState, context?: Record<string, any>): DocumentBlock {
+  if (!isExportAllowed()) {
+    return { type: "checklist", title: "", items: [], metadata: { generatedAt: new Date().toISOString() } };
+  }
   const profile = resolveBusinessProfile(context || {});
   const items: string[] = [];
 
@@ -84,6 +95,14 @@ export function generateChecklist(engineState: EngineState, context?: Record<str
  * Generate contractor summary from EngineState.exportSlices
  */
 export function generateContractorSummary(engineState: EngineState, context?: Record<string, any>): DocumentBlock {
+  if (!isExportAllowed()) {
+    return {
+      type: "summary",
+      title: "",
+      content: { signals: [], blockers: [], opportunities: [], context: context || {} },
+      metadata: { generatedAt: new Date().toISOString() },
+    };
+  }
   const profile = resolveBusinessProfile(context || {});
   
   // Aggregate from exportSlices
@@ -124,6 +143,9 @@ export function generateContractorSummary(engineState: EngineState, context?: Re
  * Generate homeowner action plan from EngineState.exportSlices
  */
 export function generateHomeownerActionPlan(engineState: EngineState, context?: Record<string, any>): DocumentBlock {
+  if (!isExportAllowed()) {
+    return { type: "actions", title: "", items: [], metadata: { generatedAt: new Date().toISOString() } };
+  }
   const profile = resolveBusinessProfile(context || {});
   const items: string[] = [];
 

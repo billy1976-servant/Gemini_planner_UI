@@ -1,4 +1,9 @@
+import { isSensorAllowed } from "./sensor-capability-gate";
+
 export function readLocation() {
-    return { lat: null, lon: null, accuracy: null };
+  if (!isSensorAllowed("location")) {
+    return { lat: null, lon: null, accuracy: null, available: false };
   }
+  return { lat: null, lon: null, accuracy: null, available: true };
+}
   
