@@ -1,8 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { signInWithPopup, signOut, onAuthStateChanged, type User } from "firebase/auth";
+import { signOut, onAuthStateChanged, type User } from "firebase/auth";
 import { getFirebaseAuth, googleProvider } from "@/mobile/auth/firebaseClient";
+import {
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
+} from "@/mobile/auth/authActions";
+import { isNativePlatform } from "@/mobile/nativeCapabilities";
 
 /**
  * Minimal Google auth UI: shows "Sign in with Google" when logged out,
@@ -24,12 +30,26 @@ export default function GoogleLoginButton() {
       setLoading(false);
       return;
     }
-    const unsubscribe = onAuthStateChanged(auth, (u) => {
-      setUser(u);
-      setLoading(false);
-      setError(null);
-    });
-    return () => unsubscribe();
+    let cancelled = false;
+    let unsubscribe: (() => void) | undefined;
+    (async () => {
+      try {
+        await getRedirectResult(auth);
+      } catch {
+        // No pending redirect or user cancelled.
+      }
+      if (cancelled) return;
+      unsubscribe = onAuthStateChanged(auth, (u) => {
+        if (cancelled) return;
+        setUser(u);
+        setLoading(false);
+        setError(null);
+      });
+    })();
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
   }, []);
 
   const handleSignIn = async () => {
@@ -40,7 +60,11 @@ export default function GoogleLoginButton() {
     }
     setError(null);
     try {
-      await signInWithPopup(auth, googleProvider);
+      if (isNativePlatform()) {
+        await signInWithRedirect(auth, googleProvider);
+      } else {
+        await signInWithPopup(auth, googleProvider);
+      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Sign-in failed";
       setError(message);

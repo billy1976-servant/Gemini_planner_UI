@@ -6,6 +6,16 @@ export async function signInWithPopup(auth: Auth, provider: AuthProvider): Promi
   return fb(auth, provider);
 }
 
+export async function signInWithRedirect(auth: Auth, provider: AuthProvider): Promise<void> {
+  const { signInWithRedirect: fb } = await import("firebase/auth");
+  return fb(auth, provider);
+}
+
+export async function getRedirectResult(auth: Auth): Promise<UserCredential | null> {
+  const { getRedirectResult: fb } = await import("firebase/auth");
+  return fb(auth);
+}
+
 export async function signInWithEmailAndPassword(
   auth: Auth,
   email: string,
