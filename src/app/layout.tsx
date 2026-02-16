@@ -9,6 +9,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useSyncExternalStore } from "react";
 
 import "@/styles/site-theme.css";
+import { getBaseUrl } from "@/lib/app-base-url";
 import DevicePreviewToggle from "@/dev/DevicePreviewToggle";
 import VerticalSpacingReport from "@/diagnostics/VerticalSpacingReport";
 import PipelineDiagnosticsRail from "@/app/ui/control-dock/PipelineDiagnosticsRail";
@@ -400,7 +401,9 @@ export default function RootLayout({ children }: any) {
     <html>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-        <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" href={`${getBaseUrl()}/icons/icon-192.png`} type="image/png" sizes="192x192" />
+        <link rel="apple-touch-icon" href={`${getBaseUrl()}/icons/icon-192.png`} />
+        <link rel="manifest" href="/manifest" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link

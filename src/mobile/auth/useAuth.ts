@@ -5,12 +5,15 @@ import type { User } from "firebase/auth";
 import { getFirebaseAuth, googleProvider } from "./firebaseClient";
 import {
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   signOut as fbSignOut,
   onAuthStateChanged,
 } from "./authActions";
+import { isNativePlatform } from "../nativeCapabilities";
 
 export interface UseAuthResult {
   user: User | null;
@@ -35,12 +38,26 @@ export function useAuth(): UseAuthResult {
       setAuthReady(true);
       return;
     }
-    const unsub = onAuthStateChanged(auth, (u) => {
-      setUser(u ?? null);
-      setLoading(false);
-      setAuthReady(true);
-    });
-    return () => unsub();
+    let cancelled = false;
+    let unsub: (() => void) | undefined;
+    (async () => {
+      try {
+        await getRedirectResult(auth);
+      } catch {
+        // No pending redirect or error (e.g. user cancelled); continue.
+      }
+      if (cancelled) return;
+      unsub = onAuthStateChanged(auth, (u) => {
+        if (cancelled) return;
+        setUser(u ?? null);
+        setLoading(false);
+        setAuthReady(true);
+      });
+    })();
+    return () => {
+      cancelled = true;
+      unsub?.();
+    };
   }, []);
 
   const signOut = useCallback(async () => {
@@ -52,7 +69,11 @@ export function useAuth(): UseAuthResult {
   const signInWithGoogle = useCallback(async () => {
     const auth = getFirebaseAuth();
     if (!auth) throw new Error("Firebase not configured");
-    await signInWithPopup(auth, googleProvider);
+    if (isNativePlatform()) {
+      await signInWithRedirect(auth, googleProvider);
+    } else {
+      await signInWithPopup(auth, googleProvider);
+    }
   }, []);
 
   const signInWithEmail = useCallback(async (email: string, password: string) => {
