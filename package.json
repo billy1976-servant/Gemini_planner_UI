@@ -31,7 +31,7 @@
     "extract-2": "ts-node src/web2extractor/compile2.ts",
     "export-2": "ts-node src/web2extractor/compile2.ts",
     "catalog": "ts-node src/web2extractor/buildProductCatalog.ts",
-    "cleanup": "node scripts/cleanup-docs.js",
+    "cleanup": "node scripts/cleanup-root.js",
     "docs:reachability": "ts-node -r tsconfig-paths/register src/scripts/docs/generate-reachability-report.ts",
     "reports": "ts-node -r tsconfig-paths/register src/scripts/system-report/generate-system-report.ts",
     "system-report": "ts-node -r tsconfig-paths/register src/scripts/system-report/generate-system-report.ts",

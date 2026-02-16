@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "./useAuth";
+import { isFirebaseConfigured } from "./firebaseClient";
 
 type AuthModalProps = {
   open: boolean;
@@ -15,6 +16,8 @@ export default function AuthModal({ open, onClose }: AuthModalProps) {
   const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+
+  const disabled = !isFirebaseConfigured();
 
   if (!open) return null;
 
@@ -74,17 +77,27 @@ export default function AuthModal({ open, onClose }: AuthModalProps) {
         onClick={(e) => e.stopPropagation()}
       >
         <h3 style={{ margin: "0 0 16px", fontSize: 18 }}>HI Clarify — Sign in</h3>
+        {disabled && (
+          <p
+            style={{ color: "#c00", fontSize: 12, marginBottom: 12 }}
+            role="alert"
+          >
+            Firebase not configured. Add <code style={{ background: "#f0f0f0", padding: "0 4px", borderRadius: 4 }}>NEXT_PUBLIC_FIREBASE_API_KEY</code> and <code style={{ background: "#f0f0f0", padding: "0 4px", borderRadius: 4 }}>NEXT_PUBLIC_FIREBASE_PROJECT_ID</code> to a <code style={{ background: "#f0f0f0", padding: "0 4px", borderRadius: 4 }}>.env.local</code> file in the project root, then restart the dev server.
+          </p>
+        )}
         <button
           type="button"
           onClick={handleGoogle}
+          disabled={disabled}
           style={{
             width: "100%",
             padding: "10px 16px",
             marginBottom: 12,
             border: "1px solid #ccc",
             borderRadius: 6,
-            cursor: "pointer",
+            cursor: disabled ? "not-allowed" : "pointer",
             background: "#fff",
+            opacity: disabled ? 0.6 : 1,
           }}
         >
           Sign in with Google
@@ -125,7 +138,16 @@ export default function AuthModal({ open, onClose }: AuthModalProps) {
           {error && <p style={{ color: "#c00", fontSize: 12, margin: "4px 0" }}>{error}</p>}
           {message && <p style={{ color: "#060", fontSize: 12, margin: "4px 0" }}>{message}</p>}
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
-            <button type="submit" style={{ padding: "8px 16px", borderRadius: 4, cursor: "pointer" }}>
+            <button
+              type="submit"
+              disabled={disabled}
+              style={{
+                padding: "8px 16px",
+                borderRadius: 4,
+                cursor: disabled ? "not-allowed" : "pointer",
+                opacity: disabled ? 0.6 : 1,
+              }}
+            >
               {mode === "forgot" ? "Send reset link" : mode === "signup" ? "Sign up" : "Sign in"}
             </button>
             {mode !== "forgot" && (

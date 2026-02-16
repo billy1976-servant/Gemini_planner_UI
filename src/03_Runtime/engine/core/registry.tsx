@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 /**
  * Component Registry — single source of truth for JSON node type → React component.
  * JsonRenderer resolves node.type via Registry only; no competing type→component maps.
@@ -38,6 +39,23 @@ import ColumnLayout from "@/lib/layout/molecules/column-layout";
 import GridLayout from "@/lib/layout/molecules/grid-layout";
 import StackLayout from "@/lib/layout/molecules/stack-layout";
 import PageLayout from "@/lib/layout/molecules/page-layout";
+// =====================================================
+// FLOW/ONBOARDING CARDS (JSON type → component; adapter for JsonRenderer props)
+// =====================================================
+import { CalculatorCard, EducationCard, SummaryCard } from "@/ui/molecules/cards";
+
+/** Wrap card components so they receive JsonRenderer spread props; provide no-op callbacks for standalone render. */
+function wrapCard(CardComponent: React.ComponentType<any>) {
+  return (props: any) => (
+    <CardComponent
+      onAdvance={() => {}}
+      onComplete={() => {}}
+      restoreState={null}
+      {...props}
+    />
+  );
+}
+
 // =====================================================
 // REGISTRY — JSON `type` → COMPONENT
 // =====================================================
@@ -126,6 +144,18 @@ export const Registry = {
   toolbar: getCompoundComponent("toolbar") ?? (() => null),
   Toolbar: getCompoundComponent("toolbar") ?? (() => null),
 
+  // 🔹 Flow/onboarding card types (referenced by JSON; reconnected for prod visibility)
+  question: wrapCard(EducationCard),
+  Question: wrapCard(EducationCard),
+  education: wrapCard(EducationCard),
+  Education: wrapCard(EducationCard),
+  calculator: wrapCard(CalculatorCard),
+  Calculator: wrapCard(CalculatorCard),
+  summary: wrapCard(SummaryCard),
+  Summary: wrapCard(SummaryCard),
+  cta: getCompoundComponent("button") ?? (() => null),
+  Cta: getCompoundComponent("button") ?? (() => null),
+  CTA: getCompoundComponent("button") ?? (() => null),
 
   // 🔹 STATE-AWARE VIEWERS
   UserInputViewer: userInputViewer,

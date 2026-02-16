@@ -9,6 +9,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useSyncExternalStore } from "react";
 
 import "@/styles/site-theme.css";
+import "@/styles/dev-mobile.css";
 import { getBaseUrl } from "@/lib/app-base-url";
 import DevicePreviewToggle from "@/dev/DevicePreviewToggle";
 import VerticalSpacingReport from "@/diagnostics/VerticalSpacingReport";
@@ -68,6 +69,8 @@ import { BottomNavOnly } from "@/04_Presentation/shells/GlobalAppSkin";
 import { NAV_STRIP_HEIGHT } from "@/app/shell-ui-constants";
 import MobileShell from "@/mobile/MobileShell";
 import MobileLayout from "@/mobile/MobileLayout";
+import { useDevMobileMode } from "@/app/dev/useDevMobileMode";
+import DevHome from "@/app/dev/DevHome";
 
 /* ============================================================
    🔒 STATIC REGISTRIES
@@ -103,6 +106,7 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentScreen = searchParams.get("screen") ?? "";
+  const devMobileMode = useDevMobileMode();
 
   const [index, setIndex] = useState<ScreensIndex[]>([]);
 
@@ -135,6 +139,16 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
     installCapabilityDebug();
     return () => console.log("[UNMOUNT]", "RootLayout");
   }, []);
+
+  /* DEV_MOBILE_MODE: apply mobile dev layout when viewport < 768px (layout/CSS only) */
+  useEffect(() => {
+    if (devMobileMode) {
+      document.body.classList.add("dev-mobile-mode");
+    } else {
+      document.body.classList.remove("dev-mobile-mode");
+    }
+    return () => document.body.classList.remove("dev-mobile-mode");
+  }, [devMobileMode]);
 
   useEffect(() => {
     console.log("[layout.tsx] phoneFrameEnabled changed to:", phoneFrameEnabled);
@@ -190,9 +204,26 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
 
   return (
     <>
+        <DevHome />
         {/* Navigator: no key — identity stable; palette changes only update CSS, never remount. */}
         <div className="app-chrome">
-          <b>HIclarify Navigator</b>
+          <button
+            type="button"
+            className="app-chrome-home"
+            onClick={() => router.push("/dev")}
+            title="Go to dev home"
+            style={{
+              background: "none",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
+              font: "inherit",
+              color: "inherit",
+              textAlign: "left",
+            }}
+          >
+            <b>HIclarify Navigator</b>
+          </button>
 
           <CascadingScreenMenu index={index} currentScreen={currentScreen} />
 

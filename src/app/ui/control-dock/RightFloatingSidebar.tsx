@@ -22,6 +22,7 @@ import CreateNewInterfacePanel from "@/app/ui/control-dock/CreateNewInterfacePan
 import ExperienceRenderer from "@/engine/core/ExperienceRenderer";
 import { applyPaletteToElement } from "@/lib/site-renderer/palette-bridge";
 import PaletteContractInspector from "@/04_Presentation/diagnostics/PaletteContractInspector";
+import { useDevMobileMode } from "@/app/dev/useDevMobileMode";
 
 /** Wraps content and applies a specific palette's CSS variables to the wrapper so the content renders in that palette. */
 function PaletteFullPreviewFrame({
@@ -158,6 +159,7 @@ export type RightFloatingSidebarProps = {
 
 function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, palettePreviewProps }: RightFloatingSidebarProps) {
   const { openPanel, togglePanel } = useDockState();
+  const devMobileMode = useDevMobileMode();
   const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
   const currentHref = typeof window !== "undefined" ? window.location.href : "";
   useSyncExternalStore(subscribePalette, getPaletteName, () => "default");
@@ -204,9 +206,27 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
         zIndex: 900,
         transition: "width 0.2s ease",
       }}
+      data-dev-right-sidebar
+      data-dev-right-sidebar-open={String(!!openPanel)}
     >
+      {devMobileMode && (
+        <button
+          type="button"
+          className="dev-mobile-hamburger--right"
+          onClick={() => togglePanel(openPanel ? null : "experience")}
+          aria-label={openPanel ? "Close sidebar" : "Open sidebar"}
+          aria-expanded={!!openPanel}
+        >
+          <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+      )}
       {/* Docked panel — full height, scrollable content; minWidth:0 so flex children can use full width */}
       <div
+        data-dev-right-panel
         style={{
           width: openPanel ? FLOATING_PANEL_WIDTH : 0,
           minWidth: 0,
@@ -227,7 +247,7 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
                 {activeLabel}
               </h3>
             </div>
-            <div style={{ padding: "12px 16px", overflowY: "auto", overflowX: "visible", height: "100%", flex: 1, minHeight: 0, minWidth: 0, fontFamily: GOOGLE.fontFamily }}>
+            <div style={{ padding: "12px 16px", overflowY: "auto", overflowX: "visible", height: "100%", flex: 1, minHeight: 0, minWidth: 0, fontFamily: GOOGLE.fontFamily }} data-dev-panel-content>
             {openPanel === "experience" && (
               <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
                 {EXPERIENCES.map((exp) => {
@@ -653,7 +673,7 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
       )}
 
       {/* Icon rail — 44px, 10px gap, subtle hover/active */}
-      <div style={RAIL_STYLE}>
+      <div style={RAIL_STYLE} data-dev-right-sidebar-strip>
         {pills.map(({ id, label }) => {
           const isActive = isPanelOpen(id);
           const iconName = getAppIconNameForPanel(id);

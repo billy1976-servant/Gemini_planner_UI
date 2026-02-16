@@ -153,6 +153,12 @@ export default function DevPage() {
   const [remountCount, setRemountCount] = useState(0);
 
   useEffect(() => {
+    if (screen && typeof window !== "undefined") {
+      sessionStorage.setItem("dev_last_screen", screen);
+    }
+  }, [screen]);
+
+  useEffect(() => {
     if (screen !== lastScreen) {
       setRemountCount(c => c + 1);
       setLastScreen(screen);
