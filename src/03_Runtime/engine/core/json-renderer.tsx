@@ -1334,9 +1334,12 @@ export function renderNode(
     for (const part of pathParts) {
       value = value != null && typeof value === "object" && part in (value as object) ? (value as Record<string, unknown>)[part] : undefined;
     }
+<<<<<<< HEAD
     if (resolvedNode.content?.bodyFromStateSlice === "last" && Array.isArray(value) && value.length > 0) {
       value = value[value.length - 1];
     }
+=======
+>>>>>>> c529cf0 (Clean version)
     if (value != null) {
       const body =
         typeof value === "string"

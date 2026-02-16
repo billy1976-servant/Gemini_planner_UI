@@ -99,9 +99,12 @@ const ICON_BUTTON_BASE: React.CSSProperties = {
 export default function PipelineDiagnosticsRail() {
   const [openPanel, setOpenPanel] = useState<PanelId | null>(null);
   const [diagnosticsTab, setDiagnosticsTab] = useState<TabId>("pipeline");
+<<<<<<< HEAD
   const [panelWidth, setPanelWidth] = useState(PANEL_WIDTH);
   const [isDragging, setIsDragging] = useState(false);
   const railRef = useRef<HTMLDivElement>(null);
+=======
+>>>>>>> c529cf0 (Clean version)
   const devMobileMode = useDevMobileMode();
 
   const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
@@ -126,6 +129,7 @@ export default function PipelineDiagnosticsRail() {
 
   const closePanel = useCallback(() => setOpenPanel(null), []);
 
+<<<<<<< HEAD
   // Click outside rail (including panel) to collapse
   useEffect(() => {
     if (!openPanel) return;
@@ -160,6 +164,8 @@ export default function PipelineDiagnosticsRail() {
     };
   }, [isDragging]);
 
+=======
+>>>>>>> c529cf0 (Clean version)
   // When opened from Dev Home "Open Diagnostics", open the diagnostics panel once
   useEffect(() => {
     if (typeof window === "undefined") return;

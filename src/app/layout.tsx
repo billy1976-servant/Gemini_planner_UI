@@ -10,7 +10,10 @@ import { useSyncExternalStore } from "react";
 
 import "@/styles/site-theme.css";
 import "@/styles/dev-mobile.css";
+<<<<<<< HEAD
 import "@/styles/navigator-density.css";
+=======
+>>>>>>> c529cf0 (Clean version)
 import { getBaseUrl } from "@/lib/app-base-url";
 import DevicePreviewToggle from "@/dev/DevicePreviewToggle";
 import VerticalSpacingReport from "@/diagnostics/VerticalSpacingReport";
@@ -72,11 +75,16 @@ import { NAV_STRIP_HEIGHT } from "@/app/shell-ui-constants";
 import MobileShell from "@/mobile/MobileShell";
 <<<<<<< HEAD
 import MobileLayout from "@/mobile/MobileLayout";
+<<<<<<< HEAD
 import OsbMinimalTopBar from "@/04_Presentation/shells/OsbMinimalTopBar";
 import { useDevMobileMode } from "@/app/dev/useDevMobileMode";
 import DevHome from "@/app/dev/DevHome";
 =======
 >>>>>>> e4b6a15 (Checkpoint: auth wiring, env setup, dev/app route split, capacitor config updates)
+=======
+import { useDevMobileMode } from "@/app/dev/useDevMobileMode";
+import DevHome from "@/app/dev/DevHome";
+>>>>>>> c529cf0 (Clean version)
 
 /* ============================================================
    🔒 STATIC REGISTRIES
@@ -162,6 +170,7 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
     return () => document.body.classList.remove("dev-mobile-mode");
   }, [devMobileMode]);
 
+<<<<<<< HEAD
   /* Nav compact desktop: apply when viewport > 1024px (density only, no logic change) */
   const [navCompactDesktop, setNavCompactDesktop] = useState(false);
   useEffect(() => {
@@ -173,6 +182,8 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
     return () => mq.removeEventListener("change", apply);
   }, []);
 
+=======
+>>>>>>> c529cf0 (Clean version)
   useEffect(() => {
     console.log("[layout.tsx] phoneFrameEnabled changed to:", phoneFrameEnabled);
   }, [phoneFrameEnabled]);
@@ -235,9 +246,13 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
   return (
     <>
 <<<<<<< HEAD
+<<<<<<< HEAD
         <DevHome />
 =======
 >>>>>>> e4b6a15 (Checkpoint: auth wiring, env setup, dev/app route split, capacitor config updates)
+=======
+        <DevHome />
+>>>>>>> c529cf0 (Clean version)
         {/* Navigator: no key — identity stable; palette changes only update CSS, never remount. */}
         <div className={navCompactDesktop ? "nav-compact-desktop" : undefined}>
         <div className="app-chrome">

@@ -29,6 +29,7 @@ import {
   structureSetActivePlanner,
   structureCancelDay,
   structureAddFromText,
+<<<<<<< HEAD
   structureAddJourney,
   structureSetParserStaging,
   structureUpdateStagingRow,
@@ -40,6 +41,8 @@ import {
   structureEnsureTaskTemplateRows,
   structureSetScheduledSection,
   structureParseToStaging,
+=======
+>>>>>>> c529cf0 (Clean version)
   calendarSetDay,
   calendarSetWeek,
   calendarSetMonth,
@@ -91,8 +94,11 @@ const registry: Record<string, ActionHandler> = {
   "diagnostics:inputLogSnapshot": runDiagnosticsInputLogSnapshot,
   "diagnostics:systemSnapshot": runDiagnosticsSystemSnapshot,
   "diagnostics:systemSignalsReadAll": runDiagnosticsSystemSignalsReadAll,
+<<<<<<< HEAD
   "diagnostics:plannerParserPipeline": runDiagnosticsPlannerParserPipeline,
   "diagnostics:plannerFullParseTrace": runDiagnosticsPlannerFullParseTrace,
+=======
+>>>>>>> c529cf0 (Clean version)
 
   // Structure (planner) — one key state.values.structure; atomic state.update only
   "structure:addItem": structureAddItem,
@@ -103,6 +109,7 @@ const registry: Record<string, ActionHandler> = {
   "structure:setActivePlanner": structureSetActivePlanner,
   "structure:cancelDay": structureCancelDay,
   "structure:addFromText": structureAddFromText,
+<<<<<<< HEAD
   "structure:addJourney": structureAddJourney,
   "structure:setParserStaging": structureSetParserStaging,
   "structure:updateStagingRow": structureUpdateStagingRow,
@@ -114,6 +121,8 @@ const registry: Record<string, ActionHandler> = {
   "structure:ensureTaskTemplateRows": structureEnsureTaskTemplateRows,
   "structure:setScheduledSection": structureSetScheduledSection,
   "structure:parseToStaging": structureParseToStaging,
+=======
+>>>>>>> c529cf0 (Clean version)
 
   // V6: Calendar view state (structure.calendarView, structure.selectedDate)
   "calendar.today": calendarSetDay,

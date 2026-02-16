@@ -24,12 +24,15 @@ import ExperienceRenderer from "@/engine/core/ExperienceRenderer";
 import { applyPaletteToElement } from "@/lib/site-renderer/palette-bridge";
 import PaletteContractInspector from "@/04_Presentation/diagnostics/PaletteContractInspector";
 import { useDevMobileMode } from "@/app/dev/useDevMobileMode";
+<<<<<<< HEAD
 import TsxStructurePanel from "@/app/ui/control-dock/TsxStructurePanel";
 import { DevNodePanel } from "@/04_Presentation/components/organs/tsx/website/DevNodePanel";
 import {
   getDevSidebarProps,
   subscribeDevSidebarProps,
 } from "@/app/ui/control-dock/dev-right-sidebar-store";
+=======
+>>>>>>> c529cf0 (Clean version)
 
 /** Wraps content and applies a specific palette's CSS variables to the wrapper so the content renders in that palette. */
 function PaletteFullPreviewFrame({
@@ -170,12 +173,16 @@ export type RightFloatingSidebarProps = {
 };
 
 function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, palettePreviewProps }: RightFloatingSidebarProps) {
+<<<<<<< HEAD
   const { openPanel, togglePanel, closePanel } = useDockState();
   const [panelWidth, setPanelWidth] = useState(FLOATING_PANEL_WIDTH);
   const [isDragging, setIsDragging] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const gripStart = useRef<{ x: number; w: number } | null>(null);
   const searchParams = useSearchParams();
+=======
+  const { openPanel, togglePanel } = useDockState();
+>>>>>>> c529cf0 (Clean version)
   const devMobileMode = useDevMobileMode();
   const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
   const currentHref = typeof window !== "undefined" ? window.location.href : "";
@@ -260,10 +267,32 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
         transition: isDragging ? "none" : "width 0.2s ease",
       }}
       data-dev-right-sidebar
+<<<<<<< HEAD
       data-testid="dev-right-sidebar"
       data-dev-right-sidebar-open={String(!!openPanel)}
     >
+=======
+      data-dev-right-sidebar-open={String(!!openPanel)}
+    >
+      {devMobileMode && (
+        <button
+          type="button"
+          className="dev-mobile-hamburger--right"
+          onClick={() => togglePanel(openPanel ? null : "experience")}
+          aria-label={openPanel ? "Close sidebar" : "Open sidebar"}
+          aria-expanded={!!openPanel}
+        >
+          <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+      )}
+      {/* Docked panel — full height, scrollable content; minWidth:0 so flex children can use full width */}
+>>>>>>> c529cf0 (Clean version)
       <div
+        data-dev-right-panel
         style={{
           flexShrink: 0,
           padding: "6px 10px",

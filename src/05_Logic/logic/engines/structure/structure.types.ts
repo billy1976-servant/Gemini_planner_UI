@@ -11,11 +11,16 @@ export type StructureTreeNode = {
 };
 
 export type RecurrenceBlock = {
+<<<<<<< HEAD
   recurringType: "daily" | "weekly" | "monthly" | "quarterly" | "off";
   recurringDetails?: string;
   /** When set, next occurrence after miss uses this + interval. */
   lastExpectedAt?: string;
   lastCompletedAt?: string;
+=======
+  recurringType: "daily" | "weekly" | "monthly" | "off";
+  recurringDetails?: string;
+>>>>>>> c529cf0 (Clean version)
 };
 
 export type HabitBlock = {
@@ -34,8 +39,11 @@ export type StructureItem = {
   dueDate: string | null;
   createdAt?: string;
   updatedAt?: string;
+<<<<<<< HEAD
   /** Optional parent item id for sub-tasks. */
   parentId?: string;
+=======
+>>>>>>> c529cf0 (Clean version)
   recurrence?: RecurrenceBlock;
   habit?: HabitBlock;
   signals?: string[];
@@ -53,6 +61,7 @@ export type Block = {
 
 export type ResolvedRuleset = {
   priorityScale?: { min: number; max: number; default: number };
+<<<<<<< HEAD
   /** Ramp priority 1–10 by days until due (e.g. 7 days out = 1, day of = 10). */
   priorityRamp?: {
     daysOutForMin?: number;
@@ -62,6 +71,8 @@ export type ResolvedRuleset = {
   };
   /** Hide from weekly view until effective priority >= this. */
   visibilityMinPriority?: number;
+=======
+>>>>>>> c529cf0 (Clean version)
   escalation?: {
     enabled: boolean;
     daysUntilEscalation?: number;
@@ -118,6 +129,7 @@ export type MapperTrace = {
   matchedRuleIds: string[];
   extractedFields: Record<string, unknown>;
 };
+<<<<<<< HEAD
 
 /* ========== V4 Parser pipeline types ========== */
 
@@ -161,3 +173,5 @@ export type ParserPipelineConfig = {
   autoConfirmThreshold?: number;
   rollForward?: boolean;
 };
+=======
+>>>>>>> c529cf0 (Clean version)

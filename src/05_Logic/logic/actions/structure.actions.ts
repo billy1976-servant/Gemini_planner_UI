@@ -3,6 +3,7 @@
  */
 
 import { getState, dispatchState } from "@/state/state-store";
+<<<<<<< HEAD
 import type { StructureItem, Block, ResolvedRuleset, StructureTreeNode, Rollup, TaskTemplateRow, ParserPipelineConfig } from "@/logic/engines/structure/structure.types";
 import { applyCancelDay } from "@/logic/engines/structure/prioritization.engine";
 import { streamToCandidates, splitSentences } from "@/logic/engines/structure/extreme-mode-parser";
@@ -27,6 +28,15 @@ export type ParserStagingRow = {
   status: "pending" | "use" | "add_use";
 };
 
+=======
+import type { StructureItem, Block, ResolvedRuleset, StructureTreeNode, Rollup } from "@/logic/engines/structure/structure.types";
+import { applyCancelDay } from "@/logic/engines/structure/prioritization.engine";
+import { streamToCandidates } from "@/logic/engines/structure/extreme-mode-parser";
+import { aggregateByDateRange } from "@/logic/engines/structure/aggregation.engine";
+
+const STRUCTURE_KEY = "structure";
+
+>>>>>>> c529cf0 (Clean version)
 type StructureSlice = {
   domain?: string;
   tree: StructureTreeNode[];
@@ -44,6 +54,7 @@ type StructureSlice = {
   monthRollup?: Rollup[];
   /** V6: counts for stats layer */
   stats?: { todayCount: number; weekCount: number; monthCount: number };
+<<<<<<< HEAD
   /** V3/V4: parser staging (candidates before confirm). */
   parserStaging?: ParserStagingRow[];
   /** V4: task folder template (Folder → Subfolder → Category) for matcher. */
@@ -54,6 +65,8 @@ type StructureSlice = {
   parserConfig?: ParserPipelineConfig;
   /** V2: Section scheduling — selected folder/section for day (SCHEDULED WORK DAY / SCHEDULED [section]). */
   scheduledSection?: string;
+=======
+>>>>>>> c529cf0 (Clean version)
 };
 
 const EMPTY_SLICE: StructureSlice = {
@@ -66,6 +79,7 @@ const EMPTY_SLICE: StructureSlice = {
 function getSlice(): StructureSlice {
   const values = getState()?.values;
   const s = values?.[STRUCTURE_KEY];
+<<<<<<< HEAD
   if (s && typeof s === "object" && Array.isArray(s.items)) {
     const slice = s as StructureSlice;
     if (!slice.tree?.length) {
@@ -78,6 +92,10 @@ function getSlice(): StructureSlice {
   const initial: StructureSlice = { ...EMPTY_SLICE, tree: [...BASE_PLANNER_TREE] };
   writeSlice(initial);
   return initial;
+=======
+  if (s && typeof s === "object" && Array.isArray(s.items)) return s as StructureSlice;
+  return { ...EMPTY_SLICE };
+>>>>>>> c529cf0 (Clean version)
 }
 
 function writeSlice(next: StructureSlice): void {
@@ -197,6 +215,7 @@ export function structureCancelDay(
 }
 
 /** V6 Stage 1: Parse text into candidates and add to structure.items. Reads text from action.text or state.values.structure_draftText. */
+<<<<<<< HEAD
 /** OSB V5: Load journey pack (or payload), resolve relative-time, merge tree + items into structure. Single write. */
 export function structureAddJourney(
   action: {
@@ -272,10 +291,13 @@ function getDefaultTaskTemplateRows(): TaskTemplateRow[] {
 
 const PLANNER_TRACE_PREFIX = "[structure:addFromText]";
 
+=======
+>>>>>>> c529cf0 (Clean version)
 export function structureAddFromText(
   action: { text?: string },
   _state: Record<string, any>
 ): void {
+<<<<<<< HEAD
   const trace = getState()?.values?.diagnostics_plannerPipelineTrace === true;
   if (trace) console.log(`${PLANNER_TRACE_PREFIX} ENTER text=`, typeof action.text === "string" ? action.text : "(from draft)" );
 
@@ -317,12 +339,15 @@ export function structureParseToStaging(
   action: { text?: string },
   _state: Record<string, any>
 ): void {
+=======
+>>>>>>> c529cf0 (Clean version)
   const slice = getSlice();
   const text =
     typeof action.text === "string"
       ? action.text.trim()
       : (getState()?.values?.structure_draftText as string)?.trim?.() ?? "";
   if (!text) return;
+<<<<<<< HEAD
   const refDate = new Date();
   const templateRows = slice.taskTemplateRows?.length
     ? slice.taskTemplateRows
@@ -369,6 +394,23 @@ export function structureParseToStaging(
     if (getState()?.values?.structure_draftText != null) {
       dispatchState("state.update", { key: "structure_draftText", value: "" });
     }
+=======
+  const segments = [{ text, isFinal: true }];
+  const refDate = new Date();
+  const { candidates } = streamToCandidates(segments, slice.rules ?? {}, refDate);
+  if (candidates.length === 0) return;
+  const items = [...slice.items];
+  for (const c of candidates) {
+    const item = normalizeItem(c);
+    const idx = items.findIndex((i) => i.id === item.id);
+    if (idx >= 0) items[idx] = item;
+    else items.push(item);
+  }
+  writeSlice({ ...slice, items });
+  // Clear draft text if it was used
+  if (getState()?.values?.structure_draftText != null) {
+    dispatchState("state.update", { key: "structure_draftText", value: "" });
+>>>>>>> c529cf0 (Clean version)
   }
 }
 
@@ -493,6 +535,7 @@ export function calendarSetDate(
     stats,
   });
 }
+<<<<<<< HEAD
 
 /** V3/V4: Set parser staging rows (from Task Matcher). */
 export function structureSetParserStaging(
@@ -604,3 +647,5 @@ export function structureSetScheduledSection(
   const slice = getSlice();
   writeSlice({ ...slice, scheduledSection: action.section ?? undefined });
 }
+=======
+>>>>>>> c529cf0 (Clean version)

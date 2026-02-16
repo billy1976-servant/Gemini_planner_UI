@@ -3,12 +3,16 @@
  */
 
 import type { StructureItem, ResolvedRuleset } from "./structure.types";
+<<<<<<< HEAD
 import { nextOccurrences } from "./recurrence.engine";
+=======
+>>>>>>> c529cf0 (Clean version)
 
 function toISO(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
+<<<<<<< HEAD
 /** Resolve due date for priority: for recurring items use next occurrence on or after date; else item.dueDate. */
 function dueDateForPriority(item: StructureItem, date: Date): string | null {
   if (item.recurrence && item.recurrence.recurringType !== "off") {
@@ -21,6 +25,10 @@ function dueDateForPriority(item: StructureItem, date: Date): string | null {
 /**
  * Effective priority (base + escalation by days overdue; optional ramp by days until due).
  * For items with recurrence, uses next occurrence date for ramp and escalation.
+=======
+/**
+ * Effective priority (base + escalation by days overdue).
+>>>>>>> c529cf0 (Clean version)
  */
 export function effectivePriority(
   item: StructureItem,
@@ -29,6 +37,7 @@ export function effectivePriority(
 ): number {
   const scale = rules.priorityScale ?? { min: 0, max: 10, default: 5 };
   let p = typeof item.priority === "number" ? item.priority : scale.default ?? 5;
+<<<<<<< HEAD
   const dueDate = dueDateForPriority(item, date);
   const ramp = rules.priorityRamp;
   if (ramp && dueDate) {
@@ -51,6 +60,11 @@ export function effectivePriority(
   const esc = rules.escalation;
   if (esc?.enabled && dueDate) {
     const due = new Date(dueDate);
+=======
+  const esc = rules.escalation;
+  if (esc?.enabled && item.dueDate) {
+    const due = new Date(item.dueDate);
+>>>>>>> c529cf0 (Clean version)
     const ref = new Date(date);
     ref.setHours(0, 0, 0, 0);
     due.setHours(0, 0, 0, 0);
@@ -62,6 +76,7 @@ export function effectivePriority(
   return Math.max(scale.min ?? 0, Math.min(scale.max ?? 10, p));
 }
 
+<<<<<<< HEAD
 /** True if item passes visibility threshold for week view (effective priority >= visibilityMinPriority). */
 export function isVisibleInWeekView(
   item: StructureItem,
@@ -73,6 +88,8 @@ export function isVisibleInWeekView(
   return effectivePriority(item, date, rules) >= min;
 }
 
+=======
+>>>>>>> c529cf0 (Clean version)
 /**
  * Sort items by effective priority (desc), then by due date (asc).
  */

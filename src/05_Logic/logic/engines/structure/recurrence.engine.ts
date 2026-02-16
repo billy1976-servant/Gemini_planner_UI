@@ -76,6 +76,7 @@ export function nextOccurrences(
     return out.slice(0, count);
   }
 
+<<<<<<< HEAD
   if (rec.recurringType === "quarterly") {
     const dayOfMonth = fromDate.getDate();
     let y = d.getFullYear();
@@ -93,6 +94,8 @@ export function nextOccurrences(
     return out.slice(0, count);
   }
 
+=======
+>>>>>>> c529cf0 (Clean version)
   return [];
 }
 
@@ -115,10 +118,13 @@ export function isDueOn(task: StructureItem, date: Date): boolean {
   if (rec.recurringType === "monthly") {
     return task.dueDate?.endsWith(ref.slice(5)) ?? false;
   }
+<<<<<<< HEAD
   if (rec.recurringType === "quarterly") {
     const q = Math.floor(date.getMonth() / 3) + 1;
     const qDue = task.dueDate ? Math.floor(new Date(task.dueDate).getMonth() / 3) + 1 : 0;
     return q === qDue && task.dueDate?.slice(8, 10) === ref.slice(8, 10);
   }
+=======
+>>>>>>> c529cf0 (Clean version)
   return false;
 }
