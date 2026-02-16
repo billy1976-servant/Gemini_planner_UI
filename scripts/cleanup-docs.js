@@ -13,6 +13,9 @@ const ROOT = path.resolve(__dirname, "..");
 const HI_SYSTEM = path.join(ROOT, "docs", "HI_SYSTEM");
 
 function ensureStartHere() {
+  if (!fs.existsSync(HI_SYSTEM)) {
+    fs.mkdirSync(HI_SYSTEM, { recursive: true });
+  }
   const startHere = path.join(HI_SYSTEM, "START_HERE.md");
   if (!fs.existsSync(startHere)) {
     fs.writeFileSync(startHere, "# If you're new, read this\n\nRun `npm run cleanup` and see docs/HI_SYSTEM/.\n", "utf8");

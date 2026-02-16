@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { useDevMobileMode } from "@/app/dev/useDevMobileMode";
 
 type ScreensIndex = {
   category: string;
@@ -20,6 +21,57 @@ function formatScreenPillLabel(screen: string): string {
   return `File: ${path}`;
 }
 
+/** Group categories into TSX SYSTEM (tsx*) vs PROJECT */
+function groupCategories(index: ScreensIndex[]): { section: string; categories: ScreensIndex[] }[] {
+  const tsx = index.filter((c) => c.category.toLowerCase().startsWith("tsx"));
+  const project = index.filter((c) => !c.category.toLowerCase().startsWith("tsx"));
+  const groups: { section: string; categories: ScreensIndex[] }[] = [];
+  if (tsx.length) groups.push({ section: "TSX SYSTEM", categories: tsx });
+  if (project.length) groups.push({ section: "PROJECT", categories: project });
+  return groups;
+}
+
+const SECTION_HEADER_STYLE: React.CSSProperties = {
+  textTransform: "uppercase",
+  fontSize: 11,
+  letterSpacing: "0.08em",
+  opacity: 0.6,
+  padding: "8px 16px",
+  marginTop: 8,
+  marginBottom: 4,
+};
+
+const PARENT_ROW_STYLE: React.CSSProperties = {
+  fontWeight: 600,
+  fontSize: 16,
+  background: "#0f172a08",
+  padding: "14px 16px",
+  borderBottom: "1px solid rgba(0,0,0,0.08)",
+  minHeight: 48,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  cursor: "pointer",
+  color: "#000",
+  gap: 8,
+};
+
+const SUBFOLDER_ROW_STYLE: React.CSSProperties = {
+  paddingLeft: 28,
+  paddingRight: 16,
+  paddingTop: 14,
+  paddingBottom: 14,
+  fontWeight: 400,
+  fontSize: 14,
+  opacity: 0.85,
+  minHeight: 48,
+  display: "flex",
+  alignItems: "center",
+  cursor: "pointer",
+  color: "#000",
+  borderBottom: "1px solid rgba(0,0,0,0.06)",
+};
+
 type CascadingScreenMenuProps = {
   index: ScreensIndex[];
   /** Current screen path from URL (?screen=...) for pill label */
@@ -29,12 +81,19 @@ type CascadingScreenMenuProps = {
 export default function CascadingScreenMenu({ index, currentScreen = "" }: CascadingScreenMenuProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const devMobileMode = useDevMobileMode();
   const containerRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [hoveredFolder, setHoveredFolder] = useState<string | null>(null);
 
   const base = pathname?.startsWith("/dev") ? "/dev" : "/";
+
+  const closeMenu = () => {
+    setOpen(false);
+    setHoveredCategory(null);
+    setHoveredFolder(null);
+  };
 
   const navigate = (category: string, folder: string, file?: string) => {
     if (file === undefined) {
@@ -44,9 +103,7 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
       const screenPath = `${category}/${folder}/${file}`;
       router.replace(`${base}?screen=${encodeURIComponent(screenPath)}`);
     }
-    setOpen(false);
-    setHoveredCategory(null);
-    setHoveredFolder(null);
+    closeMenu();
   };
 
   useEffect(() => {
@@ -62,18 +119,10 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
   useEffect(() => {
     if (!open) return;
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setOpen(false);
-        setHoveredCategory(null);
-        setHoveredFolder(null);
-      }
+      if (e.key === "Escape") closeMenu();
     };
     const onClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpen(false);
-        setHoveredCategory(null);
-        setHoveredFolder(null);
-      }
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) closeMenu();
     };
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("click", onClickOutside, true);
@@ -142,6 +191,7 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
             left: 0,
             marginTop: 4,
             display: "flex",
+            flexDirection: "column",
             minWidth: 200,
             pointerEvents: "auto",
             background: "#ffffff",
@@ -150,7 +200,25 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
             borderRadius: 10,
           }}
         >
-          {/* Level 1: Categories */}
+          {/* Breadcrumb header (mobile clarity) */}
+          <div
+            className="cascading-screen-menu-breadcrumb"
+            style={{
+              padding: "10px 16px",
+              borderBottom: "1px solid #e5e7eb",
+              background: "#f8fafc",
+              flexShrink: 0,
+            }}
+          >
+            <div style={{ fontSize: 12, color: "#64748b", marginBottom: 2 }}>HIClarify Navigator</div>
+            <div style={{ fontSize: 12, color: "#64748b" }}>
+              Current: {hoveredCategory ?? "…"}
+              {hoveredFolder ? ` → ${hoveredFolder}` : ""}
+            </div>
+          </div>
+
+          <div className="cascading-screen-menu-panels-inner" style={{ display: "flex", flex: 1, minHeight: 0 }}>
+          {/* Level 1: Categories with section headers */}
           <div
             className="cascading-screen-menu-panel"
             style={{
@@ -161,37 +229,36 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
               borderRadius: "10px 0 0 10px",
             }}
           >
-            {index.map((cat) => {
-              const hasChildren = hasLevel2(cat);
-              return (
-                <div
-                  key={cat.category}
-                  role="menuitem"
-                  className="cascading-screen-menu-item"
-                  style={{
-                    padding: "var(--spacing-2) var(--spacing-3)",
-                    cursor: "pointer",
-                    color: "#000000",
-                    backgroundColor: hoveredCategory === cat.category ? "#f3f4f6" : "#ffffff",
-                    borderBottom: "1px solid #e5e7eb",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    gap: "var(--spacing-2)",
-                  }}
-                  onMouseEnter={() => {
-                    setHoveredCategory(cat.category);
-                    setHoveredFolder(null);
-                  }}
-                >
-                  <span>{cat.category}</span>
-                  {hasChildren && <span aria-hidden>▸</span>}
-                </div>
-              );
-            })}
+            {groupCategories(index).map(({ section, categories }) => (
+              <div key={section}>
+                <div style={SECTION_HEADER_STYLE}>{section}</div>
+                <div style={{ borderBottom: "1px solid rgba(0,0,0,0.06)", marginBottom: 4 }} />
+                {categories.map((cat) => {
+                  const hasChildren = hasLevel2(cat);
+                  return (
+                    <div
+                      key={cat.category}
+                      role="menuitem"
+                      className="cascading-screen-menu-item"
+                      style={{
+                        ...PARENT_ROW_STYLE,
+                        backgroundColor: hoveredCategory === cat.category ? "#e2e8f0" : "#0f172a08",
+                      }}
+                      onMouseEnter={() => {
+                        setHoveredCategory(cat.category);
+                        setHoveredFolder(null);
+                      }}
+                    >
+                      <span>{cat.category}</span>
+                      {hasChildren && <span aria-hidden style={{ fontSize: 14, opacity: 0.7 }}>›</span>}
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
           </div>
 
-          {/* Level 2: Files & folders */}
+          {/* Level 2: Files & subfolders (subfolder style) */}
           {categoryObj && (
             <div
               className="cascading-screen-menu-panel"
@@ -205,13 +272,7 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
                   key={fileName}
                   role="menuitem"
                   className="cascading-screen-menu-item"
-                  style={{
-                    padding: "var(--spacing-2) var(--spacing-3)",
-                    cursor: "pointer",
-                    color: "#000000",
-                    backgroundColor: "#ffffff",
-                    borderBottom: "1px solid #e5e7eb",
-                  }}
+                  style={{ ...SUBFOLDER_ROW_STYLE, backgroundColor: "#ffffff" }}
                   onClick={() => navigate(hoveredCategory!, fileName)}
                   onMouseEnter={() => setHoveredFolder(null)}
                 >
@@ -227,20 +288,14 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
                     role="menuitem"
                     className="cascading-screen-menu-item"
                     style={{
-                      padding: "var(--spacing-2) var(--spacing-3)",
-                      cursor: "pointer",
-                      color: "#000000",
-                      backgroundColor: hoveredFolder === folderName ? "#f3f4f6" : "#ffffff",
-                      borderBottom: "1px solid #e5e7eb",
-                      display: "flex",
+                      ...SUBFOLDER_ROW_STYLE,
+                      backgroundColor: hoveredFolder === folderName ? "#f1f5f9" : "#ffffff",
                       justifyContent: "space-between",
-                      alignItems: "center",
-                      gap: "var(--spacing-2)",
                     }}
                     onMouseEnter={() => setHoveredFolder(folderName)}
                   >
                     <span>{folderName}</span>
-                    {hasChildren && <span aria-hidden>▸</span>}
+                    {hasChildren && <span aria-hidden style={{ fontSize: 14, opacity: 0.7 }}>›</span>}
                   </div>
                 );
               })}
@@ -258,13 +313,7 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
                   key={fileName}
                   role="menuitem"
                   className="cascading-screen-menu-item"
-                  style={{
-                    padding: "var(--spacing-2) var(--spacing-3)",
-                    cursor: "pointer",
-                    color: "#000000",
-                    backgroundColor: "#ffffff",
-                    borderBottom: "1px solid #e5e7eb",
-                  }}
+                  style={{ ...SUBFOLDER_ROW_STYLE, backgroundColor: "#ffffff" }}
                   onClick={() => navigate(hoveredCategory!, hoveredFolder, fileName)}
                 >
                   {fileName}
@@ -272,6 +321,7 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
               ))}
             </div>
           )}
+          </div>
         </div>
       )}
     </div>

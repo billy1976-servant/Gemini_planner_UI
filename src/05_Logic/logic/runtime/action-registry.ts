@@ -18,6 +18,20 @@ import {
   runDiagnosticsSystemSnapshot,
   runDiagnosticsSystemSignalsReadAll,
 } from "@/logic/actions/diagnostics.actions";
+import {
+  structureAddItem,
+  structureAddItems,
+  structureUpdateItem,
+  structureDeleteItem,
+  structureSetBlocksForDate,
+  structureSetActivePlanner,
+  structureCancelDay,
+  structureAddFromText,
+  calendarSetDay,
+  calendarSetWeek,
+  calendarSetMonth,
+  calendarSetDate,
+} from "@/logic/actions/structure.actions";
 
 
 /**
@@ -64,6 +78,25 @@ const registry: Record<string, ActionHandler> = {
   "diagnostics:inputLogSnapshot": runDiagnosticsInputLogSnapshot,
   "diagnostics:systemSnapshot": runDiagnosticsSystemSnapshot,
   "diagnostics:systemSignalsReadAll": runDiagnosticsSystemSignalsReadAll,
+
+  // Structure (planner) — one key state.values.structure; atomic state.update only
+  "structure:addItem": structureAddItem,
+  "structure:addItems": structureAddItems,
+  "structure:updateItem": structureUpdateItem,
+  "structure:deleteItem": structureDeleteItem,
+  "structure:setBlocksForDate": structureSetBlocksForDate,
+  "structure:setActivePlanner": structureSetActivePlanner,
+  "structure:cancelDay": structureCancelDay,
+  "structure:addFromText": structureAddFromText,
+
+  // V6: Calendar view state (structure.calendarView, structure.selectedDate)
+  "calendar.today": calendarSetDay,
+  "calendar.week": calendarSetWeek,
+  "calendar.month": calendarSetMonth,
+  "calendar:setDay": calendarSetDay,
+  "calendar:setWeek": calendarSetWeek,
+  "calendar:setMonth": calendarSetMonth,
+  "calendar:setDate": calendarSetDate,
 };
 
 

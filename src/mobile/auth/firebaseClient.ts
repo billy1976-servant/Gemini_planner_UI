@@ -15,6 +15,14 @@ function getFirebaseConfig() {
   };
 }
 
+/** True when required Firebase env vars are set (sign-in will work). SSR-safe. */
+export function isFirebaseConfigured(): boolean {
+  return !!(
+    process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
+    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
+  );
+}
+
 export function getFirebaseAuth(): Auth | null {
   if (typeof window === "undefined") return null;
   const firebaseConfig = getFirebaseConfig();

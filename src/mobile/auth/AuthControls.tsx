@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useAuth } from "./useAuth";
 import AuthModal from "./AuthModal";
+import { isFirebaseConfigured } from "./firebaseClient";
 
 export default function AuthControls() {
   const { user, loading, signOut, authReady } = useAuth();
@@ -10,8 +11,33 @@ export default function AuthControls() {
 
   if (!authReady || loading) return null;
 
+  const showBanner = !user && !isFirebaseConfigured();
+
   return (
     <>
+      {showBanner && (
+        <div
+          style={{
+            position: "fixed",
+            top: 12,
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 9998,
+            padding: "6px 12px",
+            borderRadius: 6,
+            background: "#fef3c7",
+            color: "#92400e",
+            fontSize: 12,
+            border: "1px solid #f59e0b",
+            maxWidth: "90vw",
+          }}
+          role="status"
+        >
+          Sign-in not configured (missing Firebase env). Add{" "}
+          <code style={{ background: "rgba(0,0,0,0.06)", padding: "0 4px", borderRadius: 4 }}>NEXT_PUBLIC_FIREBASE_*</code> to{" "}
+          <code style={{ background: "rgba(0,0,0,0.06)", padding: "0 4px", borderRadius: 4 }}>.env.local</code> — see .env.example.
+        </div>
+      )}
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         {user ? (
           <>

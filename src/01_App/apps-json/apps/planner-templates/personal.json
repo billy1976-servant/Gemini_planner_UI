@@ -1,0 +1,18 @@
+{
+  "id": "personal",
+  "name": "Personal Planner",
+  "tree": {
+    "id": "root",
+    "name": "Life",
+    "order": 0,
+    "children": [
+      { "id": "home", "name": "Home", "order": 0 },
+      { "id": "work", "name": "Work", "order": 1 },
+      { "id": "health", "name": "Health", "order": 2 },
+      { "id": "finance", "name": "Finance", "order": 3 }
+    ]
+  },
+  "defaultTasks": [],
+  "defaultBlocks": [],
+  "rulesetId": "base"
+}

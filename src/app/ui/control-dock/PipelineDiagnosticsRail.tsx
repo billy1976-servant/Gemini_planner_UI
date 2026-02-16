@@ -25,6 +25,7 @@ import SpacingAuditPanel from "@/diagnostics/SpacingAuditPanel";
 import IntegrationsPanel from "@/diagnostics/IntegrationsPanel";
 import InspectorOverlay from "@/diagnostics/InspectorOverlay";
 import InteractionTracerPanel from "@/devtools/InteractionTracerPanel";
+import { useDevMobileMode } from "@/app/dev/useDevMobileMode";
 
 const RAIL_WIDTH = 48;
 const PANEL_WIDTH = 360;
@@ -95,6 +96,7 @@ const ICON_BUTTON_BASE: React.CSSProperties = {
 export default function PipelineDiagnosticsRail() {
   const [openPanel, setOpenPanel] = useState<PanelId | null>(null);
   const [diagnosticsTab, setDiagnosticsTab] = useState<TabId>("pipeline");
+  const devMobileMode = useDevMobileMode();
 
   const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
   const layoutSnapshot = useSyncExternalStore(subscribeLayout, getLayout, getLayout);
@@ -117,6 +119,15 @@ export default function PipelineDiagnosticsRail() {
   }, []);
 
   const closePanel = useCallback(() => setOpenPanel(null), []);
+
+  // When opened from Dev Home "Open Diagnostics", open the diagnostics panel once
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (sessionStorage.getItem("dev_open_diagnostics_rail") === "1") {
+      sessionStorage.removeItem("dev_open_diagnostics_rail");
+      setOpenPanel("diagnostics");
+    }
+  }, []);
 
   const activeRailLabel = openPanel ? RAIL_BUTTONS.find((b) => b.id === openPanel)?.label ?? "" : "";
 
@@ -286,9 +297,26 @@ export default function PipelineDiagnosticsRail() {
         transition: "width 0.2s ease",
       }}
       data-pipeline-diagnostics-rail
+      data-dev-left-rail
+      data-dev-left-rail-open={String(!!openPanel)}
     >
+      {devMobileMode && (
+        <button
+          type="button"
+          className="dev-mobile-hamburger--left"
+          onClick={() => togglePanel(openPanel ? null : "diagnostics")}
+          aria-label={openPanel ? "Close diagnostics" : "Open diagnostics"}
+          aria-expanded={!!openPanel}
+        >
+          <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+      )}
       {/* Icon rail — exactly two buttons, like right sidebar */}
-      <div style={RAIL_STYLE}>
+      <div style={RAIL_STYLE} data-dev-left-rail-strip>
         {RAIL_BUTTONS.map(({ id, label, icon }) => {
           const isActive = openPanel === id;
           return (
@@ -326,6 +354,7 @@ export default function PipelineDiagnosticsRail() {
 
       {/* Pop-out panel — same overlay feel as right sidebar */}
       <div
+        data-dev-left-panel
         style={{
           width: openPanel ? PANEL_WIDTH : 0,
           minWidth: 0,

@@ -1,0 +1,358 @@
+/**
+ * Dev mobile layout — responsive dev UI only. Applied when body has .dev-mobile-mode
+ * (viewport width < 768px on /dev). Desktop layout and runtime logic unchanged.
+ *
+ * Breakpoints:
+ *   Mobile:  < 768px
+ *   Tablet:  768px – 1024px
+ *   Desktop: > 1024px
+ *
+ * MOBILE DEV USABILITY: scaling, stacking, tap targets, full-screen panels.
+ * No engines, JSON, registry, or runtime logic changed.
+ */
+
+/* ============================================================================
+   Body class: .dev-mobile-mode (set by layout when path /dev and innerWidth < 768)
+   ============================================================================ */
+
+/* ----------------------------------------------------------------------------
+   1) GLOBAL SCALING
+   ---------------------------------------------------------------------------- */
+body.dev-mobile-mode {
+  font-size: 14px;
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+body.dev-mobile-mode .app-chrome {
+  min-height: 48px;
+  height: auto;
+  max-width: 100vw;
+}
+
+body.dev-mobile-mode .app-content,
+body.dev-mobile-mode .app-shell,
+body.dev-mobile-mode [data-json-stage],
+body.dev-mobile-mode .stage-center {
+  max-width: 100vw !important;
+}
+
+/* ----------------------------------------------------------------------------
+   5) TAP TARGET FIX — ALL buttons, selects, dropdown items, sidebar icons
+   ---------------------------------------------------------------------------- */
+body.dev-mobile-mode button,
+body.dev-mobile-mode select,
+body.dev-mobile-mode [role="menuitem"],
+body.dev-mobile-mode .cascading-screen-menu-item,
+body.dev-mobile-mode .cascading-screen-menu-trigger,
+body.dev-mobile-mode .dev-mobile-hamburger--left,
+body.dev-mobile-mode .dev-mobile-hamburger--right,
+body.dev-mobile-mode [data-dev-left-rail] button,
+body.dev-mobile-mode [data-dev-right-sidebar] button,
+body.dev-mobile-mode [data-dev-right-sidebar-strip] button,
+body.dev-mobile-mode [data-dev-left-rail-strip] button {
+  min-height: 48px !important;
+  min-width: 48px !important;
+  margin-bottom: 8px;
+}
+
+/* Allow last items in a row to not add extra bottom margin where it would wrap badly */
+body.dev-mobile-mode .app-chrome > *:last-child {
+  margin-bottom: 0;
+}
+
+/* ----------------------------------------------------------------------------
+   2) TOP BAR CLEANUP — Stack vertically, spacing, no overlap
+   ---------------------------------------------------------------------------- */
+body.dev-mobile-mode .app-chrome {
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 12px;
+  padding: 12px;
+  min-height: 48px;
+  height: auto;
+}
+
+body.dev-mobile-mode .app-chrome .app-chrome-spacer {
+  display: none;
+}
+
+body.dev-mobile-mode .app-chrome > b {
+  order: 0;
+  margin-bottom: 4px;
+}
+
+body.dev-mobile-mode .app-chrome .cascading-screen-menu {
+  order: 1;
+  width: 100%;
+}
+
+body.dev-mobile-mode .app-chrome .app-chrome-save {
+  order: 2;
+  width: 100%;
+}
+
+body.dev-mobile-mode .app-chrome .app-chrome-save + * {
+  order: 3;
+}
+
+body.dev-mobile-mode .app-chrome .app-chrome-hint {
+  order: 10;
+  width: 100%;
+  font-size: 0.7rem;
+  white-space: normal;
+  margin-bottom: 0;
+}
+
+body.dev-mobile-mode .app-chrome button[type="button"]:not(.cascading-screen-menu-trigger):not(.app-chrome-save) {
+  order: 4;
+  width: 100%;
+}
+
+/* DevicePreviewToggle (Desktop/Tablet/Phone) — stack vertically, full width */
+body.dev-mobile-mode [data-device-preview-toggle] {
+  display: flex !important;
+  flex-direction: column;
+  width: 100%;
+  gap: 8px;
+  order: 3;
+}
+
+body.dev-mobile-mode [data-device-preview-toggle] button {
+  width: 100%;
+  min-height: 48px !important;
+}
+
+/* ----------------------------------------------------------------------------
+   FILE / SCREEN DROPDOWN — Full-screen overlay, stacked list
+   ---------------------------------------------------------------------------- */
+body.dev-mobile-mode .cascading-screen-menu-panels-inner {
+  flex-direction: column !important;
+}
+
+body.dev-mobile-mode .cascading-screen-menu-panels {
+  position: fixed !important;
+  inset: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  min-width: 0;
+  margin: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: 0;
+  z-index: 99999;
+  background: #fff;
+  box-shadow: none;
+}
+
+body.dev-mobile-mode .cascading-screen-menu-panel {
+  min-width: 0;
+  width: 100% !important;
+  max-width: 100%;
+  border-right: none !important;
+  border-bottom: 1px solid #e5e7eb;
+  border-radius: 0;
+  flex-shrink: 0;
+}
+
+body.dev-mobile-mode .cascading-screen-menu-item {
+  min-height: 48px !important;
+  width: 100% !important;
+  padding: 14px 16px !important;
+  display: flex !important;
+  align-items: center;
+  margin-bottom: 0;
+  box-sizing: border-box;
+}
+
+body.dev-mobile-mode .cascading-screen-menu-item + .cascading-screen-menu-item {
+  border-top: 1px solid #f3f4f6;
+}
+
+/* ----------------------------------------------------------------------------
+   Section layout panel: stack vertically, single column, tap targets
+   ---------------------------------------------------------------------------- */
+body.dev-mobile-mode .app-section-layout-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  max-width: 100vw;
+}
+
+body.dev-mobile-mode .app-section-layout-panel .diagnostics-compact button,
+body.dev-mobile-mode .app-section-layout-panel button {
+  min-height: 48px !important;
+}
+
+/* ----------------------------------------------------------------------------
+   6) CONTENT AREA — Padding 12px, prevent elements touching screen edges
+   ---------------------------------------------------------------------------- */
+body.dev-mobile-mode .app-content {
+  padding: 12px !important;
+  box-sizing: border-box;
+}
+
+body.dev-mobile-mode .app-content .json-stage,
+body.dev-mobile-mode .app-content [data-json-stage] {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ----------------------------------------------------------------------------
+   4) LEFT RAIL — Fullscreen slide panel, 100vw, scrollable
+   ---------------------------------------------------------------------------- */
+body.dev-mobile-mode [data-dev-left-rail] {
+  width: 0 !important;
+  min-width: 0 !important;
+  overflow: visible;
+}
+
+body.dev-mobile-mode [data-dev-left-rail][data-dev-left-rail-open="true"] {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25);
+}
+
+body.dev-mobile-mode [data-dev-left-rail][data-dev-left-rail-open="true"] [data-dev-left-panel] {
+  flex: 1;
+  min-width: 0;
+  width: 100% !important;
+  max-width: 100vw;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+body.dev-mobile-mode [data-dev-left-rail] [data-dev-left-rail-strip] {
+  width: 0 !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  overflow: hidden;
+  border: none;
+}
+
+.dev-mobile-hamburger--left {
+  position: fixed !important;
+  left: 12px;
+  top: calc(48px + 12px);
+  z-index: 901;
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  min-height: 48px !important;
+  margin-bottom: 0;
+  border-radius: var(--radius-md);
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 1px solid #dadce0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  cursor: pointer;
+}
+
+/* ----------------------------------------------------------------------------
+   4) RIGHT SIDEBAR — Fullscreen slide panel, 100vw, scrollable
+   ---------------------------------------------------------------------------- */
+body.dev-mobile-mode [data-dev-right-sidebar] {
+  width: 0 !important;
+  min-width: 0 !important;
+  overflow: visible;
+}
+
+body.dev-mobile-mode [data-dev-right-sidebar][data-dev-right-sidebar-open="true"] {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.25);
+}
+
+body.dev-mobile-mode [data-dev-right-sidebar][data-dev-right-sidebar-open="true"] [data-dev-right-panel] {
+  flex: 1;
+  min-width: 0;
+  width: 100% !important;
+  max-width: 100vw;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+body.dev-mobile-mode [data-dev-right-sidebar] [data-dev-right-sidebar-strip] {
+  width: 0 !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  overflow: hidden;
+  border: none;
+}
+
+.dev-mobile-hamburger--right {
+  position: fixed !important;
+  right: 12px;
+  top: calc(48px + 12px);
+  z-index: 901;
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  min-height: 48px !important;
+  margin-bottom: 0;
+  border-radius: var(--radius-md);
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 1px solid #dadce0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  cursor: pointer;
+}
+
+/* ----------------------------------------------------------------------------
+   Dev panels: single column, 48px tap targets, max-width safety
+   ---------------------------------------------------------------------------- */
+body.dev-mobile-mode [data-dev-right-sidebar] button[type="button"],
+body.dev-mobile-mode [data-dev-left-rail] button[type="button"] {
+  min-height: 48px !important;
+}
+
+body.dev-mobile-mode [data-dev-right-sidebar] [data-dev-panel-content],
+body.dev-mobile-mode [data-dev-left-rail] [data-dev-panel-content] {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 100vw;
+}
+
+body.dev-mobile-mode [data-dev-right-sidebar] [data-dev-panel-content] [style*="grid"],
+body.dev-mobile-mode [data-dev-left-rail] [style*="grid"] {
+  grid-template-columns: 1fr !important;
+}
+
+/* ----------------------------------------------------------------------------
+   Overlay when panel open (tap outside to close — overlay used by components)
+   ---------------------------------------------------------------------------- */
+body.dev-mobile-mode .dev-mobile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 898;
+  pointer-events: auto;
+}
+
+/* ----------------------------------------------------------------------------
+   7) DROPDOWN USABILITY — Item spacing (close after selection is in component)
+   ---------------------------------------------------------------------------- */
+body.dev-mobile-mode .cascading-screen-menu-item {
+  margin-bottom: 0;
+}
+
+body.dev-mobile-mode .cascading-screen-menu-panel .cascading-screen-menu-item:not(:last-child) {
+  border-bottom: 1px solid #e5e7eb;
+}

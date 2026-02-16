@@ -40,6 +40,8 @@ import { pushTrace } from "@/devtools/runtime-trace-store";
 import { addTraceEvent, endInteraction } from "@/03_Runtime/debug/pipeline-trace-aggregator";
 import { startTrace, endTrace, isEnabled } from "@/diagnostics/traceStore";
 import { OriginTraceProvider } from "@/03_Runtime/diagnostics/OriginTraceContext";
+import { isDueOn } from "@/logic/engines/structure/recurrence.engine";
+import { sortByPriority } from "@/logic/engines/structure/prioritization.engine";
 
 
 /* ======================================================
@@ -265,26 +267,37 @@ function shouldRenderNode(node: any, state: any, defaultState?: any): boolean {
   const { state: key, equals } = node.when;
   if (!key) return true;
 
+  // Resolve state value: support dotted path (e.g. "values.structure.calendarView")
+  function getByPath(obj: any, path: string): any {
+    if (!obj || !path) return undefined;
+    const parts = path.trim().split(".").filter(Boolean);
+    let v: any = obj;
+    for (const part of parts) {
+      v = v != null && typeof v === "object" ? v[part] : undefined;
+    }
+    return v;
+  }
 
   // 🔒 Authoritative gating:
   // 🔑 CRITICAL: Use reactive state if it exists (user interactions), fallback to defaultState for initial render
-  // This ensures behaviors work (reactive state) while initial render shows correct view (defaultState)
   let stateValue: any;
-  
-  // Reactive state takes priority (user has interacted)
-  if (state?.[key] !== undefined) {
-    stateValue = state[key];
-  } else if (defaultState?.[key] !== undefined) {
-    // No reactive state yet - use defaultState for initial render
-    stateValue = defaultState[key];
+  if (key.includes(".")) {
+    stateValue = getByPath(state, key) ?? getByPath(defaultState, key);
   } else {
-    stateValue = undefined;
+    if (state?.[key] !== undefined) {
+      stateValue = state[key];
+    } else if (defaultState?.[key] !== undefined) {
+      stateValue = defaultState[key];
+    } else {
+      stateValue = undefined;
+    }
   }
   
   // Debug logging removed - use trace store instead
   
   // If state key doesn't exist in either, don't render (prevents showing wrong content)
-  if (stateValue === undefined) {
+  // V6: treat undefined calendarView as "day" so Day view shows when user first opens Plan
+  if (stateValue === undefined && (key !== "values.structure.calendarView" || equals !== "day")) {
     logRuntimeDecision({
       timestamp: Date.now(),
       engineId: "renderer",
@@ -295,6 +308,9 @@ function shouldRenderNode(node: any, state: any, defaultState?: any): boolean {
       downstreamEffect: "node not rendered",
     });
     return false;
+  }
+  if (stateValue === undefined && key === "values.structure.calendarView" && equals === "day") {
+    stateValue = "day";
   }
 
   const visible = stateValue === equals;
@@ -938,8 +954,17 @@ export function renderNode(
     });
     return (
       <MaybeDebugWrapper node={resolvedNode} screenPath={effectivePath}>
-        <div style={{ color: "red" }}>
-          Missing registry entry: <b>{resolvedNode.type}</b>
+        <div
+          style={{
+            background: "#f5f5f5",
+            borderRadius: 12,
+            padding: "16px 20px",
+            color: "#6b7280",
+            fontSize: 14,
+            fontWeight: 400,
+          }}
+        >
+          Module loading…
         </div>
       </MaybeDebugWrapper>
     );
@@ -1174,6 +1199,154 @@ export function renderNode(
     props.activeValue = stateSnapshot.currentView;
   }
 
+  // Phase C: List itemsFromState — resolve state path to items; map to List content.items
+  const isList = resolvedNode.type === "List" || resolvedNode.type === "list";
+  const itemsFromStatePath = resolvedNode.content?.itemsFromState;
+  if (isList && typeof itemsFromStatePath === "string" && stateSnapshot?.values) {
+    const pathParts = itemsFromStatePath.trim().split(".").filter(Boolean);
+    let value: unknown = stateSnapshot.values;
+    for (const part of pathParts) {
+      value = value != null && typeof value === "object" && part in value
+        ? (value as Record<string, unknown>)[part]
+        : undefined;
+    }
+    if (Array.isArray(value)) {
+      const mapper = resolvedNode.content?.itemsFromStateMapper;
+      const defaultMap = (item: any) => ({
+        label: item?.title ?? item?.label ?? String(item?.id ?? ""),
+        behavior: item?.id != null
+          ? { type: "Action", params: { name: "structure:updateItem", id: item.id } }
+          : undefined,
+      });
+      const mapFn = mapper === "structureToList" || mapper === "structureToListItem" ? defaultMap : defaultMap;
+      props.content = { ...(props.content ?? {}), items: value.map((item: any) => mapFn(item)) };
+    }
+  }
+
+  // Phase C: List blocksFromState (V6) — resolve blocksByDate[selectedDate] for day layout
+  const blocksFromStatePath = resolvedNode.content?.blocksFromState;
+  const blocksFromStateDateKey = resolvedNode.content?.blocksFromStateDateKey;
+  if (
+    isList &&
+    typeof blocksFromStatePath === "string" &&
+    stateSnapshot?.values
+  ) {
+    const pathParts = blocksFromStatePath.trim().split(".").filter(Boolean);
+    let blocksByDate: unknown = stateSnapshot.values;
+    for (const part of pathParts) {
+      blocksByDate =
+        blocksByDate != null && typeof blocksByDate === "object" && part in (blocksByDate as object)
+          ? (blocksByDate as Record<string, unknown>)[part]
+          : undefined;
+    }
+    let dateKey: string | undefined;
+    if (typeof blocksFromStateDateKey === "string") {
+      const datePathParts = blocksFromStateDateKey.trim().split(".").filter(Boolean);
+      let v: unknown = stateSnapshot.values;
+      for (const part of datePathParts) {
+        v = v != null && typeof v === "object" && part in (v as object) ? (v as Record<string, unknown>)[part] : undefined;
+      }
+      dateKey = typeof v === "string" ? v : undefined;
+    }
+    if (!dateKey) {
+      const now = new Date();
+      dateKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    }
+    const blocks =
+      blocksByDate != null && typeof blocksByDate === "object" && dateKey in (blocksByDate as object)
+        ? (blocksByDate as Record<string, unknown>)[dateKey]
+        : undefined;
+    if (Array.isArray(blocks)) {
+      const blockItems = blocks.map((block: any) => ({
+        label: block?.label ?? (block?.start != null && block?.end != null ? `${block.start}–${block.end}` : "Block"),
+        behavior: undefined,
+      }));
+      props.content = { ...(props.content ?? {}), items: blockItems };
+    }
+  }
+
+  // Phase C: List scheduledFromState (V6) — tasks due on selectedDate, sorted by priority
+  const scheduledFromStatePath = resolvedNode.content?.scheduledFromState;
+  const scheduledFromStateDateKey = resolvedNode.content?.scheduledFromStateDateKey;
+  if (
+    isList &&
+    typeof scheduledFromStatePath === "string" &&
+    stateSnapshot?.values
+  ) {
+    const pathParts = scheduledFromStatePath.trim().split(".").filter(Boolean);
+    let slice: any = stateSnapshot.values;
+    for (const part of pathParts) {
+      slice = slice != null && typeof slice === "object" && part in slice ? slice[part] : undefined;
+    }
+    let dateKey: string | undefined;
+    if (typeof scheduledFromStateDateKey === "string") {
+      const datePathParts = scheduledFromStateDateKey.trim().split(".").filter(Boolean);
+      let v: unknown = stateSnapshot.values;
+      for (const part of datePathParts) {
+        v = v != null && typeof v === "object" && part in (v as object) ? (v as Record<string, unknown>)[part] : undefined;
+      }
+      dateKey = typeof v === "string" ? v : undefined;
+    }
+    if (!dateKey) {
+      const now = new Date();
+      dateKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    }
+    const date = new Date(dateKey + "T12:00:00");
+    const items: any[] = Array.isArray(slice?.items) ? slice.items : [];
+    const rules = slice?.rules ?? {};
+    const dueItems = items.filter((item: any) => isDueOn(item, date));
+    const sorted = sortByPriority(dueItems, date, rules);
+    const scheduledItems = sorted.map((item: any) => ({
+      label: item?.title ?? item?.id ?? "",
+      behavior: item?.id != null
+        ? { type: "Action", params: { name: "structure:updateItem", id: item.id } }
+        : undefined,
+    }));
+    props.content = { ...(props.content ?? {}), items: scheduledItems };
+  }
+
+  // Phase C: List cellsFromState (V6) — path to array (e.g. monthRollup), map to list items
+  const cellsFromStatePath = resolvedNode.content?.cellsFromState;
+  if (isList && typeof cellsFromStatePath === "string" && stateSnapshot?.values) {
+    const pathParts = cellsFromStatePath.trim().split(".").filter(Boolean);
+    let value: unknown = stateSnapshot.values;
+    for (const part of pathParts) {
+      value = value != null && typeof value === "object" && part in (value as object) ? (value as Record<string, unknown>)[part] : undefined;
+    }
+    if (Array.isArray(value)) {
+      const cellItems = value.map((cell: any) => ({
+        label:
+          cell?.period != null && typeof cell?.count === "number"
+            ? `${cell.period} (${cell.count})`
+            : cell?.label ?? String(cell?.period ?? ""),
+        behavior: undefined,
+      }));
+      props.content = { ...(props.content ?? {}), items: cellItems };
+    }
+  }
+
+  // Phase C: Card bodyFromState (V6) — resolve path and set content.body (e.g. stats)
+  const isCard = resolvedNode.type === "Card" || resolvedNode.type === "card";
+  const bodyFromStatePath = resolvedNode.content?.bodyFromState;
+  if (isCard && typeof bodyFromStatePath === "string" && stateSnapshot?.values) {
+    const pathParts = bodyFromStatePath.trim().split(".").filter(Boolean);
+    let value: unknown = stateSnapshot.values;
+    for (const part of pathParts) {
+      value = value != null && typeof value === "object" && part in (value as object) ? (value as Record<string, unknown>)[part] : undefined;
+    }
+    if (value != null) {
+      const body =
+        typeof value === "string"
+          ? value
+          : typeof value === "object" &&
+              value !== null &&
+              "todayCount" in value &&
+              "weekCount" in value
+            ? `Today: ${(value as any).todayCount} | Week: ${(value as any).weekCount} | Month: ${(value as any).monthCount ?? 0}`
+            : JSON.stringify(value);
+      props.content = { ...(props.content ?? {}), body };
+    }
+  }
 
   delete props.type;
   delete props.key;

@@ -204,6 +204,233 @@
         {
           "type": "Card",
           "content": {
+            "title": "Stats",
+            "body": "Today: 0 | Week: 0 | Month: 0",
+            "bodyFromState": "structure.stats"
+          }
+        },
+        {
+          "type": "Toolbar",
+          "content": {
+            "actions": [
+              {
+                "content": { "label": "Today" },
+                "behavior": { "type": "Action", "params": { "name": "calendar.today" } }
+              },
+              {
+                "content": { "label": "Week" },
+                "behavior": { "type": "Action", "params": { "name": "calendar.week" } }
+              },
+              {
+                "content": { "label": "Month" },
+                "behavior": { "type": "Action", "params": { "name": "calendar.month" } }
+              }
+            ]
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "Add task from text",
+            "body": "Type one or more tasks (e.g. Buy milk tomorrow, Call John every Thursday) then click Add."
+          }
+        },
+        {
+          "type": "Field",
+          "params": {
+            "field": {
+              "fieldKey": "structure_draftText",
+              "multiline": true
+            }
+          },
+          "content": {
+            "placeholder": "e.g. Run to the bank Thursday, take out trash every Thursday"
+          }
+        },
+        {
+          "type": "Button",
+          "content": { "label": "Add from text" },
+          "behavior": { "type": "Action", "params": { "name": "structure:addFromText" } }
+        },
+        {
+          "type": "Section",
+          "when": { "state": "values.structure.calendarView", "equals": "day" },
+          "content": { "title": "Day" },
+          "layout": "content-stack",
+          "children": [
+            {
+              "type": "List",
+              "content": {
+                "scheduledFromState": "structure",
+                "scheduledFromStateDateKey": "structure.selectedDate"
+              }
+            },
+            {
+              "type": "List",
+              "content": {
+                "blocksFromState": "structure.blocksByDate",
+                "blocksFromStateDateKey": "structure.selectedDate"
+              }
+            }
+          ]
+        },
+        {
+          "type": "Section",
+          "when": { "state": "values.structure.calendarView", "equals": "week" },
+          "content": { "title": "Week" },
+          "layout": "content-stack",
+          "children": [
+            {
+              "type": "Card",
+              "content": { "title": "Day 1" }
+            },
+            {
+              "type": "List",
+              "content": {
+                "blocksFromState": "structure.blocksByDate",
+                "blocksFromStateDateKey": "structure.weekDates.0"
+              }
+            },
+            {
+              "type": "List",
+              "content": {
+                "scheduledFromState": "structure",
+                "scheduledFromStateDateKey": "structure.weekDates.0"
+              }
+            },
+            {
+              "type": "Card",
+              "content": { "title": "Day 2" }
+            },
+            {
+              "type": "List",
+              "content": {
+                "blocksFromState": "structure.blocksByDate",
+                "blocksFromStateDateKey": "structure.weekDates.1"
+              }
+            },
+            {
+              "type": "List",
+              "content": {
+                "scheduledFromState": "structure",
+                "scheduledFromStateDateKey": "structure.weekDates.1"
+              }
+            },
+            {
+              "type": "Card",
+              "content": { "title": "Day 3" }
+            },
+            {
+              "type": "List",
+              "content": {
+                "blocksFromState": "structure.blocksByDate",
+                "blocksFromStateDateKey": "structure.weekDates.2"
+              }
+            },
+            {
+              "type": "List",
+              "content": {
+                "scheduledFromState": "structure",
+                "scheduledFromStateDateKey": "structure.weekDates.2"
+              }
+            },
+            {
+              "type": "Card",
+              "content": { "title": "Day 4" }
+            },
+            {
+              "type": "List",
+              "content": {
+                "blocksFromState": "structure.blocksByDate",
+                "blocksFromStateDateKey": "structure.weekDates.3"
+              }
+            },
+            {
+              "type": "List",
+              "content": {
+                "scheduledFromState": "structure",
+                "scheduledFromStateDateKey": "structure.weekDates.3"
+              }
+            },
+            {
+              "type": "Card",
+              "content": { "title": "Day 5" }
+            },
+            {
+              "type": "List",
+              "content": {
+                "blocksFromState": "structure.blocksByDate",
+                "blocksFromStateDateKey": "structure.weekDates.4"
+              }
+            },
+            {
+              "type": "List",
+              "content": {
+                "scheduledFromState": "structure",
+                "scheduledFromStateDateKey": "structure.weekDates.4"
+              }
+            },
+            {
+              "type": "Card",
+              "content": { "title": "Day 6" }
+            },
+            {
+              "type": "List",
+              "content": {
+                "blocksFromState": "structure.blocksByDate",
+                "blocksFromStateDateKey": "structure.weekDates.5"
+              }
+            },
+            {
+              "type": "List",
+              "content": {
+                "scheduledFromState": "structure",
+                "scheduledFromStateDateKey": "structure.weekDates.5"
+              }
+            },
+            {
+              "type": "Card",
+              "content": { "title": "Day 7" }
+            },
+            {
+              "type": "List",
+              "content": {
+                "blocksFromState": "structure.blocksByDate",
+                "blocksFromStateDateKey": "structure.weekDates.6"
+              }
+            },
+            {
+              "type": "List",
+              "content": {
+                "scheduledFromState": "structure",
+                "scheduledFromStateDateKey": "structure.weekDates.6"
+              }
+            }
+          ]
+        },
+        {
+          "type": "Section",
+          "when": { "state": "values.structure.calendarView", "equals": "month" },
+          "content": { "title": "Month" },
+          "layout": "content-stack",
+          "children": [
+            {
+              "type": "List",
+              "content": {
+                "cellsFromState": "structure.monthRollup"
+              }
+            }
+          ]
+        },
+        {
+          "type": "List",
+          "content": {
+            "itemsFromState": "structure.items"
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
             "title": "Calendar View",
             "body": "Plan your days, weeks, and months ahead."
           }
@@ -213,46 +440,6 @@
           "content": {
             "title": "Upcoming Events",
             "body": "See what's coming up in your schedule."
-          }
-        },
-        {
-          "type": "Toolbar",
-          "content": {
-            "actions": [
-              {
-                "content": {
-                  "label": "Today"
-                },
-                "behavior": {
-                  "type": "Action",
-                  "params": {
-                    "name": "calendar.today"
-                  }
-                }
-              },
-              {
-                "content": {
-                  "label": "Week"
-                },
-                "behavior": {
-                  "type": "Action",
-                  "params": {
-                    "name": "calendar.week"
-                  }
-                }
-              },
-              {
-                "content": {
-                  "label": "Month"
-                },
-                "behavior": {
-                  "type": "Action",
-                  "params": {
-                    "name": "calendar.month"
-                  }
-                }
-              }
-            ]
           }
         }
       ]
