@@ -2,6 +2,7 @@
 export const dynamic = "force-dynamic";
 // Path contract: TSX resolution uses require.context("../01_App/apps-tsx", ...) (see scripts/validate-paths.js)
 import React, { useEffect, useMemo, useState } from "react";
+import nextDynamic from "next/dynamic";
 import { useSyncExternalStore } from "react";
 import ExperienceRenderer from "@/engine/core/ExperienceRenderer";
 import { loadScreen } from "@/engine/core/screen-loader";
@@ -28,31 +29,48 @@ import {
   type ResolveCapabilityProfileOptions,
 } from "@/03_Runtime/capability";
 
-const USER_APP_SCREEN_PATH = "apps/journal_track/journal_replicate-2";
+/** Entry: first-time users see onboarding; returning users go straight to Home V2. */
+const ENTRY_SCREEN_PATH = "tsx:HiClarify/HiClarifyOnboarding";
+const HOME_SCREEN_PATH = "HiClarify/home/home_screen";
+const RETURNING_USER_KEY = "hiclarify_entered_once";
+
+function isReturningUser(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return localStorage.getItem(RETURNING_USER_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+const HiClarifyOnboarding = nextDynamic(
+  () => import("@/apps-tsx/HiClarify/HiClarifyOnboarding").then((m) => m.default),
+  { ssr: false }
+);
 
 export default function Page() {
-  const [json, setJson] = useState<any>(null);
+  const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
+  const currentView = (stateSnapshot?.values?.currentView as string) ?? "";
+
+  const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const defaultPath = isReturningUser() ? HOME_SCREEN_PATH : ENTRY_SCREEN_PATH;
+  const effectivePath = currentView || defaultPath;
+
   useEffect(() => {
-    loadScreen(USER_APP_SCREEN_PATH)
-      .then((data) => {
-        if (data?.__type === "tsx-screen") {
-          setError("User app must be JSON screen.");
-          setJson(null);
-          return;
-        }
-        setJson(data);
+    loadScreen(effectivePath)
+      .then((loaded) => {
         setError(null);
+        setData(loaded);
       })
       .catch((err) => {
         setError(err?.message ?? "Failed to load app");
-        setJson(null);
+        setData(null);
       });
-  }, []);
+  }, [effectivePath]);
 
   const layoutSnapshot = useSyncExternalStore(subscribeLayout, getLayout, getLayout);
-  const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
 
   const experience = (stateSnapshot?.values?.experience ?? (layoutSnapshot as { experience?: string })?.experience) ?? "website";
   const effectiveTemplateId =
@@ -65,7 +83,10 @@ export default function Page() {
   const experienceProfile = getExperienceProfile(experience);
   const templateProfile = getTemplateProfile(effectiveTemplateId ?? "");
 
-  // Capability hub: resolve and write to store on screen/template change
+  const isTsxScreen = data?.__type === "tsx-screen";
+  const json = isTsxScreen ? null : data;
+
+  // Capability hub: resolve and write to store on screen/template change (JSON screens only)
   useEffect(() => {
     if (!json) return;
     const global = loadGlobalCapabilities();
@@ -103,9 +124,17 @@ export default function Page() {
   );
 
   if (error) return <div style={{ color: "red", padding: 16 }}>{error}</div>;
-  if (!json) return <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>Loading…</div>;
+  if (!data) return <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>Loading…</div>;
 
-  const screenKey = "journal-replicate-2";
+  if (isTsxScreen) {
+    return (
+      <CapabilityProvider>
+        <HiClarifyOnboarding />
+      </CapabilityProvider>
+    );
+  }
+
+  const screenKey = json?.id ?? effectivePath.replace(/[/.]/g, "-");
   const organInternalLayoutOverrides: Record<string, string> = {};
 
   let renderNode = json?.root ?? json?.screen ?? json?.node ?? json;
@@ -113,8 +142,8 @@ export default function Page() {
   const children = assignSectionInstanceKeys(rawChildren);
   const docForOrgans = { meta: { domain: "offline", pageId: "screen", version: 1 }, nodes: children };
   const expandedDoc = expandOrgansInDocument(docForOrgans as any, loadOrganVariant, organInternalLayoutOverrides);
-  const data = json?.data ?? {};
-  const boundDoc = applySkinBindings(expandedDoc as any, data);
+  const skinData = json?.data ?? {};
+  const boundDoc = applySkinBindings(expandedDoc as any, skinData);
   const finalChildren = (boundDoc as any).nodes ?? children;
   renderNode = { ...renderNode, children: finalChildren };
 

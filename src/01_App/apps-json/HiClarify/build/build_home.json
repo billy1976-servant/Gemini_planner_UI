@@ -1,0 +1,99 @@
+{
+  "id": "build_home",
+  "type": "screen",
+  "state": {
+    "currentView": "main"
+  },
+  "children": [
+    {
+      "id": "buildHero",
+      "type": "section",
+      "role": "hero",
+      "content": {
+        "title": "Build",
+        "body": "Ideas, planning, learning"
+      },
+      "children": []
+    },
+    {
+      "id": "buildNav",
+      "type": "section",
+      "role": "writing",
+      "content": {
+        "title": ""
+      },
+      "children": [
+        {
+          "id": "buildLauncher",
+          "type": "section",
+          "role": "focus",
+          "content": {
+            "title": ""
+          },
+          "children": [
+            {
+              "id": "cardIdeas",
+              "type": "card",
+              "content": {
+                "title": "Ideas",
+                "body": "Coming Soon"
+              },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "navigate",
+                  "to": "HiClarify/build/ideas/ideas_screen"
+                }
+              }
+            },
+            {
+              "id": "cardResearch",
+              "type": "card",
+              "content": {
+                "title": "Research",
+                "body": "Coming Soon"
+              },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "navigate",
+                  "to": "HiClarify/build/research/research_screen"
+                }
+              }
+            },
+            {
+              "id": "cardProjects",
+              "type": "card",
+              "content": {
+                "title": "Projects",
+                "body": "Coming Soon"
+              },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "navigate",
+                  "to": "HiClarify/build/projects/projects_screen"
+                }
+              }
+            },
+            {
+              "id": "cardLearning",
+              "type": "card",
+              "content": {
+                "title": "Learning",
+                "body": "Coming Soon"
+              },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "navigate",
+                  "to": "HiClarify/me/learning/learning_screen"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

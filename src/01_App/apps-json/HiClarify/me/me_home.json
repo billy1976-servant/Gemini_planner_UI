@@ -1,0 +1,99 @@
+{
+  "id": "me_home",
+  "type": "screen",
+  "state": {
+    "currentView": "main"
+  },
+  "children": [
+    {
+      "id": "meHero",
+      "type": "section",
+      "role": "hero",
+      "content": {
+        "title": "Me",
+        "body": "Personal tools and growth"
+      },
+      "children": []
+    },
+    {
+      "id": "meNav",
+      "type": "section",
+      "role": "writing",
+      "content": {
+        "title": ""
+      },
+      "children": [
+        {
+          "id": "meLauncher",
+          "type": "section",
+          "role": "focus",
+          "content": {
+            "title": ""
+          },
+          "children": [
+            {
+              "id": "cardJournal",
+              "type": "card",
+              "content": {
+                "title": "Journal",
+                "body": "Coming Soon"
+              },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "navigate",
+                  "to": "HiClarify/me/journal/journal_screen"
+                }
+              }
+            },
+            {
+              "id": "cardPlanner",
+              "type": "card",
+              "content": {
+                "title": "Planner",
+                "body": "Coming Soon"
+              },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "navigate",
+                  "to": "HiClarify/build/planner/planner_screen"
+                }
+              }
+            },
+            {
+              "id": "cardNotes",
+              "type": "card",
+              "content": {
+                "title": "Notes",
+                "body": "Coming Soon"
+              },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "navigate",
+                  "to": "HiClarify/me/notes/notes_screen"
+                }
+              }
+            },
+            {
+              "id": "cardTracker",
+              "type": "card",
+              "content": {
+                "title": "Personal Tracker",
+                "body": "Coming Soon"
+              },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "navigate",
+                  "to": "HiClarify/me/tracker/personal_tracker_screen"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

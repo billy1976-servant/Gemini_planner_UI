@@ -1,0 +1,11 @@
+{
+  "id": "home_screen",
+  "type": "screen",
+  "state": { "currentView": "main" },
+  "children": [
+    {
+      "id": "homeV2",
+      "type": "OsbHomeV2"
+    }
+  ]
+}

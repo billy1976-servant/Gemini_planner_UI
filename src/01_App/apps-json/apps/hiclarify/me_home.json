@@ -1,0 +1,63 @@
+{
+  "id": "me_home",
+  "type": "screen",
+  "state": {},
+  "children": [
+    {
+      "id": "|Section",
+      "type": "Section",
+      "content": { "title": "Me" },
+      "layout": "content-stack",
+      "children": [
+        {
+          "type": "Card",
+          "content": { "body": "This section will grow over time. Select a tool below." }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "Journal",
+            "body": "Coming Soon"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": { "name": "navigate", "to": "HiClarify/journal_screen" }
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "Planner",
+            "body": "Coming Soon"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": { "name": "navigate", "to": "HiClarify/planner_screen" }
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "Notes",
+            "body": "Coming Soon"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": { "name": "navigate", "to": "HiClarify/notes_screen" }
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "Personal Tracker",
+            "body": "Coming Soon"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": { "name": "navigate", "to": "HiClarify/personal_tracker_screen" }
+          }
+        }
+      ]
+    }
+  ]
+}

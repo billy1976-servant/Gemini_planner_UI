@@ -1,0 +1,15 @@
+{
+  "id": "conversations_screen",
+  "type": "screen",
+  "state": {},
+  "children": [
+    {
+      "type": "Section",
+      "content": { "title": "Conversations" },
+      "layout": "content-stack",
+      "children": [
+        { "type": "Card", "content": { "body": "Placeholder. Coming soon." } }
+      ]
+    }
+  ]
+}

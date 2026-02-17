@@ -17,6 +17,8 @@ import {
   runDiagnosticsInputLogSnapshot,
   runDiagnosticsSystemSnapshot,
   runDiagnosticsSystemSignalsReadAll,
+  runDiagnosticsPlannerParserPipeline,
+  runDiagnosticsPlannerFullParseTrace,
 } from "@/logic/actions/diagnostics.actions";
 import {
   structureAddItem,
@@ -27,6 +29,7 @@ import {
   structureSetActivePlanner,
   structureCancelDay,
   structureAddFromText,
+  structureAddJourney,
   calendarSetDay,
   calendarSetWeek,
   calendarSetMonth,
@@ -78,6 +81,8 @@ const registry: Record<string, ActionHandler> = {
   "diagnostics:inputLogSnapshot": runDiagnosticsInputLogSnapshot,
   "diagnostics:systemSnapshot": runDiagnosticsSystemSnapshot,
   "diagnostics:systemSignalsReadAll": runDiagnosticsSystemSignalsReadAll,
+  "diagnostics:plannerParserPipeline": runDiagnosticsPlannerParserPipeline,
+  "diagnostics:plannerFullParseTrace": runDiagnosticsPlannerFullParseTrace,
 
   // Structure (planner) — one key state.values.structure; atomic state.update only
   "structure:addItem": structureAddItem,
@@ -88,6 +93,7 @@ const registry: Record<string, ActionHandler> = {
   "structure:setActivePlanner": structureSetActivePlanner,
   "structure:cancelDay": structureCancelDay,
   "structure:addFromText": structureAddFromText,
+  "structure:addJourney": structureAddJourney,
 
   // V6: Calendar view state (structure.calendarView, structure.selectedDate)
   "calendar.today": calendarSetDay,

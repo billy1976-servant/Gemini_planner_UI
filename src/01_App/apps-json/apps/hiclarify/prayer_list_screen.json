@@ -1,0 +1,15 @@
+{
+  "id": "prayer_list_screen",
+  "type": "screen",
+  "state": {},
+  "children": [
+    {
+      "type": "Section",
+      "content": { "title": "Prayer List" },
+      "layout": "content-stack",
+      "children": [
+        { "type": "Card", "content": { "body": "Placeholder. Coming soon." } }
+      ]
+    }
+  ]
+}

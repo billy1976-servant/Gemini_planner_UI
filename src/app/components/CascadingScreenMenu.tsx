@@ -21,14 +21,19 @@ function formatScreenPillLabel(screen: string): string {
   return `File: ${path}`;
 }
 
-/** Group categories into TSX SYSTEM (tsx*) vs PROJECT */
+/** JSON-first: PROJECT (JSON apps) first, TSX/System last. */
 function groupCategories(index: ScreensIndex[]): { section: string; categories: ScreensIndex[] }[] {
-  const tsx = index.filter((c) => c.category.toLowerCase().startsWith("tsx"));
   const project = index.filter((c) => !c.category.toLowerCase().startsWith("tsx"));
+  const tsx = index.filter((c) => c.category.toLowerCase().startsWith("tsx"));
   const groups: { section: string; categories: ScreensIndex[] }[] = [];
-  if (tsx.length) groups.push({ section: "TSX SYSTEM", categories: tsx });
   if (project.length) groups.push({ section: "PROJECT", categories: project });
+  if (tsx.length) groups.push({ section: "TSX / System", categories: tsx });
   return groups;
+}
+
+function firstJsonCategory(index: ScreensIndex[]): string | null {
+  const first = index.find((c) => !c.category.toLowerCase().startsWith("tsx"));
+  return first?.category ?? index[0]?.category ?? null;
 }
 
 const SECTION_HEADER_STYLE: React.CSSProperties = {
@@ -108,7 +113,7 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
 
   useEffect(() => {
     if (open && index.length > 0 && !hoveredCategory) {
-      setHoveredCategory(index[0].category);
+      setHoveredCategory(firstJsonCategory(index) ?? index[0].category);
     }
     if (!open) {
       setHoveredCategory(null);

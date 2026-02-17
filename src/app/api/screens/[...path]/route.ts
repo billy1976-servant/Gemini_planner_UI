@@ -41,6 +41,18 @@ const GENERATED_ROOT = path.join(
   "generated"
 );
 
+/**
+ * HiClarify scaffold root.
+ * Paths starting with "HiClarify/" resolve from here.
+ * Actual location: src/01_App/apps-json/HiClarify
+ */
+const HICLARIFY_ROOT = path.join(
+  process.cwd(),
+  "src",
+  "01_App",
+  "apps-json",
+  "HiClarify"
+);
 
 /* ============================================================
    🧩 TSX SCREEN ROOT (FIXED PATH)
@@ -119,10 +131,20 @@ export async function GET(
        1️⃣ JSON PATH (FIXED)
        Try exact path, then path + .json if no extension.
        Paths starting with "generated/" resolve from apps-json/generated.
+       Paths starting with "HiClarify/" resolve from apps-json/HiClarify.
     =============================== */
+    const isHiClarify = params.path[0] === "HiClarify";
     const isGenerated = params.path[0] === "generated";
-    const jsonPathSegments = isGenerated ? params.path.slice(1) : params.path;
-    const jsonRoot = isGenerated ? GENERATED_ROOT : SCREENS_ROOT;
+    const jsonPathSegments = isHiClarify
+      ? params.path.slice(1)
+      : isGenerated
+        ? params.path.slice(1)
+        : params.path;
+    const jsonRoot = isHiClarify
+      ? HICLARIFY_ROOT
+      : isGenerated
+        ? GENERATED_ROOT
+        : SCREENS_ROOT;
     let jsonPath = path.join(jsonRoot, ...jsonPathSegments);
     if (!jsonPath.endsWith(".json") && !fs.existsSync(jsonPath)) {
       const withJson = jsonPath + ".json";

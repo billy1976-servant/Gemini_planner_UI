@@ -1,0 +1,47 @@
+{
+  "id": "play_home",
+  "type": "screen",
+  "state": {
+    "currentView": "main"
+  },
+  "children": [
+    {
+      "id": "playHero",
+      "type": "section",
+      "role": "hero",
+      "content": {
+        "title": "Run Life",
+        "body": "One next step"
+      },
+      "children": []
+    },
+    {
+      "id": "playNav",
+      "type": "section",
+      "role": "writing",
+      "content": {
+        "title": ""
+      },
+      "children": [
+        {
+          "id": "playLauncher",
+          "type": "section",
+          "role": "focus",
+          "content": {
+            "title": ""
+          },
+          "children": [
+            {
+              "id": "cardPlayPrompt",
+              "type": "card",
+              "content": {
+                "title": "Play",
+                "body": "Play system will guide your next action."
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

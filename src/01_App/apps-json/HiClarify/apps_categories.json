@@ -1,0 +1,15 @@
+{
+  "id": "apps_categories",
+  "categories": [
+    { "id": "health", "label": "Health" },
+    { "id": "home", "label": "Home" },
+    { "id": "marriage", "label": "Marriage" },
+    { "id": "bible", "label": "Bible" },
+    { "id": "business", "label": "Business" },
+    { "id": "recovery", "label": "Recovery" },
+    { "id": "travel", "label": "Travel" },
+    { "id": "finance", "label": "Finance" },
+    { "id": "projects", "label": "Projects" },
+    { "id": "growth", "label": "Growth" }
+  ]
+}

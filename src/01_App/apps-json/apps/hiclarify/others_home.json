@@ -1,0 +1,63 @@
+{
+  "id": "others_home",
+  "type": "screen",
+  "state": {},
+  "children": [
+    {
+      "id": "|Section",
+      "type": "Section",
+      "content": { "title": "Others" },
+      "layout": "content-stack",
+      "children": [
+        {
+          "type": "Card",
+          "content": { "body": "This section will grow over time. Select a tool below." }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "People Journal",
+            "body": "Coming Soon"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": { "name": "navigate", "to": "HiClarify/people_journal_screen" }
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "Prayer List",
+            "body": "Coming Soon"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": { "name": "navigate", "to": "HiClarify/prayer_list_screen" }
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "Conversations",
+            "body": "Coming Soon"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": { "name": "navigate", "to": "HiClarify/conversations_screen" }
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "Outreach",
+            "body": "Coming Soon"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": { "name": "navigate", "to": "HiClarify/outreach_screen" }
+          }
+        }
+      ]
+    }
+  ]
+}

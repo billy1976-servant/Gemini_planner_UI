@@ -1,0 +1,15 @@
+{
+  "id": "projects_screen",
+  "type": "screen",
+  "state": {},
+  "children": [
+    {
+      "type": "Section",
+      "content": { "title": "Projects" },
+      "layout": "content-stack",
+      "children": [
+        { "type": "Card", "content": { "body": "Placeholder. Coming soon." } }
+      ]
+    }
+  ]
+}

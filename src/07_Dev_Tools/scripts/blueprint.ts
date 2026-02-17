@@ -123,6 +123,111 @@ function validateContentKeys(
 }
 
 /** Validate organ nodes: organId in index, slotKeys in definition, variant allowed. Fail or warn per contract. */
+/** V2 Validation: one issue (warning or error) */
+export type ValidationIssue = {
+  code: string;
+  message: string;
+  rawId?: string;
+  suggestion?: string;
+};
+
+/** V2 Validation: result of pre-compile safety checks */
+export type ValidationResult = {
+  warnings: ValidationIssue[];
+  errors: ValidationIssue[];
+  safeToContinue: boolean;
+};
+
+const MAX_DEPTH = 10;
+
+/** V2 Validation pass: duplicate IDs, missing arrow targets, content drift, depth. Non-blocking by default. */
+function runValidation(
+  rawNodes: RawNode[],
+  contentMap: Record<string, any>,
+  idMap: Record<string, string>,
+  targetToRaw: Record<string, string>
+): ValidationResult {
+  const warnings: ValidationIssue[] = [];
+  const errors: ValidationIssue[] = [];
+  const rawIds = new Set(rawNodes.map((n) => n.rawId));
+
+  // Duplicate IDs
+  const idToRawIds: Record<string, string[]> = {};
+  for (const n of rawNodes) {
+    const id = idMap[n.rawId];
+    if (!idToRawIds[id]) idToRawIds[id] = [];
+    idToRawIds[id].push(n.rawId);
+  }
+  for (const [id, rids] of Object.entries(idToRawIds)) {
+    if (rids.length > 1) {
+      errors.push({
+        code: "DUPLICATE_ID",
+        message: `Duplicate id "${id}" for rawIds: ${rids.join(", ")}`,
+        rawId: rids[0],
+        suggestion: "Use @id(...) on one node or rename to make ids unique",
+      });
+    }
+  }
+
+  // Missing arrow targets
+  for (const node of rawNodes) {
+    if (!node.target) continue;
+    const raw =
+      targetToRaw[node.target] ??
+      node.target.match(/^([\d.]+)/)?.[1] ??
+      node.target;
+    const id = idMap[raw];
+    if (!id) {
+      errors.push({
+        code: "MISSING_ARROW_TARGET",
+        message: `Arrow target "${node.target}" does not resolve to any node`,
+        rawId: node.rawId,
+        suggestion: "Check rawId, name, or @id of the target node",
+      });
+    }
+  }
+
+  // Content drift: unused content blocks
+  for (const contentRawId of Object.keys(contentMap)) {
+    if (!rawIds.has(contentRawId)) {
+      warnings.push({
+        code: "UNUSED_CONTENT",
+        message: `Content block "${contentRawId}" has no matching blueprint node`,
+        rawId: contentRawId,
+        suggestion: "Remove from content.txt or add node to blueprint",
+      });
+    }
+  }
+
+  // Content drift: missing content (warning only)
+  for (const n of rawNodes) {
+    const block = contentMap[n.rawId];
+    if (!block || (typeof block === "object" && Object.keys(block).length === 0)) {
+      warnings.push({
+        code: "MISSING_CONTENT",
+        message: `No content block for rawId "${n.rawId}" (${n.name})`,
+        rawId: n.rawId,
+      });
+    }
+  }
+
+  // Max depth
+  for (const n of rawNodes) {
+    const depth = (n.rawId.match(/\./g) || []).length + 1;
+    if (depth > MAX_DEPTH) {
+      warnings.push({
+        code: "MAX_DEPTH",
+        message: `Node ${n.rawId} exceeds max depth ${MAX_DEPTH}`,
+        rawId: n.rawId,
+      });
+    }
+  }
+
+  const safeToContinue = errors.length === 0;
+  return { warnings, errors, safeToContinue };
+}
+
+/** Validate organ nodes: organId in index, slotKeys in definition, variant allowed. Fail or warn per contract. */
 function validateOrganNodes(rawNodes: RawNode[], organIndex: OrganIndex | null): void {
   if (!organIndex) return;
   for (const node of rawNodes) {
@@ -175,6 +280,32 @@ function slugify(name: string) {
   return "|" + name.replace(/[^a-zA-Z0-9]+/g, "");
 }
 
+/** V2 Alias: normalize nodeId to id format (|xxx) */
+function slugifyId(nodeId: string) {
+  return "|" + nodeId.replace(/[^a-zA-Z0-9]+/g, "");
+}
+
+/** V2 Alias + Validation: build idMap and target resolution maps from nodes */
+function buildIdMaps(nodes: RawNode[]): {
+  idMap: Record<string, string>;
+  rawByName: Record<string, string>;
+  targetToRaw: Record<string, string>;
+} {
+  const idMap: Record<string, string> = {};
+  const rawByName: Record<string, string> = {};
+  const targetToRaw: Record<string, string> = {};
+  for (const n of nodes) {
+    const id = n.nodeId ? slugifyId(n.nodeId) : slugify(n.name);
+    idMap[n.rawId] = id;
+    rawByName[n.name] = n.rawId;
+    targetToRaw[n.rawId] = n.rawId;
+    targetToRaw[n.name] = n.rawId;
+    if (n.nodeId) targetToRaw[slugifyId(n.nodeId)] = n.rawId;
+    if (n.aliasNames) for (const a of n.aliasNames) targetToRaw[a] = n.rawId;
+  }
+  return { idMap, rawByName, targetToRaw };
+}
+
 
 /* ============================================================
    BLUEPRINT PARSER
@@ -194,19 +325,45 @@ type RawNode = {
   organId?: string;
   /** Organ variant; default "default" */
   variant?: string;
+  /** Optional stable id (V2 alias layer); when set, used instead of slugify(name) */
+  nodeId?: string;
+  /** Optional alias names for arrow/target resolution (V2 alias layer) */
+  aliasNames?: string[];
 };
 
+export type ParseBlueprintResult = {
+  nodes: RawNode[];
+  sequenceOrder: string[] | null;
+};
 
-function parseBlueprint(text: string): RawNode[] {
+function parseBlueprint(text: string): ParseBlueprintResult {
   const lines = text.split("\n");
   const nodes: RawNode[] = [];
   let last: RawNode | null = null;
-
+  let sequenceOrder: string[] | null = null;
+  let inSequenceBlock = false;
 
   for (const line of lines) {
-    if (!line.trim()) continue;
+    if (!line.trim()) {
+      if (inSequenceBlock) inSequenceBlock = false;
+      continue;
+    }
     if (line.startsWith("APP:")) continue;
 
+    // V3 Sequencer: detect SEQUENCE block at top
+    if (line.trim().match(/^SEQUENCE:\s*$/i)) {
+      inSequenceBlock = true;
+      sequenceOrder = [];
+      continue;
+    }
+    if (inSequenceBlock) {
+      if (line.trim().match(/^[\d.]+\s*\|/)) {
+        inSequenceBlock = false;
+      } else {
+        sequenceOrder!.push(...line.split(",").map((s) => s.trim()).filter(Boolean));
+        continue;
+      }
+    }
 
     const indent = line.match(/^(\s*)/)?.[1].length ?? 0;
 
@@ -238,6 +395,18 @@ function parseBlueprint(text: string): RawNode[] {
       continue;
     }
 
+    // V2 Alias: optional @id(...) and @aliases(...) on next line
+    const idMatch = line.trim().match(/^@id\s*\(?([^)\s]+)\)?\s*$/i);
+    if (idMatch && last) {
+      last.nodeId = idMatch[1].trim();
+      continue;
+    }
+    const aliasesMatch = line.trim().match(/^@aliases\s*\(([^)]+)\)\s*$/i);
+    if (aliasesMatch && last) {
+      last.aliasNames = aliasesMatch[1].split(",").map((s) => s.trim()).filter(Boolean);
+      continue;
+    }
+
     // Organ line: 1.0 | HeroBlock | organ:hero [hero.title, hero.subtitle, hero.cta]
     const organMatch = line
       .trim()
@@ -264,14 +433,14 @@ function parseBlueprint(text: string): RawNode[] {
       continue;
     }
 
-    // Contract-style: `1.1 | Name | Type [slot,slot] (verb)`
+    // Contract-style: `1.1 | Name | Type [slot,slot] (verb)` with optional @id(...) @aliases(...)
     const match = line
       .trim()
-      .match(/^([\d.]+)\s*\|\s*(.+?)\s*\|\s*(\w+)(?:\s*\[([^\]]*)\])?(?:\s*\(([^)]+)\))?/);
+      .match(/^([\d.]+)\s*\|\s*(.+?)\s*\|\s*(\w+)(?:\s*\[([^\]]*)\])?(?:\s*\(([^)]+)\))?(?:\s*@id\s*\(([^)]+)\))?(?:\s*@aliases\s*\(([^)]+)\))?/);
     if (!match) continue;
 
 
-    const [, rawId, name, type, slotsRaw, behaviorTokenRaw] = match as any;
+    const [, rawId, name, type, slotsRaw, behaviorTokenRaw, nodeIdInline, aliasesInline] = match as any;
 
     const slots =
       typeof slotsRaw === "string" && slotsRaw.trim().length
@@ -286,12 +455,17 @@ function parseBlueprint(text: string): RawNode[] {
         ? behaviorTokenRaw.trim()
         : undefined;
 
-    nodes.push({ indent, rawId, name, type, slots, behaviorToken });
+    const nodeId = typeof nodeIdInline === "string" && nodeIdInline.trim() ? nodeIdInline.trim() : undefined;
+    const aliasNames =
+      typeof aliasesInline === "string" && aliasesInline.trim()
+        ? aliasesInline.split(",").map((s: string) => s.trim()).filter(Boolean)
+        : undefined;
+
+    nodes.push({ indent, rawId, name, type, slots, behaviorToken, nodeId, aliasNames });
     last = nodes[nodes.length - 1];
   }
 
-
-  return nodes;
+  return { nodes, sequenceOrder: sequenceOrder?.length ? sequenceOrder : null };
 }
 
 
@@ -337,23 +511,21 @@ function parseContent(text: string): Record<string, any> {
 
 /* ============================================================
    TREE BUILDER (CANONICAL — NO AUTO-INSERTION)
+   V2: uses pre-built idMap/targetToRaw. V3: reorders root children by sequenceOrder.
 ============================================================ */
 function buildTree(
   nodes: RawNode[],
   contentMap: Record<string, any>,
-  organIndex: OrganIndex | null
+  organIndex: OrganIndex | null,
+  sequenceOrder: string[] | null,
+  idMap: Record<string, string>,
+  targetToRaw: Record<string, string>
 ) {
   const stack: any[] = [];
   const rootChildren: any[] = [];
-  const idMap: Record<string, string> = {};
-  const rawByName: Record<string, string> = {};
-
-
-  for (const n of nodes) {
-    idMap[n.rawId] = slugify(n.name);
-    rawByName[n.name] = n.rawId;
-  }
-
+  const rawByName = Object.fromEntries(
+    nodes.map((n) => [n.name, n.rawId] as const)
+  );
 
   for (const node of nodes) {
     if (node.type === "organ") {
@@ -441,13 +613,13 @@ function buildTree(
     }
 
 
-    /* ---------- NAV TARGET (DO NOT OVERRIDE LOGIC) ---------- */
+    /* ---------- NAV TARGET (DO NOT OVERRIDE LOGIC) — V2: targetToRaw for alias/nodeId ---------- */
     if (node.target && !entry.behavior) {
       const raw =
+        targetToRaw[node.target] ??
         node.target.match(/^([\d.]+)/)?.[1] ??
         rawByName[node.target] ??
         node.target;
-
 
       entry.behavior = {
         type: "Navigation",
@@ -473,34 +645,133 @@ function buildTree(
     stack.push({ indent: node.indent, entry });
   }
 
+  // V3 Sequencer: reorder root children by sequenceOrder (root level only)
+  if (sequenceOrder?.length) {
+    const sequenceIds = sequenceOrder.map(
+      (t) => idMap[targetToRaw[t] ?? t] ?? idMap[t]
+    );
+    rootChildren.sort((a, b) => {
+      const ia = sequenceIds.indexOf(a.id);
+      const ib = sequenceIds.indexOf(b.id);
+      if (ia === -1 && ib === -1) return 0;
+      if (ia === -1) return 1;
+      if (ib === -1) return -1;
+      return ia - ib;
+    });
+  }
 
   return rootChildren;
 }
 
 
+/** V2 Content sync: suggest missing stubs; optional auto-create (append only). */
+function runContentSync(
+  appPath: string,
+  rawNodes: RawNode[],
+  contentMap: Record<string, any>,
+  manifest: Record<string, Record<string, string>>,
+  autoCreate: boolean
+): { contentMap: Record<string, any>; missingRawIds: string[]; unusedRawIds: string[] } {
+  const rawIds = new Set(rawNodes.map((n) => n.rawId));
+  const missingRawIds = rawNodes
+    .filter(
+      (n) =>
+        !contentMap[n.rawId] ||
+        (typeof contentMap[n.rawId] === "object" && Object.keys(contentMap[n.rawId]).length === 0)
+    )
+    .map((n) => n.rawId);
+  const unusedRawIds = Object.keys(contentMap).filter((id) => !rawIds.has(id));
+
+  if (autoCreate && missingRawIds.length > 0) {
+    const contentPath = path.join(appPath, "content.txt");
+    let existing = fs.existsSync(contentPath) ? fs.readFileSync(contentPath, "utf8") : "";
+    if (existing.length && !existing.endsWith("\n")) existing += "\n";
+    const lines: string[] = [];
+    for (const rawId of missingRawIds) {
+      const keys = manifest[rawId] ? Object.keys(manifest[rawId]) : [];
+      lines.push("", rawId);
+      for (const k of keys) lines.push(`- ${k}: ""`);
+    }
+    fs.writeFileSync(contentPath, existing + lines.join("\n"), "utf8");
+    contentMap = parseContent(fs.readFileSync(contentPath, "utf8"));
+  }
+  return { contentMap, missingRawIds, unusedRawIds };
+}
+
+export type CompileAppOptions = {
+  /** V2: fail compile when validation reports errors */
+  strict?: boolean;
+  /** V2 Phase 3: append missing content stubs to content.txt (append-only) */
+  contentSyncAutoCreate?: boolean;
+  /** V2: write validation-report.json to app folder */
+  writeValidationReport?: boolean;
+};
+
 /* ============================================================
    COMPILE APP (EXPORTED — ADDITIVE)
-   Call this from module-system or API to compile an app folder.
-   appPath: absolute path to folder containing blueprint.txt + content.txt.
+   V2: validation, alias idMaps, content sync. V3: sequenceOrder.
 ============================================================ */
-export function compileApp(appPath: string): void {
+export function compileApp(appPath: string, options: CompileAppOptions = {}): void {
   const blueprintPath = path.join(appPath, "blueprint.txt");
   if (!fs.existsSync(blueprintPath)) {
     throw new Error(`No blueprint.txt at ${appPath}`);
   }
   const blueprintText = fs.readFileSync(blueprintPath, "utf8");
   const contentPath = path.join(appPath, "content.txt");
-  const contentText = fs.existsSync(contentPath)
-    ? fs.readFileSync(contentPath, "utf8")
-    : "";
+  let contentText = fs.existsSync(contentPath) ? fs.readFileSync(contentPath, "utf8") : "";
 
   const organIndex = loadOrganIndex();
-  const rawNodes = parseBlueprint(blueprintText);
+  const { nodes: rawNodes, sequenceOrder } = parseBlueprint(blueprintText);
+  const { idMap, rawByName, targetToRaw } = buildIdMaps(rawNodes);
+
   validateOrganNodes(rawNodes, organIndex);
-  const contentMap = parseContent(contentText);
+  let contentMap = parseContent(contentText);
   const manifest = generateContentManifest(rawNodes, appPath, organIndex);
   validateContentKeys(contentMap, manifest, rawNodes);
-  const children = buildTree(rawNodes, contentMap, organIndex);
+
+  const validation = runValidation(rawNodes, contentMap, idMap, targetToRaw);
+  for (const w of validation.warnings) {
+    console.warn(`[validation] ${w.code}: ${w.message}${w.rawId ? ` (rawId: ${w.rawId})` : ""}`);
+  }
+  for (const e of validation.errors) {
+    console.error(`[validation] ${e.code}: ${e.message}${e.rawId ? ` (rawId: ${e.rawId})` : ""}`);
+  }
+  if (options.writeValidationReport) {
+    const reportPath = path.join(appPath, "validation-report.json");
+    fs.writeFileSync(
+      reportPath,
+      JSON.stringify(
+        {
+          warnings: validation.warnings,
+          errors: validation.errors,
+          safeToContinue: validation.safeToContinue,
+        },
+        null,
+        2
+      ),
+      "utf8"
+    );
+  }
+  if (options.strict && !validation.safeToContinue) {
+    throw new Error("Validation failed (strict mode). Fix errors and re-run.");
+  }
+
+  const sync = runContentSync(
+    appPath,
+    rawNodes,
+    contentMap,
+    manifest,
+    options.contentSyncAutoCreate ?? false
+  );
+  contentMap = sync.contentMap;
+  if (sync.missingRawIds.length) {
+    console.warn(`[content-sync] Missing content for rawIds: ${sync.missingRawIds.join(", ")}`);
+  }
+  if (sync.unusedRawIds.length) {
+    console.warn(`[content-sync] Unused content blocks: ${sync.unusedRawIds.join(", ")}`);
+  }
+
+  const children = buildTree(rawNodes, contentMap, organIndex, sequenceOrder, idMap, targetToRaw);
 
   const output = {
     id: SCREEN_ROOT_ID,
@@ -518,11 +789,13 @@ export function compileApp(appPath: string): void {
 async function run() {
   let appPath: string;
 
-  // Optional non-interactive: node blueprint.ts <category>/<app> (e.g. apps/journal_track)
-  const relativePath = process.argv[2];
+  // Optional non-interactive: node blueprint.ts <path> [--strict] [--sync] [--report]
+  const pathArg = process.argv[2] && !String(process.argv[2]).startsWith("--") ? process.argv[2] : undefined;
+  const flags = pathArg ? process.argv.slice(3) : process.argv.slice(2);
   let cat: string;
   let app: string;
-  if (relativePath) {
+  if (pathArg) {
+    const relativePath = pathArg;
     const parts = relativePath.replace(/\\/g, "/").split("/");
     cat = parts[0] ?? "";
     app = parts[1] ?? "";
@@ -560,8 +833,15 @@ async function run() {
     appPath = path.join(catPath, app);
   }
 
-  compileApp(appPath);
-  console.log("✅ app.json generated (Blueprint-only structure)");
+  const strict = flags.includes("--strict");
+  const contentSync = flags.includes("--sync");
+  const report = flags.includes("--report");
+  compileApp(appPath, {
+    strict,
+    contentSyncAutoCreate: contentSync,
+    writeValidationReport: report,
+  });
+  console.log("✅ app.json generated (Blueprint + V2/V3)");
 }
 
 const isMain = typeof require !== "undefined" && require.main === module;

@@ -1,0 +1,63 @@
+{
+  "id": "build_home",
+  "type": "screen",
+  "state": {},
+  "children": [
+    {
+      "id": "|Section",
+      "type": "Section",
+      "content": { "title": "Build" },
+      "layout": "content-stack",
+      "children": [
+        {
+          "type": "Card",
+          "content": { "body": "This section will grow over time. Select a tool below." }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "Ideas",
+            "body": "Coming Soon"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": { "name": "navigate", "to": "HiClarify/ideas_screen" }
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "Research",
+            "body": "Coming Soon"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": { "name": "navigate", "to": "HiClarify/research_screen" }
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "Projects",
+            "body": "Coming Soon"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": { "name": "navigate", "to": "HiClarify/projects_screen" }
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "Learning",
+            "body": "Coming Soon"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": { "name": "navigate", "to": "HiClarify/learning_screen" }
+          }
+        }
+      ]
+    }
+  ]
+}

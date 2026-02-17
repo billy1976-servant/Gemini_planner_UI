@@ -1,0 +1,11 @@
+{
+  "id": "apps_screen",
+  "type": "screen",
+  "state": {},
+  "children": [
+    {
+      "id": "appsListV2",
+      "type": "AppsListV2"
+    }
+  ]
+}

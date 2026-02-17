@@ -1,0 +1,63 @@
+{
+  "id": "tools_home",
+  "type": "screen",
+  "state": {},
+  "children": [
+    {
+      "id": "|Section",
+      "type": "Section",
+      "content": { "title": "Tools" },
+      "layout": "content-stack",
+      "children": [
+        {
+          "type": "Card",
+          "content": { "body": "This section will grow over time. Select a tool below." }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "Apps",
+            "body": "Coming Soon"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": { "name": "navigate", "to": "HiClarify/apps_screen" }
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "Diagnostics",
+            "body": "Coming Soon"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": { "name": "navigate", "to": "HiClarify/diagnostics_screen" }
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "Protection",
+            "body": "Coming Soon"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": { "name": "navigate", "to": "HiClarify/protection_screen" }
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "System Settings",
+            "body": "Coming Soon"
+          },
+          "behavior": {
+            "type": "Action",
+            "params": { "name": "navigate", "to": "HiClarify/system_settings_screen" }
+          }
+        }
+      ]
+    }
+  ]
+}
