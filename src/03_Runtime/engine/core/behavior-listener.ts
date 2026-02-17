@@ -351,6 +351,11 @@ export function installBehaviorListener(navigate: (to: string) => void) {
       console.log("params:", params);
       console.groupEnd();
 
+      // Resolve textFromState so actions (e.g. structure:addFromText) receive action.text from state.values
+      const verbParams = { ...params };
+      if (typeof verbParams.textFromState === "string" && verbParams.textFromState.length > 0) {
+        verbParams.text = currentState?.values?.[verbParams.textFromState];
+      }
 
       try {
         // Lazy-load the runtime interpreter to avoid pulling in engine-only action modules
@@ -361,7 +366,7 @@ export function installBehaviorListener(navigate: (to: string) => void) {
         interpretRuntimeVerb(
           {
             name: actionName,
-            ...params,
+            ...verbParams,
           },
           currentState
         );

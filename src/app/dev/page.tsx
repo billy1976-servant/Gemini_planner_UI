@@ -481,10 +481,11 @@ export default function DevPage() {
 
   if (TsxComponent) {
     return (
-      <>
+      <PreviewStage>
         {overlay}
         <TsxComponent />
-      </>
+        <RightFloatingSidebar />
+      </PreviewStage>
     );
   }
 

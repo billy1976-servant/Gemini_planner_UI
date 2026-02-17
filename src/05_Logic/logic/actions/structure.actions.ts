@@ -3,9 +3,10 @@
  */
 
 import { getState, dispatchState } from "@/state/state-store";
-import type { StructureItem, Block, ResolvedRuleset, StructureTreeNode, Rollup } from "@/logic/engines/structure/structure.types";
+import type { StructureItem, Block, ResolvedRuleset, StructureTreeNode, Rollup, TaskTemplateRow, ParserPipelineConfig } from "@/logic/engines/structure/structure.types";
 import { applyCancelDay } from "@/logic/engines/structure/prioritization.engine";
-import { streamToCandidates } from "@/logic/engines/structure/extreme-mode-parser";
+import { streamToCandidates, splitSentences } from "@/logic/engines/structure/extreme-mode-parser";
+import { runPhrasePipeline } from "@/logic/engines/structure/parser-v4.engine";
 import { aggregateByDateRange } from "@/logic/engines/structure/aggregation.engine";
 import { BASE_PLANNER_TREE } from "@/logic/planner/base-planner-tree";
 import { mergeTreeFragmentsUnderBase } from "@/logic/planner/tree-merge";
@@ -14,6 +15,17 @@ import type { JourneyItemTemplate } from "@/logic/planner/journey-types";
 import { getJourneyPack } from "@/logic/planner/journey-registry";
 
 const STRUCTURE_KEY = "structure";
+
+/** V3/V4: one row from parser (candidate + user choice). */
+export type ParserStagingRow = {
+  id: string;
+  raw: string;
+  title: string;
+  dueDate: string | null;
+  categoryId: string;
+  score?: number;
+  status: "pending" | "use" | "add_use";
+};
 
 type StructureSlice = {
   domain?: string;
@@ -32,6 +44,16 @@ type StructureSlice = {
   monthRollup?: Rollup[];
   /** V6: counts for stats layer */
   stats?: { todayCount: number; weekCount: number; monthCount: number };
+  /** V3/V4: parser staging (candidates before confirm). */
+  parserStaging?: ParserStagingRow[];
+  /** V4: task folder template (Folder → Subfolder → Category) for matcher. */
+  taskFolderTemplate?: Record<string, { subfolders?: Record<string, { categories?: string[] }> }>;
+  /** V4: flat template rows for tokenize/scoreMatch matcher. */
+  taskTemplateRows?: TaskTemplateRow[];
+  /** V4: parser pipeline config (tokenWeights, modifierVerbs, matcherThreshold). */
+  parserConfig?: ParserPipelineConfig;
+  /** V2: Section scheduling — selected folder/section for day (SCHEDULED WORK DAY / SCHEDULED [section]). */
+  scheduledSection?: string;
 };
 
 const EMPTY_SLICE: StructureSlice = {
@@ -224,6 +246,30 @@ export function structureAddJourney(
   writeSlice({ ...slice, tree: mergedTree, items });
 }
 
+/** V4: Default template rows from base tree for matcher (folder/subfolder/category + task alternatives). */
+function getDefaultTaskTemplateRows(): TaskTemplateRow[] {
+  const root = BASE_PLANNER_TREE.find((n) => n.children?.length);
+  if (!root?.children) return [];
+  const alternatives: Record<string, string[]> = {
+    home: ["gardening", "lawn", "mow", "bills", "house", "chores", "errands", "shopping", "groceries"],
+    business: ["email", "call", "meeting", "report", "client", "office", "work"],
+    health: ["gym", "run", "exercise", "doctor", "appointment", "medicine"],
+    relationships: ["call mom", "call dad", "family", "friend", "visit", "dinner"],
+    finance: ["bank", "bills", "pay", "invoice", "budget", "tax"],
+    projects: ["project", "task", "deadline", "review", "draft"],
+    travel: ["book", "flight", "hotel", "trip", "vacation"],
+    maintenance: ["oil change", "car", "repair", "fix", "service"],
+    growth: ["read", "learn", "course", "practice"],
+  };
+  return root.children.map((node) => ({
+    folder: root.id,
+    subfolder: node.id,
+    category: node.id,
+    task: node.name,
+    taskAlternatives: alternatives[node.id] ?? [],
+  }));
+}
+
 const PLANNER_TRACE_PREFIX = "[structure:addFromText]";
 
 export function structureAddFromText(
@@ -263,6 +309,66 @@ export function structureAddFromText(
   // Clear draft text if it was used
   if (getState()?.values?.structure_draftText != null) {
     dispatchState("state.update", { key: "structure_draftText", value: "" });
+  }
+}
+
+/** V3/V4: Parse text to staging rows. Uses V4 pipeline (tokenize + matcher) when taskTemplateRows present. */
+export function structureParseToStaging(
+  action: { text?: string },
+  _state: Record<string, any>
+): void {
+  const slice = getSlice();
+  const text =
+    typeof action.text === "string"
+      ? action.text.trim()
+      : (getState()?.values?.structure_draftText as string)?.trim?.() ?? "";
+  if (!text) return;
+  const refDate = new Date();
+  const templateRows = slice.taskTemplateRows?.length
+    ? slice.taskTemplateRows
+    : getDefaultTaskTemplateRows();
+  const config = slice.parserConfig;
+
+  if (templateRows.length > 0) {
+    const phrases: string[] = [];
+    const chunks = text.split(/[,;\n]+/).map((s) => s.trim()).filter(Boolean);
+    for (const chunk of chunks) {
+      const parts = splitSentences(chunk);
+      phrases.push(...(parts.length ? parts : [chunk]));
+    }
+    const rows: ParserStagingRow[] = phrases.map((phrase) => {
+      const { built, match, lowConfidence } = runPhrasePipeline(phrase, templateRows, refDate, config);
+      return {
+        id: nextId(),
+        raw: phrase,
+        title: built.title ?? phrase,
+        dueDate: built.dueDate ?? null,
+        categoryId: built.categoryId ?? "default",
+        score: match?.score,
+        status: "pending",
+      };
+    });
+    writeSlice({ ...slice, parserStaging: rows });
+    if (getState()?.values?.structure_draftText != null) {
+      dispatchState("state.update", { key: "structure_draftText", value: "" });
+    }
+  } else {
+    const segments = [{ text, isFinal: true }];
+    const { candidates } = streamToCandidates(segments, slice.rules ?? {}, refDate);
+    const sentences = splitSentences(text);
+    const rows: ParserStagingRow[] = candidates.map((c, i) => ({
+      id: nextId(),
+      raw: sentences[i] ?? c.title,
+      title: c.title,
+      dueDate: c.dueDate ?? null,
+      categoryId: c.categoryId ?? "default",
+      score: undefined,
+      status: "pending",
+    }));
+    writeSlice({ ...slice, parserStaging: rows });
+    if (getState()?.values?.structure_draftText != null) {
+      dispatchState("state.update", { key: "structure_draftText", value: "" });
+    }
   }
 }
 
@@ -386,4 +492,115 @@ export function calendarSetDate(
     monthRollup,
     stats,
   });
+}
+
+/** V3/V4: Set parser staging rows (from Task Matcher). */
+export function structureSetParserStaging(
+  action: { rows?: ParserStagingRow[] },
+  _state: Record<string, any>
+): void {
+  const slice = getSlice();
+  const rows = Array.isArray(action.rows) ? action.rows : [];
+  writeSlice({ ...slice, parserStaging: rows });
+}
+
+/** V3/V4: Update a single staging row's status (pending | use | add_use). */
+export function structureUpdateStagingRow(
+  action: { id?: string; status?: ParserStagingRow["status"] },
+  _state: Record<string, any>
+): void {
+  const slice = getSlice();
+  const rows = slice.parserStaging ?? [];
+  const { id, status } = action;
+  if (!id || !status) return;
+  const next = rows.map((r) => (r.id === id ? { ...r, status } : r));
+  writeSlice({ ...slice, parserStaging: next });
+}
+
+/** V3/V4: Confirm staging: add rows with status 'use' or 'add_use' to structure.items and clear staging. */
+export function structureConfirmStaging(
+  _action: Record<string, unknown>,
+  _state: Record<string, any>
+): void {
+  const slice = getSlice();
+  const rows = slice.parserStaging ?? [];
+  const toAdd = rows.filter((r) => r.status === "use" || r.status === "add_use");
+  if (toAdd.length) {
+    const items = toAdd.map((r) =>
+      normalizeItem({
+        title: r.title,
+        dueDate: r.dueDate,
+        categoryId: r.categoryId,
+        priority: 5,
+      })
+    );
+    const nextItems = [...slice.items];
+    for (const item of items) {
+      const idx = nextItems.findIndex((i) => i.id === item.id);
+      if (idx >= 0) nextItems[idx] = item;
+      else nextItems.push(item);
+    }
+    writeSlice({ ...slice, items: nextItems, parserStaging: undefined });
+  } else {
+    writeSlice({ ...slice, parserStaging: undefined });
+  }
+}
+
+/** V4: Set task folder template (Folder → Subfolder → Category) for parser matcher. */
+export function structureSetTaskFolderTemplate(
+  action: { template?: StructureSlice["taskFolderTemplate"] },
+  _state: Record<string, any>
+): void {
+  const slice = getSlice();
+  writeSlice({ ...slice, taskFolderTemplate: action.template ?? undefined });
+}
+
+/** V4: Set flat task template rows for tokenize/scoreMatch pipeline. */
+export function structureSetTaskTemplateRows(
+  action: { rows?: TaskTemplateRow[] },
+  _state: Record<string, any>
+): void {
+  const slice = getSlice();
+  writeSlice({ ...slice, taskTemplateRows: action.rows ?? undefined });
+}
+
+/** V4: Set parser pipeline config (tokenWeights, modifierVerbs, matcherThreshold). */
+export function structureSetParserConfig(
+  action: { config?: ParserPipelineConfig },
+  _state: Record<string, any>
+): void {
+  const slice = getSlice();
+  writeSlice({ ...slice, parserConfig: action.config ?? undefined });
+}
+
+/** V2: Load ruleset into structure.rules. Merge payload.rules (e.g. from /api/rulesets/base). */
+export function structureLoadRuleset(
+  action: { rules?: ResolvedRuleset; rulesetId?: string },
+  _state: Record<string, any>
+): void {
+  const slice = getSlice();
+  const rules = action.rules;
+  if (rules && typeof rules === "object") {
+    const merged: ResolvedRuleset = { ...slice.rules, ...rules };
+    writeSlice({ ...slice, rules: merged });
+  }
+}
+
+/** V2: Ensure structure.taskTemplateRows is set; if empty, set from default (BASE_PLANNER_TREE). */
+export function structureEnsureTaskTemplateRows(
+  _action: Record<string, unknown>,
+  _state: Record<string, any>
+): void {
+  const slice = getSlice();
+  if (slice.taskTemplateRows?.length) return;
+  writeSlice({ ...slice, taskTemplateRows: getDefaultTaskTemplateRows() });
+}
+
+/** V2: Set scheduled section (folder id or "work" / "dayOff") for section menus. */
+export function structureSetScheduledSection(
+  action: { section?: string },
+  _state: Record<string, any>
+): void {
+  const slice = getSlice();
+  writeSlice({ ...slice, scheduledSection: action.section ?? undefined });
 }

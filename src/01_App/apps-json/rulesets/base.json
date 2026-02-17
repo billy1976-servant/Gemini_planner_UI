@@ -1,39 +1,24 @@
 {
   "id": "base",
   "priorityScale": { "min": 0, "max": 10, "default": 5 },
+  "priorityRamp": {
+    "daysOutForMin": 7,
+    "daysOutForMax": 0,
+    "minPriority": 1,
+    "maxPriority": 10
+  },
+  "visibilityMinPriority": 6,
   "escalation": {
     "enabled": true,
     "daysUntilEscalation": 1,
     "incrementPerDay": 1,
     "maxPriority": 10
   },
-  "cancelDayReset": "none",
-  "recurrenceDefinitions": {
-    "daily": "daily",
-    "weekly": "weekly",
-    "monthly": "monthly",
-    "off": "off"
-  },
-  "schedulingDefaults": {
-    "slotDuration": 30,
-    "businessHours": { "start": "09:00", "end": "17:00" }
-  },
-  "categoryInference": {
-    "keywords": {},
-    "defaultCategoryId": "default"
-  },
-  "priorityInference": {
-    "asap": 9,
-    "urgent": 9,
-    "high": 7,
-    "medium": 5,
-    "low": 3,
-    "when you can": 3
-  },
-  "habitDefaults": {
-    "startValue": 0,
-    "targetValue": 1,
-    "durationDays": 21
-  },
+  "cancelDayReset": "moveToNextDay",
+  "recurrenceDefinitions": { "daily": "daily", "weekly": "weekly", "monthly": "monthly", "off": "off" },
+  "schedulingDefaults": { "slotDuration": 30, "businessHours": { "start": "09:00", "end": "17:00" } },
+  "categoryInference": { "keywords": {}, "defaultCategoryId": "default" },
+  "priorityInference": { "asap": 9, "urgent": 9, "high": 7, "medium": 5, "low": 3, "when you can": 3 },
+  "habitDefaults": { "startValue": 0, "targetValue": 1, "durationDays": 21 },
   "rules": []
 }

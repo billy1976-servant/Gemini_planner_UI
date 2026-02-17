@@ -92,6 +92,23 @@ export async function GET(
     const requestedPath = params.path.join("/");
 
     /* ===============================
+       V2 PLANNER: HiClarify/planner_screen → TSX DayView (no JSON placeholder)
+    =============================== */
+    const isPlannerScreen =
+      requestedPath === "HiClarify/planner_screen" ||
+      requestedPath === "HiClarify/planner_screen.json" ||
+      requestedPath === "HiClarify/build/planner/planner_screen" ||
+      requestedPath === "HiClarify/build/planner/planner_screen.json";
+    if (isPlannerScreen) {
+      return NextResponse.json({
+        __type: "tsx-screen",
+        __tsx__: true,
+        screen: "HiClarify/JSX_PlannerShell",
+        path: "HiClarify/JSX_PlannerShell",
+      });
+    }
+
+    /* ===============================
        0️⃣ 09_INTEGRATIONS LAB (single path)
        integration-lab.json → 09_Integrations/05_TESTS/IntegrationLab.screen.json
     =============================== */

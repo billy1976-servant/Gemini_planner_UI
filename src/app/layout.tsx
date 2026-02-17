@@ -67,8 +67,8 @@ import { installCapabilityDebug } from "@/03_Runtime/capability/capability-debug
 import presentationProfiles from "@/lib/layout/presentation-profiles.json";
 import CascadingScreenMenu from "@/app/components/CascadingScreenMenu";
 import OSBCaptureModal from "@/app/components/OSBCaptureModal";
-import { BottomNavOnly } from "@/04_Presentation/shells/GlobalAppSkin";
-import { NAV_STRIP_HEIGHT } from "@/app/shell-ui-constants";
+import TopTextNav from "@/01_App/apps-tsx/HiClarify/TopTextNav";
+import OSBBar from "@/01_App/apps-tsx/HiClarify/OSBBar";
 import MobileShell from "@/mobile/MobileShell";
 import MobileLayout from "@/mobile/MobileLayout";
 import OsbMinimalTopBar from "@/04_Presentation/shells/OsbMinimalTopBar";
@@ -336,23 +336,9 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
                   }}
                 >
                   <div style={{ flex: 1, minHeight: 0, overflowY: "auto", overflowX: "hidden", padding: 0, margin: 0 }}>
+                    <TopTextNav />
+                    <OSBBar />
                     {children}
-                  </div>
-                  <div
-                    id="screen-ui-layer"
-                    data-screen-ui-layer
-                    style={{
-                      position: "absolute",
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      width: "100%",
-                      height: NAV_STRIP_HEIGHT,
-                      zIndex: 50,
-                      overflow: "visible",
-                    }}
-                  >
-                    <BottomNavOnly />
                   </div>
                 </div>
               </div>
@@ -404,23 +390,9 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
                       margin: 0,
                     }}
                   >
+                    <TopTextNav />
+                    <OSBBar />
                     {children}
-                  </div>
-                  <div
-                    id="screen-ui-layer"
-                    data-screen-ui-layer
-                    style={{
-                      position: "absolute",
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      width: "100%",
-                      height: NAV_STRIP_HEIGHT,
-                      zIndex: 50,
-                      overflow: "visible",
-                    }}
-                  >
-                    <BottomNavOnly />
                   </div>
                 </div>
               </div>
@@ -458,7 +430,7 @@ function UserLayoutChrome({ children }: { children: React.ReactNode }) {
   return (
     <>
       <OsbMinimalTopBar />
-      <MobileLayout showBottomNav={!isHomeScreen}>{children}</MobileLayout>
+      <MobileLayout>{children}</MobileLayout>
       <OSBCaptureModal />
     </>
   );
