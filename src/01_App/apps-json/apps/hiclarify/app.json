@@ -3,7 +3,7 @@
   "type": "screen",
   "defaultSectionLayoutId": "content-stack",
   "state": {
-    "currentView": "me"
+    "currentView": "plan"
   },
   "children": [
     {

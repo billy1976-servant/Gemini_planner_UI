@@ -195,11 +195,15 @@ body.dev-mobile-mode .app-section-layout-panel button {
 }
 
 /* ----------------------------------------------------------------------------
-   6) CONTENT AREA — Padding 12px, prevent elements touching screen edges
+   6) CONTENT AREA — Padding 12px, scroll container (JSON-first navigator)
    ---------------------------------------------------------------------------- */
 body.dev-mobile-mode .app-content {
   padding: 12px !important;
   box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  min-height: 0;
 }
 
 body.dev-mobile-mode .app-content .json-stage,

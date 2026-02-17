@@ -7,12 +7,14 @@ const DEV_HOME_DISMISSED_KEY = "dev_home_dismissed";
 const DEV_OPEN_DIAGNOSTICS_KEY = "dev_open_diagnostics_rail";
 const DEV_LAST_SCREEN_KEY = "dev_last_screen";
 
+/** JSON-first: default to Navigator (dismissed). Only show DevHome if explicitly pinned. */
 function useDevHomeDismissed() {
   const [dismissed, setDismissed] = useState(true);
   const [hasChecked, setHasChecked] = useState(false);
   useLayoutEffect(() => {
     if (typeof window === "undefined") return;
-    const wasDismissed = sessionStorage.getItem(DEV_HOME_DISMISSED_KEY) === "1";
+    const raw = sessionStorage.getItem(DEV_HOME_DISMISSED_KEY);
+    const wasDismissed = raw !== "0";
     setDismissed(wasDismissed);
     setHasChecked(true);
   }, []);

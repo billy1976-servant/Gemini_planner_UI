@@ -2,49 +2,50 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 
+function findRepoRoot(start: string): string {
+  let dir = start;
+  for (let i = 0; i < 6; i++) {
+    if (fs.existsSync(path.join(dir, "src", "01_App"))) return dir;
+    const parent = path.dirname(dir);
+    if (parent === dir) break;
+    dir = parent;
+  }
+  return start;
+}
 
-/* ======================================================
-   JSON SCREENS (FIXED PATH)
-   Actual location: src/01_App/apps-json
-====================================================== */
-const BASE = path.join(process.cwd(), "src", "01_App", "apps-json");
-
-
-/* ======================================================
-   TSX SCREENS (FIXED PATH)
-   Actual location: src/01_App/apps-tsx
-   Matches EXACTLY:
-   src/01_App/apps-tsx/<group>/<app>/<file>.tsx
-====================================================== */
-const TSX_BASE = path.join(
-  process.cwd(),
-  "src",
-  "01_App",
-  "apps-tsx"
-);
+const REPO_ROOT = findRepoRoot(process.cwd());
+const APPS_JSON_BASE = path.join(REPO_ROOT, "src", "01_App", "apps-json");
+const APPS_TSX_BASE = path.join(REPO_ROOT, "src", "01_App", "apps-tsx");
 
 
 /* ======================================================
-   TSX DISCOVERY — FLEXIBLE 2-LEVEL OR 3-LEVEL
-   Level 1 = category (folder under apps-tsx)
+   TSX DISCOVERY — ALL TOP-LEVEL FOLDERS (no whitelist/filter)
+   Level 1 = category (every directory under apps-tsx)
    Level 2 = direct .tsx files in category OR subfolders
    Level 3 = .tsx files inside selected subfolder
+   No hardcoded folder names; one failing dir does not hide others.
 ====================================================== */
 function collectTsxScreens(): Array<{
   category: string;
   directFiles: string[];
   folders: Record<string, string[]>;
 }> {
-  if (!fs.existsSync(TSX_BASE)) return [];
+  if (!fs.existsSync(APPS_TSX_BASE)) return [];
 
-  return fs
-    .readdirSync(TSX_BASE, { withFileTypes: true })
-    .filter(d => d.isDirectory())
-    .map(group => {
-      const groupPath = path.join(TSX_BASE, group.name);
+  const topLevelDirs = fs
+    .readdirSync(APPS_TSX_BASE, { withFileTypes: true })
+    .filter((d): d is fs.Dirent => d.isDirectory())
+    .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
+
+  return topLevelDirs.map(group => {
+    const groupPath = path.join(APPS_TSX_BASE, group.name);
+    let directFiles: string[] = [];
+    let folders: Record<string, string[]> = {};
+
+    try {
       const entries = fs.readdirSync(groupPath, { withFileTypes: true });
 
-      const directFiles = entries
+      directFiles = entries
         .filter(
           f =>
             f.isFile() &&
@@ -54,12 +55,12 @@ function collectTsxScreens(): Array<{
         )
         .map(f => f.name.replace(/\.tsx$/, ""));
 
-      const folders = entries
-        .filter(d => d.isDirectory())
-        .reduce<Record<string, string[]>>((acc, app) => {
-          const appPath = path.join(groupPath, app.name);
-          const files = fs
-            .readdirSync(appPath, { withFileTypes: true })
+      const subdirs = entries.filter((d): d is fs.Dirent => d.isDirectory());
+      for (const app of subdirs) {
+        const appPath = path.join(groupPath, app.name);
+        try {
+          const fileEntries = fs.readdirSync(appPath, { withFileTypes: true });
+          const files = fileEntries
             .filter(
               f =>
                 f.isFile() &&
@@ -68,16 +69,21 @@ function collectTsxScreens(): Array<{
                 !f.name.startsWith("_template")
             )
             .map(f => f.name.replace(/\.tsx$/, ""));
-          if (files.length) acc[app.name] = files;
-          return acc;
-        }, {});
+          if (files.length > 0) folders[app.name] = files;
+        } catch {
+          /* skip this subfolder so one bad dir does not break the category */
+        }
+      }
+    } catch (_err) {
+      /* Include category with empty children so Navigator still lists this folder */
+    }
 
-      return {
-        category: group.name,
-        directFiles,
-        folders,
-      };
-    });
+    return {
+      category: group.name,
+      directFiles,
+      folders,
+    };
+  });
 }
 
 
@@ -89,15 +95,12 @@ function collectTsxScreens(): Array<{
  */
 export async function GET() {
   try {
-    // 🔑 LOG: Check if BASE folder exists
-    console.log("[api/screens] 📍 Checking BASE path", {
-      BASE,
-      exists: fs.existsSync(BASE),
-      cwd: process.cwd(),
-    });
+    console.log("[api/screens] ROOT =", REPO_ROOT);
+    console.log("[api/screens] JSON BASE =", APPS_JSON_BASE, fs.existsSync(APPS_JSON_BASE));
+    console.log("[api/screens] TSX BASE =", APPS_TSX_BASE, fs.existsSync(APPS_TSX_BASE));
 
-    if (!fs.existsSync(BASE)) {
-      console.error("[api/screens] ❌ BASE folder does not exist", { BASE });
+    if (!fs.existsSync(APPS_JSON_BASE)) {
+      console.error("[api/screens] ❌ BASE folder does not exist", { APPS_JSON_BASE });
       // Return empty array instead of crashing
       return NextResponse.json([]);
     }
@@ -129,10 +132,10 @@ export async function GET() {
     };
 
     const jsonCategories = fs
-      .readdirSync(BASE, { withFileTypes: true })
+      .readdirSync(APPS_JSON_BASE, { withFileTypes: true })
       .filter(d => d.isDirectory())
       .map(category => {
-        const categoryPath = path.join(BASE, category.name);
+        const categoryPath = path.join(APPS_JSON_BASE, category.name);
 
         console.log("[api/screens] 📂 Processing category", {
           category: category.name,
@@ -145,11 +148,6 @@ export async function GET() {
         return { category: category.name, folders };
       });
 
-    // 🔑 LOG: Check if TSX_BASE folder exists
-    console.log("[api/screens] 📍 Checking TSX_BASE path", {
-      TSX_BASE,
-      exists: fs.existsSync(TSX_BASE),
-    });
 
     /* ---------------- TSX (ADDITIVE) ---------------- */
     const tsxCategories = collectTsxScreens();
@@ -174,11 +172,11 @@ export async function GET() {
     console.error("[api/screens] ❌ Error in GET handler", {
       error: e.message,
       stack: e.stack,
-      BASE,
-      TSX_BASE,
+      APPS_JSON_BASE,
+      APPS_TSX_BASE,
     });
     return NextResponse.json(
-      { error: e.message, path: BASE },
+      { error: e.message, path: APPS_JSON_BASE },
       { status: 500 }
     );
   }

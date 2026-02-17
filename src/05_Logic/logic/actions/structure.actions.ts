@@ -7,6 +7,11 @@ import type { StructureItem, Block, ResolvedRuleset, StructureTreeNode, Rollup }
 import { applyCancelDay } from "@/logic/engines/structure/prioritization.engine";
 import { streamToCandidates } from "@/logic/engines/structure/extreme-mode-parser";
 import { aggregateByDateRange } from "@/logic/engines/structure/aggregation.engine";
+import { BASE_PLANNER_TREE } from "@/logic/planner/base-planner-tree";
+import { mergeTreeFragmentsUnderBase } from "@/logic/planner/tree-merge";
+import { resolveDueDate } from "@/logic/planner/relative-time";
+import type { JourneyItemTemplate } from "@/logic/planner/journey-types";
+import { getJourneyPack } from "@/logic/planner/journey-registry";
 
 const STRUCTURE_KEY = "structure";
 
@@ -39,8 +44,18 @@ const EMPTY_SLICE: StructureSlice = {
 function getSlice(): StructureSlice {
   const values = getState()?.values;
   const s = values?.[STRUCTURE_KEY];
-  if (s && typeof s === "object" && Array.isArray(s.items)) return s as StructureSlice;
-  return { ...EMPTY_SLICE };
+  if (s && typeof s === "object" && Array.isArray(s.items)) {
+    const slice = s as StructureSlice;
+    if (!slice.tree?.length) {
+      const withBase = { ...slice, tree: [...BASE_PLANNER_TREE] };
+      writeSlice(withBase);
+      return withBase;
+    }
+    return slice;
+  }
+  const initial: StructureSlice = { ...EMPTY_SLICE, tree: [...BASE_PLANNER_TREE] };
+  writeSlice(initial);
+  return initial;
 }
 
 function writeSlice(next: StructureSlice): void {
@@ -160,20 +175,81 @@ export function structureCancelDay(
 }
 
 /** V6 Stage 1: Parse text into candidates and add to structure.items. Reads text from action.text or state.values.structure_draftText. */
+/** OSB V5: Load journey pack (or payload), resolve relative-time, merge tree + items into structure. Single write. */
+export function structureAddJourney(
+  action: {
+    journeyId?: string;
+    tree?: StructureTreeNode[];
+    items?: JourneyItemTemplate[];
+    targetDate?: string;
+    startDate?: string;
+  },
+  _state: Record<string, any>
+): void {
+  const slice = getSlice();
+  let treeFragments: StructureTreeNode[] = [];
+  let itemTemplates: JourneyItemTemplate[] = [];
+  let targetDate = action.targetDate;
+  let startDate = action.startDate;
+
+  if (action.journeyId) {
+    const pack = getJourneyPack(action.journeyId);
+    if (!pack) return;
+    treeFragments = pack.tree ?? [];
+    itemTemplates = pack.items ?? [];
+    if (!targetDate && pack.items?.length) targetDate = toISODate(addDays(new Date(), 14));
+  } else {
+    treeFragments = action.tree ?? [];
+    itemTemplates = action.items ?? [];
+  }
+
+  const resolvedItems: Partial<StructureItem>[] = itemTemplates.map((t) => {
+    const dueDate = resolveDueDate(t, targetDate, startDate);
+    const { dueOffset, relativeTo, ...rest } = t;
+    return { ...rest, dueDate: dueDate ?? (rest.dueDate ?? null) };
+  });
+
+  const items = [...slice.items];
+  for (const partial of resolvedItems) {
+    const item = normalizeItem(partial);
+    const idx = items.findIndex((i) => i.id === item.id);
+    if (idx >= 0) items[idx] = item;
+    else items.push(item);
+  }
+
+  const mergedTree = treeFragments.length
+    ? mergeTreeFragmentsUnderBase(slice.tree, treeFragments)
+    : slice.tree;
+
+  writeSlice({ ...slice, tree: mergedTree, items });
+}
+
+const PLANNER_TRACE_PREFIX = "[structure:addFromText]";
+
 export function structureAddFromText(
   action: { text?: string },
   _state: Record<string, any>
 ): void {
+  const trace = getState()?.values?.diagnostics_plannerPipelineTrace === true;
+  if (trace) console.log(`${PLANNER_TRACE_PREFIX} ENTER text=`, typeof action.text === "string" ? action.text : "(from draft)" );
+
   const slice = getSlice();
   const text =
     typeof action.text === "string"
       ? action.text.trim()
       : (getState()?.values?.structure_draftText as string)?.trim?.() ?? "";
-  if (!text) return;
+  if (!text) {
+    if (trace) console.log(`${PLANNER_TRACE_PREFIX} EXIT no text`);
+    return;
+  }
   const segments = [{ text, isFinal: true }];
   const refDate = new Date();
   const { candidates } = streamToCandidates(segments, slice.rules ?? {}, refDate);
-  if (candidates.length === 0) return;
+  if (trace) console.log(`${PLANNER_TRACE_PREFIX} (1) parse → candidates=${candidates.length}`, candidates.map((c) => ({ title: c.title, dueDate: c.dueDate })));
+  if (candidates.length === 0) {
+    if (trace) console.log(`${PLANNER_TRACE_PREFIX} EXIT no candidates`);
+    return;
+  }
   const items = [...slice.items];
   for (const c of candidates) {
     const item = normalizeItem(c);
@@ -182,6 +258,8 @@ export function structureAddFromText(
     else items.push(item);
   }
   writeSlice({ ...slice, items });
+  if (trace) console.log(`${PLANNER_TRACE_PREFIX} (2) writeSlice items.length=${items.length}; (3) blocksByDate NOT updated; (4) selectedDate/calendarView NOT updated; (5) scheduledFromState will populate at render from structure.items`);
+
   // Clear draft text if it was used
   if (getState()?.values?.structure_draftText != null) {
     dispatchState("state.update", { key: "structure_draftText", value: "" });

@@ -1,0 +1,99 @@
+{
+  "id": "tools_home",
+  "type": "screen",
+  "state": {
+    "currentView": "main"
+  },
+  "children": [
+    {
+      "id": "toolsHero",
+      "type": "section",
+      "role": "hero",
+      "content": {
+        "title": "Tools",
+        "body": "Apps, protection, system"
+      },
+      "children": []
+    },
+    {
+      "id": "toolsNav",
+      "type": "section",
+      "role": "writing",
+      "content": {
+        "title": ""
+      },
+      "children": [
+        {
+          "id": "toolsLauncher",
+          "type": "section",
+          "role": "focus",
+          "content": {
+            "title": ""
+          },
+          "children": [
+            {
+              "id": "cardApps",
+              "type": "card",
+              "content": {
+                "title": "Apps",
+                "body": "Coming Soon"
+              },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "navigate",
+                  "to": "HiClarify/tools/apps/apps_screen"
+                }
+              }
+            },
+            {
+              "id": "cardDiagnostics",
+              "type": "card",
+              "content": {
+                "title": "Diagnostics",
+                "body": "Coming Soon"
+              },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "navigate",
+                  "to": "HiClarify/tools/system/diagnostics_screen"
+                }
+              }
+            },
+            {
+              "id": "cardProtection",
+              "type": "card",
+              "content": {
+                "title": "Protection",
+                "body": "Coming Soon"
+              },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "navigate",
+                  "to": "HiClarify/tools/protection/protection_screen"
+                }
+              }
+            },
+            {
+              "id": "cardSystemSettings",
+              "type": "card",
+              "content": {
+                "title": "System Settings",
+                "body": "Coming Soon"
+              },
+              "behavior": {
+                "type": "Action",
+                "params": {
+                  "name": "navigate",
+                  "to": "HiClarify/tools/system/system_settings_screen"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

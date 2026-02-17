@@ -103,29 +103,24 @@ function normalizeTsxPath(path: string) {
 
 
 /* ------------------------------------------------------------
-   🔑 RESOLVER (FLEXIBLE 2-LEVEL OR 3-LEVEL)
-   Tries: exact → tsx-screens/ prefix → 2-level fallback (folder/file)
+   🔑 RESOLVER — ALL TSX CATEGORIES (HiClarify, tsx-screens, etc.)
+   Tries: exact path first, then tsx-screens/ prefix, then 2/3-level fallbacks.
 ------------------------------------------------------------ */
-function resolveTsxScreen(path: string) {
-  const normalized = normalizeTsxPath(path);
+function resolveTsxScreen(screenPath: string) {
+  const normalized = normalizeTsxPath(screenPath);
+  // 1) Exact key (e.g. HiClarify/HiClarifyOnboarding or tsx-screens/onboarding/trial)
   let loader = AUTO_TSX_MAP[normalized];
   if (loader) {
     return nextDynamic(loader, { ssr: false });
   }
+  // 2) For paths not already under tsx-screens/, try with tsx-screens/ prefix (legacy)
   if (!normalized.startsWith("tsx-screens/")) {
     loader = AUTO_TSX_MAP[`tsx-screens/${normalized}`];
   }
   if (loader) {
     return nextDynamic(loader, { ssr: false });
   }
-  if (normalized.includes("/")) {
-    const parts = normalized.split("/");
-    loader = AUTO_TSX_MAP[parts.slice(1).join("/")];
-  }
-  if (loader) {
-    return nextDynamic(loader, { ssr: false });
-  }
-  // 2-level fallback: 3-segment path (folder/subfolder/file) → try folder/file
+  // 3) 3-segment path (e.g. tsx-screens/onboarding/file) → try 2-level folder/file
   if (normalized.split("/").length === 3) {
     const [folder, , file] = normalized.split("/");
     const twoLevel = `${folder}/${file}`;

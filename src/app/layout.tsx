@@ -10,6 +10,7 @@ import { useSyncExternalStore } from "react";
 
 import "@/styles/site-theme.css";
 import "@/styles/dev-mobile.css";
+import "@/styles/navigator-density.css";
 import { getBaseUrl } from "@/lib/app-base-url";
 import DevicePreviewToggle from "@/dev/DevicePreviewToggle";
 import VerticalSpacingReport from "@/diagnostics/VerticalSpacingReport";
@@ -65,10 +66,12 @@ import { installCapabilityDebug } from "@/03_Runtime/capability/capability-debug
 ============================================================ */
 import presentationProfiles from "@/lib/layout/presentation-profiles.json";
 import CascadingScreenMenu from "@/app/components/CascadingScreenMenu";
+import OSBCaptureModal from "@/app/components/OSBCaptureModal";
 import { BottomNavOnly } from "@/04_Presentation/shells/GlobalAppSkin";
 import { NAV_STRIP_HEIGHT } from "@/app/shell-ui-constants";
 import MobileShell from "@/mobile/MobileShell";
 import MobileLayout from "@/mobile/MobileLayout";
+import OsbMinimalTopBar from "@/04_Presentation/shells/OsbMinimalTopBar";
 import { useDevMobileMode } from "@/app/dev/useDevMobileMode";
 import DevHome from "@/app/dev/DevHome";
 
@@ -150,6 +153,17 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
     return () => document.body.classList.remove("dev-mobile-mode");
   }, [devMobileMode]);
 
+  /* Nav compact desktop: apply when viewport > 1024px (density only, no logic change) */
+  const [navCompactDesktop, setNavCompactDesktop] = useState(false);
+  useEffect(() => {
+    const mq = typeof window !== "undefined" ? window.matchMedia("(min-width: 1025px)") : null;
+    if (!mq) return;
+    const apply = () => setNavCompactDesktop(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+
   useEffect(() => {
     console.log("[layout.tsx] phoneFrameEnabled changed to:", phoneFrameEnabled);
   }, [phoneFrameEnabled]);
@@ -181,6 +195,13 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
     });
   }, [router]);
 
+  /* OSB V5: center FAB opens capture modal */
+  useEffect(() => {
+    const openOSB = () => dispatchState("state.update", { key: "osb_modalOpen", value: true });
+    window.addEventListener("osb:open", openOSB);
+    return () => window.removeEventListener("osb:open", openOSB);
+  }, []);
+
 
   /* ============================================================
      📂 LOAD AVAILABLE SCREENS
@@ -206,6 +227,7 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
     <>
         <DevHome />
         {/* Navigator: no key — identity stable; palette changes only update CSS, never remount. */}
+        <div className={navCompactDesktop ? "nav-compact-desktop" : undefined}>
         <div className="app-chrome">
           <button
             type="button"
@@ -262,6 +284,7 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
           <button type="button" onClick={() => setShowSections(v => !v)}>
             Sections ▾
           </button>
+        </div>
         </div>
 
 
@@ -405,23 +428,40 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
           )}
         </div>
         {process.env.NODE_ENV === "development" && <PipelineDiagnosticsRail />}
+        <OSBCaptureModal />
         <MobileShell />
     </>
   );
 }
 
-/** User/mobile mode (/) — no navigator, no dev chrome; app UI + fixed bottom nav only. */
+const HOME_VIEW = "HiClarify/home/home_screen";
+
+/** User/mobile mode (/) — minimal top bar; bottom nav hidden on home (OSB V2). */
 function UserLayoutChrome({ children }: { children: React.ReactNode }) {
   usePaletteCSS();
+  const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
+  const currentView = (stateSnapshot?.values?.currentView as string) ?? "";
+  const isHomeScreen = currentView === HOME_VIEW;
+
   useEffect(() => {
     installBehaviorListener((to: string) => {
-      if (typeof to === "string" && to.startsWith("|")) {
-        dispatchState("state:currentView", { value: to });
-      }
-      // Screen-path nav from user app stays in-app; builder is at /dev
+      if (typeof to !== "string") return;
+      dispatchState("state:currentView", { value: to });
     });
   }, []);
-  return <MobileLayout>{children}</MobileLayout>;
+  useEffect(() => {
+    const openOSB = () => dispatchState("state.update", { key: "osb_modalOpen", value: true });
+    window.addEventListener("osb:open", openOSB);
+    return () => window.removeEventListener("osb:open", openOSB);
+  }, []);
+
+  return (
+    <>
+      <OsbMinimalTopBar />
+      <MobileLayout showBottomNav={!isHomeScreen}>{children}</MobileLayout>
+      <OSBCaptureModal />
+    </>
+  );
 }
 
 export default function RootLayout({ children }: any) {

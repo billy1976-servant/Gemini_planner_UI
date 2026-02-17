@@ -1,0 +1,33 @@
+{
+  "id": "osb-home-registry",
+  "topBar": {
+    "profileLabel": "Me",
+    "settingsLabel": "Settings",
+    "settingsTo": "HiClarify/system_settings_screen"
+  },
+  "placeholders": [
+    "Plan something",
+    "Start a journey",
+    "Organize today",
+    "Track progress",
+    "Build a plan"
+  ],
+  "hint": "Type anything. The system will build the plan.",
+  "strip": [
+    { "label": "Me", "to": "HiClarify/me/me_home" },
+    { "label": "Plans", "to": "HiClarify/play/play_home" },
+    { "label": "Build", "to": "HiClarify/build/build_home" },
+    { "label": "People", "to": "HiClarify/others/others_home" },
+    { "label": "Apps", "to": "HiClarify/apps_screen" }
+  ],
+  "panel": [
+    { "label": "Planner", "to": "HiClarify/planner_screen" },
+    { "label": "Journeys", "to": "HiClarify/planner_screen" },
+    { "label": "Habits", "to": "HiClarify/planner_screen" },
+    { "label": "Tasks", "to": "HiClarify/planner_screen" },
+    { "label": "Notes", "to": "HiClarify/notes_screen" },
+    { "label": "Settings", "to": "HiClarify/system_settings_screen" },
+    { "label": "Install New Plan", "to": "HiClarify/planner_screen" },
+    { "label": "Import Shared Plan", "to": "HiClarify/planner_screen" }
+  ]
+}

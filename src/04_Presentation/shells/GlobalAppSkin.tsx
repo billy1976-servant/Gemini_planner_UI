@@ -60,17 +60,32 @@ const JourneyIcon = () => (
   </svg>
 );
 
+const ToolsIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" {...SHELL_ICON_SVG_PROPS} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+  </svg>
+);
+
 const iconRegistry: Record<string, React.ComponentType> = {
-  Habit: HabitIcon,
-  Calendar: CalendarIcon,
-  People: PeopleIcon,
-  Journey: JourneyIcon,
-  Overview: PlayIcon,
+  person: HabitIcon,
+  people: PeopleIcon,
+  play: PlayIcon,
+  build: JourneyIcon,
+  tools: ToolsIcon,
 };
 
-const centerItem = "Overview";
-const leftItems = ["Habit", "People"];
-const rightItems = ["Journey", "Calendar"];
+const centerItem = "play";
+const leftItems = ["person", "people"];
+const rightItems = ["build", "tools"];
+
+/** HiClarify hub screen IDs for bottom nav (existing navigate action format only). */
+const NAV_TARGET_BY_ICON: Record<string, string> = {
+  person: "HiClarify/me/me_home",
+  people: "HiClarify/others/others_home",
+  play: "HiClarify/play/play_home",
+  build: "HiClarify/build/build_home",
+  tools: "HiClarify/tools/tools_home",
+};
 
 const SHELL_BUTTON_STYLE: React.CSSProperties = {
   width: 48,
@@ -96,6 +111,7 @@ function renderNavItem(iconKey: string) {
     }
     return null;
   }
+  const to = NAV_TARGET_BY_ICON[iconKey];
   return (
     <button
       key={iconKey}
@@ -105,6 +121,13 @@ function renderNavItem(iconKey: string) {
       title={iconKey}
       type="button"
       aria-label={iconKey}
+      onClick={() => {
+        if (to && typeof window !== "undefined") {
+          window.dispatchEvent(
+            new CustomEvent("navigate", { detail: { to } })
+          );
+        }
+      }}
     >
       <Icon />
     </button>
@@ -169,11 +192,11 @@ export function BottomNavOnly() {
       console.log("rect", logRect(container), "position", s.position, "display", s.display, "overflow", s.overflow, "zIndex", s.zIndex);
       console.groupEnd();
 
-      const overviewItem = document.querySelector('[data-shell-icon="Overview"]');
-      if (overviewItem) {
-        console.group("[Step A] Play nav item (Overview)");
-        console.log("button rect", logRect(overviewItem));
-        const svg = overviewItem.querySelector("svg");
+      const playItem = document.querySelector('[data-shell-icon="play"]');
+      if (playItem) {
+        console.group("[Step A] Play nav item");
+        console.log("button rect", logRect(playItem));
+        const svg = playItem.querySelector("svg");
         if (svg) console.log("svg rect", logRect(svg));
         console.groupEnd();
       }
@@ -329,11 +352,17 @@ export function BottomNavOnly() {
             <button
               ref={launcherButtonRef}
               type="button"
-              data-shell-icon="Overview"
-              data-nav-item="Overview"
-              aria-label="Quick Launch Menu"
-              title="Quick Launch Menu"
-              onClick={() => setLauncherOpen((prev) => !prev)}
+              data-shell-icon="play"
+              data-nav-item="play"
+              data-osb-entry
+              aria-label="Quick capture"
+              title="Quick capture"
+              onClick={() => {
+                setLauncherOpen(false);
+                if (typeof window !== "undefined") {
+                  window.dispatchEvent(new CustomEvent("osb:open"));
+                }
+              }}
               style={{
                 width: LAUNCHER_BUTTON_SIZE,
                 height: LAUNCHER_BUTTON_SIZE,
