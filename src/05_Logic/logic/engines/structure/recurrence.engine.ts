@@ -76,6 +76,23 @@ export function nextOccurrences(
     return out.slice(0, count);
   }
 
+  if (rec.recurringType === "quarterly") {
+    const dayOfMonth = fromDate.getDate();
+    let y = d.getFullYear();
+    let m = d.getMonth();
+    while (out.length < count) {
+      const next = new Date(y, m, Math.min(dayOfMonth, new Date(y, m + 1, 0).getDate()));
+      if (next >= d) out.push(toISO(next));
+      m += 3;
+      if (m >= 12) {
+        m -= 12;
+        y += 1;
+      }
+      d = new Date(y, m, 1);
+    }
+    return out.slice(0, count);
+  }
+
   return [];
 }
 
@@ -97,6 +114,11 @@ export function isDueOn(task: StructureItem, date: Date): boolean {
   }
   if (rec.recurringType === "monthly") {
     return task.dueDate?.endsWith(ref.slice(5)) ?? false;
+  }
+  if (rec.recurringType === "quarterly") {
+    const q = Math.floor(date.getMonth() / 3) + 1;
+    const qDue = task.dueDate ? Math.floor(new Date(task.dueDate).getMonth() / 3) + 1 : 0;
+    return q === qDue && task.dueDate?.slice(8, 10) === ref.slice(8, 10);
   }
   return false;
 }

@@ -1,0 +1,104 @@
+{
+  "id": "parser_test_screen",
+  "type": "screen",
+  "state": {},
+  "children": [
+    {
+      "type": "Section",
+      "content": { "title": "Parser test (diagnostics)" },
+      "layout": "content-stack",
+      "children": [
+        {
+          "type": "Field",
+          "params": {
+            "field": {
+              "fieldKey": "parser_test_input",
+              "multiline": true
+            }
+          },
+          "content": {
+            "placeholder": "e.g. Fertilize garden Thursday at 4pm every week high priority"
+          }
+        },
+        {
+          "type": "Button",
+          "content": { "label": "Parse and add" },
+          "behavior": {
+            "type": "Action",
+            "params": {
+              "name": "structure:addFromText",
+              "textFromState": "parser_test_input"
+            }
+          }
+        },
+        {
+          "type": "Button",
+          "content": { "label": "Run deep trace" },
+          "behavior": {
+            "type": "Action",
+            "params": {
+              "name": "diagnostics:plannerFullParseTrace"
+            }
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "A — Last parsed item",
+            "bodyFromState": "structure.items",
+            "bodyFromStateSlice": "last"
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "B — selectedDate",
+            "bodyFromState": "structure.selectedDate"
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "B — calendarView",
+            "bodyFromState": "structure.calendarView"
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "B — weekDates",
+            "bodyFromState": "structure.weekDates"
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "B — monthRollup",
+            "bodyFromState": "structure.monthRollup"
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "C — Rule usage snapshot",
+            "bodyFromState": "structure.rules"
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "D — Full structure",
+            "bodyFromState": "structure"
+          }
+        },
+        {
+          "type": "Card",
+          "content": {
+            "title": "Deep trace result",
+            "bodyFromState": "diagnostics_plannerFullParseTrace"
+          }
+        }
+      ]
+    }
+  ]
+}
