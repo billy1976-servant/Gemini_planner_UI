@@ -67,8 +67,9 @@ import { installCapabilityDebug } from "@/03_Runtime/capability/capability-debug
 import presentationProfiles from "@/lib/layout/presentation-profiles.json";
 import CascadingScreenMenu from "@/app/components/CascadingScreenMenu";
 import OSBCaptureModal from "@/app/components/OSBCaptureModal";
-import TopTextNav from "@/01_App/apps-tsx/HiClarify/TopTextNav";
-import OSBBar from "@/01_App/apps-tsx/HiClarify/OSBBar";
+import { BottomNavOnly } from "@/04_Presentation/shells/GlobalAppSkin";
+import BottomNavBar_Text from "@/04_Presentation/shells/BottomNavBar_Text";
+import { NAV_STRIP_HEIGHT } from "@/app/shell-ui-constants";
 import MobileShell from "@/mobile/MobileShell";
 import MobileLayout from "@/mobile/MobileLayout";
 import OsbMinimalTopBar from "@/04_Presentation/shells/OsbMinimalTopBar";
@@ -126,6 +127,9 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
       : devicePreviewMode === "tablet"
         ? STAGE_MAX_WIDTH_TABLET
         : STAGE_MAX_WIDTH_DESKTOP;
+
+  // Do not auto-attach bottom nav for onboarding / Google-style / OsbHomeV2; clean stage rules (no play button + icons strip, neutral bg, no extra maxWidth)
+  const isOnboardingTsx = /HiClarifyOnboarding|onboarding|HiClarify\/HiClarifyOnboarding|OsbHomeV2/i.test(currentScreen || "");
 
   // State is source of truth; fall back to layout-store / palette-store when key is missing
   const experience = (stateSnapshot?.values?.experience ?? (layoutSnapshot as { experience?: string })?.experience) ?? "website";
@@ -294,7 +298,15 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
           </div>
         )}
 
-        <div ref={contentRef} className="app-content" style={{ padding: 0, overflow: "visible" }}>
+        <div
+          ref={contentRef}
+          className="app-content"
+          style={{
+            padding: 0,
+            overflow: "visible",
+            ...(isOnboardingTsx ? { background: "linear-gradient(135deg, #2d3436 0%, #1e272e 100%)" } : {}),
+          }}
+        >
           {phoneFrameEnabled ? (
             <div
               style={{
@@ -336,10 +348,26 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
                   }}
                 >
                   <div style={{ flex: 1, minHeight: 0, overflowY: "auto", overflowX: "hidden", padding: 0, margin: 0 }}>
-                    <TopTextNav />
-                    <OSBBar />
                     {children}
                   </div>
+                  {!isOnboardingTsx && (
+                    <div
+                      id="screen-ui-layer"
+                      data-screen-ui-layer
+                      style={{
+                        position: "absolute",
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        width: "100%",
+                        height: NAV_STRIP_HEIGHT,
+                        zIndex: 50,
+                        overflow: "visible",
+                      }}
+                    >
+                      <BottomNavBar_Text />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -351,6 +379,7 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
                 width: "100%",
                 minHeight: "100vh",
                 overflow: "visible",
+                ...(isOnboardingTsx ? { background: "linear-gradient(135deg, #2d3436 0%, #1e272e 100%)" } : {}),
               }}
             >
               <div
@@ -370,12 +399,12 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
                   style={{
                     pointerEvents: "auto",
                     width: "100%",
-                    maxWidth: `min(100%, ${stageMaxWidth}px)`,
+                    maxWidth: isOnboardingTsx ? "none" : `min(100%, ${stageMaxWidth}px)`,
                     height: "100%",
                     minHeight: "100vh",
                     position: "relative",
                     boxSizing: "border-box",
-                    overflow: "hidden",
+                    overflow: "visible",
                     display: "flex",
                     flexDirection: "column",
                   }}
@@ -390,10 +419,26 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
                       margin: 0,
                     }}
                   >
-                    <TopTextNav />
-                    <OSBBar />
                     {children}
                   </div>
+                  {!isOnboardingTsx && (
+                    <div
+                      id="screen-ui-layer"
+                      data-screen-ui-layer
+                      style={{
+                        position: "absolute",
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        width: "100%",
+                        height: NAV_STRIP_HEIGHT,
+                        zIndex: 50,
+                        overflow: "visible",
+                      }}
+                    >
+                      <BottomNavBar_Text />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -430,7 +475,7 @@ function UserLayoutChrome({ children }: { children: React.ReactNode }) {
   return (
     <>
       <OsbMinimalTopBar />
-      <MobileLayout>{children}</MobileLayout>
+      <MobileLayout showBottomNav={!isHomeScreen}>{children}</MobileLayout>
       <OSBCaptureModal />
     </>
   );
