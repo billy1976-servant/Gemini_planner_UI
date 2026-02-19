@@ -12,6 +12,12 @@ import { useNodeOrder } from "./useNodeOrder";
 import { NodeRenderer } from "./NodeRenderer";
 import type { TsxWebsiteContract } from "./types";
 
+const EXPERIENCE_LAYOUT: Record<string, React.CSSProperties> = {
+  website: { maxWidth: "100%", padding: "0" },
+  app: { maxWidth: "100%", padding: "0.5rem 1rem" },
+  learning: { maxWidth: "min(800px, 100%)", margin: "0 auto", padding: "1.5rem 1rem" },
+};
+
 export function WebsiteTemplate({
   contract,
   screenPath,
@@ -24,17 +30,21 @@ export function WebsiteTemplate({
 }) {
   useAutoStructure();
   const orderedNodes = useNodeOrder(contract.nodes, contract.nodeOrder, screenPath);
+  const exp = (experience ?? "website").toLowerCase();
+  const experienceStyle = EXPERIENCE_LAYOUT[exp] ?? EXPERIENCE_LAYOUT.website;
 
   return (
     <div
       data-tsx-website="true"
       data-tsx-screen-path={screenPath}
-      data-tsx-experience={experience ?? "website"}
+      data-tsx-experience={exp}
+      className={`tsx-website tsx-website--experience-${exp}`}
       style={{
         display: "flex",
         flexDirection: "column",
         minHeight: "100%",
         width: "100%",
+        ...experienceStyle,
       }}
     >
       {orderedNodes.map((node) => (

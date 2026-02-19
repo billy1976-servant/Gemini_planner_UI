@@ -10,6 +10,7 @@
     "blocks:status": "ts-node scripts/scan-blocks-status.ts",
     "prebuild": "npm run validate:paths",
     "dev": "node --max-old-space-size=4096 ./node_modules/next/dist/bin/next dev",
+    "shopify:dev": "npx @shopify/cli app dev",
     "apps": "ts-node src/map/engine/map-engine.ts",
     "blueprint": "ts-node -r tsconfig-paths/register src/07_Dev_Tools/scripts/blueprint.ts",
     "contract:validate": "ts-node src/scripts/contract-validate.ts",
@@ -59,6 +60,8 @@
     "@capacitor/cli": "^8.1.0",
     "@capacitor/core": "^8.1.0",
     "@capacitor/filesystem": "^8.0.0",
+    "@shopify/app-bridge-react": "^4.2.10",
+    "@shopify/shopify-api": "^11.14.1",
     "@types/chalk": "^0.4.31",
     "chalk": "^5.6.2",
     "firebase": "^11.0.0",
@@ -69,6 +72,7 @@
     "react-dom": "18.2.0"
   },
   "devDependencies": {
+    "@shopify/cli": "^3.90.1",
     "@playwright/test": "^1.58.1",
     "@types/react": "19.2.6",
     "ts-node": "^10.9.1",

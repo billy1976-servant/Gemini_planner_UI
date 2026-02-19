@@ -1,5 +1,5 @@
-// Hook order stabilized — no conditional hooks allowed
 "use client";
+// Hook order stabilized — no conditional hooks allowed
 export const dynamic = "force-dynamic";
 import React, { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -178,6 +178,9 @@ export default function DevPage() {
   const [TsxComponent, setTsxComponent] =
     useState<React.ComponentType<any> | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [screenError, setScreenError] = useState<
+    { code: "FILE_NOT_FOUND"; resolvedPath: string } | { code: "JSON_PARSE"; message: string } | null
+  >(null);
   const [host, setHost] = useState<HTMLElement | null>(null);
   const [sectionHeights, setSectionHeights] = useState<Record<string, number>>({});
   const contentRef = useRef<HTMLDivElement>(null);
@@ -391,12 +394,14 @@ export default function DevPage() {
             setTsxMeta(null);
             setTsxComponent(null);
             setJson(null);
+            setScreenError(null);
           })
           .catch((err) => {
             setError(err?.message || "Failed to load FlowViewer");
             setJson(null);
             setTsxMeta(null);
             setTsxComponent(null);
+            setScreenError(null);
           });
         return;
       }
@@ -405,6 +410,7 @@ export default function DevPage() {
         const { flow, content } = resolveLandingPage();
 
         if (content) {
+          setScreenError(null);
           const landingPageContent = {
             ...content,
             flow,
@@ -427,6 +433,7 @@ export default function DevPage() {
       setTsxMeta(null);
       setTsxComponent(null);
       setError("Select a screen from the Navigator.");
+      setScreenError(null);
       return;
     }
 
@@ -435,17 +442,26 @@ export default function DevPage() {
     setTsxMeta(null);
     setTsxComponent(null);
     setError(null);
+    setScreenError(null);
+
+    const screenParamDecoded = (() => {
+      try {
+        return screen ? decodeURIComponent(screen) : "";
+      } catch {
+        return screen ?? "";
+      }
+    })();
 
     // Short paths → treat as TSX so loadScreen returns tsx-screen descriptor
     const pathToLoad = (() => {
-      if (!screen) return screen;
-      if (screen.startsWith("tsx:")) return screen;
-      if (screen.startsWith("onboarding/")) return `tsx:${screen}`;
+      if (!screenParamDecoded) return screenParamDecoded;
+      if (screenParamDecoded.startsWith("tsx:")) return screenParamDecoded;
+      if (screenParamDecoded.startsWith("onboarding/")) return `tsx:${screenParamDecoded}`;
       // Container Creations website: URL often has Container_Creations/ContainerCreationsWebsite without tsx: prefix
-      if (screen === "Container_Creations/ContainerCreationsWebsite" || screen.replace(/\\/g, "/") === "Container_Creations/ContainerCreationsWebsite") {
+      if (screenParamDecoded === "Container_Creations/ContainerCreationsWebsite" || screenParamDecoded.replace(/\\/g, "/") === "Container_Creations/ContainerCreationsWebsite") {
         return "tsx:(live) Business/Container_Creations/ContainerCreationsWebsite";
       }
-      return screen;
+      return screenParamDecoded;
     })();
 
     loadScreen(pathToLoad)
@@ -458,6 +474,19 @@ export default function DevPage() {
           timestamp: Date.now(),
         });
 
+        if (data?.__type === "screen-error") {
+          if (data.code === "FILE_NOT_FOUND") {
+            setScreenError({ code: "FILE_NOT_FOUND", resolvedPath: data.resolvedPath ?? pathToLoad });
+          } else if (data.code === "JSON_PARSE") {
+            setScreenError({ code: "JSON_PARSE", message: data.message ?? "Invalid JSON" });
+          }
+          setJson(null);
+          setTsxMeta(null);
+          setTsxComponent(null);
+          setError(null);
+          return;
+        }
+
         const tsxPath = typeof data?.path === "string" ? data.path : data?.screen;
         if (data?.__type === "tsx-screen" && typeof tsxPath === "string") {
           const C = resolveTsxScreen(tsxPath);
@@ -466,18 +495,20 @@ export default function DevPage() {
             setTsxMeta(null);
             setTsxComponent(null);
             setJson(null);
+            setScreenError(null);
             return;
           }
           setTsxMeta({ path: tsxPath });
           setTsxComponent(() => C);
           setJson(null);
           setError(null);
+          setScreenError(null);
           return;
         }
 
         const isContainerCreations = (s: string | null) =>
           s != null && s.replace(/\\/g, "/") === "Container_Creations/ContainerCreationsWebsite";
-        if (isContainerCreations(screen) && data?.title === "Screen unavailable") {
+        if (isContainerCreations(screenParamDecoded) && data?.title === "Screen unavailable") {
           const forcedPath = "(live) Business/Container_Creations/ContainerCreationsWebsite";
           const C = resolveTsxScreen(forcedPath);
           if (C) {
@@ -485,17 +516,19 @@ export default function DevPage() {
             setTsxComponent(() => C);
             setJson(null);
             setError(null);
+            setScreenError(null);
             return;
           }
         }
 
         setJson(data);
-        
+        setScreenError(null);
+
         if (process.env.NODE_ENV === "development" && data) {
           const validation = validateScreenJson(screen, data);
           logScreenJsonValidation(validation);
         }
-        
+
         setTsxMeta(null);
         setTsxComponent(null);
         setError(null);
@@ -505,19 +538,31 @@ export default function DevPage() {
         setJson(null);
         setTsxMeta(null);
         setTsxComponent(null);
+        setScreenError(null);
       });
   }, [screen, searchParams]);
 
+
+  if (screenError) {
+    setDevSidebarProps(null);
+    if (screenError.code === "FILE_NOT_FOUND") {
+      return <div style={{ color: "red" }}>SCREEN FILE NOT FOUND: {screenError.resolvedPath}</div>;
+    }
+    if (screenError.code === "JSON_PARSE") {
+      return (
+        <div style={{ padding: 16 }}>
+          <pre>{JSON.stringify(screenError.message)}</pre>
+        </div>
+      );
+    }
+  }
 
   if (error) {
     setDevSidebarProps(null);
     return <div style={{ color: "red" }}>{error}</div>;
   }
 
-  if (!mounted) {
-    setDevSidebarProps(null);
-    return <div style={{ padding: 40, color: "var(--color-text-secondary)" }}>Loading…</div>;
-  }
+  if (!mounted) return null;
 
   const overlay = null;
 

@@ -29,14 +29,18 @@ function normalizeError(err: unknown): string {
   }
 }
 
+export type SafeImportJsonErrorCode = "FILE_NOT_FOUND" | "JSON_PARSE";
+
+export type SafeImportJsonResult =
+  | { ok: true; json: any }
+  | { ok: false; error: string; code?: SafeImportJsonErrorCode };
+
 /**
  * Load JSON screen from path (relative to apps-json/apps, with or without .json).
  * Uses fetch to /api/screens/{path} only (no Node/fs) so the client bundle never pulls in "fs".
  * For Node-only tests, use the loader in contracts/load-app-offline-json.node.ts.
  */
-export async function safeImportJson(
-  path: string
-): Promise<{ ok: true; json: any } | { ok: false; error: string }> {
+export async function safeImportJson(path: string): Promise<SafeImportJsonResult> {
   const pathWithJson = withJsonSuffix(path.replace(/^\/+/, ""));
   const normalized = pathWithJson
     .replace(/^src\//, "")
@@ -53,12 +57,24 @@ export async function safeImportJson(
     if (!res.ok) {
       const text = await res.text().catch(() => "");
       const detail = text.length > 200 ? text.slice(0, 200) + "…" : text;
+      const code: SafeImportJsonErrorCode | undefined = res.status === 404 ? "FILE_NOT_FOUND" : undefined;
       return {
         ok: false,
         error: `HTTP ${res.status}: ${res.statusText}${detail ? ` — ${detail}` : ""}`,
+        code,
       };
     }
-    const json = await res.json();
+    const text = await res.text();
+    let json: unknown;
+    try {
+      json = JSON.parse(text);
+    } catch (parseErr) {
+      return {
+        ok: false,
+        error: normalizeError(parseErr),
+        code: "JSON_PARSE",
+      };
+    }
     return { ok: true, json };
   } catch (e) {
     return { ok: false, error: normalizeError(e) };

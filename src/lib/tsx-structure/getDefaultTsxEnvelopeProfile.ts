@@ -47,9 +47,45 @@ function matchPath(screenPath: string, pattern: string): boolean {
 /**
  * Returns the default envelope profile for any TSX screen.
  * Used by TSXScreenWithEnvelope to apply layout, palette, nav, chrome, and app class.
+ * When experience is provided (e.g. from DEV SIDEBAR Website/App/Learning), TSX website
+ * screens like Container Creations use it to align with the experience console.
  */
-export function getDefaultTsxEnvelopeProfile(screenPath: string): TsxEnvelopeProfile {
+export function getDefaultTsxEnvelopeProfile(
+  screenPath: string,
+  experience?: string
+): TsxEnvelopeProfile {
   const path = screenPath.replace(/^tsx:/, "").trim();
+  const exp = (experience ?? "").toLowerCase();
+
+  // Container Creations (and TSX website screens): respect web/app/learning console
+  if (matchPath(path, "Container_Creations/*") || path.includes("Container_Creations/ContainerCreationsWebsite")) {
+    if (exp === "app") {
+      return {
+        layout: "contained",
+        palette: "vars-only",
+        nav: "app-default",
+        appClass: "standard",
+        chrome: { ...DEFAULT_CHROME, topBar: true, sidePanel: false },
+      };
+    }
+    if (exp === "learning") {
+      return {
+        layout: "max-width",
+        palette: "vars-only",
+        nav: "minimal",
+        appClass: "learning",
+        chrome: { ...DEFAULT_CHROME, sidePanel: true },
+      };
+    }
+    // website (default): marketing/content-first
+    return {
+      layout: "full-viewport",
+      palette: "vars-only",
+      nav: "inherit",
+      appClass: "standard",
+      chrome: DEFAULT_CHROME,
+    };
+  }
 
   // Path pattern conventions only — no per-screen logic
   if (matchPath(path, "learning/*")) {
@@ -114,15 +150,6 @@ export function getDefaultTsxEnvelopeProfile(screenPath: string): TsxEnvelopePro
       nav: "minimal",
       appClass: "standard",
       chrome: { ...DEFAULT_CHROME, overlayHost: true },
-    };
-  }
-  if (matchPath(path, "Container_Creations/*") || path.includes("Container_Creations/ContainerCreationsWebsite")) {
-    return {
-      layout: "full-viewport",
-      palette: "vars-only",
-      nav: "inherit",
-      appClass: "standard",
-      chrome: DEFAULT_CHROME,
     };
   }
 

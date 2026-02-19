@@ -30,6 +30,14 @@ export async function loadScreen(path: string): Promise<any> {
       });
     }
 
+    let decodedPath: string;
+    try {
+      decodedPath = decodeURIComponent(path);
+    } catch {
+      decodedPath = path;
+    }
+    path = decodedPath;
+
     /* ==================================================
        🚫 SCREEN IDS ARE DEAD — return fallback instead of throw
        ================================================== */
@@ -53,7 +61,7 @@ export async function loadScreen(path: string): Promise<any> {
     }
 
     /* ==================================================
-       📄 JSON SCREEN — safe load, never throw
+       📄 JSON SCREEN — safe load, explicit diagnostics, no silent fallback
        ================================================== */
     const normalized = path
       .replace(/^\/+/, "")
@@ -61,28 +69,44 @@ export async function loadScreen(path: string): Promise<any> {
       .replace(/^apps-json\/apps\//, "")
       .replace(/^apps-json\//, "")
       .replace(/^apps\//, "");
-    const pathWithJson = normalized.match(/\.json$/i) ? normalized : `${normalized}.json`;
+    const resolvedPath = normalized.match(/\.json$/i) ? normalized : `${normalized}.json`;
 
-    const result = await safeImportJson(pathWithJson);
+    console.log("Resolving screen:", path);
+    console.log("Resolved path:", resolvedPath);
+
+    const result = await safeImportJson(resolvedPath);
+
+    const exists = result.ok ? true : (result as { ok: false; code?: string }).code === "FILE_NOT_FOUND" ? false : "unknown";
+    console.log("File exists:", exists);
+    if (result.ok) {
+      const parsedJson = result.json;
+      console.log("Parsed JSON keys:", Object.keys(parsedJson || {}));
+    }
 
     if (!result.ok) {
-      const err = (result as { ok: false; error: string }).error;
-      console.warn("[screen-loader] Screen load failed, returning fallback", {
+      const fail = result as { ok: false; error: string; code?: "FILE_NOT_FOUND" | "JSON_PARSE" };
+      if (fail.code === "FILE_NOT_FOUND") {
+        return { __type: "screen-error", code: "FILE_NOT_FOUND" as const, resolvedPath };
+      }
+      if (fail.code === "JSON_PARSE") {
+        return { __type: "screen-error", code: "JSON_PARSE" as const, message: fail.error };
+      }
+      console.warn("[screen-loader] Resolver failed after logging (generic error), returning fallback", {
         path,
-        normalized: pathWithJson,
-        error: err,
+        resolvedPath,
+        error: fail.error,
       });
       return makeFallbackScreen({
         title: "Screen unavailable",
-        message: err,
-        meta: { requestedPath: path, normalized: pathWithJson },
+        message: fail.error,
+        meta: { requestedPath: path, normalized: resolvedPath },
       });
     }
 
     const json = result.json;
 
     console.log("[screen-loader] 📥 LOADED", {
-      path: pathWithJson,
+      path: resolvedPath,
       id: json?.id,
       type: json?.type,
       hasState: !!json?.state,

@@ -1,5 +1,6 @@
 /**
  * Shopify Intelligence — shared types
+ * Used by provider, controller, executor, and the TSX page for viewing online.
  */
 
 export interface ShopifySignal {
@@ -20,4 +21,16 @@ export interface ShopifyControlState {
     | "Maintain"
     | "Reduce Ads"
     | "Promote High Margin SKUs";
+}
+
+/** GET /api/shopify-intelligence success body — used by TSX page for viewing online */
+export interface ShopifyIntelligenceApiResponse {
+  signal: ShopifySignal;
+  controlState: ShopifyControlState;
+}
+
+/** GET /api/shopify-intelligence error body (401 / 4xx / 5xx) */
+export interface ShopifyIntelligenceApiError {
+  error: string;
+  installUrl?: string;
 }
