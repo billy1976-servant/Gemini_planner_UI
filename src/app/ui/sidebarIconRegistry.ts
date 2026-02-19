@@ -17,6 +17,7 @@ export const SIDEBAR_ICON_REGISTRY: Record<DockPanelId, string> = {
   layout: `${BASE}/layout.svg`,
   newInterface: `${BASE}/content.svg`,
   tsx: `${BASE}/components.svg`,
+  nodes: `${BASE}/layout.svg`,
   expand: `${BASE}/layout.svg`,
 };
 

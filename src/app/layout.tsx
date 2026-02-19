@@ -14,7 +14,6 @@ import "@/styles/navigator-density.css";
 import { getBaseUrl } from "@/lib/app-base-url";
 import DevicePreviewToggle from "@/dev/DevicePreviewToggle";
 import VerticalSpacingReport from "@/diagnostics/VerticalSpacingReport";
-import PipelineDiagnosticsRail from "@/app/ui/control-dock/PipelineDiagnosticsRail";
 import { getPhoneFrameEnabled, subscribePhoneFrameEnabled } from "@/dev/phone-frame-store";
 import { getDevicePreviewMode, subscribeDevicePreviewMode } from "@/dev/device-preview-store";
 
@@ -437,7 +436,6 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
             </div>
           )}
         </div>
-        {process.env.NODE_ENV === "development" && <PipelineDiagnosticsRail />}
         <OSBCaptureModal />
         <MobileShell />
     </>

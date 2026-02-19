@@ -116,6 +116,15 @@ export function getDefaultTsxEnvelopeProfile(screenPath: string): TsxEnvelopePro
       chrome: { ...DEFAULT_CHROME, overlayHost: true },
     };
   }
+  if (matchPath(path, "Container_Creations/*") || path.includes("Container_Creations/ContainerCreationsWebsite")) {
+    return {
+      layout: "full-viewport",
+      palette: "vars-only",
+      nav: "inherit",
+      appClass: "standard",
+      chrome: DEFAULT_CHROME,
+    };
+  }
 
   // Default fallback
   return {

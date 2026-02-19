@@ -1,0 +1,12 @@
+{
+  "industry": "container-ventilation",
+  "palette": "default",
+  "nodes": [
+    { "id": "header", "type": "header", "props": { "title": "Container Creations" } },
+    { "id": "hero", "type": "hero", "props": { "headline": "Industrial Container Vent Systems" } },
+    { "id": "products", "type": "product-grid", "props": {} },
+    { "id": "cta", "type": "cta", "props": { "label": "Request a Quote" } },
+    { "id": "footer", "type": "footer", "props": { "text": "© Container Creations" } }
+  ],
+  "nodeOrder": ["header", "hero", "products", "cta", "footer"]
+}

@@ -27,7 +27,7 @@ import {
   loadOrganVariant,
 } from "@/components/organs";
 import OrganPanel from "@/components/organs/OrganPanel";
-import RightFloatingSidebar from "@/app/ui/control-dock/RightFloatingSidebar";
+import { setDevSidebarProps } from "@/app/ui/control-dock/dev-right-sidebar-store";
 import {
   getSectionLayoutPresetOverrides,
   getOverridesForScreen,
@@ -107,10 +107,20 @@ businessContext.keys().forEach((key) => {
 /* ------------------------------------------------------------
    🔑 RESOLVER — exact match + (live) Business fallback for short paths
 ------------------------------------------------------------ */
+const EXPLICIT_TSX_MAP: Record<string, () => Promise<any>> = {
+  "(live) Business/Container_Creations/ContainerCreationsWebsite": () =>
+    import("@/business/Container_Creations/ContainerCreationsWebsite"),
+};
+
 function resolveTsxScreen(path: string) {
   const normalized = path
     .replace(/^tsx:/, "")
-    .replace(/\\/g, "/");
+    .replace(/\\/g, "/")
+    .trim();
+
+  if (EXPLICIT_TSX_MAP[normalized]) {
+    return nextDynamic(EXPLICIT_TSX_MAP[normalized], { ssr: false });
+  }
 
   if (AUTO_TSX_MAP[normalized]) {
     return nextDynamic(AUTO_TSX_MAP[normalized], { ssr: false });
@@ -119,6 +129,10 @@ function resolveTsxScreen(path: string) {
   const businessPath = `(live) Business/${normalized}`;
   if (AUTO_TSX_MAP[businessPath]) {
     return nextDynamic(AUTO_TSX_MAP[businessPath], { ssr: false });
+  }
+
+  if (EXPLICIT_TSX_MAP[businessPath]) {
+    return nextDynamic(EXPLICIT_TSX_MAP[businessPath], { ssr: false });
   }
 
   return null;
@@ -168,6 +182,10 @@ export default function DevPage() {
   const [sectionHeights, setSectionHeights] = useState<Record<string, number>>({});
   const contentRef = useRef<HTMLDivElement>(null);
   const sectionKeysRef = useRef<string[]>([]);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Measure section heights so panel rows align with each section (must run before any early return)
   useLayoutEffect(() => {
@@ -418,16 +436,23 @@ export default function DevPage() {
     setTsxComponent(null);
     setError(null);
 
-    // Short paths like onboarding/flows-index → treat as TSX so loadScreen returns tsx-screen descriptor
-    const pathToLoad =
-      screen && !screen.startsWith("tsx:") && screen.startsWith("onboarding/")
-        ? `tsx:${screen}`
-        : screen;
+    // Short paths → treat as TSX so loadScreen returns tsx-screen descriptor
+    const pathToLoad = (() => {
+      if (!screen) return screen;
+      if (screen.startsWith("tsx:")) return screen;
+      if (screen.startsWith("onboarding/")) return `tsx:${screen}`;
+      // Container Creations website: URL often has Container_Creations/ContainerCreationsWebsite without tsx: prefix
+      if (screen === "Container_Creations/ContainerCreationsWebsite" || screen.replace(/\\/g, "/") === "Container_Creations/ContainerCreationsWebsite") {
+        return "tsx:(live) Business/Container_Creations/ContainerCreationsWebsite";
+      }
+      return screen;
+    })();
 
     loadScreen(pathToLoad)
       .then((data) => {
         console.log("[page] ✅ SCREEN LOADED", {
           screenPath: screen,
+          pathToLoad,
           dataType: data?.__type,
           hasJson: !!data && !data.__type,
           timestamp: Date.now(),
@@ -450,6 +475,19 @@ export default function DevPage() {
           return;
         }
 
+        const isContainerCreations = (s: string | null) =>
+          s != null && s.replace(/\\/g, "/") === "Container_Creations/ContainerCreationsWebsite";
+        if (isContainerCreations(screen) && data?.title === "Screen unavailable") {
+          const forcedPath = "(live) Business/Container_Creations/ContainerCreationsWebsite";
+          const C = resolveTsxScreen(forcedPath);
+          if (C) {
+            setTsxMeta({ path: forcedPath });
+            setTsxComponent(() => C);
+            setJson(null);
+            setError(null);
+            return;
+          }
+        }
 
         setJson(data);
         
@@ -471,13 +509,23 @@ export default function DevPage() {
   }, [screen, searchParams]);
 
 
-  if (error) return <div style={{ color: "red" }}>{error}</div>;
+  if (error) {
+    setDevSidebarProps(null);
+    return <div style={{ color: "red" }}>{error}</div>;
+  }
 
+  if (!mounted) {
+    setDevSidebarProps(null);
+    return <div style={{ padding: 40, color: "var(--color-text-secondary)" }}>Loading…</div>;
+  }
 
   const overlay = null;
 
 
   if (TsxComponent) {
+    // Do not clear the store here: TSX screens (e.g. ContainerCreationsWebsite) set
+    // websiteScreenPath/websiteNodeOrder for the Nodes panel. Clearing on every render
+    // caused the Nodes panel to lose recognition after opening another sidebar view.
     const screenPath = tsxMeta?.path ? (tsxMeta.path.startsWith("tsx:") ? tsxMeta.path : `tsx:${tsxMeta.path}`) : "tsx:HiClarify/HiClarifyOnboarding";
     return (
       <>
@@ -492,7 +540,10 @@ export default function DevPage() {
   }
 
 
-  if (!json) return <div>Loading…</div>;
+  if (!json) {
+    setDevSidebarProps(null);
+    return <div>Loading…</div>;
+  }
 
   let renderNode =
     json?.root ??
@@ -760,6 +811,41 @@ export default function DevPage() {
     );
 
   if (experience === "app") {
+    setDevSidebarProps({
+      layoutPanelContent: (
+        <OrganPanel
+          sectionKeysForPreset={sectionKeysForPreset}
+          sectionLabels={sectionLabels}
+          sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
+          onSectionLayoutPresetOverride={handleSectionLayoutPresetOverride}
+          cardLayoutPresetOverrides={cardLayoutPresetOverrides}
+          onCardLayoutPresetOverride={handleCardLayoutPresetOverride}
+          sectionPresetOptions={sectionPresetOptions}
+          sectionHeights={sectionHeights}
+          organIdBySectionKey={organIdBySectionKey}
+          organInternalLayoutOverrides={organInternalLayoutOverridesProp}
+          onOrganInternalLayoutOverride={handleOrganInternalLayoutOverride}
+          sectionNodesByKey={sectionByKey}
+          screenModel={treeForRender}
+          defaultState={json?.state}
+          profileOverride={effectiveProfile}
+          screenKey={screenKey}
+        />
+      ),
+      palettePreviewScreen: treeForRender,
+      palettePreviewProps: {
+        defaultState: json?.state,
+        profileOverride: effectiveProfile,
+        sectionLayoutPresetOverrides,
+        cardLayoutPresetOverrides,
+        organInternalLayoutOverrides: organInternalLayoutOverridesProp,
+        screenKey,
+        behaviorProfile,
+        experience,
+        sectionKeys: sectionKeysFromTree,
+        sectionLabels,
+      },
+    });
     return (
       <PreviewStage>
         {overlay}
@@ -785,53 +871,53 @@ export default function DevPage() {
             />
           </div>
         </div>
-        <RightFloatingSidebar
-          layoutPanelContent={
-            <OrganPanel
-              sectionKeysForPreset={sectionKeysForPreset}
-              sectionLabels={sectionLabels}
-              sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
-              onSectionLayoutPresetOverride={handleSectionLayoutPresetOverride}
-              cardLayoutPresetOverrides={cardLayoutPresetOverrides}
-              onCardLayoutPresetOverride={handleCardLayoutPresetOverride}
-              sectionPresetOptions={sectionPresetOptions}
-              sectionHeights={sectionHeights}
-              organIdBySectionKey={organIdBySectionKey}
-              organInternalLayoutOverrides={organInternalLayoutOverridesProp}
-              onOrganInternalLayoutOverride={handleOrganInternalLayoutOverride}
-              sectionNodesByKey={sectionByKey}
-              screenModel={treeForRender}
-              defaultState={json?.state}
-              profileOverride={effectiveProfile}
-              screenKey={screenKey}
-            />
-          }
-          palettePreviewScreen={treeForRender}
-          palettePreviewProps={{
-            defaultState: json?.state,
-            profileOverride: effectiveProfile,
-            sectionLayoutPresetOverrides,
-            cardLayoutPresetOverrides,
-            organInternalLayoutOverrides: organInternalLayoutOverridesProp,
-            screenKey,
-            behaviorProfile,
-            experience,
-            sectionKeys: sectionKeysFromTree,
-            sectionLabels,
-          }}
-        />
       </PreviewStage>
     );
   }
   if (experience === "learning") {
+    setDevSidebarProps({});
     return (
       <PreviewStage>
         {overlay}
         <LearningShell content={<div>{jsonContent}</div>} />
-        <RightFloatingSidebar />
       </PreviewStage>
     );
   }
+  setDevSidebarProps({
+    layoutPanelContent: (
+      <OrganPanel
+        sectionKeysForPreset={sectionKeysForPreset}
+        sectionLabels={sectionLabels}
+        sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
+        onSectionLayoutPresetOverride={handleSectionLayoutPresetOverride}
+        cardLayoutPresetOverrides={cardLayoutPresetOverrides}
+        onCardLayoutPresetOverride={handleCardLayoutPresetOverride}
+        sectionPresetOptions={sectionPresetOptions}
+        sectionHeights={sectionHeights}
+        organIdBySectionKey={organIdBySectionKey}
+        organInternalLayoutOverrides={organInternalLayoutOverridesProp}
+        onOrganInternalLayoutOverride={handleOrganInternalLayoutOverride}
+        sectionNodesByKey={sectionByKey}
+        screenModel={treeForRender}
+        defaultState={json?.state}
+        profileOverride={effectiveProfile}
+        screenKey={screenKey}
+      />
+    ),
+    palettePreviewScreen: treeForRender,
+    palettePreviewProps: {
+      defaultState: json?.state,
+      profileOverride: effectiveProfile,
+      sectionLayoutPresetOverrides,
+      cardLayoutPresetOverrides,
+      organInternalLayoutOverrides: organInternalLayoutOverridesProp,
+      screenKey,
+      behaviorProfile,
+      experience,
+      sectionKeys: sectionKeysFromTree,
+      sectionLabels,
+    },
+  });
   return (
     <PreviewStage>
       {overlay}
@@ -844,41 +930,6 @@ export default function DevPage() {
             </div>
           </>
         }
-      />
-      <RightFloatingSidebar
-        layoutPanelContent={
-          <OrganPanel
-            sectionKeysForPreset={sectionKeysForPreset}
-            sectionLabels={sectionLabels}
-            sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
-            onSectionLayoutPresetOverride={handleSectionLayoutPresetOverride}
-            cardLayoutPresetOverrides={cardLayoutPresetOverrides}
-            onCardLayoutPresetOverride={handleCardLayoutPresetOverride}
-            sectionPresetOptions={sectionPresetOptions}
-            sectionHeights={sectionHeights}
-            organIdBySectionKey={organIdBySectionKey}
-            organInternalLayoutOverrides={organInternalLayoutOverridesProp}
-            onOrganInternalLayoutOverride={handleOrganInternalLayoutOverride}
-            sectionNodesByKey={sectionByKey}
-            screenModel={treeForRender}
-            defaultState={json?.state}
-            profileOverride={effectiveProfile}
-            screenKey={screenKey}
-            />
-        }
-        palettePreviewScreen={treeForRender}
-        palettePreviewProps={{
-          defaultState: json?.state,
-          profileOverride: effectiveProfile,
-          sectionLayoutPresetOverrides,
-          cardLayoutPresetOverrides,
-          organInternalLayoutOverrides: organInternalLayoutOverridesProp,
-          screenKey,
-          behaviorProfile,
-          experience,
-          sectionKeys: sectionKeysFromTree,
-          sectionLabels,
-        }}
       />
     </PreviewStage>
   );
