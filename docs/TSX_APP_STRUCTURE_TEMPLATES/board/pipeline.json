@@ -1,0 +1,7 @@
+{
+  "columns": { "source": "config", "minWidth": 180, "maxWidth": 280 },
+  "cards": { "minHeight": 72, "showPreview": true },
+  "drag": { "enabled": true, "betweenColumnsOnly": true },
+  "swimlanes": { "enabled": false },
+  "density": "spacious"
+}

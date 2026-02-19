@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import { compileSite, siteExists } from "@/lib/siteCompiler";
 
-const SITES_ROOT = path.join(process.cwd(), "src", "apps-json", "sites");
+const SITES_ROOT = path.join(process.cwd(), "src", "01_App", "(dead) Json", "sites");
 
 export async function GET(
   _req: Request,

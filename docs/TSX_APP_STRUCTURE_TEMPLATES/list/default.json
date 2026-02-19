@@ -1,0 +1,8 @@
+{
+  "density": "default",
+  "sort": { "enabled": true, "defaultOrder": "asc" },
+  "filter": { "enabled": false },
+  "pagination": { "mode": "none" },
+  "selection": { "mode": "none" },
+  "orientation": "vertical"
+}

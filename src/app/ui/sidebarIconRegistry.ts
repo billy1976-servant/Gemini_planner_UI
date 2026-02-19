@@ -16,6 +16,7 @@ export const SIDEBAR_ICON_REGISTRY: Record<DockPanelId, string> = {
   behavior: `${BASE}/lightning.svg`,
   layout: `${BASE}/layout.svg`,
   newInterface: `${BASE}/content.svg`,
+  tsx: `${BASE}/components.svg`,
   expand: `${BASE}/layout.svg`,
 };
 

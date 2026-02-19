@@ -1,0 +1,6 @@
+{
+  "toolbar": { "placement": "top", "sticky": true },
+  "sidebars": { "left": null, "right": null },
+  "dirtyState": { "indicator": "dot", "confirmOnLeave": true },
+  "contentArea": { "maxWidth": null, "padding": "normal" }
+}

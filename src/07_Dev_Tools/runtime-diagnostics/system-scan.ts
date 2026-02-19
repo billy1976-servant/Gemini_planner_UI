@@ -83,8 +83,8 @@ export type SystemScanResult = {
 };
 
 const SRC_ROOTS = [
-  "apps-tsx",
-  "apps-json",
+  "01_App/(dead) Tsx",
+  "01_App/(dead) Json",
   "runtime",
   "engine",
   "logic",
@@ -280,8 +280,8 @@ function scanBlocks(srcDir: string): BlockStats {
 }
 
 function scanApps(srcDir: string): { screenCount: number; templateCount: number; generatedWebsitesCount: number; paths: string[] } {
-  const appsTsx = path.join(srcDir, "apps-tsx");
-  const appsJson = path.join(srcDir, "apps-json");
+  const appsTsx = path.join(srcDir, "01_App", "(dead) Tsx");
+  const appsJson = path.join(srcDir, "01_App", "(dead) Json");
   const paths: string[] = [];
   let screenCount = 0;
   let templateCount = 0;

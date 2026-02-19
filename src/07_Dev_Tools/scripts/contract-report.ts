@@ -10,7 +10,7 @@
 import fs from "fs";
 import path from "path";
 
-const ROOT = path.join(process.cwd(), "src", "apps-json");
+const ROOT = path.join(process.cwd(), "src", "01_App", "(dead) Json");
 const OUT = path.join(process.cwd(), "CONTRACT_VALIDATION_REPORT.md");
 
 function rel(p: string) {

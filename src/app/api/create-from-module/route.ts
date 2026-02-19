@@ -9,7 +9,7 @@ import fs from "fs";
 import path from "path";
 
 const MODULES_ROOT = path.join(process.cwd(), "src", "08_Modules");
-const GENERATED_APPS_ROOT = path.join(process.cwd(), "src", "01_App", "apps-json", "generated");
+const GENERATED_APPS_ROOT = path.join(process.cwd(), "src", "01_App", "(dead) Json", "generated");
 
 type Body = {
   moduleTemplate: string;

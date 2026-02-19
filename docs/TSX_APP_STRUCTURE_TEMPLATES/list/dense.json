@@ -1,0 +1,8 @@
+{
+  "density": "table",
+  "sort": { "enabled": true, "defaultKey": "updated", "defaultOrder": "desc" },
+  "filter": { "enabled": true, "placement": "above" },
+  "pagination": { "mode": "page", "pageSize": 50 },
+  "selection": { "mode": "multiple" },
+  "orientation": "vertical"
+}

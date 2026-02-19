@@ -5,7 +5,9 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 
-const FLOWS_ROOT = path.join(process.cwd(), "src", "logic", "flows");
+const FLOWS_ROOT = path.join(process.cwd(), "src", "05_Logic", "logic", "flows");
+const CONTENT_FLOWS_ROOT = path.join(process.cwd(), "src", "05_Logic", "logic", "content", "flows");
+const BUSINESS_FILES_ROOT = path.join(process.cwd(), "src", "00_Projects", "Business_Files");
 
 export async function GET(
   _req: Request,
@@ -58,7 +60,54 @@ export async function GET(
         return null;
       };
       
-      const foundPath = findFlowInSubfolders(FLOWS_ROOT);
+      let foundPath = findFlowInSubfolders(FLOWS_ROOT);
+      if (!foundPath && fs.existsSync(CONTENT_FLOWS_ROOT)) {
+        foundPath = findFlowInSubfolders(CONTENT_FLOWS_ROOT);
+      }
+      // Business_Files: scan Flows/ and flows/ folders, then any JSON by id
+      if (!foundPath && fs.existsSync(BUSINESS_FILES_ROOT)) {
+        const findInBusinessFlows = (dir: string): string | null => {
+          if (!fs.existsSync(dir)) return null;
+          const entries = fs.readdirSync(dir, { withFileTypes: true });
+          for (const entry of entries) {
+            const fullPath = path.join(dir, entry.name);
+            if (entry.isDirectory()) {
+              if (entry.name === "Flows" || entry.name === "flows") {
+                const inFlows = findFlowInSubfolders(fullPath);
+                if (inFlows) return inFlows;
+              }
+              const found = findInBusinessFlows(fullPath);
+              if (found) return found;
+            }
+          }
+          return null;
+        };
+        foundPath = findInBusinessFlows(BUSINESS_FILES_ROOT);
+      }
+      // Last resort: any JSON under Business_Files whose id matches
+      if (!foundPath && fs.existsSync(BUSINESS_FILES_ROOT)) {
+        const findByFlowId = (dir: string): string | null => {
+          if (!fs.existsSync(dir)) return null;
+          const entries = fs.readdirSync(dir, { withFileTypes: true });
+          for (const entry of entries) {
+            const fullPath = path.join(dir, entry.name);
+            if (entry.isFile() && entry.name.endsWith(".json")) {
+              try {
+                const content = fs.readFileSync(fullPath, "utf8");
+                const data = JSON.parse(content);
+                if (data?.id === flowId) return fullPath;
+              } catch {
+                /* skip */
+              }
+            } else if (entry.isDirectory()) {
+              const found = findByFlowId(fullPath);
+              if (found) return found;
+            }
+          }
+          return null;
+        };
+        foundPath = findByFlowId(BUSINESS_FILES_ROOT);
+      }
       if (foundPath) {
         jsonPath = foundPath;
       } else {

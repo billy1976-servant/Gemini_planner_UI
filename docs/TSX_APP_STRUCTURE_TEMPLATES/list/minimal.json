@@ -1,0 +1,8 @@
+{
+  "density": "spacious",
+  "sort": { "enabled": false },
+  "filter": { "enabled": false },
+  "pagination": { "mode": "none" },
+  "selection": { "mode": "none" },
+  "orientation": "vertical"
+}

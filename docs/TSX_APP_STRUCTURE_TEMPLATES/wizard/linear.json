@@ -1,0 +1,6 @@
+{
+  "steps": { "source": "config", "showProgress": true, "progressStyle": "dots" },
+  "navigation": { "back": true, "next": true, "skip": false, "placement": "sides" },
+  "branching": { "enabled": false },
+  "linear": true
+}

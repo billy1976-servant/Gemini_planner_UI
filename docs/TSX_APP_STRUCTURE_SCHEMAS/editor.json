@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "tsx-structure-editor",
+  "title": "Editor Structure Config",
+  "description": "Config for Editor structure: single-focus content, toolbars, sidebars, dirty state",
+  "type": "object",
+  "properties": {
+    "toolbar": {
+      "type": "object",
+      "properties": {
+        "placement": { "type": "string", "enum": ["top", "bottom", "floating", "none"], "default": "top" },
+        "sticky": { "type": "boolean", "default": true }
+      }
+    },
+    "sidebars": {
+      "type": "object",
+      "properties": {
+        "left": { "type": "object", "properties": { "enabled": { "type": "boolean" }, "width": { "type": "integer" }, "collapsible": { "type": "boolean" } } },
+        "right": { "type": "object", "properties": { "enabled": { "type": "boolean" }, "width": { "type": "integer" }, "collapsible": { "type": "boolean" } } }
+      }
+    },
+    "dirtyState": {
+      "type": "object",
+      "properties": {
+        "indicator": { "type": "string", "enum": ["none", "dot", "badge", "bar"], "default": "dot" },
+        "confirmOnLeave": { "type": "boolean", "default": true }
+      }
+    },
+    "contentArea": {
+      "type": "object",
+      "properties": {
+        "maxWidth": { "type": ["integer", "null"] },
+        "padding": { "type": "string", "default": "normal" }
+      }
+    }
+  },
+  "additionalProperties": false
+}

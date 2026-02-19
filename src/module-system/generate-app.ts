@@ -14,7 +14,7 @@ export const GENERATED_APPS_BASE = path.join(
   process.cwd(),
   "src",
   "01_App",
-  "apps-json",
+  "(dead) Json",
   "generated"
 );
 

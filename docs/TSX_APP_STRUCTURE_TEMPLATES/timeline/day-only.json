@@ -1,0 +1,12 @@
+{
+  "slotMinutes": 10,
+  "dayStart": 0,
+  "dayEnd": 1439,
+  "density": "default",
+  "axis": { "show": true, "width": 56, "position": "left" },
+  "overlayPolicy": "system",
+  "viewModes": ["day"],
+  "defaultView": "day",
+  "interaction": { "drag": true, "resize": true, "select": true },
+  "dataBinding": { "eventsKey": "events", "tasksKey": "tasks" }
+}

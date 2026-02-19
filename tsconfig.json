@@ -31,13 +31,15 @@
       "@/compounds/*": ["src/04_Presentation/ui/compounds/*"],
       "@/config/*": ["src/07_Dev_Tools/config/*"],
       "@/content/*": ["src/06_Data/content/*"],
-      "@/apps-tsx": ["src/01_App/apps-tsx"],
-      "@/apps-tsx/*": ["src/01_App/apps-tsx/*"],
-      "@/apps-tsx/core/*": ["src/01_App/screens/core/*"],
-      "@/apps-tsx/config": ["src/01_App/apps-tsx/config"],
-      "@/apps-tsx/config/*": ["src/01_App/apps-tsx/config/*"],
-      "@/apps-json": ["src/01_App/apps-json"],
-      "@/apps-json/*": ["src/01_App/apps-json/*"],
+      "@/apps-tsx": ["src/01_App/(dead) Tsx"],
+      "@/apps-tsx/*": ["src/01_App/(dead) Tsx/*"],
+      "@/business": ["src/01_App/(live) Business"],
+      "@/business/*": ["src/01_App/(live) Business/*"],
+      "@/apps-tsx/core/*": ["src/01_App/(dead) screens/core/*"],
+      "@/apps-tsx/config": ["src/01_App/(dead) Tsx/config"],
+      "@/apps-tsx/config/*": ["src/01_App/(dead) Tsx/config/*"],
+      "@/apps-json": ["src/01_App/(dead) Json"],
+      "@/apps-json/*": ["src/01_App/(dead) Json/*"],
       "@/layout": ["src/04_Presentation/layout"],
       "@/layout/*": ["src/04_Presentation/layout/*"],
       "@/styles/*": ["src/07_Dev_Tools/styles/*"],
@@ -47,7 +49,7 @@
       "@/palettes": ["src/04_Presentation/palettes"],
       "@/palettes/*": ["src/04_Presentation/palettes/*"],
       "@/compiler/*": ["src/06_Data/compiler/*"],
-      "@/screens/*": ["src/01_App/screens/*"],
+      "@/screens/*": ["src/01_App/(dead) screens/*"],
       "@/ui/*": ["src/04_Presentation/ui/*"],
       "@/ux/*": ["src/04_Presentation/ux/*"],
       "@/registry/*": ["src/04_Presentation/registry/*"],
@@ -95,7 +97,7 @@
 
   "exclude": [
     "node_modules",
-    "src/01_App/apps-tsx/tsx-screens/generated/**/*",
+    "src/01_App/(dead) Tsx/tsx-screens/generated/**/*",
     "src/999_Cleanup/**/*"
   ]
 }

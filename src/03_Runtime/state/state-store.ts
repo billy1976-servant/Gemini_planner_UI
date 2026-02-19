@@ -40,7 +40,7 @@ export function getState() {
 }
 
 
-export function subscribeState(fn: () => void) {
+export function subscribeState(fn: () => void): () => void {
   listeners.add(fn);
   return () => listeners.delete(fn);
 }

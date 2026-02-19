@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 // Path contract: TSX resolution uses require.context("../01_App/apps-tsx", ...) (see scripts/validate-paths.js)
 import React, { useEffect, useMemo, useState } from "react";
 import nextDynamic from "next/dynamic";
+import { useSearchParams } from "next/navigation";
 import { useSyncExternalStore } from "react";
 import ExperienceRenderer from "@/engine/core/ExperienceRenderer";
 import { loadScreen } from "@/engine/core/screen-loader";
@@ -28,9 +29,10 @@ import {
   getDomainMicroLoaders,
   type ResolveCapabilityProfileOptions,
 } from "@/03_Runtime/capability";
+import { TSXScreenWithEnvelope } from "@/lib/tsx-structure/TSXScreenWithEnvelope";
 
-/** Entry: first-time users see onboarding; returning users go straight to Home V2. */
-const ENTRY_SCREEN_PATH = "tsx:HiClarify/HiClarifyOnboarding";
+/** Canonical default when URL/state missing or invalid (bare id). Never pass bare ids to loadScreen. */
+const DEFAULT_SCREEN_PATH = "tsx:HiClarify/HiClarifyOnboarding";
 const HOME_SCREEN_PATH = "HiClarify/home/home_screen";
 const RETURNING_USER_KEY = "hiclarify_entered_once";
 
@@ -49,14 +51,20 @@ const HiClarifyOnboarding = nextDynamic(
 );
 
 export default function Page() {
+  const searchParams = useSearchParams();
   const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
   const currentView = (stateSnapshot?.values?.currentView as string) ?? "";
 
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const defaultPath = isReturningUser() ? HOME_SCREEN_PATH : ENTRY_SCREEN_PATH;
-  const effectivePath = currentView || defaultPath;
+  const rawPath =
+    searchParams?.get("screen")?.trim() ||
+    currentView?.trim() ||
+    DEFAULT_SCREEN_PATH;
+  const isValidPath =
+    rawPath.startsWith("tsx:") || rawPath.includes("/");
+  const effectivePath = isValidPath ? rawPath : DEFAULT_SCREEN_PATH;
 
   useEffect(() => {
     loadScreen(effectivePath)
@@ -129,7 +137,10 @@ export default function Page() {
   if (isTsxScreen) {
     return (
       <CapabilityProvider>
-        <HiClarifyOnboarding />
+        <TSXScreenWithEnvelope
+          screenPath={effectivePath.startsWith("tsx:") ? effectivePath : `tsx:${effectivePath}`}
+          Component={HiClarifyOnboarding}
+        />
       </CapabilityProvider>
     );
   }

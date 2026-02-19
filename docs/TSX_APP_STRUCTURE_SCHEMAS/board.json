@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "tsx-structure-board",
+  "title": "Board Structure Config",
+  "description": "Config for Board structure: columns/lanes, cards, drag-between, optional swimlanes",
+  "type": "object",
+  "properties": {
+    "columns": {
+      "type": "object",
+      "properties": {
+        "source": { "type": "string", "enum": ["config", "data"], "default": "data" },
+        "minWidth": { "type": "integer", "minimum": 120, "default": 200 },
+        "maxWidth": { "type": "integer", "minimum": 120 }
+      }
+    },
+    "cards": {
+      "type": "object",
+      "properties": {
+        "minHeight": { "type": "integer", "minimum": 40, "default": 60 },
+        "showPreview": { "type": "boolean", "default": true }
+      }
+    },
+    "drag": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean", "default": true },
+        "betweenColumnsOnly": { "type": "boolean", "default": true }
+      }
+    },
+    "swimlanes": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean", "default": false },
+        "orientation": { "type": "string", "enum": ["horizontal", "vertical"], "default": "horizontal" }
+      }
+    },
+    "density": {
+      "type": "string",
+      "enum": ["compact", "default", "spacious"],
+      "default": "default"
+    }
+  },
+  "additionalProperties": false
+}

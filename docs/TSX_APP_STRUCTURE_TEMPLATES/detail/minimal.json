@@ -1,0 +1,9 @@
+{
+  "split": {
+    "orientation": "horizontal",
+    "masterRatio": 0.25,
+    "resizable": false
+  },
+  "master": { "position": "left", "listDensity": "compact" },
+  "detail": { "emptyState": "", "persistSelection": false }
+}

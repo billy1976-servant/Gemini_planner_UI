@@ -1,0 +1,40 @@
+{
+  "id": "container-lighting-safety",
+  "title": "Safe Container Lighting",
+  "steps": [
+    {
+      "id": "start",
+      "title": "What lighting issue are you facing?",
+      "body": "Containers without proper lighting create safety hazards.",
+      "image": "/images/container-dark.jpg",
+      "choices": [
+        { "label": "It's too dark inside", "nextStepId": "danger" },
+        { "label": "I need safe lighting options", "nextStepId": "solution" },
+        { "label": "I just want to buy lighting", "nextStepId": "buy" }
+      ]
+    },
+    {
+      "id": "danger",
+      "title": "Why darkness is dangerous",
+      "body": "Poor lighting increases injury risk and theft exposure.",
+      "choices": [
+        { "label": "Show me the solution", "nextStepId": "solution" }
+      ]
+    },
+    {
+      "id": "solution",
+      "title": "Safe Lighting Options",
+      "body": "Solar-powered or low-voltage lighting eliminates electrical risk.",
+      "image": "/images/container-light.jpg",
+      "choices": [
+        { "label": "Buy lighting now", "nextStepId": "buy" }
+      ]
+    },
+    {
+      "id": "buy",
+      "title": "Purchase Lighting",
+      "body": "Secure safe illumination for your container today.",
+      "choices": []
+    }
+  ]
+}

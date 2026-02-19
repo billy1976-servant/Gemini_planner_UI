@@ -1,0 +1,285 @@
+{
+  "id": "marketing-plan-assessment",
+  "title": "Marketing Clarity & Cost Reduction Assessment",
+  "steps": [
+    {
+      "id": "wasted-clicks",
+      "title": "Ad Spend Waste",
+      "body": "Do you feel like you're paying for clicks that never turn into real customers?",
+      "image": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop",
+      "imageAlt": "Analytics and ad performance",
+      "choices": [
+        {
+          "id": "yes-often",
+          "label": "Yes, very often",
+          "kind": "yes",
+          "outcome": {
+            "signals": ["wasted_clicks_high"],
+            "blockers": ["high_cac_risk"],
+            "opportunities": ["traffic_filtering"],
+            "severity": "high",
+            "affects": ["cac", "profit"]
+          }
+        },
+        {
+          "id": "sometimes",
+          "label": "Sometimes",
+          "kind": "unsure",
+          "outcome": {
+            "signals": ["wasted_clicks_medium"],
+            "opportunities": ["improve_targeting"],
+            "severity": "medium",
+            "affects": ["cac"]
+          }
+        },
+        {
+          "id": "rarely",
+          "label": "Rarely",
+          "kind": "no",
+          "outcome": {
+            "signals": ["efficient_spend"],
+            "opportunities": ["scale_ready"],
+            "severity": "low"
+          }
+        }
+      ]
+    },
+    {
+      "id": "cac-control",
+      "title": "Cost Control",
+      "body": "If you could prevent spending more than a set amount per lead (ex: $50–$60), would that help your business?",
+      "image": "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&h=400&fit=crop",
+      "imageAlt": "Budget and cost control",
+      "choices": [
+        {
+          "id": "critical",
+          "label": "Yes, that would be huge",
+          "kind": "yes",
+          "outcome": {
+            "signals": ["cac_control_needed"],
+            "opportunities": ["budget_protection"],
+            "severity": "high",
+            "affects": ["cac", "scaling"]
+          }
+        },
+        {
+          "id": "somewhat",
+          "label": "Somewhat helpful",
+          "kind": "unsure",
+          "outcome": {
+            "signals": ["budget_awareness"],
+            "opportunities": ["spend_tracking"],
+            "severity": "medium"
+          }
+        },
+        {
+          "id": "not-needed",
+          "label": "Not really",
+          "kind": "no",
+          "outcome": {
+            "signals": ["budget_stable"],
+            "severity": "low"
+          }
+        }
+      ]
+    },
+    {
+      "id": "customer-understanding",
+      "title": "Customer Insight",
+      "body": "How valuable would it be to know what your customers are thinking before they buy?",
+      "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop",
+      "imageAlt": "Customer data and insights",
+      "choices": [
+        {
+          "id": "extremely",
+          "label": "Extremely valuable",
+          "kind": "yes",
+          "outcome": {
+            "signals": ["needs_behavior_insight"],
+            "opportunities": ["conversion_growth"],
+            "severity": "high",
+            "affects": ["conversion"]
+          }
+        },
+        {
+          "id": "somewhat",
+          "label": "Somewhat valuable",
+          "kind": "unsure",
+          "outcome": {
+            "signals": ["curiosity"],
+            "opportunities": ["education_value"],
+            "severity": "medium"
+          }
+        },
+        {
+          "id": "not-important",
+          "label": "Not important",
+          "kind": "no",
+          "outcome": {
+            "signals": ["low_insight_priority"],
+            "severity": "low"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ad-confidence",
+      "title": "Ad Confidence",
+      "body": "Do you feel confident that you know which ads are actually making you money?",
+      "image": "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop",
+      "imageAlt": "Confident decision making",
+      "choices": [
+        {
+          "id": "no-idea",
+          "label": "No, not really",
+          "kind": "no",
+          "outcome": {
+            "blockers": ["blind_spend"],
+            "signals": ["tracking_gap"],
+            "opportunities": ["clarity_gain"],
+            "severity": "high",
+            "affects": ["cac", "profit"]
+          }
+        },
+        {
+          "id": "some-idea",
+          "label": "Some idea",
+          "kind": "unsure",
+          "outcome": {
+            "signals": ["partial_tracking"],
+            "opportunities": ["improve_tracking"],
+            "severity": "medium"
+          }
+        },
+        {
+          "id": "very-confident",
+          "label": "Yes, very confident",
+          "kind": "yes",
+          "outcome": {
+            "signals": ["strong_tracking"],
+            "opportunities": ["scale_ready"],
+            "severity": "low"
+          }
+        }
+      ]
+    },
+    {
+      "id": "competitor-confusion",
+      "title": "Competitor Pressure",
+      "body": "Do cheaper competitors ever make your product look the same to customers?",
+      "image": "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=800&h=400&fit=crop",
+      "imageAlt": "Strategy and competition",
+      "choices": [
+        {
+          "id": "yes-often",
+          "label": "Yes, frequently",
+          "kind": "yes",
+          "outcome": {
+            "signals": ["competitor_confusion"],
+            "blockers": ["trust_gap"],
+            "opportunities": ["education_funnel"],
+            "severity": "high",
+            "affects": ["conversion"]
+          }
+        },
+        {
+          "id": "sometimes",
+          "label": "Sometimes",
+          "kind": "unsure",
+          "outcome": {
+            "signals": ["price_pressure"],
+            "opportunities": ["value_positioning"],
+            "severity": "medium"
+          }
+        },
+        {
+          "id": "never",
+          "label": "No",
+          "kind": "no",
+          "outcome": {
+            "signals": ["brand_trust_strong"],
+            "severity": "low"
+          }
+        }
+      ]
+    },
+    {
+      "id": "time-loss",
+      "title": "Time Cost",
+      "body": "How much time do you spend guessing or adjusting marketing each month?",
+      "image": "https://images.unsplash.com/photo-1501139083538-0139583c060f?w=800&h=400&fit=crop",
+      "imageAlt": "Time and productivity",
+      "choices": [
+        {
+          "id": "a-lot",
+          "label": "Many hours",
+          "kind": "yes",
+          "outcome": {
+            "signals": ["time_loss_high"],
+            "opportunities": ["hours_saved"],
+            "severity": "high",
+            "affects": ["time", "focus"]
+          }
+        },
+        {
+          "id": "some",
+          "label": "A few hours",
+          "kind": "unsure",
+          "outcome": {
+            "signals": ["time_loss_medium"],
+            "opportunities": ["efficiency_gain"],
+            "severity": "medium"
+          }
+        },
+        {
+          "id": "none",
+          "label": "Very little",
+          "kind": "no",
+          "outcome": {
+            "signals": ["efficient_process"],
+            "severity": "low"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bundle-awareness",
+      "title": "Revenue Opportunity",
+      "body": "Do you think customers would spend more if they clearly understood the full value of your products?",
+      "image": "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&h=400&fit=crop",
+      "imageAlt": "Growth and revenue",
+      "choices": [
+        {
+          "id": "yes",
+          "label": "Yes",
+          "kind": "yes",
+          "outcome": {
+            "signals": ["bundle_opportunity"],
+            "opportunities": ["revenue_growth"],
+            "severity": "high",
+            "affects": ["revenue"]
+          }
+        },
+        {
+          "id": "maybe",
+          "label": "Maybe",
+          "kind": "unsure",
+          "outcome": {
+            "signals": ["value_unclear"],
+            "opportunities": ["value_education"],
+            "severity": "medium"
+          }
+        },
+        {
+          "id": "no",
+          "label": "No",
+          "kind": "no",
+          "outcome": {
+            "signals": ["single_product_focus"],
+            "severity": "low"
+          }
+        }
+      ]
+    }
+  ]
+}

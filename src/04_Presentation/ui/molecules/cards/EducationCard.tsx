@@ -8,7 +8,7 @@ import { aggregateDecisionState } from "@/logic/engines/decision-engine";
 import { resolveNextStep } from "@/logic/engines/flow-router";
 import { explainNextStep } from "@/logic/engine-system/engine-explain";
 import type { PresentationModel } from "@/logic/engines/presentation-types";
-import { ENGINE_STATE_KEY, type EngineState } from "@/logic/runtime/engine-state";
+import { ENGINE_STATE_KEY, type EngineState, deriveEngineState } from "@/logic/runtime/engine-state";
 import { runHIEngines, type HIEngineId } from "@/logic/engines/post-processing/hi-engine-runner";
 
 type CardResult = {
@@ -30,6 +30,8 @@ type CardProps = {
   onExplain?: (explain: any) => void; // Optional explain callback
   presentation?: PresentationModel | null; // Optional presentation model for ordering/grouping
   hiEngineId?: HIEngineId; // HI engine to run on completion
+  /** Client onboarding view: hide flow dropdown, engine chrome; show only question + 1/7 header + image */
+  clientView?: boolean;
 };
 
 // Engine state keys
@@ -38,7 +40,7 @@ const STEP_KEY = `${ENGINE_KEY}.stepIndex`;
 const OUTCOMES_KEY = `${ENGINE_KEY}.outcomes`;
 const RESULTS_KEY = `${ENGINE_KEY}.results`;
 
-export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, presentation, hiEngineId }: CardProps) {
+export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, presentation, hiEngineId, clientView }: CardProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   
@@ -101,6 +103,8 @@ export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, 
   
   // Store explain/reasoning data for UI rendering
   const [explainData, setExplainData] = useState<any>(null);
+  // Simple display: numeric input value for current step
+  const [numericInputValue, setNumericInputValue] = useState<string>("");
   
   // Subscribe to engine state changes
   useEffect(() => {
@@ -177,8 +181,13 @@ export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, 
   
   // Get current step using ordered step IDs from EngineState
   const currentStepId = orderedStepIds[currentStepIndex];
-  const currentStep = flow.steps.find((s) => s.id === currentStepId);
-  
+  let currentStep = flow.steps.find((s) => s.id === currentStepId);
+  // Fallback: if step id not found (e.g. flow changed or engine reordered), use step by index
+  // so we never show a blank card when progress says "3/3"
+  if (!currentStep && currentStepIndex >= 0 && currentStepIndex < flow.steps.length) {
+    currentStep = flow.steps[currentStepIndex];
+  }
+
   // Completion logic from EngineState
   const isComplete = currentStepIndex >= totalSteps;
   const displayStep = Math.min(currentStepIndex + 1, totalSteps);
@@ -323,15 +332,17 @@ export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, 
       [ENGINE_STATE_KEY]: derivedEngineState,
     });
 
-    // Update global state for downstream use (without aftermath processors during routing)
-    dispatchState("state.update", {
-      key: "educationResults",
-      value: {
-        outcomes: updatedOutcomes,
-        results: updatedResults,
-        completed: nextStep >= totalSteps, // Driven by EngineState
-      },
-    });
+    // Update global state for downstream use (skip when simple display - no click tracking)
+    if (!flow.displayMode || flow.displayMode !== "simple") {
+      dispatchState("state.update", {
+        key: "educationResults",
+        value: {
+          outcomes: updatedOutcomes,
+          results: updatedResults,
+          completed: nextStep >= totalSteps,
+        },
+      });
+    }
 
     setLocalStep(nextStep);
     onAdvance(nextStep);
@@ -375,12 +386,89 @@ export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, 
     }
   }
 
+  // Simple display: submit numeric input and advance
+  function handleNumericSubmit() {
+    if (!currentStep || currentStep.inputType !== "number" || !currentStep.inputKey) return;
+    const value = parseInt(numericInputValue, 10);
+    if (isNaN(value) || value < 0) return;
+
+    const outcome = {
+      stepId: currentStep.id,
+      choiceId: "_numeric",
+      choiceLabel: String(value),
+      choiceKind: "understand" as const,
+      outcome: {
+        numericValue: value,
+        inputKey: currentStep.inputKey,
+        signals: [],
+      },
+      timestamp: Date.now(),
+    };
+
+    const current = readEngineState();
+    const previousOutcomes = current[OUTCOMES_KEY] ?? [];
+    const updatedOutcomes = [...previousOutcomes, outcome];
+    const updatedResults = {
+      ...(current[RESULTS_KEY] ?? {}),
+      [currentStep.id]: {
+        stepId: currentStep.id,
+        stepTitle: currentStep.title,
+        stepBody: currentStep.body,
+        choice: "_numeric",
+        choiceLabel: String(value),
+        outcome: outcome.outcome,
+      },
+    };
+
+    const nextStep = currentStepIndex + 1;
+    const engineIdFromState = engineStateData?.engineId || "learning";
+    const derivedEngineState = deriveEngineState(
+      flow,
+      presentation ?? null,
+      nextStep,
+      updatedOutcomes.map((o: any) => ({ stepId: o.stepId, choiceId: o.choiceId, outcome: o.outcome })),
+      {},
+      engineIdFromState
+    );
+
+    writeEngineState({
+      [STEP_KEY]: nextStep,
+      [OUTCOMES_KEY]: updatedOutcomes,
+      [RESULTS_KEY]: updatedResults,
+      [ENGINE_STATE_KEY]: derivedEngineState,
+    });
+
+    setNumericInputValue("");
+    setLocalStep(nextStep);
+    onAdvance(nextStep);
+
+    if (nextStep >= totalSteps) {
+      onComplete({
+        cardId: "education",
+        completed: true,
+        output: {
+          outcomes: updatedOutcomes,
+          results: updatedResults,
+          educationResults: {
+            outcomes: updatedOutcomes,
+            results: updatedResults,
+            completed: true,
+            completedAt: Date.now(),
+          },
+        },
+      });
+    }
+  }
+
   // STEP 4: Prove Presentation Is Engine-Driven, Not Hardcoded
   console.log("[PRESENTATION MODEL RECEIVED FROM ENGINE]", presentation);
 
+  const showClientLayout = clientView || flow.displayMode === "simple";
+
   return (
     <div style={cardContainer}>
-      {/* Flow Selector */}
+      {/* Flow Selector - hidden in client view */}
+      {!showClientLayout && (
       <div style={flowSelectorContainer}>
         <label style={flowSelectorLabel}>Flow:</label>
         <select
@@ -395,21 +483,31 @@ export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, 
           ))}
         </select>
       </div>
+      )}
       
-      {/* Header with Step Counter - All text from content */}
+      {/* Header: client = simple "1/7" + question; dev = full title + step counter + engine */}
       <div style={cardHeader}>
         <div style={cardTitleRow}>
-          <h3 style={cardTitle}>{flow.title}</h3>
-          {presentation?.badges && currentStepId && presentation.badges[currentStepId] && (
-            <div style={badgeContainer}>
-              {presentation.badges[currentStepId].map((badge, i) => (
-                <span key={i} style={badgeStyle}>
-                  {badge}
-                </span>
-              ))}
+          {showClientLayout ? (
+            <div style={stepCounter}>
+              {isComplete ? "Complete" : `${displayStep} / ${totalSteps}`}
             </div>
+          ) : (
+            <>
+              <h3 style={cardTitle}>{flow.title}</h3>
+              {presentation?.badges && currentStepId && presentation.badges[currentStepId] && (
+                <div style={badgeContainer}>
+                  {presentation.badges[currentStepId].map((badge, i) => (
+                    <span key={i} style={badgeStyle}>
+                      {badge}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </div>
+        {!showClientLayout && (
         <div style={stepCounter}>
           {isComplete ? "Complete" : `Step ${displayStep} / ${totalSteps}`}
           {presentation && (
@@ -418,10 +516,11 @@ export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, 
             </span>
           )}
         </div>
+        )}
       </div>
       
-      {/* Presentation Groups (if any) */}
-      {presentation?.groups && presentation.groups.length > 0 && (
+      {/* Presentation Groups (if any) - hidden in client view */}
+      {!showClientLayout && presentation?.groups && presentation.groups.length > 0 && (
         <div style={groupsPanel}>
           {presentation.groups.map((group) => {
             const isCurrentGroup = group.stepIds.includes(currentStepId || "");
@@ -435,8 +534,8 @@ export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, 
         </div>
       )}
 
-      {/* Presentation Engine Notes */}
-      {presentation && presentation.notes && presentation.notes.length > 0 && (
+      {/* Presentation Engine Notes - hidden in client view */}
+      {!showClientLayout && presentation && presentation.notes && presentation.notes.length > 0 && (
         <div style={notesPanel}>
           <div style={notesHeader}>Engine: {presentation.engineId}</div>
           {presentation.notes.map((note, i) => (
@@ -447,8 +546,8 @@ export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, 
         </div>
       )}
 
-      {/* WHY / REASONING PANEL */}
-      {explainData && (
+      {/* WHY / REASONING PANEL - hidden in client view */}
+      {!showClientLayout && explainData && (
         <div style={reasoningPanel}>
           <div style={reasoningHeader}>Why This Step</div>
           <div style={reasoningContent}>
@@ -521,8 +620,8 @@ export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, 
         </div>
       )}
 
-      {/* DECISION LOGIC PANEL */}
-      {engineStateData?.exportSlices && engineStateData.exportSlices.length > 0 && (
+      {/* DECISION LOGIC PANEL - dev only; hidden in client view */}
+      {!showClientLayout && engineStateData?.exportSlices && engineStateData.exportSlices.length > 0 && (
         <div style={decisionLogicPanel}>
           <div style={decisionLogicHeader}>Decision Logic</div>
           <div style={decisionLogicContent}>
@@ -570,8 +669,8 @@ export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, 
       {/* Current Step Panel - Hero Image + Content */}
       {!isComplete && currentStep && (
         <div style={currentStepPanel}>
-          {/* Progress Stack - Completed Steps (from engine state) */}
-          {completedSteps.length > 0 && (
+          {/* Progress Stack - Completed Steps (dev only; hidden in client/onboarding view) */}
+          {!showClientLayout && completedSteps.length > 0 && (
             <div style={progressStack}>
               <div style={progressStackHeader}>Completed Steps</div>
               {completedSteps.map((item, i) => {
@@ -623,46 +722,149 @@ export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, 
             )}
           </div>
 
-          {/* Step Content - All from content */}
+          {/* Step Content - All from content (fallbacks when step has no title/body) */}
           <div style={stepContent}>
-            <h4 style={stepTitle}>{currentStep.title}</h4>
-            <p style={stepBody}>{currentStep.body}</p>
+            <h4 style={stepTitle}>{currentStep.title || `Step ${displayStep}`}</h4>
+            <p style={stepBody}>{currentStep.body || (currentStep.title ? "" : "No description for this step.")}</p>
           </div>
 
-          {/* Action Buttons - All choices from content */}
-          <div style={buttonGroup}>
-            {currentStep.choices.map((choice) => (
+          {/* Numeric input (simple display) or choice buttons */}
+          {currentStep.inputType === "number" ? (
+            <div style={buttonGroup}>
+              <input
+                type="number"
+                min={0}
+                step={100}
+                placeholder={currentStep.inputLabel || "Amount ($)"}
+                value={numericInputValue}
+                onChange={(e) => setNumericInputValue(e.target.value)}
+                style={numericInputStyle}
+              />
               <button
-                key={choice.id}
-                onClick={() => handleChoice(choice.id)}
+                type="button"
+                onClick={handleNumericSubmit}
                 style={choiceButton}
-                onMouseEnter={(e) => {
-                  // Hover color based on choice kind (from content)
-                  const hoverColor = 
-                    choice.kind === "understand" || choice.kind === "yes" ? "#10b981" :
-                    choice.kind === "unsure" || choice.kind === "no" ? "#ef4444" :
-                    "#3b82f6";
-                  e.currentTarget.style.background = hoverColor;
-                  e.currentTarget.style.color = "#ffffff";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "#1e293b";
-                  e.currentTarget.style.color = "#e5e7eb";
-                }}
               >
-                {choice.label}
+                Next
               </button>
-            ))}
-          </div>
+            </div>
+          ) : (currentStep.choices?.length > 0 ? (
+            <div style={buttonGroup}>
+              {currentStep.choices.map((choice) => (
+                <button
+                  key={choice.id}
+                  onClick={() => handleChoice(choice.id)}
+                  style={choiceButton}
+                  onMouseEnter={(e) => {
+                    const hoverColor = 
+                      choice.kind === "understand" || choice.kind === "yes" ? "#10b981" :
+                      choice.kind === "unsure" || choice.kind === "no" ? "#ef4444" :
+                      "#3b82f6";
+                    e.currentTarget.style.background = hoverColor;
+                    e.currentTarget.style.color = "#ffffff";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "#1e293b";
+                    e.currentTarget.style.color = "#e5e7eb";
+                  }}
+                >
+                  {choice.label}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div style={buttonGroup}>
+              <button
+                type="button"
+                onClick={() => {
+                  const nextStep = currentStepIndex + 1;
+                  if (nextStep >= totalSteps) {
+                    onComplete({ cardId: "education", completed: true, output: {} });
+                  } else {
+                    writeEngineState({ [STEP_KEY]: nextStep });
+                    setLocalStep(nextStep);
+                    onAdvance(nextStep);
+                  }
+                }}
+                style={choiceButton}
+              >
+                {currentStepIndex + 1 >= totalSteps - 1 ? "Finish" : "Next"}
+              </button>
+            </div>
+          ))}
         </div>
       )}
 
-      {/* Completion State */}
-      {isComplete && (
+      {/* Completion State or Simple Report - summary + calculation + verdict, then answers with calculators and check/X */}
+      {isComplete && flow.displayMode === "simple" && (() => {
+        const numericStep = flow.steps.find((s) => s.inputType === "number" && s.inputKey && s.resultBands);
+        const numericOutcome = numericStep ? outcomes.find((o: any) => o.stepId === numericStep.id) : null;
+        const numVal = (numericOutcome?.outcome as { numericValue?: number } | undefined)?.numericValue ?? 0;
+        const format = (v: number) => `$${v.toLocaleString()}`;
+        const band3 = numericStep?.resultBands?.find((b: { label: string }) => b.label.includes("3:1"));
+        const salesAt3 = band3 && typeof band3.ratio === "number" ? numVal * band3.ratio : numVal * 3;
+        const summary = (flow as { reportSummary?: string }).reportSummary || "The average business gains 3:1 sales according to industry benchmarks.";
+        return (
+          <div style={reportContainer}>
+            <div style={reportTitleStyle}>{flow.reportTitle || "Your results"}</div>
+            <div style={reportSummaryLine}>{summary}</div>
+            {numericStep && (
+              <>
+                <div style={reportCalculation}>
+                  You said {format(numVal)}/month → at 3:1 that's {format(salesAt3)} in sales.
+                </div>
+                {numericStep.verdict && <div style={reportVerdict}>{numericStep.verdict}</div>}
+              </>
+            )}
+            {/* Per-step answers: calculator bands and check/X (no repeated questions) */}
+            <div style={reportAnswersSection}>
+              {flow.steps.map((step) => {
+                const outcome = outcomes.find((o: any) => o.stepId === step.id);
+                if (step.inputType === "number" && step.inputKey && step.resultBands) {
+                  const value = (outcome?.outcome as { numericValue?: number } | undefined)?.numericValue ?? 0;
+                  const pass = value > 0;
+                  return (
+                    <div key={step.id} style={reportItem}>
+                      <div style={reportItemHeader}>
+                        <span style={reportStepTitle}>{step.title}</span>
+                        <span style={reportCheck(pass)}>{pass ? "✓" : "✕"}</span>
+                      </div>
+                      <div style={reportStepBody}>Answer: {format(value)}</div>
+                      <div style={reportBands}>
+                        {step.resultBands.map((band: { label: string; ratio: number; description: string }) => (
+                          <div key={band.label} style={reportBandRow}>
+                            {band.label}: {format(value * band.ratio)} sales
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                }
+                const choice = outcome ? step.choices?.find((c) => c.id === outcome.choiceId) : null;
+                const reportStatus = (outcome?.outcome as { reportStatus?: "pass" | "fail" })?.reportStatus;
+                const pass = reportStatus === "pass";
+                return (
+                  <div key={step.id} style={reportItem}>
+                    <div style={reportItemHeader}>
+                      <span style={reportStepTitle}>{step.title}</span>
+                      <span style={reportCheck(pass)}>{pass ? "✓" : "✕"}</span>
+                    </div>
+                    <div style={reportStepBody}>
+                      {choice ? choice.label : (outcome as any)?.choiceLabel ?? "—"}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
+      {isComplete && flow.displayMode !== "simple" && (
         <div style={completionState}>
           <div style={completionIcon}>✓</div>
           <div style={completionText}>Education Complete</div>
-          {completedSteps.length > 0 && (
+          {/* Diagnostic list (Signals/Blockers/Opportunities) - dev only; hidden in client onboarding */}
+          {!showClientLayout && completedSteps.length > 0 && (
             <div style={progressStack}>
               {completedSteps.map((item, i) => {
                 if (!item) return null;
@@ -696,6 +898,9 @@ export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, 
                 );
               })}
             </div>
+          )}
+          {showClientLayout && (
+            <div style={reportSummaryLine}>Thanks. We've saved your answers.</div>
           )}
         </div>
       )}
@@ -1219,4 +1424,98 @@ const decisionLogicSeverity = (severity: "low" | "medium" | "high"): React.CSSPr
     color: colors[severity],
     fontWeight: 600,
   };
+};
+
+const numericInputStyle: React.CSSProperties = {
+  width: "100%",
+  padding: "14px 20px",
+  borderRadius: 10,
+  border: "1px solid rgba(255, 255, 255, 0.1)",
+  background: "#1e293b",
+  color: "#e5e7eb",
+  fontSize: 15,
+  marginBottom: 10,
+};
+
+const reportContainer: React.CSSProperties = {
+  marginTop: 24,
+  padding: 20,
+  background: "rgba(255, 255, 255, 0.05)",
+  borderRadius: 12,
+  border: "1px solid rgba(255, 255, 255, 0.1)",
+};
+
+const reportTitleStyle: React.CSSProperties = {
+  fontSize: 18,
+  fontWeight: 700,
+  color: "#f1f5f9",
+  marginBottom: 16,
+};
+
+const reportAnswersSection: React.CSSProperties = {
+  marginTop: 20,
+  paddingTop: 16,
+  borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+};
+
+const reportSummaryLine: React.CSSProperties = {
+  fontSize: 15,
+  color: "#e2e8f0",
+  marginBottom: 16,
+  lineHeight: 1.4,
+};
+
+const reportCalculation: React.CSSProperties = {
+  fontSize: 15,
+  fontWeight: 600,
+  color: "#f1f5f9",
+  marginBottom: 8,
+};
+
+const reportItem: React.CSSProperties = {
+  padding: "12px 0",
+  borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+};
+
+const reportItemHeader: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: 12,
+  marginBottom: 6,
+};
+
+const reportStepTitle: React.CSSProperties = {
+  fontSize: 14,
+  fontWeight: 600,
+  color: "#f1f5f9",
+};
+
+const reportCheck = (pass: boolean): React.CSSProperties => ({
+  fontSize: 18,
+  fontWeight: 700,
+  color: pass ? "#10b981" : "#ef4444",
+});
+
+const reportStepBody: React.CSSProperties = {
+  fontSize: 13,
+  color: "#94a3b8",
+  marginBottom: 4,
+};
+
+const reportBands: React.CSSProperties = {
+  fontSize: 12,
+  color: "#64748b",
+  marginTop: 6,
+};
+
+const reportBandRow: React.CSSProperties = {
+  marginBottom: 2,
+};
+
+const reportVerdict: React.CSSProperties = {
+  fontSize: 12,
+  fontStyle: "italic",
+  color: "#60a5fa",
+  marginTop: 8,
 };

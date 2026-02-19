@@ -1,0 +1,18 @@
+{
+  "topBar": {
+    "menu": [
+      {
+        "label": "Home",
+        "path": "tsx:HiClarify/HiClarifyOnboarding"
+      },
+      {
+        "label": "Me",
+        "path": "tsx:HiClarify/Profile"
+      },
+      {
+        "label": "Settings",
+        "path": "tsx:HiClarify/Settings"
+      }
+    ]
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "grid": { "columns": 12, "gap": 16, "rowHeight": 80 },
+  "widgets": { "resizable": true, "draggable": true, "minW": 1, "minH": 1 },
+  "preset": "default"
+}

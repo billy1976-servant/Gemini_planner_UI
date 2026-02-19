@@ -14,46 +14,69 @@ function findRepoRoot(start: string): string {
 }
 
 const REPO_ROOT = findRepoRoot(process.cwd());
-const APPS_JSON_BASE = path.join(REPO_ROOT, "src", "01_App", "apps-json");
-const APPS_TSX_BASE = path.join(REPO_ROOT, "src", "01_App", "apps-tsx");
+const O1_APP_BASE = path.join(REPO_ROOT, "src", "01_App");
 
-
-/* ======================================================
-   TSX DISCOVERY — ALL TOP-LEVEL FOLDERS (no whitelist/filter)
-   Level 1 = category (every directory under apps-tsx)
-   Level 2 = direct .tsx files in category OR subfolders
-   Level 3 = .tsx files inside selected subfolder
-   No hardcoded folder names; one failing dir does not hide others.
-====================================================== */
-function collectTsxScreens(): Array<{
+export type ScreensIndexItem = {
   category: string;
   directFiles: string[];
   folders: Record<string, string[]>;
-}> {
-  if (!fs.existsSync(APPS_TSX_BASE)) return [];
+  rootSection: string;
+  displayName: string;
+};
+
+/* ======================================================
+   JSON FOLDERS — recursive walk for .json files
+====================================================== */
+function collectJsonFolders(categoryPath: string): Record<string, string[]> {
+  const result: Record<string, string[]> = {};
+  const walk = (dir: string, prefix: string) => {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    const files: string[] = [];
+    for (const entry of entries) {
+      if (entry.isFile() && entry.name.endsWith(".json")) {
+        files.push(entry.name);
+      } else if (entry.isDirectory()) {
+        const nextDir = path.join(dir, entry.name);
+        const nextPrefix = prefix ? `${prefix}/${entry.name}` : entry.name;
+        walk(nextDir, nextPrefix);
+      }
+    }
+    if (files.length) {
+      result[prefix || "."] = files;
+    }
+  };
+  walk(categoryPath, "");
+  return result;
+}
+
+/* ======================================================
+   TSX DISCOVERY — recursive .tsx under a root
+   Category = top-level dir; folders = subdirs with .tsx
+====================================================== */
+function collectTsxUnderRoot(rootPath: string): ScreensIndexItem[] {
+  if (!fs.existsSync(rootPath)) return [];
 
   const topLevelDirs = fs
-    .readdirSync(APPS_TSX_BASE, { withFileTypes: true })
+    .readdirSync(rootPath, { withFileTypes: true })
     .filter((d): d is fs.Dirent => d.isDirectory())
     .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
 
-  return topLevelDirs.map(group => {
-    const groupPath = path.join(APPS_TSX_BASE, group.name);
+  return topLevelDirs.map((group) => {
+    const groupPath = path.join(rootPath, group.name);
     let directFiles: string[] = [];
-    let folders: Record<string, string[]> = {};
+    const folders: Record<string, string[]> = {};
 
     try {
       const entries = fs.readdirSync(groupPath, { withFileTypes: true });
-
       directFiles = entries
         .filter(
-          f =>
+          (f) =>
             f.isFile() &&
             f.name.endsWith(".tsx") &&
             !f.name.endsWith(".d.ts") &&
             !f.name.startsWith("_template")
         )
-        .map(f => f.name.replace(/\.tsx$/, ""));
+        .map((f) => f.name.replace(/\.tsx$/, ""));
 
       const subdirs = entries.filter((d): d is fs.Dirent => d.isDirectory());
       for (const app of subdirs) {
@@ -62,124 +85,145 @@ function collectTsxScreens(): Array<{
           const fileEntries = fs.readdirSync(appPath, { withFileTypes: true });
           const files = fileEntries
             .filter(
-              f =>
+              (f) =>
                 f.isFile() &&
                 f.name.endsWith(".tsx") &&
                 !f.name.endsWith(".d.ts") &&
                 !f.name.startsWith("_template")
             )
-            .map(f => f.name.replace(/\.tsx$/, ""));
+            .map((f) => f.name.replace(/\.tsx$/, ""));
           if (files.length > 0) folders[app.name] = files;
         } catch {
-          /* skip this subfolder so one bad dir does not break the category */
+          /* skip */
         }
       }
-    } catch (_err) {
-      /* Include category with empty children so Navigator still lists this folder */
+    } catch {
+      /* include category with empty children */
     }
 
     return {
       category: group.name,
       directFiles,
       folders,
+      rootSection: path.basename(rootPath),
+      displayName: path.basename(rootPath),
     };
   });
 }
 
+/* ======================================================
+   GENERIC WALK — .json and .tsx under a root
+   Top-level subdirs = categories; recursive folders.
+====================================================== */
+function collectGenericUnderRoot(rootPath: string, rootName: string): ScreensIndexItem[] {
+  if (!fs.existsSync(rootPath)) return [];
+
+  const topLevelDirs = fs
+    .readdirSync(rootPath, { withFileTypes: true })
+    .filter((d): d is fs.Dirent => d.isDirectory())
+    .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
+
+  return topLevelDirs.map((group) => {
+    const groupPath = path.join(rootPath, group.name);
+    const folders: Record<string, string[]> = {};
+    const directFiles: string[] = [];
+
+    const walk = (dir: string, prefix: string) => {
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      const files: string[] = [];
+      for (const entry of entries) {
+        if (
+          entry.isFile() &&
+          (entry.name.endsWith(".json") || entry.name.endsWith(".tsx"))
+        ) {
+          if (!entry.name.endsWith(".d.ts") && !entry.name.startsWith("_template")) {
+            files.push(entry.name.replace(/\.(json|tsx)$/, ""));
+          }
+        } else if (entry.isDirectory()) {
+          const nextDir = path.join(dir, entry.name);
+          const nextPrefix = prefix ? `${prefix}/${entry.name}` : entry.name;
+          walk(nextDir, nextPrefix);
+        }
+      }
+      if (files.length) {
+        folders[prefix || "."] = files;
+      }
+    };
+
+    try {
+      const entries = fs.readdirSync(groupPath, { withFileTypes: true });
+      for (const e of entries) {
+        if (e.isFile() && (e.name.endsWith(".json") || e.name.endsWith(".tsx"))) {
+          if (!e.name.endsWith(".d.ts") && !e.name.startsWith("_template")) {
+            directFiles.push(e.name.replace(/\.(json|tsx)$/, ""));
+          }
+        } else if (e.isDirectory()) {
+          walk(path.join(groupPath, e.name), e.name);
+        }
+      }
+    } catch {
+      /* include with empty children */
+    }
+
+    return {
+      category: group.name,
+      directFiles,
+      folders,
+      rootSection: rootName,
+      displayName: rootName,
+    };
+  });
+}
 
 /**
  * GET /api/screens
- * Lists:
- * category → folder → *.json
- * category → folder → *.tsx
+ * Scans src/01_App/* — each directory is a root section.
+ * Returns categories with rootSection = displayName = dir.name (no renaming, no tsx: prefix).
  */
 export async function GET() {
   try {
-    console.log("[api/screens] ROOT =", REPO_ROOT);
-    console.log("[api/screens] JSON BASE =", APPS_JSON_BASE, fs.existsSync(APPS_JSON_BASE));
-    console.log("[api/screens] TSX BASE =", APPS_TSX_BASE, fs.existsSync(APPS_TSX_BASE));
-
-    if (!fs.existsSync(APPS_JSON_BASE)) {
-      console.error("[api/screens] ❌ BASE folder does not exist", { APPS_JSON_BASE });
-      // Return empty array instead of crashing
+    if (!fs.existsSync(O1_APP_BASE)) {
       return NextResponse.json([]);
     }
 
-    /* ---------------- JSON (FIXED PATH, RECURSIVE) ---------------- */
-    const collectJsonFolders = (categoryPath: string): Record<string, string[]> => {
-      const result: Record<string, string[]> = {};
+    const rootDirs = fs
+      .readdirSync(O1_APP_BASE, { withFileTypes: true })
+      .filter((d): d is fs.Dirent => d.isDirectory())
+      .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
 
-      const walk = (dir: string, prefix: string) => {
-        const entries = fs.readdirSync(dir, { withFileTypes: true });
-        const files: string[] = [];
-        for (const entry of entries) {
-          if (entry.isFile() && entry.name.endsWith(".json")) {
-            files.push(entry.name);
-          } else if (entry.isDirectory()) {
-            const nextDir = path.join(dir, entry.name);
-            const nextPrefix = prefix ? `${prefix}/${entry.name}` : entry.name;
-            walk(nextDir, nextPrefix);
-          }
-        }
-        if (files.length) {
-          const key = prefix || ".";
-          result[key] = files;
-        }
-      };
+    const result: ScreensIndexItem[] = [];
 
-      walk(categoryPath, "");
-      return result;
-    };
+    for (const dir of rootDirs) {
+      const rootPath = path.join(O1_APP_BASE, dir.name);
+      const rootSection = dir.name;
+      const displayName = dir.name;
 
-    const jsonCategories = fs
-      .readdirSync(APPS_JSON_BASE, { withFileTypes: true })
-      .filter(d => d.isDirectory())
-      .map(category => {
-        const categoryPath = path.join(APPS_JSON_BASE, category.name);
-
-        console.log("[api/screens] 📂 Processing category", {
-          category: category.name,
-          categoryPath,
-          exists: fs.existsSync(categoryPath),
-        });
-
-        const folders = collectJsonFolders(categoryPath);
-
-        return { category: category.name, folders };
-      });
-
-
-    /* ---------------- TSX (ADDITIVE) ---------------- */
-    const tsxCategories = collectTsxScreens();
-
-    const result = [
-      ...jsonCategories.map(c => ({ ...c, directFiles: (c as any).directFiles ?? [] })),
-      ...tsxCategories.map(c => ({
-        category: `tsx:${c.category}`,
-        directFiles: c.directFiles,
-        folders: c.folders,
-      })),
-    ];
-
-    console.log("[api/screens] ✅ Success", {
-      jsonCategoriesCount: jsonCategories.length,
-      tsxCategoriesCount: tsxCategories.length,
-      totalCategories: result.length,
-    });
+      if (dir.name === "(dead) Json") {
+        const categories = fs
+          .readdirSync(rootPath, { withFileTypes: true })
+          .filter((d): d is fs.Dirent => d.isDirectory())
+          .map((category) => ({
+            category: category.name,
+            directFiles: [] as string[],
+            folders: collectJsonFolders(path.join(rootPath, category.name)),
+            rootSection,
+            displayName,
+          }));
+        result.push(...categories);
+      } else if (dir.name === "(dead) Tsx") {
+        result.push(...collectTsxUnderRoot(rootPath));
+      } else {
+        result.push(...collectGenericUnderRoot(rootPath, rootSection));
+      }
+    }
 
     return NextResponse.json(result);
-  } catch (e: any) {
-    console.error("[api/screens] ❌ Error in GET handler", {
-      error: e.message,
-      stack: e.stack,
-      APPS_JSON_BASE,
-      APPS_TSX_BASE,
-    });
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : String(e);
+    console.error("[api/screens] Error", message);
     return NextResponse.json(
-      { error: e.message, path: APPS_JSON_BASE },
+      { error: message, path: O1_APP_BASE },
       { status: 500 }
     );
   }
 }
-
-

@@ -1,0 +1,29 @@
+{
+  "$comment": "Example resolver config: path patterns → structure type + template. No per-screen registry.",
+  "patterns": [
+    {
+      "glob": "**/planner*.tsx",
+      "structureType": "timeline",
+      "templateId": "default"
+    },
+    {
+      "glob": "**/JSX_PlannerShell*",
+      "structureType": "timeline",
+      "templateId": "day-only"
+    },
+    {
+      "glob": "**/board*.tsx",
+      "structureType": "board",
+      "templateId": "default"
+    },
+    {
+      "glob": "**/dashboard*.tsx",
+      "structureType": "dashboard",
+      "templateId": "default"
+    }
+  ],
+  "default": {
+    "structureType": "list",
+    "templateId": "default"
+  }
+}

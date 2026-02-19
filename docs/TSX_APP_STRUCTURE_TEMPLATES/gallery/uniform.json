@@ -1,0 +1,6 @@
+{
+  "layout": "uniform",
+  "grid": { "columns": 4, "gap": 24, "aspectRatio": "16/9" },
+  "lightbox": { "enabled": true, "swipe": true },
+  "density": "spacious"
+}

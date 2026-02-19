@@ -16,7 +16,7 @@ import { compileProductDataToScreen } from "@/06_Data/product-screen-adapter";
 
 const COMPILED_SITES = path.join(process.cwd(), "content", "compiled", "sites");
 const RAW_SITES = path.join(process.cwd(), "src", "content", "sites", "raw");
-const APPS_WEBSITES = path.join(process.cwd(), "src", "apps-json", "apps", "websites");
+const APPS_WEBSITES = path.join(process.cwd(), "src", "01_App", "(dead) Json", "apps", "websites");
 
 function loadProductGraph(domain: string): { products: unknown[] } | null {
   const compiledPath = path.join(COMPILED_SITES, domain, "product.graph.json");

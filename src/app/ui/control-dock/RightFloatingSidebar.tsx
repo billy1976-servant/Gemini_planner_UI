@@ -8,6 +8,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
+import { useSearchParams } from "next/navigation";
 import "@/editor/editor-theme.css";
 import { useDockState } from "./dock-state";
 import type { DockPanelId } from "./dock-state";
@@ -23,6 +24,7 @@ import ExperienceRenderer from "@/engine/core/ExperienceRenderer";
 import { applyPaletteToElement } from "@/lib/site-renderer/palette-bridge";
 import PaletteContractInspector from "@/04_Presentation/diagnostics/PaletteContractInspector";
 import { useDevMobileMode } from "@/app/dev/useDevMobileMode";
+import TsxStructurePanel from "@/app/ui/control-dock/TsxStructurePanel";
 
 /** Wraps content and applies a specific palette's CSS variables to the wrapper so the content renders in that palette. */
 function PaletteFullPreviewFrame({
@@ -87,6 +89,7 @@ const PILL_CONFIG: Array<{ id: DockPanelId; label: string }> = [
   { id: "behavior", label: "Behavior" },
   { id: "layout", label: "Layout" },
   { id: "newInterface", label: "New Interface" },
+  { id: "tsx", label: "TSX" },
   { id: "expand", label: "Expand" },
 ];
 
@@ -159,6 +162,7 @@ export type RightFloatingSidebarProps = {
 
 function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, palettePreviewProps }: RightFloatingSidebarProps) {
   const { openPanel, togglePanel } = useDockState();
+  const searchParams = useSearchParams();
   const devMobileMode = useDevMobileMode();
   const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
   const currentHref = typeof window !== "undefined" ? window.location.href : "";
@@ -609,6 +613,9 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
             {openPanel === "newInterface" && (
               <CreateNewInterfacePanel />
             )}
+            {openPanel === "tsx" && (
+              <TsxStructurePanel key={searchParams.get("screen") ?? ""} />
+            )}
             {openPanel === "expand" && (
               <div style={{ fontSize: 14, color: GOOGLE.textSecondary }}>
                 Large overlay opens above. Click Expand again to close.
@@ -682,8 +689,8 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
               key={id}
               type="button"
               onClick={() => togglePanel(id)}
-              title={label}
-              aria-label={label}
+              title={id === "tsx" ? "TSX Structure" : label}
+              aria-label={id === "tsx" ? "TSX Structure" : label}
               aria-pressed={isActive}
               style={{
                 ...ICON_BUTTON_BASE,

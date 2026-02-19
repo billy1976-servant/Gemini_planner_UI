@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "tsx-structure-timeline",
+  "title": "Timeline Structure Config",
+  "description": "Config for Timeline/Calendar structure: slot scale, day range, density, axis, view modes, interaction, overlay policy",
+  "type": "object",
+  "properties": {
+    "slotMinutes": {
+      "type": "integer",
+      "enum": [5, 10, 15, 30, 60],
+      "default": 15
+    },
+    "dayStart": {
+      "type": "integer",
+      "description": "Minutes from midnight (0-1439)",
+      "minimum": 0,
+      "maximum": 1439,
+      "default": 360
+    },
+    "dayEnd": {
+      "type": "integer",
+      "description": "Minutes from midnight (0-1439)",
+      "minimum": 0,
+      "maximum": 1439,
+      "default": 1320
+    },
+    "density": {
+      "type": "string",
+      "enum": ["compact", "default", "spacious"],
+      "default": "default"
+    },
+    "zoom": {
+      "type": "object",
+      "properties": {
+        "preset": { "type": "string", "enum": ["tight", "default", "wide"] },
+        "slotHeight": { "type": "integer", "minimum": 20, "maximum": 120 }
+      }
+    },
+    "axis": {
+      "type": "object",
+      "properties": {
+        "show": { "type": "boolean", "default": true },
+        "width": { "type": "integer", "minimum": 0, "maximum": 120, "default": 48 },
+        "position": { "type": "string", "enum": ["left", "right"], "default": "left" }
+      },
+      "default": { "show": true, "width": 48, "position": "left" }
+    },
+    "overlayPolicy": {
+      "type": "string",
+      "enum": ["system", "local"],
+      "default": "local"
+    },
+    "viewModes": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["day", "week", "month"] },
+      "minItems": 1,
+      "default": ["day", "week", "month"]
+    },
+    "defaultView": {
+      "type": "string",
+      "enum": ["day", "week", "month"],
+      "default": "day"
+    },
+    "interaction": {
+      "type": "object",
+      "properties": {
+        "drag": { "type": "boolean", "default": true },
+        "resize": { "type": "boolean", "default": true },
+        "select": { "type": "boolean", "default": true }
+      },
+      "default": { "drag": true, "resize": true, "select": true }
+    },
+    "dataBinding": {
+      "type": "object",
+      "description": "Contract keys only; UI decoupled from data shape",
+      "properties": {
+        "eventsKey": { "type": "string" },
+        "tasksKey": { "type": "string" },
+        "chunksKey": { "type": "string" },
+        "adapter": { "type": "string" }
+      }
+    }
+  },
+  "additionalProperties": false
+}

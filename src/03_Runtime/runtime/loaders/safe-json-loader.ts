@@ -1,37 +1,16 @@
 /**
- * Safe JSON screen loader — prevents build/runtime crash when a screen file is deleted.
- * Uses require.context so only existing files are bundled; missing paths return null.
+ * Safe JSON screen loader — no filesystem/require.context dependency.
+ * JSON apps folder (apps-json/apps) removed; loader returns null for all paths.
+ * Callers handle null; TSX screens are resolved via API and apps-tsx.
  */
 
-// From src/03_Runtime/runtime/loaders: apps-json is at ../../../01_App/apps-json
-const context = (require as any).context(
-  "../../../01_App/apps-json/apps",
-  true,
-  /\.json$/
-);
-
-const contextKeys = context.keys();
+/** No registry; no scanning. */
+const appsRegistry: Record<string, unknown> = {};
 
 /**
- * Load a screen JSON by path relative to apps-json/apps.
- * @param relativePath - e.g. "Onboarding/trial.json", "behavior-tests/A-to-D-Test.json"
- * @returns Parsed JSON node or null if file is missing
+ * Load a screen JSON by path (no-op: no apps-json/apps at runtime).
+ * @returns null always — JSON screens are not loaded from filesystem.
  */
-export function loadScreenJson(relativePath: string): unknown | null {
-  const key = relativePath.startsWith("./") ? relativePath : `./${relativePath}`;
-  if (!contextKeys.includes(key)) {
-    if (typeof console !== "undefined" && console.warn) {
-      console.warn(`[safe-json-loader] Screen file not found (ignored): ${relativePath}`);
-    }
-    return null;
-  }
-  try {
-    const mod = context(key);
-    return mod?.default ?? mod;
-  } catch {
-    if (typeof console !== "undefined" && console.warn) {
-      console.warn(`[safe-json-loader] Failed to load screen: ${relativePath}`);
-    }
-    return null;
-  }
+export function loadScreenJson(_relativePath: string): unknown | null {
+  return appsRegistry[_relativePath] ?? null;
 }

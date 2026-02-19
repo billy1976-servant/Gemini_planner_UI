@@ -1,0 +1,7 @@
+{
+  "columns": { "source": "data", "minWidth": 200 },
+  "cards": { "minHeight": 60, "showPreview": true },
+  "drag": { "enabled": true, "betweenColumnsOnly": true },
+  "swimlanes": { "enabled": false },
+  "density": "default"
+}

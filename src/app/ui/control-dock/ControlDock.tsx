@@ -127,6 +127,7 @@ export default function ControlDock({
               behavior: "Behavior",
               layout: "Layout",
               newInterface: "New Interface",
+              tsx: "TSX",
               expand: "Expand",
             };
             return (
