@@ -2,11 +2,80 @@
   "industry": "container-ventilation",
   "palette": "default",
   "nodes": [
-    { "id": "header", "type": "header", "props": { "title": "Container Creations" } },
-    { "id": "hero", "type": "hero", "props": { "headline": "Industrial Container Vent Systems" } },
-    { "id": "products", "type": "product-grid", "props": {} },
-    { "id": "cta", "type": "cta", "props": { "label": "Request a Quote" } },
-    { "id": "footer", "type": "footer", "props": { "text": "© Container Creations" } }
+    {
+      "id": "header",
+      "type": "header",
+      "props": {
+        "title": "Container Creations"
+      }
+    },
+    {
+      "id": "hero",
+      "type": "hero",
+      "props": {
+        "layout": "video-overlay",
+        "video": "/videos/hero-install.mp4",
+        "overlay": {
+          "title": "Container Ventilation & Protection Systems",
+          "subtitle": "Protect from Water. Improve Light. Install in Minutes.",
+          "primaryCTA": {
+            "label": "Shop Water Protection",
+            "href": "#water"
+          },
+          "secondaryCTA": {
+            "label": "Shop Light Systems",
+            "href": "#light"
+          }
+        },
+        "headline": "Container Ventilation & Protection Systems",
+        "subheadline": "Protect from Water. Improve Light. Install in Minutes."
+      }
+    },
+    {
+      "id": "hero-products",
+      "type": "dual-feature",
+      "props": {
+        "items": [
+          {
+            "id": "water",
+            "title": "Water Protection Systems",
+            "description": "Prevent leaks, corrosion, and interior damage with sealed ventilation.",
+            "cta": {
+              "label": "View Water Products",
+              "href": "/water"
+            }
+          },
+          {
+            "id": "light",
+            "title": "Light & Visibility Systems",
+            "description": "Increase safety and visibility with integrated skylight solutions.",
+            "cta": {
+              "label": "View Light Products",
+              "href": "/light"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "products",
+      "type": "product-grid",
+      "props": {}
+    },
+    {
+      "id": "cta",
+      "type": "cta",
+      "props": {
+        "label": "Request a Quote"
+      }
+    },
+    {
+      "id": "footer",
+      "type": "footer",
+      "props": {
+        "text": "© Container Creations"
+      }
+    }
   ],
-  "nodeOrder": ["header", "hero", "products", "cta", "footer"]
+  "nodeOrder": ["header", "hero", "hero-products", "products", "cta", "footer"]
 }

@@ -1,32 +1,48 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { ShopifyControlState, ShopifySignal } from "@/shopify/types";
+import { useSearchParams } from "next/navigation";
+import type {
+  ShopifyControlState,
+  ShopifyIntelligenceApiError,
+  ShopifyIntelligenceApiResponse,
+  ShopifySignal,
+} from "@/00_Projects/Business_Files/Container_Creations/Shopify_Intelligence/types";
 
 export default function ShopifyIntelligencePage() {
+  const searchParams = useSearchParams();
   const [signal, setSignal] = useState<ShopifySignal | null>(null);
   const [controlState, setControlState] = useState<ShopifyControlState | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [installUrl, setInstallUrl] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
+    const shop = searchParams.get("shop")?.trim() ?? undefined;
 
     async function load() {
       setLoading(true);
       setError(null);
+      setInstallUrl(null);
       try {
-        const res = await fetch("/api/shopify-intelligence");
+        const url = shop
+          ? `/api/shopify-intelligence?shop=${encodeURIComponent(shop)}`
+          : "/api/shopify-intelligence";
+        const res = await fetch(url);
         const data = await res.json();
 
         if (!res.ok) {
-          setError(data.error || `HTTP ${res.status}`);
+          const err = data as ShopifyIntelligenceApiError;
+          if (err.installUrl) setInstallUrl(err.installUrl);
+          setError(err.error || `HTTP ${res.status}`);
           return;
         }
 
         if (!cancelled) {
-          setSignal(data.signal ?? null);
-          setControlState(data.controlState ?? null);
+          const body = data as ShopifyIntelligenceApiResponse;
+          setSignal(body.signal ?? null);
+          setControlState(body.controlState ?? null);
         }
       } catch (e: any) {
         if (!cancelled) setError(e?.message ?? "Failed to load");
@@ -39,7 +55,7 @@ export default function ShopifyIntelligencePage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [searchParams]);
 
   if (loading) {
     return (
@@ -54,7 +70,12 @@ export default function ShopifyIntelligencePage() {
     return (
       <div style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
         <h1>Shopify Intelligence</h1>
-        <p style={{ color: "#c00" }}>Error: {error}</p>
+        <p style={{ color: "#c00" }}>{error}</p>
+        {installUrl && (
+          <p style={{ marginTop: "1rem" }}>
+            <a href={installUrl}>Install app / Authorize</a>
+          </p>
+        )}
       </div>
     );
   }

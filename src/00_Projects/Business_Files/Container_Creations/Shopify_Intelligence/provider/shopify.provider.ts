@@ -37,13 +37,24 @@ interface ShopifyOrdersResponse {
 }
 
 /**
- * Fetch last 30 days orders and aggregate into ShopifySignal.
+ * Optional credentials from app layer (e.g. OAuth session). When provided, env is not required.
  */
-export async function fetchShopifySignal(): Promise<ShopifySignal> {
-  const store = getEnv(ENV_STORE);
-  const token = getEnv(ENV_TOKEN);
+export interface ShopifyCredentials {
+  shop: string;
+  accessToken: string;
+}
 
-  const baseUrl = `https://${store.replace(/^https?:\/\//, "").replace(/\/$/, "")}`;
+/**
+ * Fetch last 30 days orders and aggregate into ShopifySignal.
+ * When credentials is provided (e.g. from OAuth session), uses those; otherwise uses env.
+ */
+export async function fetchShopifySignal(credentials?: ShopifyCredentials): Promise<ShopifySignal> {
+  const store = credentials
+    ? credentials.shop.replace(/^https?:\/\//, "").replace(/\/$/, "")
+    : getEnv(ENV_STORE);
+  const token = credentials ? credentials.accessToken : getEnv(ENV_TOKEN);
+
+  const baseUrl = `https://${store}`;
   const url = `${baseUrl}/admin/api/2024-01/orders.json?status=any&created_at_min=${encodeURIComponent(getCreatedAtMin())}&limit=250`;
 
   const res = await fetch(url, {

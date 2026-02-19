@@ -21,6 +21,13 @@ function formatScreenPillLabel(screen: string): string {
   return `File: ${path}`;
 }
 
+/** Root folder color: (dead) = red, (live) = green; only for 01_App roots with (dead)/(live) in name. */
+function rootFolderColor(rootName: string): string | undefined {
+  if (rootName.includes("(dead)")) return "#b91c1c";
+  if (rootName.includes("(live)")) return "#15803d";
+  return undefined;
+}
+
 /** Group categories strictly by item.rootSection (no PROJECT/TSX, no renaming) */
 function groupByRootSection(index: ScreensIndex[]): Map<string, ScreensIndex[]> {
   const map = new Map<string, ScreensIndex[]>();
@@ -95,11 +102,11 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
 
   const base = pathname?.startsWith("/dev") ? "/dev" : "/";
 
+  /** Accordion: only one root expanded at a time; expanding one collapses the others. */
   const toggleRoot = (name: string) => {
     setExpandedRoots((prev) => {
-      const next = new Set(prev);
-      next.has(name) ? next.delete(name) : next.add(name);
-      return next;
+      if (prev.has(name)) return new Set<string>();
+      return new Set([name]);
     });
   };
 
@@ -275,7 +282,9 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
                       <span aria-hidden style={{ fontSize: 12 }}>
                         {isExpanded ? "▼" : "▶"}
                       </span>
-                      <span>{rootName}</span>
+                      <span style={{ color: rootFolderColor(rootName) ?? ROOT_ROW_STYLE.color }}>
+                        {rootName}
+                      </span>
                     </button>
                     {isExpanded &&
                       categories.map((cat) => {

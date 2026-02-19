@@ -11,6 +11,7 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { resolveAppStructure } from "./resolver";
 import { StructureConfigProvider } from "./StructureConfigContext";
 import { getDefaultTsxEnvelopeProfile } from "./getDefaultTsxEnvelopeProfile";
@@ -55,7 +56,9 @@ function getLayoutStyles(
 
 export function TSXScreenWithEnvelope({ screenPath, Component }: TSXScreenWithEnvelopeProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const profile = getDefaultTsxEnvelopeProfile(screenPath);
+  const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
+  const experience = (stateSnapshot?.values?.experience as string) ?? "website";
+  const profile = getDefaultTsxEnvelopeProfile(screenPath, experience);
 
   const [overrideVersion, setOverrideVersion] = useState(0);
   useEffect(() => {
