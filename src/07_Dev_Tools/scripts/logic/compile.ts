@@ -21,7 +21,7 @@ import readline from "readline";
 /* ============================================================
    CONSTANTS
 ============================================================ */
-const GENERATED_ROOT = path.resolve(process.cwd(), "src/apps-tsx/tsx-screens/generated");
+const GENERATED_ROOT = path.resolve(process.cwd(), "src/01_App/(dead) Tsx/tsx-screens/generated");
 
 
 /* ============================================================
@@ -440,7 +440,7 @@ async function main() {
   } else {
     const folders = listDirs(GENERATED_ROOT);
     if (folders.length === 0) {
-      console.error("✗ No folders found in src/apps-tsx/tsx-screens/generated/");
+      console.error("✗ No folders found in src/01_App/(dead) Tsx/tsx-screens/generated/");
       process.exit(1);
     }
 

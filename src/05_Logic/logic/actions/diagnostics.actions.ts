@@ -36,7 +36,7 @@ import { extractDatePhrase } from "@/logic/engines/structure/date-utils";
 import { isDueOn } from "@/logic/engines/structure/recurrence.engine";
 import { sortByPriority } from "@/logic/engines/structure/prioritization.engine";
 import { BASE_PLANNER_TREE } from "@/logic/planner/base-planner-tree";
-import type { StructureTreeNode } from "@/logic/engines/structure/structure.types";
+import type { StructureTreeNode, StructureItem, ResolvedRuleset } from "@/logic/engines/structure/structure.types";
 
 function write(key: string, value: unknown): void {
   dispatchState("state.update", {
@@ -399,7 +399,7 @@ export function runDiagnosticsPlannerParserPipeline(
   const dateKey = slice.selectedDate ?? slice.weekDates?.[0] ?? refDate.toISOString().slice(0, 10);
   const items = Array.isArray(slice.items) ? slice.items : [];
   const dateForFilter = new Date(dateKey + "T12:00:00");
-  const dueItems = items.filter((item: any) => isDueOn(item, dateForFilter));
+  const dueItems = items.filter((item: any) => isDueOn(item, dateForFilter)) as StructureItem[];
   const sorted = sortByPriority(dueItems, dateForFilter, slice.rules ?? {});
   report.step6_scheduledFromStatePopulates.dateKeyUsed = dateKey;
   report.step6_scheduledFromStatePopulates.dueItemCount = sorted.length;
@@ -616,7 +616,7 @@ export function runDiagnosticsPlannerFullParseTrace(
   const normalizedItemBeforeWriteSlice = {
     id: String(fullItem?.id ?? ""),
     title: String(fullItem?.title ?? ""),
-    dueDate: fullItem?.dueDate != null ? fullItem.dueDate : null,
+    dueDate: fullItem?.dueDate != null ? String(fullItem.dueDate) : null,
     priority: typeof fullItem?.priority === "number" ? fullItem.priority : 5,
     rampOrHabit: fullItem?.habit ?? fullItem?.recurrence ?? null,
     metadata: fullItem?.metadata ?? null,
@@ -660,8 +660,8 @@ export function runDiagnosticsPlannerFullParseTrace(
   const items = Array.isArray(sliceAfter.items) ? sliceAfter.items : [];
   const dateToday = new Date(todayKey + "T12:00:00");
   const dateParsed = new Date(parsedDueKey + "T12:00:00");
-  const dueToday = items.filter((i: any) => isDueOn(i, dateToday));
-  const dueOnParsed = items.filter((i: any) => isDueOn(i, dateParsed));
+  const dueToday = items.filter((i: any) => isDueOn(i, dateToday)) as StructureItem[];
+  const dueOnParsed = items.filter((i: any) => isDueOn(i, dateParsed)) as StructureItem[];
   const sortedToday = sortByPriority(dueToday, dateToday, slice.rules ?? {});
   const sortedParsed = sortByPriority(dueOnParsed, dateParsed, slice.rules ?? {});
   const uiRenderCheck = {

@@ -5,12 +5,13 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 
-const FLOWS_ROOT = path.join(process.cwd(), "src", "logic", "flows");
-const CONTENT_FLOWS_ROOT = path.join(process.cwd(), "src", "logic", "content", "flows");
+const FLOWS_ROOT = path.join(process.cwd(), "src", "05_Logic", "logic", "flows");
+const CONTENT_FLOWS_ROOT = path.join(process.cwd(), "src", "00_Projects", "Business_Files");
+const PROJECTS_BUSINESS_ROOT = path.join(process.cwd(), "src", "00_Projects", "Business_Files");
 
 export async function GET() {
   try {
-    // Recursively find all JSON files in a directory
+    // Recursively find all JSON flow files in a directory
     const findAllFlows = (dir: string): Array<{ id: string; title: string; stepCount: number }> => {
       const flows: Array<{ id: string; title: string; stepCount: number }> = [];
       
@@ -20,11 +21,9 @@ export async function GET() {
       for (const entry of entries) {
         const fullPath = path.join(dir, entry.name);
         if (entry.isFile() && entry.name.endsWith(".json")) {
-          const flowId = entry.name.replace(".json", "");
           try {
             const content = fs.readFileSync(fullPath, "utf8");
             const json = JSON.parse(content);
-            // Only include flows with valid id and steps array (skip invalid flows like 25x-cleanup-flow.json)
             if (json.id && Array.isArray(json.steps)) {
               flows.push({
                 id: json.id,
@@ -41,14 +40,31 @@ export async function GET() {
       }
       return flows;
     };
+
+    // Find all **/flows directories under Projects/Business_Files and scan them
+    const findFlowsUnderProjects = (dir: string): Array<{ id: string; title: string; stepCount: number }> => {
+      const flows: Array<{ id: string; title: string; stepCount: number }> = [];
+      if (!fs.existsSync(dir)) return flows;
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          if (entry.name === "Flows" || entry.name === "flows") {
+            flows.push(...findAllFlows(fullPath));
+          } else {
+            flows.push(...findFlowsUnderProjects(fullPath));
+          }
+        }
+      }
+      return flows;
+    };
     
-    // Scan both directories
     const flowsFromFlows = fs.existsSync(FLOWS_ROOT) ? findAllFlows(FLOWS_ROOT) : [];
-    const flowsFromContent = fs.existsSync(CONTENT_FLOWS_ROOT) ? findAllFlows(CONTENT_FLOWS_ROOT) : [];
+    const flowsFromBusinessFlows = fs.existsSync(CONTENT_FLOWS_ROOT) ? findFlowsUnderProjects(CONTENT_FLOWS_ROOT) : [];
+    const flowsFromProjects = fs.existsSync(PROJECTS_BUSINESS_ROOT) ? findFlowsUnderProjects(PROJECTS_BUSINESS_ROOT) : [];
     
-    // Merge and deduplicate by id
     const flowsMap = new Map<string, { id: string; title: string; stepCount: number }>();
-    [...flowsFromFlows, ...flowsFromContent].forEach(flow => {
+    [...flowsFromFlows, ...flowsFromBusinessFlows, ...flowsFromProjects].forEach(flow => {
       flowsMap.set(flow.id, flow);
     });
     

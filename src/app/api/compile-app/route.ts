@@ -14,16 +14,16 @@ const APPS_JSON_APPS = path.join(
   process.cwd(),
   "src",
   "01_App",
-  "apps-json",
+  "(dead) Json",
   "apps"
 );
 
-/** Generated apps: src/01_App/apps-json/generated */
+/** Generated apps: src/01_App/(dead) Json/generated */
 const APPS_JSON_GENERATED = path.join(
   process.cwd(),
   "src",
   "01_App",
-  "apps-json",
+  "(dead) Json",
   "generated"
 );
 

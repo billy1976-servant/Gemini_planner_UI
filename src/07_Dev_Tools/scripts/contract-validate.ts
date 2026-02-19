@@ -5,7 +5,7 @@
  * Contracts are documentation only; no programmatic validation is run.
  * This script exits successfully for compatibility with existing scripts.
  */
-const ROOT = "src/apps-json";
+const ROOT = "src/01_App/(dead) Json";
 
 function main() {
   console.log(`[contract:validate] Contracts are documentation only. No validation run.`);

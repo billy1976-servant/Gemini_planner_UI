@@ -1,0 +1,49 @@
+{
+  "id": "container-water-damage",
+  "title": "Stop Container Water Damage",
+  "steps": [
+    {
+      "id": "start",
+      "title": "What's happening with your container?",
+      "body": "Moisture buildup inside containers causes rust, mold, and structural decay.",
+      "image": "/images/container-moisture.jpg",
+      "choices": [
+        { "label": "I'm seeing condensation or rust", "nextStepId": "severity" },
+        { "label": "I want to prevent future damage", "nextStepId": "education" },
+        { "label": "I just want to buy ventilation now", "nextStepId": "buy" }
+      ]
+    },
+    {
+      "id": "severity",
+      "title": "How severe is the issue?",
+      "body": "Unchecked moisture can reduce container lifespan by years.",
+      "choices": [
+        { "label": "Minor condensation", "nextStepId": "solution" },
+        { "label": "Heavy moisture / mold", "nextStepId": "solution" }
+      ]
+    },
+    {
+      "id": "education",
+      "title": "Why ventilation matters",
+      "body": "Whirlybirds continuously circulate air without electricity.",
+      "image": "/images/whirlybird.jpg",
+      "choices": [
+        { "label": "Show me the solution", "nextStepId": "solution" }
+      ]
+    },
+    {
+      "id": "solution",
+      "title": "Recommended Solution",
+      "body": "Passive roof ventilation eliminates trapped moisture safely.",
+      "choices": [
+        { "label": "Buy now", "nextStepId": "buy" }
+      ]
+    },
+    {
+      "id": "buy",
+      "title": "Purchase Ventilation",
+      "body": "Secure your container with proper airflow protection.",
+      "choices": []
+    }
+  ]
+}

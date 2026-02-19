@@ -1,0 +1,12 @@
+{
+  "slotMinutes": 15,
+  "dayStart": 360,
+  "dayEnd": 1320,
+  "density": "spacious",
+  "axis": { "show": true, "width": 48, "position": "left" },
+  "overlayPolicy": "system",
+  "viewModes": ["day", "week", "month"],
+  "defaultView": "week",
+  "interaction": { "drag": true, "resize": true, "select": true },
+  "dataBinding": {}
+}

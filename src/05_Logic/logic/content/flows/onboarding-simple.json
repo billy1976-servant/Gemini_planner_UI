@@ -1,0 +1,90 @@
+{
+  "id": "onboarding-simple",
+  "title": "Marketing Assessment (Simple version)",
+  "displayMode": "simple",
+  "reportTitle": "Your results",
+  "reportSummary": "The average business gains 3:1 sales according to industry benchmarks.",
+  "steps": [
+    {
+      "id": "monthly-ad-spend",
+      "title": "Monthly ad spend",
+      "body": "How much do you spend a month on online marketing ads?",
+      "image": "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&h=400&fit=crop",
+      "imageAlt": "Digital marketing",
+      "inputType": "number",
+      "inputKey": "ad_spend",
+      "inputLabel": "Amount ($)",
+      "resultBands": [
+        { "label": "1:1", "ratio": 1, "description": "1:1 = same as spend" },
+        { "label": "3:1 Average", "ratio": 3, "description": "3:1 = 3x sales" },
+        { "label": "5:1 Strong", "ratio": 5, "description": "5:1 = 5x sales" }
+      ],
+      "verdict": "Most businesses can't survive without a 3:1 ROI.",
+      "passThreshold": 3,
+      "choices": []
+    },
+    {
+      "id": "wasted-clicks",
+      "title": "Ad spend waste",
+      "body": "Do you feel like you're paying for clicks that never turn into real customers?",
+      "image": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop",
+      "imageAlt": "Analytics",
+      "choices": [
+        {
+          "id": "yes-often",
+          "label": "Yes, very often",
+          "kind": "yes",
+          "outcome": {
+            "signals": ["wasted_clicks_high"],
+            "reportStatus": "fail"
+          }
+        },
+        {
+          "id": "sometimes",
+          "label": "Sometimes",
+          "kind": "unsure",
+          "outcome": {
+            "signals": ["wasted_clicks_medium"],
+            "reportStatus": "fail"
+          }
+        },
+        {
+          "id": "rarely",
+          "label": "Rarely",
+          "kind": "no",
+          "outcome": {
+            "signals": ["efficient_spend"],
+            "reportStatus": "pass"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ad-confidence",
+      "title": "Ad confidence",
+      "body": "Do you feel confident you know which ads are actually making you money?",
+      "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop",
+      "imageAlt": "Confidence",
+      "choices": [
+        {
+          "id": "no-idea",
+          "label": "No, not really",
+          "kind": "no",
+          "outcome": { "signals": ["tracking_gap"], "reportStatus": "fail" }
+        },
+        {
+          "id": "some-idea",
+          "label": "Some idea",
+          "kind": "unsure",
+          "outcome": { "signals": ["partial_tracking"], "reportStatus": "fail" }
+        },
+        {
+          "id": "very-confident",
+          "label": "Yes, very confident",
+          "kind": "yes",
+          "outcome": { "signals": ["strong_tracking"], "reportStatus": "pass" }
+        }
+      ]
+    }
+  ]
+}

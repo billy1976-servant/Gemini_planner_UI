@@ -26,7 +26,7 @@ const APPS_ROOT = path.resolve(
   process.cwd(),
   "src",
   "01_App",
-  "apps-json",
+  "(dead) Json",
   "apps"
 );
 const SCREEN_ROOT_ID = "screenRoot";

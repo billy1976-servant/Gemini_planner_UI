@@ -121,7 +121,7 @@ function findJsonFiles(dir: string, fileList: string[] = []): string[] {
 }
 
 function main() {
-  const appsJsonDir = path.join(process.cwd(), "src/01_App/apps-json");
+  const appsJsonDir = path.join(process.cwd(), "src/01_App/(dead) Json");
   
   if (!fs.existsSync(appsJsonDir)) {
     console.error(`Directory not found: ${appsJsonDir}`);

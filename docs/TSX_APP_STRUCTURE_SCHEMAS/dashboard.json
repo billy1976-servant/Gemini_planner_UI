@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "tsx-structure-dashboard",
+  "title": "Dashboard Structure Config",
+  "description": "Config for Dashboard structure: grid of widgets/panels, responsive breakpoints",
+  "type": "object",
+  "properties": {
+    "grid": {
+      "type": "object",
+      "properties": {
+        "columns": { "type": "integer", "minimum": 1, "maximum": 24, "default": 12 },
+        "gap": { "type": "integer", "minimum": 0, "default": 16 },
+        "rowHeight": { "type": "integer", "minimum": 20, "default": 80 }
+      }
+    },
+    "breakpoints": {
+      "type": "object",
+      "properties": {
+        "sm": { "type": "integer", "minimum": 0 },
+        "md": { "type": "integer", "minimum": 0 },
+        "lg": { "type": "integer", "minimum": 0 },
+        "xl": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "widgets": {
+      "type": "object",
+      "properties": {
+        "resizable": { "type": "boolean", "default": true },
+        "draggable": { "type": "boolean", "default": true },
+        "minW": { "type": "integer", "default": 1 },
+        "minH": { "type": "integer", "default": 1 }
+      }
+    },
+    "preset": {
+      "type": "string",
+      "description": "Named layout preset id (e.g. default, single-column, wide)"
+    }
+  },
+  "additionalProperties": false
+}

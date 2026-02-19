@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "tsx-structure-list",
+  "title": "List Structure Config",
+  "description": "Config for List structure: ordered scrollable items, sort, filter, density, selection",
+  "type": "object",
+  "properties": {
+    "density": {
+      "type": "string",
+      "enum": ["compact", "default", "spacious", "table"],
+      "default": "default"
+    },
+    "sort": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean", "default": true },
+        "defaultKey": { "type": "string" },
+        "defaultOrder": { "type": "string", "enum": ["asc", "desc"] }
+      }
+    },
+    "filter": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean", "default": false },
+        "placement": { "type": "string", "enum": ["inline", "above", "drawer"] }
+      }
+    },
+    "pagination": {
+      "type": "object",
+      "properties": {
+        "mode": { "type": "string", "enum": ["none", "page", "infinite", "loadMore"], "default": "none" },
+        "pageSize": { "type": "integer", "minimum": 1, "maximum": 500, "default": 20 }
+      }
+    },
+    "selection": {
+      "type": "object",
+      "properties": {
+        "mode": { "type": "string", "enum": ["none", "single", "multiple"], "default": "none" }
+      }
+    },
+    "orientation": {
+      "type": "string",
+      "enum": ["vertical", "horizontal"],
+      "default": "vertical"
+    }
+  },
+  "additionalProperties": false
+}

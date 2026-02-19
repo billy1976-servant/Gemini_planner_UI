@@ -65,7 +65,7 @@ import { installCapabilityDebug } from "@/03_Runtime/capability/capability-debug
    📐 EXPERIENCE PROFILES (single JSON authority)
 ============================================================ */
 import presentationProfiles from "@/lib/layout/presentation-profiles.json";
-import CascadingScreenMenu from "@/app/components/CascadingScreenMenu";
+import CascadingScreenMenu, { type ScreensIndex } from "@/app/components/CascadingScreenMenu";
 import OSBCaptureModal from "@/app/components/OSBCaptureModal";
 import { BottomNavOnly } from "@/04_Presentation/shells/GlobalAppSkin";
 import BottomNavBar_Text from "@/04_Presentation/shells/BottomNavBar_Text";
@@ -96,13 +96,6 @@ const EXPERIENCES: Record<string, any> = {
   website: (presentationProfiles as Record<string, any>).website,
   app: (presentationProfiles as Record<string, any>).app,
   learning: (presentationProfiles as Record<string, any>).learning,
-};
-
-
-type ScreensIndex = {
-  category: string;
-  directFiles?: string[];
-  folders: Record<string, string[]>;
 };
 
 

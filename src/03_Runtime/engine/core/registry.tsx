@@ -46,8 +46,8 @@ import { CalculatorCard, EducationCard, SummaryCard } from "@/ui/molecules/cards
 // =====================================================
 // OSB HOME V2 (text-first, registry-driven)
 // =====================================================
-import OsbHomeV2 from "@/01_App/apps-tsx/HiClarify/OsbHomeV2";
-import AppsListV2 from "@/01_App/apps-tsx/HiClarify/AppsListV2";
+import OsbHomeV2 from "@/apps-tsx/HiClarify/OsbHomeV2";
+import AppsListV2 from "@/apps-tsx/HiClarify/AppsListV2";
 
 /** Wrap card components so they receive JsonRenderer spread props; provide no-op callbacks for standalone render. */
 function wrapCard(CardComponent: React.ComponentType<any>) {

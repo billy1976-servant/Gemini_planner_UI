@@ -23,6 +23,7 @@ export default function EngineViewer() {
   
   const flowId = searchParams.get("flow") || null;
   const engineIdParam = searchParams.get("engine") as EngineId | null;
+  const clientMode = searchParams.get("client") === "1" || searchParams.get("view") === "client";
   // Only execution engines can be selected (aftermath processors excluded from step routing)
   const defaultEngineId: ExecutionEngineId = "learning";
   // Validate: if param is an aftermath processor, fall back to default
@@ -267,7 +268,8 @@ export default function EngineViewer() {
 
   return (
     <div style={containerStyle}>
-      {/* Flow and Engine Selectors */}
+      {/* Flow and Engine Selectors - hidden in client view */}
+      {!clientMode && (
       <div style={selectorContainer}>
         <div style={selectorRow}>
           <label style={selectorLabel}>Select Flow:</label>
@@ -304,9 +306,10 @@ export default function EngineViewer() {
           </select>
         </div>
       </div>
+      )}
 
-      {/* Next Step Reason Panel - "Why this next?" */}
-      {nextStepReason && (
+      {/* Next Step Reason Panel - "Why this next?" - hidden in client view */}
+      {!clientMode && nextStepReason && (
         <div style={explainPanel}>
           <div style={explainHeader}>
             <span style={explainTitle}>Why this next step?</span>
@@ -393,8 +396,8 @@ export default function EngineViewer() {
         </div>
       )}
 
-      {/* Engine Notes */}
-      {presentation && presentation.notes && presentation.notes.length > 0 && (
+      {/* Engine Notes - hidden in client view */}
+      {!clientMode && presentation && presentation.notes && presentation.notes.length > 0 && (
         <div style={notesPanel}>
           {presentation.notes.map((note, i) => (
             <div key={i} style={noteItem}>
@@ -404,8 +407,8 @@ export default function EngineViewer() {
         </div>
       )}
 
-      {/* Engine Selection Debug Panel */}
-      {selectionReason && engineState && (
+      {/* Engine Selection Debug Panel - hidden in client view */}
+      {!clientMode && selectionReason && engineState && (
         <div style={debugPanel}>
           <div style={debugHeader}>
             <span style={debugTitle}>🔍 Engine Selection Debug</span>
@@ -470,8 +473,8 @@ export default function EngineViewer() {
         </div>
       )}
 
-      {/* Ordered Step List - From EngineState */}
-      {engineState && currentFlow && (
+      {/* Ordered Step List - From EngineState - hidden in client view */}
+      {!clientMode && engineState && currentFlow && (
         <div style={stepListPanel}>
           <div style={stepListHeader}>Ordered Steps (from EngineState)</div>
           <div style={stepList}>
@@ -518,6 +521,7 @@ export default function EngineViewer() {
             restoreState={cardState}
             onExplain={setExplain}
             presentation={presentation}
+            clientView={clientMode}
           />
         </div>
       )}

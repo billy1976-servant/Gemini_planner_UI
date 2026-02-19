@@ -1,0 +1,9 @@
+{
+  "toolbar": { "placement": "top", "sticky": true },
+  "sidebars": {
+    "left": { "enabled": true, "width": 280, "collapsible": true },
+    "right": null
+  },
+  "dirtyState": { "indicator": "dot", "confirmOnLeave": true },
+  "contentArea": { "maxWidth": null, "padding": "normal" }
+}

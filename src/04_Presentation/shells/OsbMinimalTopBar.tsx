@@ -15,10 +15,17 @@ type Registry = {
 function useRegistry() {
   const [registry, setRegistry] = useState<Registry | null>(null);
   useEffect(() => {
-    fetch(REGISTRY_URL, { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((json) => setRegistry(json ?? null))
-      .catch(() => setRegistry(null));
+    (async () => {
+      try {
+        const res = await fetch(REGISTRY_URL, { cache: "no-store" });
+        if (!res.ok) throw new Error("Registry missing");
+        const data = await res.json();
+        setRegistry(data);
+      } catch (e) {
+        console.warn("TopBar registry missing, using fallback.");
+        setRegistry(null);
+      }
+    })();
   }, []);
   return registry;
 }

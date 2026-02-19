@@ -1,7 +1,7 @@
 // Hook order stabilized — no conditional hooks allowed
 "use client";
 export const dynamic = "force-dynamic";
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import nextDynamic from "next/dynamic";
 import { useSyncExternalStore } from "react";
@@ -57,6 +57,7 @@ import { validateScreenJson, logScreenJsonValidation } from "@/debug/validateScr
 import WebsiteShell from "@/lib/site-skin/shells/WebsiteShell";
 import LearningShell from "@/lib/site-skin/shells/LearningShell";
 import GoogleLoginButton from "@/app/components/GoogleLoginButton";
+import { TSXScreenWithEnvelope } from "@/lib/tsx-structure/TSXScreenWithEnvelope";
 
 
 /* ============================================================
@@ -70,65 +71,56 @@ import GoogleLoginButton from "@/app/components/GoogleLoginButton";
    🔑 AUTO TSX MAP — SCANS src/apps-tsx (TSX screens live here)
 ------------------------------------------------------------ */
 const tsxContext = (require as any).context(
-  "../../01_App/apps-tsx",
+  "../../01_App/(dead) Tsx",
   true,
   /\.tsx$/
 );
 
+const businessContext = (require as any).context(
+  "../../01_App/(live) Business",
+  true,
+  /\.tsx$/
+);
 
-const AUTO_TSX_MAP: Record<
-  string,
-  () => Promise<{ default: React.ComponentType<any> }>
-> = {};
+// Normalize context keys (Windows + Unix safe)
+function normalizeContextKey(key: string) {
+  return key
+    .replace(/^\.\//, "")
+    .replace(/^\.\\/, "")
+    .replace(/\\/g, "/")
+    .replace(/\.tsx$/, "");
+}
 
+const AUTO_TSX_MAP: Record<string, () => Promise<any>> = {};
 
-tsxContext.keys().forEach((key: string) => {
-  const normalized = key.replace(/^.\//, "").replace(/\.tsx$/, "");
-  AUTO_TSX_MAP[normalized] = () =>
-    import(`@/apps-tsx/${normalized}`);
+tsxContext.keys().forEach((key) => {
+  const normalized = normalizeContextKey(key);
+  AUTO_TSX_MAP[normalized] = () => Promise.resolve(tsxContext(key));
+});
+
+businessContext.keys().forEach((key) => {
+  const normalized = normalizeContextKey(key);
+  AUTO_TSX_MAP[`(live) Business/${normalized}`] = () => Promise.resolve(businessContext(key));
 });
 
 
 /* ------------------------------------------------------------
-   🔧 PATH NORMALIZER (UPDATED — HANDLES ALL SUBDIRECTORIES)
+   🔑 RESOLVER — exact match + (live) Business fallback for short paths
 ------------------------------------------------------------ */
-function normalizeTsxPath(path: string) {
-  // Remove common prefixes (tsx:, tsx-screens/, etc.) and file extensions
-  return path
+function resolveTsxScreen(path: string) {
+  const normalized = path
     .replace(/^tsx:/, "")
-    .replace(/^tsx-screens\//, "")
-    .replace(/\.screen$/, "")
-    .replace(/\.tsx$/, "");
-}
+    .replace(/\\/g, "/");
 
+  if (AUTO_TSX_MAP[normalized]) {
+    return nextDynamic(AUTO_TSX_MAP[normalized], { ssr: false });
+  }
 
-/* ------------------------------------------------------------
-   🔑 RESOLVER — ALL TSX CATEGORIES (HiClarify, tsx-screens, etc.)
-   Tries: exact path first, then tsx-screens/ prefix, then 2/3-level fallbacks.
------------------------------------------------------------- */
-function resolveTsxScreen(screenPath: string) {
-  const normalized = normalizeTsxPath(screenPath);
-  // 1) Exact key (e.g. HiClarify/HiClarifyOnboarding or tsx-screens/onboarding/trial)
-  let loader = AUTO_TSX_MAP[normalized];
-  if (loader) {
-    return nextDynamic(loader, { ssr: false });
+  const businessPath = `(live) Business/${normalized}`;
+  if (AUTO_TSX_MAP[businessPath]) {
+    return nextDynamic(AUTO_TSX_MAP[businessPath], { ssr: false });
   }
-  // 2) For paths not already under tsx-screens/, try with tsx-screens/ prefix (legacy)
-  if (!normalized.startsWith("tsx-screens/")) {
-    loader = AUTO_TSX_MAP[`tsx-screens/${normalized}`];
-  }
-  if (loader) {
-    return nextDynamic(loader, { ssr: false });
-  }
-  // 3) 3-segment path (e.g. tsx-screens/onboarding/file) → try 2-level folder/file
-  if (normalized.split("/").length === 3) {
-    const [folder, , file] = normalized.split("/");
-    const twoLevel = `${folder}/${file}`;
-    loader = AUTO_TSX_MAP[twoLevel] ?? AUTO_TSX_MAP[`tsx-screens/${twoLevel}`];
-  }
-  if (loader) {
-    return nextDynamic(loader, { ssr: false });
-  }
+
   return null;
 }
 
@@ -364,7 +356,7 @@ export default function DevPage() {
     if (!screen) {
       const flowParam = searchParams.get("flow");
       if (flowParam) {
-        const engineViewerPath = "tsx:tsx-screens/onboarding/engine-viewer";
+        const engineViewerPath = "tsx:(live) Business/onboarding/FlowViewer";
         loadScreen(engineViewerPath)
           .then((data) => {
             if (data?.__type === "tsx-screen" && typeof data.path === "string") {
@@ -383,7 +375,7 @@ export default function DevPage() {
             setJson(null);
           })
           .catch((err) => {
-            setError(err?.message || "Failed to load engine-viewer");
+            setError(err?.message || "Failed to load FlowViewer");
             setJson(null);
             setTsxMeta(null);
             setTsxComponent(null);
@@ -426,7 +418,13 @@ export default function DevPage() {
     setTsxComponent(null);
     setError(null);
 
-    loadScreen(screen)
+    // Short paths like onboarding/flows-index → treat as TSX so loadScreen returns tsx-screen descriptor
+    const pathToLoad =
+      screen && !screen.startsWith("tsx:") && screen.startsWith("onboarding/")
+        ? `tsx:${screen}`
+        : screen;
+
+    loadScreen(pathToLoad)
       .then((data) => {
         console.log("[page] ✅ SCREEN LOADED", {
           screenPath: screen,
@@ -480,12 +478,16 @@ export default function DevPage() {
 
 
   if (TsxComponent) {
+    const screenPath = tsxMeta?.path ? (tsxMeta.path.startsWith("tsx:") ? tsxMeta.path : `tsx:${tsxMeta.path}`) : "tsx:HiClarify/HiClarifyOnboarding";
     return (
-      <PreviewStage>
+      <>
         {overlay}
-        <TsxComponent />
-        <RightFloatingSidebar />
-      </PreviewStage>
+        <PreviewStage>
+          <Suspense fallback={<div style={{ padding: 40 }}>Loading screen…</div>}>
+            <TSXScreenWithEnvelope screenPath={screenPath} Component={TsxComponent} />
+          </Suspense>
+        </PreviewStage>
+      </>
     );
   }
 

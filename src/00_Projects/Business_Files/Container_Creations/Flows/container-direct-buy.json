@@ -1,0 +1,21 @@
+{
+  "id": "container-direct-buy",
+  "title": "Buy Container Upgrades",
+  "steps": [
+    {
+      "id": "start",
+      "title": "What do you need?",
+      "body": "Choose your upgrade option below.",
+      "choices": [
+        { "label": "Ventilation", "nextStepId": "purchase" },
+        { "label": "Lighting", "nextStepId": "purchase" }
+      ]
+    },
+    {
+      "id": "purchase",
+      "title": "Complete Purchase",
+      "body": "Select your configuration and proceed to checkout.",
+      "choices": []
+    }
+  ]
+}

@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 
-export type DockPanelId = "experience" | "mode" | "palette" | "template" | "styling" | "behavior" | "layout" | "newInterface" | "expand";
+export type DockPanelId = "experience" | "mode" | "palette" | "template" | "styling" | "behavior" | "layout" | "newInterface" | "tsx" | "expand";
 
 export function useDockState() {
   const [openPanel, setOpenPanel] = useState<DockPanelId | null>(null);

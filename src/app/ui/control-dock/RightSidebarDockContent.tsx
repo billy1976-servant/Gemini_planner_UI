@@ -9,6 +9,7 @@ import React from "react";
 import type { DockPanelId } from "./dock-state";
 import AppIcon, { getAppIconNameForPanel } from "@/04_Presentation/icons/AppIcon";
 import CreateNewInterfacePanel from "@/app/ui/control-dock/CreateNewInterfacePanel";
+import TsxStructurePanel from "@/app/ui/control-dock/TsxStructurePanel";
 
 const MODES = ["template", "custom"] as const;
 const STYLING_PRESETS = ["default", "clean", "minimal", "bold", "soft", "apple"];
@@ -32,6 +33,7 @@ const PILL_CONFIG: Array<{ id: DockPanelId; label: string }> = [
   { id: "behavior", label: "Behavior" },
   { id: "layout", label: "Layout" },
   { id: "newInterface", label: "New Interface" },
+  { id: "tsx", label: "TSX" },
   { id: "expand", label: "Expand" },
 ];
 
@@ -282,6 +284,9 @@ export default function RightSidebarDockContent(props: RightSidebarDockContentPr
               {openPanel === "newInterface" && (
                 <CreateNewInterfacePanel />
               )}
+              {openPanel === "tsx" && (
+                <TsxStructurePanel />
+              )}
               {openPanel === "expand" && (
                 <p style={{ margin: 0, fontSize: "var(--font-size-sm)", color: "var(--editor-text-muted)" }}>
                   Use the floating sidebar Expand pill for the large overlay editor.
@@ -317,8 +322,8 @@ export default function RightSidebarDockContent(props: RightSidebarDockContentPr
               key={id}
               type="button"
               onClick={() => setPanelOpen(id)}
-              title={label}
-              aria-label={label}
+              title={id === "tsx" ? "TSX Structure" : label}
+              aria-label={id === "tsx" ? "TSX Structure" : label}
               aria-pressed={isActive}
               className="editor-dock-pill"
               style={{

@@ -6,7 +6,7 @@ const APPS_ROOT = path.join(
   process.cwd(),
   "src",
   "01_App",
-  "apps-json",
+  "(dead) Json",
   "apps"
 );
 
@@ -14,7 +14,7 @@ const GENERATED_ROOT = path.join(
   process.cwd(),
   "src",
   "01_App",
-  "apps-json",
+  "(dead) Json",
   "generated"
 );
 

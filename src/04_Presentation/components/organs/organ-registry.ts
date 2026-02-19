@@ -2,14 +2,11 @@
  * Sync loader for organ variant JSON.
  * Single source for organ list and variant map: VARIANTS and getOrganIds/getVariantIds.
  * Extend-only for static organs: add imports and an entry in VARIANTS; add label in getOrganLabel.
- * App-layer organs: any JSON in src/01_App/organs/{organId}.json is auto-loaded by organId (no registry edits).
+ * App-layer organs: (removed) src/01_App/organs was deleted; only static VARIANTS are used.
  */
 
-/** App-layer organ JSON: require.context so organs in 01_App/organs/*.json are loadable by organId without editing this file. */
-const APP_ORGANS_CONTEXT =
-  typeof require !== "undefined"
-    ? (require as any).context("../../../01_App/organs", false, /\.json$/)
-    : null;
+/** App-layer organ JSON was under 01_App/organs; folder removed — no require.context. */
+const APP_ORGANS_CONTEXT = null;
 
 import headerDefault from "./header/variants/default.json";
 import headerStickySplit from "./header/variants/sticky-split.json";

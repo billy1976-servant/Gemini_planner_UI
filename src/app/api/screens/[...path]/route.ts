@@ -2,24 +2,9 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 
-
-/**
- * CANONICAL SCREENS ROOT (FIXED PATH)
- * ─────────────────────
- * All runtime screen loading resolves from here.
- * Actual location: src/01_App/apps-json/apps
- */
-const SCREENS_ROOT = path.join(
-  process.cwd(),
-  "src",
-  "01_App",
-  "apps-json",
-  "apps"
-);
-
 /**
  * 09_Integrations test screens (Integration Lab).
- * When path is integration-lab.json, serve from here.
+ * integration-lab.json → 09_Integrations/05_TESTS/IntegrationLab.screen.json
  */
 const INTEGRATIONS_TEST_ROOT = path.join(
   process.cwd(),
@@ -29,44 +14,14 @@ const INTEGRATIONS_TEST_ROOT = path.join(
 );
 
 /**
- * Generated apps root (module-system output).
- * Paths starting with "generated/" resolve from here.
- * Actual location: src/01_App/apps-json/generated
+ * TSX SCREEN ROOT — src/01_App/(dead) Tsx
+ * Runtime resolution of TSX screens; returns marker, not source.
  */
-const GENERATED_ROOT = path.join(
-  process.cwd(),
-  "src",
-  "01_App",
-  "apps-json",
-  "generated"
-);
-
-/**
- * HiClarify scaffold root.
- * Paths starting with "HiClarify/" resolve from here.
- * Actual location: src/01_App/apps-json/HiClarify
- */
-const HICLARIFY_ROOT = path.join(
-  process.cwd(),
-  "src",
-  "01_App",
-  "apps-json",
-  "HiClarify"
-);
-
-/* ============================================================
-   🧩 TSX SCREEN ROOT (FIXED PATH)
-   Actual location: src/01_App/apps-tsx
-   PURPOSE:
-   - Allow runtime resolution of TSX screens
-   - Uses same path semantics as JSON
-   - Returns a marker, NOT source code
-============================================================ */
 const TSX_ROOT = path.join(
   process.cwd(),
   "src",
   "01_App",
-  "apps-tsx"
+  "(dead) Tsx"
 );
 
 
@@ -75,13 +30,6 @@ export async function GET(
   { params }: { params: { path?: string[] } }
 ) {
   try {
-    // 🔑 LOG: Check if SCREENS_ROOT exists
-    console.log("[api/screens/[...path]] 📍 Checking SCREENS_ROOT", {
-      SCREENS_ROOT,
-      exists: fs.existsSync(SCREENS_ROOT),
-      cwd: process.cwd(),
-    });
-
     if (!params?.path?.length) {
       return NextResponse.json(
         { error: "No screen path provided" },
@@ -90,23 +38,6 @@ export async function GET(
     }
 
     const requestedPath = params.path.join("/");
-
-    /* ===============================
-       V2 PLANNER: HiClarify/planner_screen → TSX DayView (no JSON placeholder)
-    =============================== */
-    const isPlannerScreen =
-      requestedPath === "HiClarify/planner_screen" ||
-      requestedPath === "HiClarify/planner_screen.json" ||
-      requestedPath === "HiClarify/build/planner/planner_screen" ||
-      requestedPath === "HiClarify/build/planner/planner_screen.json";
-    if (isPlannerScreen) {
-      return NextResponse.json({
-        __type: "tsx-screen",
-        __tsx__: true,
-        screen: "HiClarify/JSX_PlannerShell",
-        path: "HiClarify/JSX_PlannerShell",
-      });
-    }
 
     /* ===============================
        0️⃣ 09_INTEGRATIONS LAB (single path)
@@ -145,87 +76,7 @@ export async function GET(
     }
 
     /* ===============================
-       1️⃣ JSON PATH (FIXED)
-       Try exact path, then path + .json if no extension.
-       Paths starting with "generated/" resolve from apps-json/generated.
-       Paths starting with "HiClarify/" resolve from apps-json/HiClarify.
-    =============================== */
-    const isHiClarify = params.path[0] === "HiClarify";
-    const isGenerated = params.path[0] === "generated";
-    const jsonPathSegments = isHiClarify
-      ? params.path.slice(1)
-      : isGenerated
-        ? params.path.slice(1)
-        : params.path;
-    const jsonRoot = isHiClarify
-      ? HICLARIFY_ROOT
-      : isGenerated
-        ? GENERATED_ROOT
-        : SCREENS_ROOT;
-    let jsonPath = path.join(jsonRoot, ...jsonPathSegments);
-    if (!jsonPath.endsWith(".json") && !fs.existsSync(jsonPath)) {
-      const withJson = jsonPath + ".json";
-      if (fs.existsSync(withJson)) jsonPath = withJson;
-    }
-
-    // 🔑 DEBUG: Log file resolution
-    console.log("[api/screens/[...path]] 📂 File resolution", {
-      requestedPath: requestedPath,
-      paramsPath: params.path,
-      jsonPath,
-      exists: fs.existsSync(jsonPath),
-      isJson: jsonPath.endsWith(".json"),
-      jsonRoot: isGenerated ? "GENERATED_ROOT" : "SCREENS_ROOT",
-    });
-
-    if (jsonPath.endsWith(".json") && fs.existsSync(jsonPath)) {
-      const fileContent = fs.readFileSync(jsonPath, "utf8");
-      
-      // 🔑 Validate JSON before parsing
-      if (!fileContent.trim()) {
-        console.error("[api/screens] ❌ Empty file", { jsonPath });
-        return NextResponse.json(
-          { error: "File is empty", path: jsonPath },
-          { status: 500 }
-        );
-      }
-      
-      try {
-        const json = JSON.parse(fileContent);
-        console.log("[api/screens] ✅ File loaded", {
-          path: jsonPath,
-          id: json?.id,
-          type: json?.type,
-          hasState: !!json?.state,
-          currentView: json?.state?.currentView,
-          childrenCount: json?.children?.length,
-        });
-        // 🔑 CRITICAL: Disable caching to force fresh loads
-        // Next.js was caching API responses, preventing screen updates
-        return NextResponse.json(json, {
-          headers: {
-            "Cache-Control": "no-cache, no-store, must-revalidate",
-            "Pragma": "no-cache",
-            "Expires": "0",
-          },
-        });
-      } catch (parseError: any) {
-        console.error("[api/screens] ❌ JSON parse error", {
-          jsonPath,
-          error: parseError.message,
-          fileLength: fileContent.length,
-          firstChars: fileContent.substring(0, 100),
-        });
-        return NextResponse.json(
-          { error: `Invalid JSON: ${parseError.message}`, path: jsonPath },
-          { status: 500 }
-        );
-      }
-    }
-
-
-    /* ===============================
-       2️⃣ TSX PATH (FLEXIBLE 2-LEVEL OR 3-LEVEL)
+       TSX PATH (FLEXIBLE 2-LEVEL OR 3-LEVEL)
        Try: folder/file.tsx, then folder/subfolder/file.tsx
        Extension: .tsx (not .screen.tsx)
     =============================== */
@@ -266,8 +117,6 @@ export async function GET(
       error: err.message,
       stack: err.stack,
       requestedPath: params?.path?.join("/"),
-      SCREENS_ROOT,
-      TSX_ROOT,
     });
     return NextResponse.json(
       { error: err.message, path: params?.path?.join("/") },

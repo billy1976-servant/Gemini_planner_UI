@@ -25,6 +25,7 @@ import {
   Sparkles,
   Briefcase,
   Maximize2,
+  Code2,
   type LucideIcon,
 } from "lucide-react";
 
@@ -47,6 +48,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Sparkles,
   Briefcase,
   Maximize2,
+  Code2,
 };
 
 export type AppIconName = keyof typeof ICON_MAP;
@@ -112,6 +114,7 @@ export const DOCK_ICON_NAMES: Record<string, AppIconName> = {
   behavior: "Zap",
   template: "LayoutGrid",
   newInterface: "Briefcase", // business blueprint/compiler flow
+  tsx: "Code2",
   expand: "Maximize2",
 };
 

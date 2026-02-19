@@ -1,0 +1,8 @@
+{
+  "density": "compact",
+  "sort": { "enabled": true, "defaultOrder": "desc" },
+  "filter": { "enabled": true, "placement": "inline" },
+  "pagination": { "mode": "loadMore", "pageSize": 30 },
+  "selection": { "mode": "single" },
+  "orientation": "vertical"
+}
