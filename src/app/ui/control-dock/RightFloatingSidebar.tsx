@@ -25,6 +25,11 @@ import { applyPaletteToElement } from "@/lib/site-renderer/palette-bridge";
 import PaletteContractInspector from "@/04_Presentation/diagnostics/PaletteContractInspector";
 import { useDevMobileMode } from "@/app/dev/useDevMobileMode";
 import TsxStructurePanel from "@/app/ui/control-dock/TsxStructurePanel";
+import { DevNodePanel } from "@/04_Presentation/components/organs/tsx/website/DevNodePanel";
+import {
+  getDevSidebarProps,
+  subscribeDevSidebarProps,
+} from "@/app/ui/control-dock/dev-right-sidebar-store";
 
 /** Wraps content and applies a specific palette's CSS variables to the wrapper so the content renders in that palette. */
 function PaletteFullPreviewFrame({
@@ -76,7 +81,10 @@ const EXPERIENCES = [
 
 /** Panel content width (360–420 range). Tiles/layout use full width; no clipping. */
 const FLOATING_PANEL_WIDTH = 380;
+const PANEL_WIDTH_MIN = 200;
+const PANEL_WIDTH_MAX = 600;
 const RAIL_WIDTH = 44;
+const GRIP_WIDTH = 8;
 /** Total width when panel is open (panel + rail). Use for main content padding-right. */
 export const SIDEBAR_TOTAL_WIDTH = FLOATING_PANEL_WIDTH + RAIL_WIDTH;
 
@@ -90,6 +98,7 @@ const PILL_CONFIG: Array<{ id: DockPanelId; label: string }> = [
   { id: "layout", label: "Layout" },
   { id: "newInterface", label: "New Interface" },
   { id: "tsx", label: "TSX" },
+  { id: "nodes", label: "Nodes" },
   { id: "expand", label: "Expand" },
 ];
 
@@ -161,7 +170,11 @@ export type RightFloatingSidebarProps = {
 };
 
 function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, palettePreviewProps }: RightFloatingSidebarProps) {
-  const { openPanel, togglePanel } = useDockState();
+  const { openPanel, togglePanel, closePanel } = useDockState();
+  const [panelWidth, setPanelWidth] = useState(FLOATING_PANEL_WIDTH);
+  const [isDragging, setIsDragging] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const gripStart = useRef<{ x: number; w: number } | null>(null);
   const searchParams = useSearchParams();
   const devMobileMode = useDevMobileMode();
   const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
@@ -195,29 +208,81 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
 
   const activeLabel = openPanel ? PILL_CONFIG.find((p) => p.id === openPanel)?.label : null;
 
+  // Click outside sidebar to collapse
+  useEffect(() => {
+    if (!openPanel) return;
+    const onMouseDown = (e: MouseEvent) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(e.target as Node)) {
+        closePanel();
+      }
+    };
+    document.addEventListener("mousedown", onMouseDown);
+    return () => document.removeEventListener("mousedown", onMouseDown);
+  }, [openPanel, closePanel]);
+
+  // Draggable resize grip
+  useEffect(() => {
+    if (!isDragging) return;
+    const onMove = (e: MouseEvent) => {
+      const start = gripStart.current;
+      if (!start) return;
+      const delta = start.x - e.clientX; // drag left = positive delta = wider panel
+      setPanelWidth(Math.min(PANEL_WIDTH_MAX, Math.max(PANEL_WIDTH_MIN, start.w + delta)));
+    };
+    const onUp = () => {
+      gripStart.current = null;
+      setIsDragging(false);
+    };
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+    return () => {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+    };
+  }, [isDragging]);
+
   const headerHeight = 56;
   return (
     <div
+      ref={sidebarRef}
       style={{
         position: "fixed",
+        top: 0,
         right: 0,
-        top: headerHeight,
-        height: `calc(100vh - ${headerHeight}px)`,
-        width: openPanel ? FLOATING_PANEL_WIDTH + RAIL_WIDTH : RAIL_WIDTH,
-        minWidth: openPanel ? undefined : RAIL_WIDTH,
+        height: "100vh",
+        width: openPanel ? panelWidth + GRIP_WIDTH + RAIL_WIDTH : RAIL_WIDTH,
+        minWidth: RAIL_WIDTH,
         display: "flex",
-        flexDirection: "row",
-        zIndex: 900,
-        transition: "width 0.2s ease",
+        flexDirection: "column",
+        zIndex: 999999,
+        opacity: 1,
+        pointerEvents: "auto",
+        transition: isDragging ? "none" : "width 0.2s ease",
       }}
       data-dev-right-sidebar
+      data-testid="dev-right-sidebar"
       data-dev-right-sidebar-open={String(!!openPanel)}
     >
+      <div
+        style={{
+          flexShrink: 0,
+          padding: "6px 10px",
+          fontSize: 11,
+          fontWeight: 700,
+          color: GOOGLE.textSecondary,
+          background: GOOGLE.surfaceHover,
+          borderBottom: `1px solid ${GOOGLE.border}`,
+          fontFamily: GOOGLE.fontFamily,
+        }}
+      >
+        DEV SIDEBAR (DEBUG)
+      </div>
+      <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "row" }}>
       {devMobileMode && (
         <button
           type="button"
           className="dev-mobile-hamburger--right"
-          onClick={() => togglePanel(openPanel ? null : "experience")}
+          onClick={() => (openPanel ? closePanel() : togglePanel("experience"))}
           aria-label={openPanel ? "Close sidebar" : "Open sidebar"}
           aria-expanded={!!openPanel}
         >
@@ -228,11 +293,32 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
           </svg>
         </button>
       )}
+      {/* Resize grip — left edge of panel (between main content and panel) */}
+      {openPanel && (
+        <div
+          role="separator"
+          aria-orientation="vertical"
+          aria-valuenow={panelWidth}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            gripStart.current = { x: e.clientX, w: panelWidth };
+            setIsDragging(true);
+          }}
+          style={{
+            width: GRIP_WIDTH,
+            flexShrink: 0,
+            cursor: "col-resize",
+            background: isDragging ? GOOGLE.primaryBg : "transparent",
+            borderRight: `1px solid ${GOOGLE.border}`,
+          }}
+          title="Drag to resize panel"
+        />
+      )}
       {/* Docked panel — full height, scrollable content; minWidth:0 so flex children can use full width */}
       <div
         data-dev-right-panel
         style={{
-          width: openPanel ? FLOATING_PANEL_WIDTH : 0,
+          width: openPanel ? panelWidth : 0,
           minWidth: 0,
           flexShrink: 0,
           overflow: "hidden",
@@ -241,7 +327,7 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
           background: GOOGLE.surface,
           borderLeft: `1px solid ${GOOGLE.border}`,
           boxShadow: GOOGLE.shadow,
-          transition: "width 0.2s ease",
+          transition: isDragging ? "none" : "width 0.2s ease",
         }}
       >
         {openPanel && (
@@ -616,6 +702,9 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
             {openPanel === "tsx" && (
               <TsxStructurePanel key={searchParams.get("screen") ?? ""} />
             )}
+            {openPanel === "nodes" && (
+              <DevNodePanel screenPath={searchParams.get("screen") ?? ""} />
+            )}
             {openPanel === "expand" && (
               <div style={{ fontSize: 14, color: GOOGLE.textSecondary }}>
                 Large overlay opens above. Click Expand again to close.
@@ -689,8 +778,8 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
               key={id}
               type="button"
               onClick={() => togglePanel(id)}
-              title={id === "tsx" ? "TSX Structure" : label}
-              aria-label={id === "tsx" ? "TSX Structure" : label}
+              title={id === "tsx" ? "TSX Structure" : id === "nodes" ? "Nodes" : label}
+              aria-label={id === "tsx" ? "TSX Structure" : id === "nodes" ? "Nodes" : label}
               aria-pressed={isActive}
               style={{
                 ...ICON_BUTTON_BASE,
@@ -716,14 +805,28 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
           );
         })}
       </div>
+      </div>
     </div>
   );
 }
 
-export default function RightFloatingSidebar(props: RightFloatingSidebarProps) {
+export default function RightFloatingSidebar(props: RightFloatingSidebarProps = {}) {
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const storeProps = useSyncExternalStore(
+    subscribeDevSidebarProps,
+    getDevSidebarProps,
+    getDevSidebarProps
+  );
+  useEffect(() => {
+    setMounted(true);
+    if (typeof console !== "undefined") console.log("[DEV] RightFloatingSidebar mounted");
+  }, []);
+
+  const merged: RightFloatingSidebarProps = {
+    ...storeProps,
+    ...props,
+  };
 
   if (!mounted || typeof document === "undefined") return null;
-  return createPortal(<RightFloatingSidebarInner {...props} />, document.body);
+  return createPortal(<RightFloatingSidebarInner {...merged} />, document.body);
 }

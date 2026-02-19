@@ -113,7 +113,7 @@ async function main(): Promise<void> {
       return "website";
     }
   })();
-  const outDir = path.join(process.cwd(), "src", "web2extractor", domainSlug);
+  const outDir = path.join(process.cwd(), "src", "06_Data", "web2extractor", domainSlug);
   const outPath = path.join(outDir, "web2-results.json");
 
   console.log("Normalized URL:", siteUrl);

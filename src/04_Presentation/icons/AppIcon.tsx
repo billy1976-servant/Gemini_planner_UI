@@ -26,6 +26,7 @@ import {
   Briefcase,
   Maximize2,
   Code2,
+  List,
   type LucideIcon,
 } from "lucide-react";
 
@@ -49,6 +50,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Briefcase,
   Maximize2,
   Code2,
+  List,
 };
 
 export type AppIconName = keyof typeof ICON_MAP;
@@ -115,6 +117,7 @@ export const DOCK_ICON_NAMES: Record<string, AppIconName> = {
   template: "LayoutGrid",
   newInterface: "Briefcase", // business blueprint/compiler flow
   tsx: "Code2",
+  nodes: "List",
   expand: "Maximize2",
 };
 

@@ -13,6 +13,7 @@ import { scanWebsite } from "./adapters/scan-adapter";
 import { normalizeToProductGraph } from "./adapters/normalize-adapter";
 import { attachResearch } from "./adapters/research-adapter";
 import { runValueTranslation } from "./adapters/value-translation-adapter";
+import { normalizeSiteData } from "@/lib/site-compiler/normalizeSiteData";
 
 
 export function generateSiteKey(url: string): string {
@@ -66,6 +67,21 @@ export async function compileWebsite(siteUrl: string): Promise<void> {
   const finalProductsPath = path.join(normalizedDir, "products.final.json");
   fs.writeFileSync(finalProductsPath, JSON.stringify(productGraph.products || [], null, 2));
 
+  // REPORT.FINAL.JSON — required by npm run website (build-site.ts)
+  let report: { brand: any; domain: string; productsCount: number } = {
+    brand: null,
+    domain: siteKey,
+    productsCount: productGraph.products?.length ?? 0,
+  };
+  try {
+    const normalizedSite = normalizeSiteData(siteKey);
+    report.brand = (normalizedSite as any).brand ?? null;
+  } catch (err) {
+    console.warn("[COMPILE] Normalizer skipped (report will have brand: null):", (err as Error).message);
+  }
+  const reportPath = path.join(normalizedDir, "report.final.json");
+  fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
+  console.log(`📋 Report written: ${reportPath}`);
 
   console.log(`\n✅ PRODUCT PIPELINE COMPLETE`);
   console.log(`📦 Final product file: ${finalProductsPath}`);

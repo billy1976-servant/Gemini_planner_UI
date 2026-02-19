@@ -14,3 +14,5 @@
 {"location":"runtime-pipeline-contract.spec.ts:28","message":"Switching to text mode","data":{},"timestamp":1770818013557,"runId":"initial","hypothesisId":"A"}
 {"location":"runtime-pipeline-contract.spec.ts:29","message":"After text mode click","data":{"selectCount":1,"selectIds":["section-layout-preset-fallback-section"]},"timestamp":1770818014621,"runId":"initial","hypothesisId":"A"}
 {"location":"runtime-pipeline-contract.spec.ts:30","message":"Before waitFor","data":{"elementCount":1},"timestamp":1770818014629,"runId":"initial","hypothesisId":"A,B,C,D"}
+{"location":"derivePagesFromNav.ts:170","message":"derivePagesFromNav entry","data":{"navigationCount":0,"navigationItems":[],"sectionsCount":0,"hasProducts":false,"productsCount":0},"timestamp":1771519696769,"sessionId":"debug-session","runId":"run2","hypothesisId":"D"}
+{"location":"derivePagesFromNav.ts:407","message":"derivePagesFromNav: returning final pages","data":{"finalPagesCount":1,"finalPages":[{"id":"home","title":"Home","slug":"/"}]},"timestamp":1771519696773,"sessionId":"debug-session","runId":"run2","hypothesisId":"E"}

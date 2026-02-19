@@ -8,6 +8,8 @@ import path from "path";
 const FLOWS_ROOT = path.join(process.cwd(), "src", "05_Logic", "logic", "flows");
 const CONTENT_FLOWS_ROOT = path.join(process.cwd(), "src", "05_Logic", "logic", "content", "flows");
 const BUSINESS_FILES_ROOT = path.join(process.cwd(), "src", "00_Projects", "Business_Files");
+/** Known business flow folders (direct path so viewer always finds flows from dropdown) */
+const CONTAINER_CREATIONS_FLOWS = path.join(BUSINESS_FILES_ROOT, "Container_Creations", "Flows");
 
 export async function GET(
   _req: Request,
@@ -24,10 +26,12 @@ export async function GET(
       return NextResponse.json({ error: "Invalid flow ID" }, { status: 400 });
     }
 
-    // Try direct path first, then check subfolders (including generated/)
-    // Also check JSON files by their "id" field, not just filename
+    // Try direct path first, then known business folders, then check subfolders
     let jsonPath = path.join(FLOWS_ROOT, `${flowId}.json`);
-    
+    if (!fs.existsSync(jsonPath) && fs.existsSync(CONTAINER_CREATIONS_FLOWS)) {
+      const candidate = path.join(CONTAINER_CREATIONS_FLOWS, `${flowId}.json`);
+      if (fs.existsSync(candidate)) jsonPath = candidate;
+    }
     if (!fs.existsSync(jsonPath)) {
       // Check in subfolders recursively, matching by filename OR by JSON "id" field
       const findFlowInSubfolders = (dir: string): string | null => {

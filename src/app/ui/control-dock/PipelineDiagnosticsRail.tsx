@@ -7,7 +7,7 @@
 
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { getState, subscribeState } from "@/state/state-store";
@@ -29,7 +29,10 @@ import { useDevMobileMode } from "@/app/dev/useDevMobileMode";
 
 const RAIL_WIDTH = 48;
 const PANEL_WIDTH = 360;
+const PANEL_WIDTH_MIN = 200;
+const PANEL_WIDTH_MAX = 600;
 const HEADER_HEIGHT = 56;
+const GRIP_WIDTH = 8;
 
 /** Which panel is open: diagnostics (with tabs), inspector, or debugger */
 export type PanelId = "diagnostics" | "inspector" | "debugger";
@@ -96,6 +99,9 @@ const ICON_BUTTON_BASE: React.CSSProperties = {
 export default function PipelineDiagnosticsRail() {
   const [openPanel, setOpenPanel] = useState<PanelId | null>(null);
   const [diagnosticsTab, setDiagnosticsTab] = useState<TabId>("pipeline");
+  const [panelWidth, setPanelWidth] = useState(PANEL_WIDTH);
+  const [isDragging, setIsDragging] = useState(false);
+  const railRef = useRef<HTMLDivElement>(null);
   const devMobileMode = useDevMobileMode();
 
   const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
@@ -119,6 +125,40 @@ export default function PipelineDiagnosticsRail() {
   }, []);
 
   const closePanel = useCallback(() => setOpenPanel(null), []);
+
+  // Click outside rail (including panel) to collapse
+  useEffect(() => {
+    if (!openPanel) return;
+    const onMouseDown = (e: MouseEvent) => {
+      if (railRef.current && !railRef.current.contains(e.target as Node)) {
+        closePanel();
+      }
+    };
+    document.addEventListener("mousedown", onMouseDown);
+    return () => document.removeEventListener("mousedown", onMouseDown);
+  }, [openPanel, closePanel]);
+
+  // Draggable resize grip
+  const gripStart = useRef<{ x: number; w: number } | null>(null);
+  useEffect(() => {
+    if (!isDragging) return;
+    const onMove = (e: MouseEvent) => {
+      const start = gripStart.current;
+      if (!start) return;
+      const delta = e.clientX - start.x;
+      setPanelWidth(Math.min(PANEL_WIDTH_MAX, Math.max(PANEL_WIDTH_MIN, start.w + delta)));
+    };
+    const onUp = () => {
+      gripStart.current = null;
+      setIsDragging(false);
+    };
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+    return () => {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+    };
+  }, [isDragging]);
 
   // When opened from Dev Home "Open Diagnostics", open the diagnostics panel once
   useEffect(() => {
@@ -284,17 +324,18 @@ export default function PipelineDiagnosticsRail() {
 
   const rail = (
     <div
+      ref={railRef}
       style={{
         position: "fixed",
         left: 0,
         top: HEADER_HEIGHT,
         height: `calc(100vh - ${HEADER_HEIGHT}px)`,
-        width: openPanel ? RAIL_WIDTH + PANEL_WIDTH : RAIL_WIDTH,
+        width: openPanel ? RAIL_WIDTH + panelWidth + GRIP_WIDTH : RAIL_WIDTH,
         display: "flex",
         flexDirection: "row",
         zIndex: 899,
         pointerEvents: "auto",
-        transition: "width 0.2s ease",
+        transition: isDragging ? "none" : "width 0.2s ease",
       }}
       data-pipeline-diagnostics-rail
       data-dev-left-rail
@@ -356,7 +397,7 @@ export default function PipelineDiagnosticsRail() {
       <div
         data-dev-left-panel
         style={{
-          width: openPanel ? PANEL_WIDTH : 0,
+          width: openPanel ? panelWidth : 0,
           minWidth: 0,
           flexShrink: 0,
           overflow: "hidden",
@@ -365,7 +406,7 @@ export default function PipelineDiagnosticsRail() {
           background: THEME.surface,
           borderRight: `1px solid ${THEME.border}`,
           boxShadow: THEME.shadow,
-          transition: "width 0.2s ease",
+          transition: isDragging ? "none" : "width 0.2s ease",
         }}
       >
         {openPanel && (
@@ -424,6 +465,27 @@ export default function PipelineDiagnosticsRail() {
           </>
         )}
       </div>
+      {/* Resize grip — right edge of panel */}
+      {openPanel && (
+        <div
+          role="separator"
+          aria-orientation="vertical"
+          aria-valuenow={panelWidth}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            gripStart.current = { x: e.clientX, w: panelWidth };
+            setIsDragging(true);
+          }}
+          style={{
+            width: GRIP_WIDTH,
+            flexShrink: 0,
+            cursor: "col-resize",
+            background: isDragging ? THEME.primaryBg : "transparent",
+            borderLeft: `1px solid ${THEME.border}`,
+          }}
+          title="Drag to resize panel"
+        />
+      )}
     </div>
   );
 
