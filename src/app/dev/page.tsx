@@ -2,7 +2,7 @@
 // Hook order stabilized — no conditional hooks allowed
 export const dynamic = "force-dynamic";
 import React, { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import nextDynamic from "next/dynamic";
 import { useSyncExternalStore } from "react";
 import ExperienceRenderer from "@/engine/core/ExperienceRenderer";
@@ -109,7 +109,7 @@ businessContext.keys().forEach((key) => {
 ------------------------------------------------------------ */
 const EXPLICIT_TSX_MAP: Record<string, () => Promise<any>> = {
   "(live) Business/Container_Creations/ContainerCreationsWebsite": () =>
-    import("@/business/Container_Creations/ContainerCreationsWebsite"),
+    import("@/01_App/(live) Business/Container_Creations/ContainerCreationsWebsite"),
 };
 
 function resolveTsxScreen(path: string) {
@@ -140,6 +140,8 @@ function resolveTsxScreen(path: string) {
 
 
 export default function DevPage() {
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const screen = searchParams.get("screen");
 
@@ -463,6 +465,14 @@ export default function DevPage() {
       }
       return screenParamDecoded;
     })();
+
+    // Sync URL when we rewrite to a tsx: path so the navigator pill and address bar show .tsx
+    if (pathToLoad && pathToLoad !== screenParamDecoded) {
+      const next = new URLSearchParams(searchParams);
+      next.set("screen", pathToLoad);
+      router.replace(`${pathname ?? "/dev"}?${next.toString()}`);
+      return;
+    }
 
     loadScreen(pathToLoad)
       .then((data) => {

@@ -12,12 +12,19 @@ export type ScreensIndex = {
   displayName: string;
 };
 
+/** Known TSX paths (no tsx: prefix) so pill shows .tsx even if URL was restored without prefix */
+function isKnownTsxPath(normalized: string): boolean {
+  const n = normalized.replace(/\\/g, "/").trim();
+  return /^\(live\)\s+Business\//i.test(n) || /^Container_Creations\/ContainerCreationsWebsite$/i.test(n);
+}
+
 /** Format screen path for pill (readable, no clipping) */
 function formatScreenPillLabel(screen: string): string {
   if (!screen.trim()) return "";
   const normalized = screen.replace(/^tsx-screens\/|^tsx:/i, "").trim();
   const hasExt = /\.(tsx|json)$/i.test(normalized);
-  const ext = /^tsx:/i.test(screen) ? ".tsx" : ".json";
+  const useTsxExt = /^tsx:/i.test(screen) || isKnownTsxPath(normalized);
+  const ext = useTsxExt ? ".tsx" : ".json";
   const path = hasExt ? normalized : `${normalized}${ext}`;
   return `File: ${path}`;
 }
@@ -158,9 +165,15 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
 >>>>>>> c529cf0 (Clean version)
   };
 
-  /** Build path and navigate; (dead) Tsx uses tsx: prefix so loader resolves TSX. */
+  /** Build path and navigate; (dead) Tsx and (live)* use tsx: prefix so loader resolves TSX. */
   const navigate = (rootSection: string, category: string, folder: string, file?: string) => {
-    const prefix = rootSection === "(dead) Tsx" ? "tsx:" : "";
+    const useTsx =
+      rootSection === "(dead) Tsx" || rootSection.includes("(live)");
+    const prefix = useTsx
+      ? rootSection.includes("(live)")
+        ? `tsx:${rootSection}/`
+        : "tsx:"
+      : "";
     const screenPath =
       file === undefined
         ? `${prefix}${category}/${folder}`
