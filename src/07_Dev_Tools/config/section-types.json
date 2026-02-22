@@ -1,0 +1,15 @@
+{
+  "types": {
+    "heading": { "outputType": "heading" },
+    "text": { "outputType": "text" },
+    "html": { "outputType": "text" },
+    "image": { "outputType": "image" },
+    "list": { "outputType": "list" },
+    "productGrid": { "outputType": "productGrid" },
+    "hero": { "outputType": "hero" },
+    "quote": { "outputType": "text" }
+  },
+  "productPageTypes": ["productGrid"],
+  "heroTypes": ["hero"],
+  "defaultOutputType": "text"
+}

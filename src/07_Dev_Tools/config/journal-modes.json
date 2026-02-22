@@ -1,0 +1,27 @@
+{
+  "routes": ["journal", "task", "note", "track", "plan"],
+  "defaultTrack": "think",
+  "routeLabels": {
+    "journal": "Journal",
+    "task": "Task",
+    "note": "Note",
+    "track": "Track",
+    "plan": "Plan",
+    "journey": "Journey"
+  },
+  "tracks": [
+    { "id": "think", "keywords": "think reflect ponder consider" },
+    { "id": "repent", "keywords": "repent confess sorry" },
+    { "id": "ask", "keywords": "ask pray question" },
+    { "id": "conform", "keywords": "conform obey" },
+    { "id": "keep", "keywords": "keep remember hold" }
+  ],
+  "journeyKeywords": {
+    "travel": "vacation trip travel holiday getaway trip planning going away",
+    "remodel": "remodel renovation kitchen bathroom home improvement",
+    "recovery": "recovery sober addiction healing",
+    "business": "business launch start company",
+    "health": "health fitness diet exercise"
+  },
+  "planKeywords": "schedule plan plan something tomorrow meeting calendar"
+}
