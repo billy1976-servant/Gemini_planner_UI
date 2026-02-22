@@ -1,0 +1,138 @@
+{
+  "google": {
+    "envelope": {
+      "layout": "contained",
+      "nav": "minimal",
+      "palette": "vars-only",
+      "appClass": "standard",
+      "chrome": { "topBar": true, "bottomBar": false, "sidePanel": false, "overlayHost": true }
+    },
+    "visualProfile": {
+      "variant": "minimal",
+      "typographyOverride": "default",
+      "paletteOverride": "default"
+    },
+    "interactionProfile": {
+      "tooltipEnable": true,
+      "feedbackLevel": "minimal",
+      "animationLevel": "reduced"
+    },
+    "behaviorProfile": {
+      "inlineEditEnable": false,
+      "readOnlyMode": false,
+      "advancedToggle": false
+    },
+    "densityProfile": {
+      "layoutDensity": "normal",
+      "compactMode": true
+    },
+    "safetyProfile": {
+      "modalEnable": true,
+      "roleBasedAccess": true,
+      "interactionStrictness": "standard",
+      "loggingVerbosity": "normal"
+    }
+  },
+  "child": {
+    "envelope": {
+      "layout": "full-viewport",
+      "nav": "minimal",
+      "palette": "full-scope",
+      "appClass": "kid",
+      "chrome": { "topBar": true, "bottomBar": true, "sidePanel": false, "overlayHost": true }
+    },
+    "visualProfile": {
+      "variant": "primary",
+      "typographyOverride": "large",
+      "paletteOverride": "kids"
+    },
+    "interactionProfile": {
+      "tooltipEnable": true,
+      "feedbackLevel": "full",
+      "animationLevel": "full"
+    },
+    "behaviorProfile": {
+      "inlineEditEnable": false,
+      "readOnlyMode": false,
+      "advancedToggle": false
+    },
+    "densityProfile": {
+      "layoutDensity": "airy",
+      "compactMode": false
+    },
+    "safetyProfile": {
+      "modalEnable": true,
+      "roleBasedAccess": true,
+      "interactionStrictness": "strict",
+      "loggingVerbosity": "silent"
+    }
+  },
+  "adult": {
+    "envelope": {
+      "layout": "full-viewport",
+      "nav": "app-default",
+      "palette": "vars-only",
+      "appClass": "standard",
+      "chrome": { "topBar": true, "bottomBar": false, "sidePanel": false, "overlayHost": true }
+    },
+    "visualProfile": {
+      "variant": "default",
+      "typographyOverride": "default",
+      "paletteOverride": "default"
+    },
+    "interactionProfile": {
+      "tooltipEnable": true,
+      "feedbackLevel": "full",
+      "animationLevel": "full"
+    },
+    "behaviorProfile": {
+      "inlineEditEnable": true,
+      "readOnlyMode": false,
+      "advancedToggle": true
+    },
+    "densityProfile": {
+      "layoutDensity": "normal",
+      "compactMode": false
+    },
+    "safetyProfile": {
+      "modalEnable": true,
+      "roleBasedAccess": true,
+      "interactionStrictness": "standard",
+      "loggingVerbosity": "normal"
+    }
+  },
+  "business": {
+    "envelope": {
+      "layout": "contained",
+      "nav": "app-default",
+      "palette": "vars-only",
+      "appClass": "standard",
+      "chrome": { "topBar": true, "bottomBar": false, "sidePanel": false, "overlayHost": true }
+    },
+    "visualProfile": {
+      "variant": "minimal",
+      "typographyOverride": "default",
+      "paletteOverride": "default"
+    },
+    "interactionProfile": {
+      "tooltipEnable": true,
+      "feedbackLevel": "minimal",
+      "animationLevel": "reduced"
+    },
+    "behaviorProfile": {
+      "inlineEditEnable": true,
+      "readOnlyMode": false,
+      "advancedToggle": true
+    },
+    "densityProfile": {
+      "layoutDensity": "tight",
+      "compactMode": true
+    },
+    "safetyProfile": {
+      "modalEnable": true,
+      "roleBasedAccess": true,
+      "interactionStrictness": "standard",
+      "loggingVerbosity": "normal"
+    }
+  }
+}
