@@ -21,7 +21,7 @@ resetPipelineTrace();
 assert(getLastPipelineTrace().length === 0, "trace empty after reset");
 
 // Record action pass then state pass; trace contains both
-recordStage("action", "pass", "Action event dispatched: state:update");
+recordStage("action", "pass", "Action event dispatched: state.update");
 recordStage("state", "pass", "State updated key: values.sectionLayoutPreset.features_section");
 const trace = getLastPipelineTrace();
 assert(trace.length >= 2, "trace has at least 2 entries");
@@ -33,7 +33,7 @@ resetPipelineTrace();
 assert(getLastPipelineTrace().length === 0, "trace empty after second reset");
 
 // Record one stage and verify
-recordStage("action", "pass", "Action event dispatched: state:update");
+recordStage("action", "pass", "Action event dispatched: state.update");
 assert(getLastPipelineTrace().length === 1 && getLastPipelineTrace()[0].stage === "action", "single action stage after reset");
 
 console.log("pipelineStageTrace.test.ts: all checks passed.");

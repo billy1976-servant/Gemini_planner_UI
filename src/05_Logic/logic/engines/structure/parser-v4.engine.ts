@@ -11,6 +11,7 @@ import type {
   ParsedDate,
   ParserPipelineConfig,
 } from "./structure.types";
+import { registerEngine } from "@/system/registry/engineRegistry";
 
 const DEFAULT_MODIFIER_VERBS = [
   "call", "email", "text", "message", "visit", "meet", "see", "ask", "tell",
@@ -309,3 +310,9 @@ export function runPhrasePipeline(
     lowConfidence: match?.lowConfidence ?? true,
   };
 }
+
+registerEngine({
+  name: "parser-v4",
+  integratesWith: ["structure", "taskTemplateRows"],
+  description: "Phrase tokenize, date parse, and template row match pipeline",
+});

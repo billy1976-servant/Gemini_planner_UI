@@ -20,6 +20,7 @@ import type { IndustryModelId, AssumptionVariable } from "../../value/assumption
 import { getIndustryModel } from "../../value/assumption-library";
 import type { Product } from "../../products/product-types";
 import { getResearchFact } from "../../research/research-fact-library";
+import { registerEngine } from "@/system/registry/engineRegistry";
 
 export interface UserIntentState {
   industryModel?: IndustryModelId;
@@ -667,3 +668,9 @@ function processMoneyDimension(
 
   return blocks;
 }
+
+registerEngine({
+  name: "value-translation",
+  integratesWith: [],
+  description: "Facts to human-meaningful value impact blocks by dimension",
+});

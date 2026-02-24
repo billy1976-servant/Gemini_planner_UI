@@ -3,6 +3,7 @@
  */
 
 import type { HabitBlock } from "./structure.types";
+import { registerEngine } from "@/system/registry/engineRegistry";
 
 /**
  * Linear ramp from startValue to targetValue over durationDays.
@@ -34,3 +35,9 @@ export function streakDays(
 ): number {
   return 0;
 }
+
+registerEngine({
+  name: "progression",
+  integratesWith: ["structure"],
+  description: "Habit ramp and streak value for dates",
+});

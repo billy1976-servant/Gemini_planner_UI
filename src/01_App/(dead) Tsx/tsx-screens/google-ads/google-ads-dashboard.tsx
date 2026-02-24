@@ -5,6 +5,7 @@ import { subscribeState, getState } from "@/state/state-store";
 import { runControlFlow } from "@/logic/controllers/control-flow";
 import type { AdControlState } from "@/logic/controllers/google-ads.controller";
 import type { ScanEvent } from "@/scans/global-scans/types";
+import { getIndicator } from "@/logic/business/ui/indicator-map";
 
 type Campaign = {
   id: string;
@@ -20,10 +21,49 @@ type Campaign = {
   };
 };
 
+type InsightsPayload = {
+  executiveSummary: {
+    totalSpend: number;
+    totalRevenue: number;
+    roas: number;
+    cpa: number;
+    topState: string;
+    topHour: number | null;
+    worstState: string;
+    growthOpportunities: string[];
+  };
+  highlights: Array<{ label: string; value: number; direction: "up" | "down" | "stable"; severity: string }>;
+  ranking: {
+    topStates: Array<{ region: string; metrics: { roas: number; cost: number }; rank: number }>;
+    worstStates: Array<{ region: string; metrics: { roas: number }; rank: number }>;
+    topHours: Array<{ hour: number; metrics: { roas: number; cost: number }; rank: number }>;
+    worstHours: Array<{ hour: number; metrics: { roas: number }; rank: number }>;
+  };
+  trends: { numericSlope: number; trendDirection: string };
+  capacity: { projectedSafeBudget: number; projectedAggressiveBudget: number };
+  recommendations: Array<{ level: string; target: string; reason: string; expectedImpact: number }>;
+  growthOpportunities: string[];
+  projectionConfidenceScore: number;
+};
+
+const INDICATOR_COLOR_CSS: Record<string, string> = {
+  green: "#22c55e",
+  "light-green": "#86efac",
+  gray: "#6b7280",
+  "light-red": "#fca5a5",
+  red: "#ef4444",
+};
+
+function indicatorStyle(colorToken: string): { color: string } {
+  return { color: INDICATOR_COLOR_CSS[colorToken] ?? INDICATOR_COLOR_CSS.gray };
+}
+
 export default function GoogleAdsDashboard() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [adsMode, setAdsMode] = useState<"mock" | "live" | null>(null);
   const [selectedCampaignId, setSelectedCampaignId] = useState<string>("");
   const [controlState, setControlState] = useState<AdControlState | null>(null);
+  const [insights, setInsights] = useState<InsightsPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [validating, setValidating] = useState(false);
@@ -33,7 +73,6 @@ export default function GoogleAdsDashboard() {
   } | null>(null);
   const [, forceRender] = useState(0);
 
-  // Subscribe to state changes
   useEffect(() => {
     const sync = () => forceRender((v) => v + 1);
     const unsub = subscribeState(sync);
@@ -42,7 +81,6 @@ export default function GoogleAdsDashboard() {
     };
   }, []);
 
-  // Load campaigns
   useEffect(() => {
     async function loadCampaigns() {
       try {
@@ -53,6 +91,9 @@ export default function GoogleAdsDashboard() {
         }
         const data = await res.json();
         setCampaigns(data.campaigns || []);
+        if (data.mode === "mock" || data.mode === "live") {
+          setAdsMode(data.mode);
+        }
         if (data.campaigns?.length > 0 && !selectedCampaignId) {
           setSelectedCampaignId(data.campaigns[0].id);
         }
@@ -65,7 +106,21 @@ export default function GoogleAdsDashboard() {
     loadCampaigns();
   }, []);
 
-  // Load control state when campaign changes
+  useEffect(() => {
+    async function loadInsights() {
+      try {
+        const res = await fetch("/api/google-ads/insights");
+        if (res.ok) {
+          const data = await res.json();
+          setInsights(data);
+        }
+      } catch {
+        // Non-blocking
+      }
+    }
+    loadInsights();
+  }, [campaigns.length]);
+
   useEffect(() => {
     if (!selectedCampaignId) return;
 
@@ -119,6 +174,10 @@ export default function GoogleAdsDashboard() {
     }
   }
 
+  function handleGeneratePdf() {
+    window.open("/api/reports/google-ads-summary", "_blank");
+  }
+
   function handleUpdateBudget(newBudget: number) {
     if (!controlState) return;
     const updated: AdControlState = {
@@ -160,10 +219,26 @@ export default function GoogleAdsDashboard() {
     setControlState(updated);
   }
 
+  const trendSlope = insights?.trends?.numericSlope ?? 0;
+  const budgetIndicator = controlState
+    ? getIndicator(
+        controlState.budget.recommended / Math.max(1, controlState.budget.current),
+        trendSlope,
+        { metric: "generic" }
+      )
+    : null;
+  const bidIndicator = controlState
+    ? getIndicator(
+        controlState.bid.recommended / Math.max(0.01, controlState.bid.current),
+        trendSlope,
+        { metric: "generic" }
+      )
+    : null;
+
   if (loading) {
     return (
       <div style={{ padding: 24 }}>
-        <h1>🚀 Google Ads Dashboard</h1>
+        <h1>Google Ads Dashboard</h1>
         <p>Loading campaigns...</p>
       </div>
     );
@@ -172,8 +247,8 @@ export default function GoogleAdsDashboard() {
   if (error) {
     return (
       <div style={{ padding: 24 }}>
-        <h1>🚀 Google Ads Dashboard</h1>
-        <div style={{ color: "red", padding: 16, background: "#fee", borderRadius: 8, marginTop: 16 }}>
+        <h1>Google Ads Dashboard</h1>
+        <div style={{ padding: 16, background: "#fee", borderRadius: 8, marginTop: 16, ...indicatorStyle("red") }}>
           <strong>Error:</strong> {error}
           <div style={{ marginTop: 8, fontSize: 12 }}>
             Make sure your Google Ads API credentials are configured in .env.local
@@ -187,12 +262,15 @@ export default function GoogleAdsDashboard() {
 
   return (
     <div style={{ padding: 24, fontFamily: "system-ui", maxWidth: 1200, margin: "0 auto" }}>
-      <h1>🚀 Google Ads Dashboard</h1>
+      <h1>Google Ads Dashboard</h1>
       <p style={{ color: "#666", marginBottom: 24 }}>
-        LIVE GOOGLE ADS DATA — Connected to Google Ads API
+        {adsMode != null ? (
+          <strong>Google Ads Mode: {adsMode === "mock" ? "MOCK" : "LIVE"}</strong>
+        ) : (
+          "Google Ads Mode: —"
+        )}
       </p>
 
-      {/* Campaign Selector */}
       <div style={{ marginBottom: 24, padding: 16, background: "#f5f5f5", borderRadius: 8 }}>
         <label style={{ display: "block", marginBottom: 8, fontWeight: "bold" }}>
           Campaign:
@@ -210,33 +288,101 @@ export default function GoogleAdsDashboard() {
         </select>
       </div>
 
+      {insights && (
+        <>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
+            <div style={{ border: "1px solid #ddd", borderRadius: 8, padding: 16 }}>
+              <h3>Top 5 States</h3>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                {insights.ranking.topStates.slice(0, 5).map((s) => {
+                  const ind = getIndicator(s.metrics.roas, trendSlope, { metric: "roas" });
+                  return (
+                    <li key={s.region} style={{ marginBottom: 8, display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={indicatorStyle(ind.color)}>{ind.arrow}</span>
+                      <strong>{s.region}</strong>
+                      <span style={indicatorStyle(ind.color)}>ROAS {s.metrics.roas.toFixed(2)}</span>
+                    </li>
+                  );
+                })}
+                {insights.ranking.topStates.length === 0 && <li style={{ color: "#666" }}>No state data</li>}
+              </ul>
+            </div>
+            <div style={{ border: "1px solid #ddd", borderRadius: 8, padding: 16 }}>
+              <h3>Top 5 Hours</h3>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                {insights.ranking.topHours.slice(0, 5).map((h) => {
+                  const ind = getIndicator(h.metrics.roas, trendSlope, { metric: "roas" });
+                  return (
+                    <li key={h.hour} style={{ marginBottom: 8, display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={indicatorStyle(ind.color)}>{ind.arrow}</span>
+                      <strong>{h.hour}:00</strong>
+                      <span style={indicatorStyle(ind.color)}>ROAS {h.metrics.roas.toFixed(2)}</span>
+                    </li>
+                  );
+                })}
+                {insights.ranking.topHours.length === 0 && <li style={{ color: "#666" }}>No hourly data</li>}
+              </ul>
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 24, padding: 16, background: "#f0f9ff", borderRadius: 8, border: "1px solid #bae6fd" }}>
+            <h3>Growth Potential & Capacity</h3>
+            <p style={{ margin: "8px 0" }}>
+              <strong>Projected safe budget:</strong> ${insights.capacity.projectedSafeBudget.toFixed(2)}
+              {" · "}
+              <strong>Aggressive:</strong> ${insights.capacity.projectedAggressiveBudget.toFixed(2)}
+            </p>
+            <p style={{ margin: "8px 0" }}>
+              <strong>Projection confidence:</strong> {(insights.projectionConfidenceScore * 100).toFixed(0)}%
+            </p>
+            <ul style={{ margin: "8px 0", paddingLeft: 20 }}>
+              {insights.growthOpportunities.slice(0, 3).map((o, i) => (
+                <li key={i}>{o}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div style={{ marginBottom: 24 }}>
+            <button
+              type="button"
+              onClick={handleGeneratePdf}
+              style={{
+                padding: "10px 20px",
+                fontSize: 14,
+                fontWeight: "bold",
+                cursor: "pointer",
+                background: "#4285f4",
+                color: "white",
+                border: "none",
+                borderRadius: 4,
+              }}
+            >
+              Generate PDF report
+            </button>
+          </div>
+        </>
+      )}
+
       {selectedCampaign && controlState && (
         <>
-          {/* Budget Control */}
-          <div
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: 8,
-              padding: 16,
-              marginBottom: 16,
-            }}
-          >
+          <div style={{ border: "1px solid #ddd", borderRadius: 8, padding: 16, marginBottom: 16 }}>
             <h3>Budget</h3>
             <div style={{ marginTop: 8 }}>
               <div>Current: <strong>${controlState.budget.current.toFixed(2)}</strong></div>
-              <div>Recommended: <strong>${controlState.budget.recommended.toFixed(2)}</strong> 
-                <span style={{ marginLeft: 8, color: controlState.budget.change === "increase" ? "green" : controlState.budget.change === "decrease" ? "red" : "#666" }}>
-                  ({controlState.budget.change})
-                </span>
+              <div>
+                Recommended: <strong>${controlState.budget.recommended.toFixed(2)}</strong>
+                {budgetIndicator && (
+                  <span style={{ marginLeft: 8, ...indicatorStyle(budgetIndicator.color) }}>
+                    {budgetIndicator.arrow} ({controlState.budget.change})
+                  </span>
+                )}
               </div>
             </div>
             <div style={{ marginTop: 12 }}>
               <input
                 type="number"
                 value={controlState.budget.recommended}
-                onChange={(e) =>
-                  handleUpdateBudget(parseFloat(e.target.value) || 0)
-                }
+                onChange={(e) => handleUpdateBudget(parseFloat(e.target.value) || 0)}
                 step="0.01"
                 min="0"
                 style={{ padding: 8, fontSize: 14, width: 200, border: "1px solid #ccc", borderRadius: 4 }}
@@ -247,31 +393,24 @@ export default function GoogleAdsDashboard() {
             </div>
           </div>
 
-          {/* Bid Control */}
-          <div
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: 8,
-              padding: 16,
-              marginBottom: 16,
-            }}
-          >
+          <div style={{ border: "1px solid #ddd", borderRadius: 8, padding: 16, marginBottom: 16 }}>
             <h3>Bid</h3>
             <div style={{ marginTop: 8 }}>
               <div>Current: <strong>${controlState.bid.current.toFixed(2)}</strong></div>
-              <div>Recommended: <strong>${controlState.bid.recommended.toFixed(2)}</strong>
-                <span style={{ marginLeft: 8, color: controlState.bid.change === "increase" ? "green" : controlState.bid.change === "decrease" ? "red" : "#666" }}>
-                  ({controlState.bid.change})
-                </span>
+              <div>
+                Recommended: <strong>${controlState.bid.recommended.toFixed(2)}</strong>
+                {bidIndicator && (
+                  <span style={{ marginLeft: 8, ...indicatorStyle(bidIndicator.color) }}>
+                    {bidIndicator.arrow} ({controlState.bid.change})
+                  </span>
+                )}
               </div>
             </div>
             <div style={{ marginTop: 12 }}>
               <input
                 type="number"
                 value={controlState.bid.recommended}
-                onChange={(e) =>
-                  handleUpdateBid(parseFloat(e.target.value) || 0)
-                }
+                onChange={(e) => handleUpdateBid(parseFloat(e.target.value) || 0)}
                 step="0.01"
                 min="0"
                 style={{ padding: 8, fontSize: 14, width: 200, border: "1px solid #ccc", borderRadius: 4 }}
@@ -282,15 +421,7 @@ export default function GoogleAdsDashboard() {
             </div>
           </div>
 
-          {/* Schedule Control */}
-          <div
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: 8,
-              padding: 16,
-              marginBottom: 16,
-            }}
-          >
+          <div style={{ border: "1px solid #ddd", borderRadius: 8, padding: 16, marginBottom: 16 }}>
             <h3>Schedule</h3>
             <div style={{ marginTop: 8 }}>
               <div>Current: <strong>{controlState.schedule.current}</strong></div>
@@ -303,7 +434,7 @@ export default function GoogleAdsDashboard() {
                 padding: "8px 16px",
                 fontSize: 14,
                 cursor: "pointer",
-                background: controlState.schedule.current === "active" ? "#ff4444" : "#44ff44",
+                background: controlState.schedule.current === "active" ? "#ef4444" : "#22c55e",
                 color: "white",
                 border: "none",
                 borderRadius: 4,
@@ -311,24 +442,15 @@ export default function GoogleAdsDashboard() {
               }}
             >
               {controlState.schedule.current === "active"
-                ? "⏸ Pause Campaign"
-                : "▶ Activate Campaign"}
+                ? "Pause Campaign"
+                : "Activate Campaign"}
             </button>
             <div style={{ fontSize: 12, color: "#666", marginTop: 4 }}>
               {controlState.schedule.reason}
             </div>
           </div>
 
-          {/* Signals */}
-          <div
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: 8,
-              padding: 16,
-              marginBottom: 16,
-              background: "#f9f9f9",
-            }}
-          >
+          <div style={{ border: "1px solid #ddd", borderRadius: 8, padding: 16, marginBottom: 16, background: "#f9f9f9" }}>
             <h3>Engine Signals</h3>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 8 }}>
               <div>Trend: <strong>{controlState.signals.trend}</strong></div>
@@ -338,7 +460,6 @@ export default function GoogleAdsDashboard() {
             </div>
           </div>
 
-          {/* Validation */}
           <div style={{ marginTop: 24, padding: 16, background: "#f0f0f0", borderRadius: 8 }}>
             <button
               onClick={handleValidate}
@@ -354,7 +475,7 @@ export default function GoogleAdsDashboard() {
                 borderRadius: 4,
               }}
             >
-              {validating ? "Validating..." : "✅ Validate Changes with Google Ads API"}
+              {validating ? "Validating..." : "Validate Changes with Google Ads API"}
             </button>
 
             {validationResult && (
@@ -362,17 +483,17 @@ export default function GoogleAdsDashboard() {
                 style={{
                   marginTop: 16,
                   padding: 16,
-                  background: validationResult.validated ? "#e8f5e9" : "#ffebee",
+                  background: validationResult.validated ? "#dcfce7" : "#fee2e2",
                   borderRadius: 8,
                 }}
               >
                 {validationResult.validated ? (
-                  <div style={{ color: "#2e7d32", fontWeight: "bold" }}>
-                    ✅ Validated by Google Ads API (DRY RUN)
+                  <div style={{ color: "#166534", fontWeight: "bold" }}>
+                    Validated by Google Ads API (DRY RUN)
                   </div>
                 ) : (
-                  <div style={{ color: "#c62828" }}>
-                    ❌ Validation Failed:
+                  <div style={{ color: "#991b1b" }}>
+                    Validation Failed:
                     <ul style={{ marginTop: 8 }}>
                       {validationResult.errors?.map((e, i) => (
                         <li key={i}>{e}</li>

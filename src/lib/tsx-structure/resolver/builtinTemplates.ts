@@ -4,6 +4,7 @@
  */
 
 import type { StructureType } from "../types";
+import { registerTemplate } from "@/system/registry/templateRegistry";
 
 export type BuiltinTemplatesMap = Record<StructureType, Record<string, Record<string, unknown>>>;
 
@@ -57,3 +58,17 @@ export const BUILTIN_TEMPLATES: BuiltinTemplatesMap = {
     uniform: { layout: "uniform", grid: { columns: 4, gap: 24, aspectRatio: "16/9" }, lightbox: { enabled: true, swipe: true }, density: "spacious" },
   },
 };
+
+const STRUCTURE_TYPES: StructureType[] = ["list", "board", "dashboard", "editor", "timeline", "detail", "wizard", "gallery"];
+for (const structureType of STRUCTURE_TYPES) {
+  const byType = BUILTIN_TEMPLATES[structureType];
+  if (!byType) continue;
+  for (const templateId of Object.keys(byType)) {
+    registerTemplate({
+      name: `${structureType}:${templateId}`,
+      structureType,
+      requiredStateKeys: [],
+      supportedEngines: [],
+    });
+  }
+}

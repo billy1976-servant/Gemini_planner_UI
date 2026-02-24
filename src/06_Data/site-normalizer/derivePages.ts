@@ -1,9 +1,11 @@
 /**
  * Page Normalization Layer
- * 
+ *
  * Derives logical pages from sections using rules-based grouping.
- * This ensures consistent page structure even with imperfect scraped data.
+ * Section type roles (product, hero) from section-types config.
  */
+
+import { isProductPageSectionType, isHeroSectionType } from "@/lib/site-renderer/section-registry";
 
 export interface DerivedPage {
   id: string;
@@ -46,8 +48,7 @@ function containsBlockedToken(text: string): boolean {
  * Extract page type from section title/id/content
  */
 function detectPageType(section: Section): string | null {
-  // Check section type first - productGrid always goes to products
-  if (section.type === "productGrid") {
+  if (isProductPageSectionType(section.type)) {
     return "products";
   }
   
@@ -108,8 +109,7 @@ export function derivePagesFromSections(sections: Section[]): DerivedPage[] {
     id: section.id || `section-${index}`,
   }));
   
-  // Find first hero section (belongs to home)
-  const firstHeroIndex = sectionsWithIds.findIndex(s => s.type === "hero");
+  const firstHeroIndex = sectionsWithIds.findIndex((s) => isHeroSectionType(s.type));
   
   // Group sections by page type
   const pageGroups: Record<string, string[]> = {
@@ -130,9 +130,10 @@ export function derivePagesFromSections(sections: Section[]): DerivedPage[] {
       ? section.content.toLowerCase() 
       : "";
     
-    // If section type is productGrid or content mentions products heavily
-    if (section.type === "productGrid" || 
-        (contentText.includes("product") && contentText.length < 200)) {
+    if (
+      isProductPageSectionType(section.type) ||
+      (contentText.includes("product") && contentText.length < 200)
+    ) {
       productSectionIndices.add(index);
     }
   });

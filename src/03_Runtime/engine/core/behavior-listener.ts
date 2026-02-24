@@ -9,7 +9,6 @@
  * ✔ HARD DIAGNOSTICS for valueFrom:"input"
  */
 import { dispatchState, getState } from "@/state/state-store";
-import { setPalette } from "@/engine/core/palette-store";
 import runBehavior from "@/behavior/behavior-runner";
 import { CONTRACT_VERBS, inferContractVerbDomain } from "@/contracts/contract-verbs";
 import { trace } from "@/devtools/interaction-tracer.store";
@@ -150,12 +149,14 @@ export function installBehaviorListener(navigate: (to: string) => void) {
 
     /* =========================
        STATE MUTATION BRIDGE
+       Canonical intent: state.update (dot). Legacy: state:currentView, state:update (colon).
     ========================= */
-    if (actionName.startsWith("state:")) {
+    const isStateMutation = actionName.startsWith("state:") || actionName === "state.update";
+    if (isStateMutation) {
       if (process.env.NODE_ENV === "development") {
-        recordStage("behavior", "pass", { matched: false, bypass: "state:update is direct state op", matchedBehavior: actionName });
+        recordStage("behavior", "pass", { matched: false, bypass: "state.update is direct state op", matchedBehavior: actionName });
       }
-      const mutation = actionName.replace("state:", "");
+      const mutation = actionName === "state.update" ? "update" : actionName.replace("state:", "");
       const {
         name: _drop,
         valueFrom,
@@ -221,10 +222,6 @@ export function installBehaviorListener(navigate: (to: string) => void) {
         const key = rest.key ?? rest.target;
         if (typeof key === "string" && key.length > 0) {
           dispatchState("state.update", { key, value: resolvedValue });
-          // Palette = visual only; sync to palette-store so renderer/CSS see it. Never write palette to layout.
-          if (key === "paletteName" && resolvedValue != null) {
-            setPalette(String(resolvedValue));
-          }
           if (process.env.NODE_ENV === "development") {
             PipelineDebugStore.mark("behavior-listener", "action.dispatchState", {
               intent: "state.update",

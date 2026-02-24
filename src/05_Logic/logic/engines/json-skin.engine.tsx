@@ -4,6 +4,7 @@ import { useSyncExternalStore } from "react";
 import { recordInteraction } from "@/logic/runtime/interaction-controller";
 import { readEngineState, subscribeEngineState, writeEngineState } from "@/logic/runtime/engine-bridge";
 import { getState, subscribeState, dispatchState } from "@/state/state-store";
+import { registerEngine } from "@/system/registry/engineRegistry";
 
 
 /* ======================================================
@@ -303,4 +304,9 @@ function normalizeVerb(behavior: any) {
   return behavior;
 }
 
+registerEngine({
+  name: "json-skin",
+  integratesWith: ["currentView", "currentFlow"],
+  description: "Authoritative screen gate rendering from JSON structure",
+});
 

@@ -16,6 +16,7 @@
 import type { Product } from "@/logic/products/product-types";
 import type { ValueDimensionId } from "./value-dimensions";
 import type { ValueImpactBlock } from "./value-translation.engine";
+import { registerEngine } from "@/system/registry/engineRegistry";
 
 export interface ProductComparison {
   productA: Product;
@@ -336,3 +337,9 @@ function extractLifespan(product: Product): number | null {
   }
   return null;
 }
+
+registerEngine({
+  name: "value-comparison",
+  integratesWith: [],
+  description: "Product comparison by value dimensions",
+});

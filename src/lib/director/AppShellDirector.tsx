@@ -24,7 +24,7 @@ import type {
 } from "./director-types";
 import { DirectorContext } from "./DirectorContext";
 
-import modeProfilesJson from "@/config/mode-profiles.json";
+import modeProfilesJson from "../../config/mode-profiles.json";
 
 const MODE_PROFILES = modeProfilesJson as ModeProfilesMap;
 

@@ -3,6 +3,7 @@
  */
 
 import type { StructureItem, Rollup } from "./structure.types";
+import { registerEngine } from "@/system/registry/engineRegistry";
 
 function toISO(d: Date): string {
   return d.toISOString().slice(0, 10);
@@ -74,3 +75,9 @@ export function aggregateSignals(items: StructureItem[]): {
     opportunities: [...new Set(opportunities)],
   };
 }
+
+registerEngine({
+  name: "aggregation",
+  integratesWith: ["structure"],
+  description: "Aggregate signals/blockers/opportunities from structure items",
+});

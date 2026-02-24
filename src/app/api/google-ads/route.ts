@@ -1,8 +1,7 @@
 export const runtime = "nodejs";
 
-
 import { NextResponse } from "next/server";
-
+import { getGoogleAdsMode } from "./client";
 
 /**
  * SERVER-SIDE GOOGLE ADS API PROXY (Diagnostics-first)
@@ -17,7 +16,6 @@ import { NextResponse } from "next/server";
  * - It only reports whether they exist + their character length.
  */
 
-
 const REQUIRED_ENV_VARS = [
   "GOOGLE_ADS_DEVELOPER_TOKEN",
   "GOOGLE_ADS_CLIENT_ID",
@@ -26,9 +24,7 @@ const REQUIRED_ENV_VARS = [
   "GOOGLE_ADS_CUSTOMER_ID",
 ] as const;
 
-
 const OPTIONAL_ENV_VARS = ["GOOGLE_ADS_LOGIN_CUSTOMER_ID"] as const;
-
 
 function readEnv(name: string): string | undefined {
   const raw = process.env[name];
@@ -36,7 +32,6 @@ function readEnv(name: string): string | undefined {
   const trimmed = raw.trim();
   return trimmed.length ? trimmed : undefined;
 }
-
 
 function statusOf(name: string) {
   const v = readEnv(name);
@@ -46,25 +41,31 @@ function statusOf(name: string) {
   };
 }
 
-
 export async function GET() {
-  const cwd = process.cwd();
+  let mode: "mock" | "live";
+  try {
+    mode = getGoogleAdsMode();
+  } catch (e: any) {
+    return NextResponse.json(
+      {
+        error: "Invalid or missing GOOGLE_ADS_MODE",
+        message: e.message,
+        nextStepHint: "Set GOOGLE_ADS_MODE=mock or GOOGLE_ADS_MODE=live in .env.local",
+      },
+      { status: 400 }
+    );
+  }
 
+  const cwd = process.cwd();
   const requiredStatus = Object.fromEntries(
     REQUIRED_ENV_VARS.map((k) => [k, statusOf(k)])
   );
-
   const optionalStatus = Object.fromEntries(
     OPTIONAL_ENV_VARS.map((k) => [k, statusOf(k)])
   );
-
-  const missing = REQUIRED_ENV_VARS.filter((k) => !readEnv(k));
-
-  // Show which GOOGLE_ADS_* keys exist at all (names only, no values)
   const googleAdsKeys = Object.keys(process.env).filter((k) =>
     k.startsWith("GOOGLE_ADS_")
   );
-
   const diagnostics = {
     cwd,
     nodeEnv: process.env.NODE_ENV ?? null,
@@ -73,7 +74,19 @@ export async function GET() {
     optionalStatus,
   };
 
+  if (mode === "mock") {
+    return NextResponse.json(
+      {
+        ok: true,
+        message: "Mock mode: no Google API calls. All required GOOGLE_ADS_* vars not required.",
+        diagnostics,
+        mode: "mock",
+      },
+      { status: 200 }
+    );
+  }
 
+  const missing = REQUIRED_ENV_VARS.filter((k) => !readEnv(k));
   if (missing.length) {
     return NextResponse.json(
       {
@@ -89,13 +102,13 @@ export async function GET() {
     );
   }
 
-
   return NextResponse.json(
     {
       ok: true,
       message:
         "All required GOOGLE_ADS_* env vars are present (not empty). Ready to call Google Ads API.",
       diagnostics,
+      mode: "live",
     },
     { status: 200 }
   );

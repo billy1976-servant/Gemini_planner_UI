@@ -14,6 +14,7 @@ The **TSX App Structure Engine** is a small library (`src/lib/tsx-structure/`) t
 - **Context:** `StructureConfigProvider` and `useStructureConfig()` so any descendant can read the resolved structure without prop drilling.
 - **Single consumption hook:** `useAutoStructure()` — one hook for all structure types; returns typed config by `structureType`. TSX authors use this by default; no need to pick a specific engine (useListConfig, useTimelineConfig, etc.).
 - **Profile:** `getDefaultTsxEnvelopeProfile(screenPath)` — returns layout mode, palette mode, nav, chrome slots, and app class by **path pattern** (e.g. `HiClarify/*`, `focus/*`, `onboarding`). No hardcoded screen IDs.
+- **Compiled structure / blueprint-content is truth:** TSX consumes ResolvedAppStructure and (when wired) Director context. It does not define structure or feature names; those come from config and resolver. Data fed to TSX should conform to existing blueprint/content contracts (node shape: id, type, content, behavior).
 
 ---
 
@@ -62,7 +63,7 @@ New screens **must** consume the structure system; it is the default. No manual 
 1. **Create a TSX component** that uses **`useAutoStructure()`** (default) or accepts `structureConfig`, `structureType`, `schemaVersion`, `featureFlags` from the envelope. All new TSX screens consume the resolved structure — do not generate screens that ignore it.
 2. **Use CSS variables** for colors and spacing (`var(--color-bg-primary)`, etc.); no hardcoded theme values.
 3. **Read structure config** from `useAutoStructure().config` (or envelope props) for anything configurable: slot size, day range, view modes, density, interaction policy. Do not hardcode those values.
-4. **Mount as usual:** The app already wraps all TSX screens in `TSXScreenWithEnvelope` on `/dev` and at TSX entry points. No extra registration; the envelope resolves structure by path and optional metadata.
+4. **Mount as usual:** The app already wraps all TSX screens in `TSXScreenWithEnvelope` on `/dev` and at TSX entry points. No extra registration; the envelope resolves structure by path and optional metadata. **Navigation:** Do not use router.push. Use the behavior bridge (CustomEvent "navigate" or action "navigate"). **Content:** Do not hardcode titles, labels, or screen paths; use config/structure.
 5. **Optional:** Add screen metadata (e.g. in apps-json) with `structure: { type: "timeline", templateId: "default", overrides: { ... } }` so the resolver returns the right config for that screen.
 
 No refactor of existing Planner or Onboarding is required; the engine applies to **new** TSX screens, which are structure-driven by default.

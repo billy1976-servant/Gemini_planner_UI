@@ -13,7 +13,7 @@ import "@/editor/editor-theme.css";
 import { useDockState } from "./dock-state";
 import type { DockPanelId } from "./dock-state";
 import { getState, subscribeState, dispatchState } from "@/state/state-store";
-import { getPaletteName, setPalette, subscribePalette } from "@/engine/core/palette-store";
+import { getPaletteName, subscribePalette } from "@/engine/core/palette-store";
 import { palettes } from "@/palettes";
 import { getTemplateList } from "@/lib/layout/template-profiles";
 import AppIcon, { getAppIconNameForPanel } from "@/04_Presentation/icons/AppIcon";
@@ -199,8 +199,6 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
     if (!(name in palettes)) return;
     setValue("paletteName", name);
     if (process.env.NODE_ENV !== "production") console.log("[palette] state.update dispatched paletteName", name);
-    setPalette(name);
-    if (process.env.NODE_ENV !== "production") console.log("[palette] setPalette called", name);
   };
 
   const isPanelOpen = (id: DockPanelId) => openPanel === id;

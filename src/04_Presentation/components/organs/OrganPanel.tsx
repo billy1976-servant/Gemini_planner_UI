@@ -227,7 +227,7 @@ export default function OrganPanel({
     recordLayoutClick(sectionKey, value, previousLayout);
     window.dispatchEvent(
       new CustomEvent("action", {
-        detail: { type: "Action", params: { name: "state:update", key: `sectionLayoutPreset.${sectionKey}`, value } },
+        detail: { type: "Action", params: { name: "state.update", key: `sectionLayoutPreset.${sectionKey}`, value } },
       })
     );
     onSectionLayoutPresetOverride?.(sectionKey, value);
@@ -239,7 +239,7 @@ export default function OrganPanel({
     recordLayoutClick(`card-${sectionKey}`, value, previousLayout);
     window.dispatchEvent(
       new CustomEvent("action", {
-        detail: { type: "Action", params: { name: "state:update", key: `cardLayoutPreset.${sectionKey}`, value } },
+        detail: { type: "Action", params: { name: "state.update", key: `cardLayoutPreset.${sectionKey}`, value } },
       })
     );
     onCardLayoutPresetOverride?.(sectionKey, value);
@@ -251,7 +251,7 @@ export default function OrganPanel({
     recordLayoutClick(`organ-${sectionKey}`, value, previousLayout);
     window.dispatchEvent(
       new CustomEvent("action", {
-        detail: { type: "Action", params: { name: "state:update", key: `organInternalLayout.${sectionKey}`, value } },
+        detail: { type: "Action", params: { name: "state.update", key: `organInternalLayout.${sectionKey}`, value } },
       })
     );
     onOrganInternalLayoutOverride?.(sectionKey, value);

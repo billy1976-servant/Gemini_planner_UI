@@ -10,6 +10,7 @@
 
 import type { EducationFlow } from "@/logic/flows/flow-loader";
 import type { PresentationModel } from "../engines/presentation-types";
+import { registerEngine } from "@/system/registry/engineRegistry";
 
 export type EngineFlow = EducationFlow;
 
@@ -69,3 +70,9 @@ export function learningPresentation(flow: EducationFlow): PresentationModel {
     notes: ["Linear learning path"],
   };
 }
+
+registerEngine({
+  name: "learning",
+  integratesWith: [],
+  description: "Comprehension/readiness step ordering for education flows",
+});

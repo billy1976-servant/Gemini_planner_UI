@@ -3,6 +3,7 @@
  */
 
 import type { ResolvedRuleset, RuleContext, RuleMatch, WhenClause } from "./structure.types";
+import { registerEngine } from "@/system/registry/engineRegistry";
 
 /**
  * Evaluate a single when clause against context (e.g. date equals, item.categoryId in list).
@@ -55,3 +56,9 @@ export function evaluateRules(
   }
   return { matched, derived };
 }
+
+registerEngine({
+  name: "rule-evaluator",
+  integratesWith: ["structure"],
+  description: "When/then rule evaluation and derived values",
+});

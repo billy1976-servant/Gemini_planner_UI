@@ -4,58 +4,56 @@
 /**
  * Palette list and resolution: single source is @/palettes (palettes object and PaletteName type).
  * Palette set is derived from JSON files in the palettes folder; no manual registration in code.
+ *
+ * Single source of truth for active palette: state.values.paletteName (via dispatchState).
+ * This module derives from state only; no mutable activePaletteName.
  */
 import { palettes } from "@/palettes";
-
-
-/**
- * ACTIVE PALETTE (STRING ONLY — CRITICAL)
- */
-let activePaletteName = "default";
-
+import { getState, subscribeState, dispatchState } from "@/state/state-store";
 
 /**
  * SUBSCRIBERS (renderer-only)
  */
 const listeners = new Set<() => void>();
 
+/**
+ * Notify palette subscribers when state changes (so getPaletteName() / getPalette() reflect current state).
+ */
+function notifyListeners() {
+  listeners.forEach((fn) => fn());
+}
+
+subscribeState(notifyListeners);
 
 /**
  * SET ACTIVE PALETTE
- * - Validates name
- * - Notifies subscribers
+ * Thin wrapper: writes to state only. Validates name against palettes.
  */
 export function setPalette(name: string) {
   const next = palettes[name] ? name : "default";
-  if (next === activePaletteName) return;
-
-  if (process.env.NODE_ENV !== "production") console.log("[palette-store] updating", next);
-  activePaletteName = next;
-  listeners.forEach(fn => fn());
+  dispatchState("state.update", { key: "paletteName", value: next });
 }
-
 
 /**
  * GET ACTIVE PALETTE OBJECT
- * Used by token resolver
+ * Used by token resolver. Derived from state.values.paletteName.
  */
 export function getPalette() {
-  return palettes[activePaletteName];
+  const name = getPaletteName();
+  return (palettes as Record<string, unknown>)[name] ?? (palettes as Record<string, unknown>).default;
 }
-
 
 /**
  * GET ACTIVE PALETTE NAME (STRING)
- * REQUIRED by app/layout.tsx
+ * REQUIRED by app/layout.tsx. Single source of truth: state.values.paletteName.
  */
 export function getPaletteName() {
-  return activePaletteName;
+  return getState()?.values?.paletteName ?? "default";
 }
-
 
 /**
  * SUBSCRIBE TO PALETTE CHANGES
- * ⚠️ MUST ONLY BE USED AT RENDERER ROOT
+ * MUST ONLY BE USED AT RENDERER ROOT
  */
 export function subscribePalette(cb: () => void) {
   listeners.add(cb);
@@ -63,5 +61,3 @@ export function subscribePalette(cb: () => void) {
     listeners.delete(cb);
   };
 }
-
-

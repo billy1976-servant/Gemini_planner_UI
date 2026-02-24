@@ -13,7 +13,7 @@ import { useDockState } from "./dock-state";
 import type { DockPanelId } from "./dock-state";
 import RightSidebarDockContent from "./RightSidebarDockContent";
 import { getState, subscribeState, dispatchState } from "@/state/state-store";
-import { getPaletteName, setPalette, subscribePalette } from "@/engine/core/palette-store";
+import { getPaletteName, subscribePalette } from "@/engine/core/palette-store";
 import { palettes } from "@/palettes";
 import { getTemplateList } from "@/lib/layout/template-profiles";
 
@@ -46,7 +46,6 @@ export default function RightSidebarDock({ layoutPanelContent }: RightSidebarDoc
   const handlePaletteChange = (name: string) => {
     if (!(name in palettes)) return;
     setValue("paletteName", name);
-    setPalette(name);
   };
 
   const isPanelOpen = (id: DockPanelId) => openPanel === id;

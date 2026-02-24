@@ -9,6 +9,7 @@
  */
 
 import { normalizeSiteData, NormalizedSite, NormalizedPage, Section, NormalizedProduct, NavItem, MediaAsset } from "./normalizeSiteData";
+import { getSectionOutputType } from "@/lib/site-renderer/section-registry";
 import { SiteLayout, SchemaMeta, FeatureItem, CategoryItem, TrustItem } from "@/lib/site-schema/siteLayout.types";
 import { SiteSchema, SitePage, LayoutBlock } from "@/types/siteSchema";
 
@@ -269,7 +270,7 @@ function compilePageLayout(
   // Convert sections to layout blocks
   page.sections.forEach((section, index) => {
     const block = convertSectionToLayoutBlock(section, site, {
-      isFirstHeading: !hasHeroHeading && section.type === "heading",
+      isFirstHeading: !hasHeroHeading && getSectionOutputType(section.type) === "heading",
       sectionIndex: index,
     });
     if (block) {
@@ -686,7 +687,8 @@ function convertSectionToLayoutBlock(
     return buildProductGridBlock(site);
   }
   
-  switch (section.type) {
+  const outputType = getSectionOutputType(section.type);
+  switch (outputType) {
     case "heading":
       const headingText = section.content.trim();
       
@@ -717,10 +719,9 @@ function convertSectionToLayoutBlock(
       };
     
     case "text":
-    case "html":
       return {
         type: "text",
-        body: section.content,
+        body: section.type === "quote" ? `"${section.content}"` : section.content,
         role: "content",
       };
     
@@ -748,14 +749,6 @@ function convertSectionToLayoutBlock(
         items: listItems.map(item => 
           typeof item === "string" ? item : JSON.stringify(item)
         ),
-        role: "content",
-      };
-    
-    case "quote":
-      // Quotes become text blocks
-      return {
-        type: "text",
-        body: `"${section.content}"`,
         role: "content",
       };
     

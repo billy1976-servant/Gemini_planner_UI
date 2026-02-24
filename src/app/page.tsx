@@ -30,6 +30,7 @@ import {
   type ResolveCapabilityProfileOptions,
 } from "@/03_Runtime/capability";
 import { TSXScreenWithEnvelope } from "@/lib/tsx-structure/TSXScreenWithEnvelope";
+import { AppShellDirector } from "@/lib/director/AppShellDirector";
 
 /** Canonical default when URL/state missing or invalid (bare id). Never pass bare ids to loadScreen. */
 const DEFAULT_SCREEN_PATH = "tsx:HiClarify/HiClarifyOnboarding";
@@ -135,12 +136,12 @@ export default function Page() {
   if (!data) return <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>Loading…</div>;
 
   if (isTsxScreen) {
+    const tsxScreenPath = effectivePath.startsWith("tsx:") ? effectivePath : `tsx:${effectivePath}`;
     return (
       <CapabilityProvider>
-        <TSXScreenWithEnvelope
-          screenPath={effectivePath.startsWith("tsx:") ? effectivePath : `tsx:${effectivePath}`}
-          Component={HiClarifyOnboarding}
-        />
+        <AppShellDirector screenPath={tsxScreenPath} appSchema={null}>
+          <TSXScreenWithEnvelope screenPath={tsxScreenPath} Component={HiClarifyOnboarding} />
+        </AppShellDirector>
       </CapabilityProvider>
     );
   }

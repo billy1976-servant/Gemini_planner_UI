@@ -13,6 +13,9 @@ This rule is the **permanent law** for how all new TSX screens must be built. It
 | **Structures drive app behavior** | A small set of structure types (list, board, dashboard, timeline, editor, detail, wizard, gallery) defines how the screen behaves. Resolution is by convention, not registry. |
 | **Wrapper/envelope always applies** | Every TSX screen is mounted inside `TSXScreenWithEnvelope`, which applies palette (CSS vars), layout containment, and structure config. TSX must not re-implement global layout or palette injection. |
 
+- **Website = presentation:** Website is one presentation mode of structured content, not a separate build. Same content/structure can be presented as website, learning, app, etc. Do not hardcode experience or create a separate website pipeline.
+- **No direct router/state in TSX:** TSX must not call router.push, dispatchState, or Next.js navigate. Use the behavior bridge: CustomEvent "navigate" with detail.to, or action "navigate". See installBehaviorListener in src/03_Runtime/engine/core/behavior-listener.ts.
+
 ---
 
 ## 1.1. DEFAULT FOR NEW TSX (MANDATORY)
@@ -40,9 +43,11 @@ This rule is the **permanent law** for how all new TSX screens must be built. It
   - Assume a fixed structure (e.g. "we are day view only"); read from `useAutoStructure()` or `structureConfig` / `useStructureConfig()`.
   - Own global layout, nav, or chrome; the envelope provides layout containment and chrome slots (data attributes). TSX renders **inside** the envelope.
   - Touch raw templates or engine internals; consume structure via `useAutoStructure()` or `structureProps` only.
+  - Call router.push, dispatchState, or any mutating state/navigate API; use the behavior bridge for navigation and read-only state/envelope for palette.
 
 - **TSX must:**
   - **Consume structure** via **useAutoStructure()** or **structureProps** (envelope); treat TSX as **renderer only**. New screens must not bypass the structure system.
+  - **No hardcoded content:** Titles, labels, API paths, and screen paths must come from structureConfig, config, or props — not literals in code.
   - Read config when present and use it for layout scale, view modes, interaction policy, and density.
   - Remain a **pure renderer** for structure: implement behavior (drag, resize, select) when policy says so; do not invent policy in code.
   - Rely on the existing system: resolver (`resolveAppStructure`), envelope (`TSXScreenWithEnvelope`), context (`StructureConfigProvider`), and hook (`useAutoStructure`) — no custom wiring or duplicate resolution logic in TSX.
@@ -163,4 +168,4 @@ When generating a new TSX screen, follow this flow. No manual thinking about eng
 
 ---
 
-*This file is the single source of truth for Cursor when generating or reviewing new TSX screens. Reference: `src/lib/tsx-structure/`, `docs/TSX_APP_STRUCTURE_ENGINE_MASTER_PLAN.md`, `docs/TSX_CONTROL_MASTER_PLAN.md`.*
+*This file is the single source of truth for Cursor when generating or reviewing new TSX screens. Reference: `src/lib/tsx-structure/`, `docs/TSX_APP_STRUCTURE_ENGINE_MASTER_PLAN.md`, `docs/TSX_CONTROL_MASTER_PLAN.md`. See also `.cursor/rules/CONTENT_AND_PRESENTATION.md` for content/presentation and template-only laws.*

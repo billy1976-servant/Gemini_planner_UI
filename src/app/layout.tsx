@@ -173,7 +173,7 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const exp = searchParams.get("experience");
     if ((exp === "website" || exp === "app" || exp === "learning") && stateSnapshot?.values?.experience !== exp) {
-      dispatchState("state:update", { key: "experience", value: exp });
+      dispatchState("state.update", { key: "experience", value: exp });
     }
   }, [searchParams, stateSnapshot?.values?.experience]);
 
@@ -183,8 +183,14 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
   ============================================================ */
   useEffect(() => {
     installBehaviorListener((to: string) => {
-      if (typeof to === "string" && to.startsWith("|")) {
+      if (typeof to !== "string") return;
+      if (to.startsWith("|")) {
         dispatchState("state:currentView", { value: to });
+        return;
+      }
+      // Full path (e.g. /dev?screen=...&flow=... or /): use as-is
+      if (to.startsWith("/")) {
+        router.replace(to);
         return;
       }
       router.replace(`/dev?screen=${encodeURIComponent(to)}`);

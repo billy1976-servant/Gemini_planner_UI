@@ -1,6 +1,8 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import content from "./content";
 import { loadFlow, getAvailableFlows, setEngineFlow, setCurrentEngine, type EducationFlow } from "@/logic/flows/flow-loader";
 import { getAvailableEngines, applyEngine, getPresentation, type EngineId, type ExecutionEngineId, isExecutionEngine } from "@/logic/engine-system/engine-contract";
 import type { EngineExplainEvent } from "@/logic/engine-system/engine-explain";
@@ -13,14 +15,27 @@ import type { EngineState } from "@/logic/runtime/engine-state";
 import { ENGINE_STATE_KEY } from "@/logic/runtime/engine-state";
 import { EducationCard } from "@/ui/molecules/cards";
 
+const cv = content.flowViewer;
+
+function navigateTo(to: string) {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent("navigate", { detail: { to } }));
+}
+
+function buildFlowViewerUrl(flowId: string | null, engineId: string): string {
+  const params = new URLSearchParams();
+  params.set("screen", cv.screenPath);
+  if (flowId) params.set("flow", flowId);
+  params.set("engine", engineId);
+  return `/dev?${params.toString()}`;
+}
+
 /**
- * FlowViewer — Canonical business onboarding: flow + engine selection, EducationCard, debug panels.
- * Flows: marketing-plan-assessment, onboarding-simple (ad spend, 3:1 sales, etc.).
- * Use ?flow=... and ?client=1 for client view.
+ * FlowViewer — Canonical business onboarding (Template V2).
+ * Content from content.ts; navigation via CustomEvent("navigate"), no router.push.
  */
 export default function FlowViewer() {
   const searchParams = useSearchParams();
-  const router = useRouter();
 
   const flowId = searchParams.get("flow") || null;
   const engineIdParam = searchParams.get("engine") as EngineId | null;
@@ -89,10 +104,7 @@ export default function FlowViewer() {
           if (!selectedFlowId && flows.length > 0) {
             const firstFlowId = flows[0].id;
             setSelectedFlowId(firstFlowId);
-            const params = new URLSearchParams();
-            params.set("flow", firstFlowId);
-            params.set("engine", selectedEngineId);
-            router.push(`?${params.toString()}`);
+            navigateTo(buildFlowViewerUrl(firstFlowId, selectedEngineId));
           }
         });
       })
@@ -147,27 +159,18 @@ export default function FlowViewer() {
   // Handle flow selection
   function handleFlowChange(newFlowId: string) {
     setSelectedFlowId(newFlowId);
-    const params = new URLSearchParams();
-    params.set("flow", newFlowId);
-    params.set("engine", selectedEngineId);
-    router.push(`?${params.toString()}`);
+    navigateTo(buildFlowViewerUrl(newFlowId, selectedEngineId));
   }
 
   // Handle engine selection (only execution engines allowed)
   function handleEngineChange(newEngineId: string) {
-    // Guard: Only execution engines can be selected for step routing
     if (!isExecutionEngine(newEngineId as EngineId)) {
       console.warn(`[FlowViewer] Attempted to select aftermath processor "${newEngineId}". Aftermath processors do not execute steps. Using default.`);
       return;
     }
     const executionEngineId = newEngineId as ExecutionEngineId;
     setSelectedEngineId(executionEngineId);
-    const params = new URLSearchParams();
-    if (selectedFlowId) {
-      params.set("flow", selectedFlowId);
-    }
-    params.set("engine", executionEngineId);
-    router.push(`?${params.toString()}`);
+    navigateTo(buildFlowViewerUrl(selectedFlowId, executionEngineId));
   }
 
   // Card state management (isolated per flow)
@@ -254,7 +257,7 @@ export default function FlowViewer() {
   if (loading) {
     return (
       <div style={containerStyle}>
-        <div style={loadingStyle}>Loading flows...</div>
+        <div style={loadingStyle}>{cv.loadingFlows}</div>
       </div>
     );
   }
@@ -262,13 +265,13 @@ export default function FlowViewer() {
   if (availableFlows.length === 0) {
     return (
       <div style={containerStyle}>
-        <div style={errorStyle}>No flows found. Add JSON flow files under Business_Files/.../Flows/</div>
+        <div style={errorStyle}>{cv.noFlowsFound}</div>
       </div>
     );
   }
 
   const handleReturnToMain = () => {
-    router.push("/dev?screen=" + encodeURIComponent("tsx:(live) Business/onboarding/flows-index"));
+    navigateTo(cv.returnPath);
   };
 
   return (
@@ -277,7 +280,7 @@ export default function FlowViewer() {
       {!clientMode && (
       <div style={selectorContainer}>
         <div style={selectorRow}>
-          <label style={selectorLabel}>Select Flow:</label>
+          <label style={selectorLabel}>{cv.selectFlow}</label>
           <select
             value={selectedFlowId || ""}
             onChange={(e) => handleFlowChange(e.target.value)}
@@ -292,7 +295,7 @@ export default function FlowViewer() {
         </div>
 
         <div style={selectorRow}>
-          <label style={selectorLabel}>Select Engine:</label>
+          <label style={selectorLabel}>{cv.selectEngine}</label>
           <select
             value={selectedEngineId}
             onChange={(e) => handleEngineChange(e.target.value as EngineId)}
@@ -300,7 +303,7 @@ export default function FlowViewer() {
           >
             {availableEngines.map((engineId) => (
               <option key={engineId} value={engineId}>
-                {engineId.charAt(0).toUpperCase() + engineId.slice(1)} (Execution)
+                {engineId.charAt(0).toUpperCase() + engineId.slice(1)} {cv.executionLabel}
               </option>
             ))}
           </select>
@@ -312,24 +315,24 @@ export default function FlowViewer() {
       {!clientMode && nextStepReason && (
         <div style={explainPanel}>
           <div style={explainHeader}>
-            <span style={explainTitle}>Why this next step?</span>
+            <span style={explainTitle}>{cv.whyThisNextStep}</span>
             <div style={explainHeaderActions}>
               <button
                 onClick={async () => {
                   try {
                     const json = formatNextStepReasonAsJSON(nextStepReason);
                     await navigator.clipboard.writeText(json);
-                    alert("Debug JSON copied to clipboard!");
+                    alert(cv.copySuccess);
                   } catch (err) {
                     console.error("Failed to copy to clipboard:", err);
-                    alert("Failed to copy to clipboard");
+                    alert(cv.copyFailed);
                   }
                 }}
                 style={copyButton}
-                aria-label="Copy debug JSON"
-                title="Copy debug JSON to clipboard"
+                aria-label={cv.copyDebugJsonTitle}
+                title={cv.copyDebugJsonTitle}
               >
-                📋 Copy Debug JSON
+                {cv.copyDebugJson}
               </button>
               <button
                 onClick={() => {
@@ -337,7 +340,7 @@ export default function FlowViewer() {
                   setNextStepReason(null);
                 }}
                 style={explainClose}
-                aria-label="Close explanation"
+                aria-label={cv.closeExplanation}
               >
                 ×
               </button>
@@ -345,13 +348,13 @@ export default function FlowViewer() {
           </div>
           <div style={explainContent}>
             <div style={explainItem}>
-              <strong>Current step:</strong> {nextStepReason.currentStep.title} ({nextStepReason.currentStep.id})
+              <strong>{cv.currentStep}</strong> {nextStepReason.currentStep.title} ({nextStepReason.currentStep.id})
             </div>
             <div style={explainItem}>
-              <strong>Selected choice:</strong> {nextStepReason.selectedChoice.label} ({nextStepReason.selectedChoice.id})
+              <strong>{cv.selectedChoice}</strong> {nextStepReason.selectedChoice.label} ({nextStepReason.selectedChoice.id})
             </div>
             <div style={explainItem}>
-              <strong>Emitted:</strong>{" "}
+              <strong>{cv.emitted}</strong>{" "}
               {nextStepReason.emitted.signals.length > 0 && `signals: [${nextStepReason.emitted.signals.join(", ")}]`}
               {nextStepReason.emitted.blockers.length > 0 && ` blockers: [${nextStepReason.emitted.blockers.join(", ")}]`}
               {nextStepReason.emitted.opportunities.length > 0 && ` opportunities: [${nextStepReason.emitted.opportunities.join(", ")}]`}
@@ -361,28 +364,28 @@ export default function FlowViewer() {
                 "none"}
             </div>
             <div style={explainItem}>
-              <strong>Routing:</strong> {nextStepReason.routing.explanation}
+              <strong>{cv.routing}</strong> {nextStepReason.routing.explanation}
               {nextStepReason.routing.matchedRuleId && ` (${nextStepReason.routing.matchedRuleId})`}
             </div>
             <div style={explainItem}>
-              <strong>Next step:</strong> {nextStepReason.nextStep.title || nextStepReason.nextStep.id || "complete"}
+              <strong>{cv.nextStep}</strong> {nextStepReason.nextStep.title || nextStepReason.nextStep.id || cv.complete}
               {nextStepReason.nextStep.index !== null && ` (index: ${nextStepReason.nextStep.index})`}
             </div>
             {nextStepReason.meta && (
               <>
                 {nextStepReason.meta.stepPurpose && (
                   <div style={explainItem}>
-                    <strong>Step purpose:</strong> {nextStepReason.meta.stepPurpose}
+                    <strong>{cv.stepPurpose}</strong> {nextStepReason.meta.stepPurpose}
                   </div>
                 )}
                 {nextStepReason.meta.stepWeight !== undefined && (
                   <div style={explainItem}>
-                    <strong>Step weight:</strong> {nextStepReason.meta.stepWeight}
+                    <strong>{cv.stepWeight}</strong> {nextStepReason.meta.stepWeight}
                   </div>
                 )}
                 {nextStepReason.meta.choiceWeight !== undefined && (
                   <div style={explainItem}>
-                    <strong>Choice weight:</strong> {nextStepReason.meta.choiceWeight}
+                    <strong>{cv.choiceWeight}</strong> {nextStepReason.meta.choiceWeight}
                   </div>
                 )}
               </>
@@ -411,24 +414,24 @@ export default function FlowViewer() {
       {!clientMode && selectionReason && engineState && (
         <div style={debugPanel}>
           <div style={debugHeader}>
-            <span style={debugTitle}>🔍 Engine Selection Debug</span>
+            <span style={debugTitle}>{cv.engineSelectionDebug}</span>
             <button
               onClick={() => setSelectionReason(null)}
               style={debugClose}
-              aria-label="Close debug panel"
+              aria-label={cv.closeDebugPanel}
             >
               ×
             </button>
           </div>
           <div style={debugContent}>
             <div style={debugItem}>
-              <strong>Selected Engine:</strong>{" "}
+              <strong>{cv.selectedEngine}</strong>{" "}
               <span style={{ color: "#3b82f6", fontWeight: 700 }}>
                 {selectionReason.engineId.toUpperCase()}
               </span>
             </div>
             <div style={debugItem}>
-              <strong>Selection Reasons:</strong>
+              <strong>{cv.selectionReasons}</strong>
               <ul style={debugList}>
                 {selectionReason.reasons.map((reason, i) => (
                   <li key={i} style={debugListItem}>{reason}</li>
@@ -437,20 +440,20 @@ export default function FlowViewer() {
             </div>
             {selectionReason.signals.length > 0 && (
               <div style={debugItem}>
-                <strong>Accumulated Signals ({selectionReason.signals.length}):</strong>
+                <strong>{cv.accumulatedSignals} ({selectionReason.signals.length}):</strong>
                 <div style={debugTags}>
                   {selectionReason.signals.slice(0, 10).map((signal, i) => (
                     <span key={i} style={debugTag}>{signal}</span>
                   ))}
                   {selectionReason.signals.length > 10 && (
-                    <span style={debugTag}>+{selectionReason.signals.length - 10} more</span>
+                    <span style={debugTag}>+{selectionReason.signals.length - 10} {cv.more}</span>
                   )}
                 </div>
               </div>
             )}
             {selectionReason.calcOutputs.length > 0 && (
               <div style={debugItem}>
-                <strong>Calculator Outputs:</strong>
+                <strong>{cv.calculatorOutputs}</strong>
                 <div style={debugTags}>
                   {selectionReason.calcOutputs.map((output, i) => (
                     <span key={i} style={debugTag}>{output}</span>
@@ -459,7 +462,7 @@ export default function FlowViewer() {
               </div>
             )}
             <div style={debugItem}>
-              <strong>EngineState Summary:</strong>
+              <strong>{cv.engineStateSummary}</strong>
               <div style={debugStats}>
                 <div>Steps: {engineState.completedStepIds.length} / {engineState.totalSteps}</div>
                 <div>Signals: {engineState.accumulatedSignals.length}</div>
@@ -476,7 +479,7 @@ export default function FlowViewer() {
       {/* Ordered Step List - From EngineState - hidden in client view */}
       {!clientMode && engineState && currentFlow && (
         <div style={stepListPanel}>
-          <div style={stepListHeader}>Ordered Steps (from EngineState)</div>
+          <div style={stepListHeader}>{cv.orderedSteps}</div>
           <div style={stepList}>
             {engineState.orderedStepIds.map((stepId, index) => {
               const step = currentFlow.steps.find((s) => s.id === stepId);
@@ -488,13 +491,13 @@ export default function FlowViewer() {
               let statusStyle: React.CSSProperties = {};
 
               if (isCompleted) {
-                statusLabel = "✓ Completed";
+                statusLabel = cv.statusCompleted;
                 statusStyle = { color: "#10b981", fontWeight: 600 };
               } else if (isCurrent) {
-                statusLabel = "→ Current";
+                statusLabel = cv.statusCurrent;
                 statusStyle = { color: "#3b82f6", fontWeight: 700 };
               } else if (isUpcoming) {
-                statusLabel = "○ Upcoming";
+                statusLabel = cv.statusUpcoming;
                 statusStyle = { color: "#94a3b8" };
               }
 
@@ -532,9 +535,9 @@ export default function FlowViewer() {
           type="button"
           onClick={handleReturnToMain}
           style={returnToMainButton}
-          aria-label="Return to main screen"
+          aria-label={cv.returnToMain}
         >
-          ← Return to main screen
+          {cv.returnToMain}
         </button>
       </div>
     </div>

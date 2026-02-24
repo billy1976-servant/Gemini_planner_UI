@@ -5,6 +5,7 @@
  */
 
 import type { EngineExplainEvent } from "@/logic/engine-system/engine-explain";
+import { registerEngine } from "@/system/registry/engineRegistry";
 
 /**
  * NextStepReason - Canonical type for explaining why a particular step was chosen
@@ -131,3 +132,9 @@ export function createNextStepReason(
 export function formatNextStepReasonAsJSON(reason: NextStepReason): string {
   return JSON.stringify(reason, null, 2);
 }
+
+registerEngine({
+  name: "next-step-reason",
+  integratesWith: [],
+  description: "Next-step reason and explanation for flow progression",
+});

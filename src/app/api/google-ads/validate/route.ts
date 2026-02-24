@@ -1,13 +1,12 @@
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
-import { createGoogleAdsClient } from "../client";
+import { createGoogleAdsClient, getGoogleAdsMode } from "../client";
 import type { AdControlState } from "@/logic/controllers/google-ads.controller";
 
 export async function POST(request: Request) {
   try {
     const controlState: AdControlState = await request.json();
-    const { customer, customerId } = await createGoogleAdsClient();
 
     if (!controlState.campaignId) {
       return NextResponse.json(
@@ -15,6 +14,16 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+
+    const mode = getGoogleAdsMode();
+    if (mode === "mock") {
+      return NextResponse.json({
+        validated: true,
+        message: "Mock mode: no API call.",
+      });
+    }
+
+    const { customer, customerId } = await createGoogleAdsClient();
 
     const operations: any[] = [];
     const campaignId = controlState.campaignId.replace(/-/g, "");
@@ -79,6 +88,12 @@ export async function POST(request: Request) {
       );
     }
   } catch (error: any) {
+    if (error.message?.includes("GOOGLE_ADS_MODE")) {
+      return NextResponse.json(
+        { error: error.message, message: error.message },
+        { status: 400 }
+      );
+    }
     console.error("[Google Ads API] Validation error:", error);
     return NextResponse.json(
       {

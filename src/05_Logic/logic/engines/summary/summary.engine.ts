@@ -12,6 +12,7 @@
 
 import type { EngineState } from "../../runtime/engine-state";
 import type { ExportSlice } from "../../runtime/engine-state";
+import { registerEngine } from "@/system/registry/engineRegistry";
 
 export type SummaryOutput = {
   keyPoints: SummaryPoint[];
@@ -141,3 +142,9 @@ export function summaryPresentation(flow: any): any {
     notes: ["Aftermath processor - generates summaries from EngineState"],
   };
 }
+
+registerEngine({
+  name: "summary",
+  integratesWith: [],
+  description: "Aftermath processor: EngineState to summary output",
+});

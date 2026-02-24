@@ -3,6 +3,7 @@
  */
 
 import type { StructureItem, RecurrenceBlock } from "./structure.types";
+import { registerEngine } from "@/system/registry/engineRegistry";
 
 function toISO(d: Date): string {
   return d.toISOString().slice(0, 10);
@@ -122,3 +123,9 @@ export function isDueOn(task: StructureItem, date: Date): boolean {
   }
   return false;
 }
+
+registerEngine({
+  name: "recurrence",
+  integratesWith: ["structure"],
+  description: "Recurrence and due-date logic for structure items",
+});

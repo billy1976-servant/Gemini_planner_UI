@@ -97,7 +97,7 @@ export default function SectionLayoutDropdown({
                     detail: {
                       type: "Action",
                       params: {
-                        name: "state:update",
+                        name: "state.update",
                         key: `devSectionLayout.${sectionId}`,
                         value,
                       },

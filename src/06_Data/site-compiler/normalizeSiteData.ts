@@ -16,6 +16,7 @@ import { groupProductsByModel } from "@/compiler/groupProductsByModel";
 import { detectVariantDimensionsForGroups } from "@/compiler/detectVariantDimensions";
 import { mapImagesToVariantsForGroups } from "@/compiler/mapImagesToVariants";
 import { buildNormalizedModels, NormalizedModel } from "@/compiler/buildNormalizedModels";
+import { isProductPageSectionType } from "@/lib/site-renderer/section-registry";
 
 // ============================================================================
 // NORMALIZED TYPES (Intermediate format - simpler than CompiledSiteModel)
@@ -181,7 +182,7 @@ export function normalizeSiteData(domain: string): NormalizedSite {
       
       // Add other homepage sections (excluding product grids)
       homepage.sections.forEach((section, index) => {
-        if (section.type === "productGrid") return; // Skip product grids on home
+        if (isProductPageSectionType(section.type)) return; // Skip product grids on home
         
         const sectionId = `block-home-${index + 1}`; // +1 because hero is index 0
         allSections.push({
@@ -226,7 +227,7 @@ export function normalizeSiteData(domain: string): NormalizedSite {
     if (derivedPage) {
       page.sections.forEach((section, index) => {
         // Skip product grids - they only go to Products page
-        if (section.type === "productGrid") return;
+        if (isProductPageSectionType(section.type)) return;
         
         const sectionId = `block-${pageSlugSafe}-${index}`;
         allSections.push({
@@ -599,7 +600,7 @@ function normalizeFromV2Structure(
       
       // Add other homepage sections (excluding product grids)
       homepage.sections.forEach((section, index) => {
-        if (section.type === "productGrid") return; // Skip product grids on home
+        if (isProductPageSectionType(section.type)) return; // Skip product grids on home
         
         const sectionId = `block-home-${index + 1}`; // +1 because hero is index 0
         allSections.push({
@@ -644,7 +645,7 @@ function normalizeFromV2Structure(
     if (derivedPage) {
       page.sections.forEach((section, index) => {
         // Skip product grids - they only go to Products page
-        if (section.type === "productGrid") return;
+        if (isProductPageSectionType(section.type)) return;
         
         const sectionId = `block-${pageSlugSafe}-${index}`;
         allSections.push({

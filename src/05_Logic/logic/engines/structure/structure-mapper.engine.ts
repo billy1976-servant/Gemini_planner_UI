@@ -11,6 +11,7 @@ import type {
   RecurrenceBlock,
 } from "./structure.types";
 import { extractDatePhrase } from "./date-utils";
+import { registerEngine } from "@/system/registry/engineRegistry";
 
 /**
  * Map parse result to candidate StructureItems (ids can be assigned in action layer).
@@ -104,3 +105,9 @@ function inferPriority(title: string, rules: ResolvedRuleset): number | undefine
   }
   return undefined;
 }
+
+registerEngine({
+  name: "structure-mapper",
+  integratesWith: ["structure"],
+  description: "Parse result to candidate structure items with rules",
+});

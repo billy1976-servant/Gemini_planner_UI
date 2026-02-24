@@ -19,6 +19,7 @@ import { getTsxStructureOverride, subscribeTsxStructureOverride } from "./tsx-st
 import { applyPaletteToElement } from "@/lib/site-renderer/palette-bridge";
 import { getPaletteName, subscribePalette } from "@/engine/core/palette-store";
 import { getState, subscribeState } from "@/state/state-store";
+import { useDirector } from "@/lib/director/DirectorContext";
 
 export type TSXScreenWithEnvelopeProps = {
   screenPath: string;
@@ -54,11 +55,32 @@ function getLayoutStyles(
   }
 }
 
+/** Content-area layout style for template (e.g. WebsiteTemplate) from envelope profile. */
+function getContentAreaStyle(
+  layout: "full-viewport" | "contained" | "max-width" | "scroll-region"
+): React.CSSProperties {
+  switch (layout) {
+    case "full-viewport":
+      return { maxWidth: "100%", padding: "0" };
+    case "contained":
+      return { maxWidth: "100%", padding: "0.5rem 1rem" };
+    case "max-width":
+      return { maxWidth: "min(800px, 100%)", margin: "0 auto", padding: "1.5rem 1rem" };
+    case "scroll-region":
+      return { maxWidth: "100%", padding: "1rem" };
+    default:
+      return { maxWidth: "100%", padding: "0" };
+  }
+}
+
 export function TSXScreenWithEnvelope({ screenPath, Component }: TSXScreenWithEnvelopeProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const director = useDirector();
   const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
-  const experience = (stateSnapshot?.values?.experience as string) ?? "website";
-  const profile = getDefaultTsxEnvelopeProfile(screenPath, experience);
+  const experience =
+    director?.experience ?? (stateSnapshot?.values?.experience as string) ?? "website";
+  const profileName = director?.profileName;
+  const profile = getDefaultTsxEnvelopeProfile(screenPath, experience, profileName);
 
   const [overrideVersion, setOverrideVersion] = useState(0);
   useEffect(() => {
@@ -111,6 +133,9 @@ export function TSXScreenWithEnvelope({ screenPath, Component }: TSXScreenWithEn
     structureType: resolvedStructure.structureType,
     schemaVersion: resolvedStructure.schemaVersion,
     featureFlags: resolvedStructure.featureFlags,
+    screenPath,
+    experience,
+    layoutStyle: getContentAreaStyle(profile.layout),
   };
 
   return (
