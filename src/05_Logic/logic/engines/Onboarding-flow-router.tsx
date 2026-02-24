@@ -13,6 +13,7 @@
 
 
 import { run25X } from "../engines/25x.engine";
+import { registerEngine } from "@/system/registry/engineRegistry";
 
 
 /* -------------------------------------------------- */
@@ -91,4 +92,9 @@ export function resolveOnboardingFromAnswers(
   });
 }
 
+registerEngine({
+  name: "onboarding-flow-router",
+  integratesWith: ["calculatorResult", "scoring"],
+  description: "Deterministic onboarding/marketing flow selection from context",
+});
 

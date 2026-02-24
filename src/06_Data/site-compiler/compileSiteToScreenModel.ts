@@ -15,6 +15,7 @@
  */
 
 import { normalizeSiteData, NormalizedSite, NormalizedPage, Section, NormalizedProduct, NavItem, MediaAsset } from "./normalizeSiteData";
+import { getSectionOutputType } from "@/lib/site-renderer/section-registry";
 
 // ============================================================================
 // ENGINE-READY OUTPUT TYPES
@@ -125,36 +126,15 @@ function compileSections(
         originalContent: section.content,
       };
     } else {
-      // Map section types according to rules
-      switch (section.type) {
-        case "heading":
-          outputType = "heading";
-          break;
-        case "text":
-        case "html": // html → text
-          outputType = "text";
-          break;
-        case "image":
-          outputType = "image";
-          // Extract image URL from content if it's a URL
-          if (isUrl(section.content)) {
-            media = [section.content];
-          }
-          break;
-        case "list":
-          outputType = "list";
-          // Parse list content if it's structured
-          if (typeof section.content === "string") {
-            content = section.content.split("\n").filter(Boolean);
-          }
-          break;
-        case "quote":
-          // Quotes become text
-          outputType = "text";
-          content = `"${section.content}"`;
-          break;
-        default:
-          outputType = "text";
+      outputType = getSectionOutputType(section.type) as SectionModel["type"];
+      if (section.type === "image" && isUrl(section.content)) {
+        media = [section.content];
+      }
+      if (outputType === "list" && typeof section.content === "string") {
+        content = section.content.split("\n").filter(Boolean);
+      }
+      if (section.type === "quote") {
+        content = `"${section.content}"`;
       }
     }
     

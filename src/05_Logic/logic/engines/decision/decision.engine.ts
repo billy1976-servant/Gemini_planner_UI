@@ -13,6 +13,7 @@
 import type { EngineState } from "../../runtime/engine-state";
 import type { DecisionState } from "./decision-types";
 import { aggregateDecisionState } from "./aggregate";
+import { registerEngine } from "@/system/registry/engineRegistry";
 
 /**
  * Process EngineState to generate decision recommendations
@@ -96,3 +97,9 @@ export function decisionPresentation(flow: any): any {
     notes: ["Aftermath processor - generates recommendations from EngineState"],
   };
 }
+
+registerEngine({
+  name: "decision",
+  integratesWith: [],
+  description: "Aftermath processor: EngineState to decision recommendations",
+});

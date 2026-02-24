@@ -11,6 +11,7 @@
 import type { EducationFlow } from "@/logic/flows/flow-loader";
 import type { EngineFlow } from "../learning.engine";
 import type { PresentationModel } from "../presentation-types";
+import { registerEngine } from "@/system/registry/engineRegistry";
 
 export function calculatorEngine(flow: EducationFlow): EngineFlow {
   // Calculator engine: Filter to steps that produce numeric outputs
@@ -165,3 +166,9 @@ export function runCalculators(
   
   return results;
 }
+
+registerEngine({
+  name: "calculator",
+  integratesWith: ["calculatorInput", "calcOutputs"],
+  description: "Flow step ordering and calculator execution for flows",
+});

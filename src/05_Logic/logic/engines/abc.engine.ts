@@ -11,6 +11,7 @@
 import type { EducationFlow } from "@/logic/flows/flow-loader";
 import type { EngineFlow } from "./learning.engine";
 import type { PresentationModel } from "../engines/presentation-types";
+import { registerEngine } from "@/system/registry/engineRegistry";
 
 export function abcEngine(flow: EducationFlow): EngineFlow {
   // ABC engine: Filter to steps with checkbox/cascading logic
@@ -93,3 +94,9 @@ export function abcPresentation(flow: EducationFlow): PresentationModel {
     notes: ["Browse/reference ordering"],
   };
 }
+
+registerEngine({
+  name: "abc",
+  integratesWith: [],
+  description: "Checkbox/cascading and branching step ordering for flows",
+});

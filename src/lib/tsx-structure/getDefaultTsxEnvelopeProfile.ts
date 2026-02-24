@@ -1,8 +1,10 @@
 /**
  * TSX Structure Layer — default profile resolver.
- * Takes screenPath, returns envelope profile by path pattern conventions only.
- * No per-screen registry; no hardcoded screen IDs.
+ * When profileName is provided, resolves envelope from config (mode-profiles.json).
+ * Otherwise uses path pattern conventions only. No per-screen registry; no hardcoded screen IDs.
  */
+
+import modeProfilesConfig from "../../config/mode-profiles.json";
 
 export type LayoutMode = "full-viewport" | "contained" | "max-width" | "scroll-region";
 export type NavMode = "inherit" | "none" | "app-default" | "minimal" | "custom-slot";
@@ -44,18 +46,47 @@ function matchPath(screenPath: string, pattern: string): boolean {
   return normalized === pattern || normalized.startsWith(pattern + "/");
 }
 
+type ModeProfileWithEnvelope = {
+  envelope?: {
+    layout?: string;
+    nav?: string;
+    palette?: string;
+    appClass?: string;
+    chrome?: { topBar?: boolean; bottomBar?: boolean; sidePanel?: boolean; overlayHost?: boolean };
+  };
+};
+
 /**
  * Returns the default envelope profile for any TSX screen.
+ * When profileName is provided, uses config (mode-profiles.json) first; else path-based conventions.
  * Used by TSXScreenWithEnvelope to apply layout, palette, nav, chrome, and app class.
- * When experience is provided (e.g. from DEV SIDEBAR Website/App/Learning), TSX website
- * screens like Container Creations use it to align with the experience console.
  */
 export function getDefaultTsxEnvelopeProfile(
   screenPath: string,
-  experience?: string
+  experience?: string,
+  profileName?: string
 ): TsxEnvelopeProfile {
   const path = screenPath.replace(/^tsx:/, "").trim();
   const exp = (experience ?? "").toLowerCase();
+
+  if (profileName && typeof profileName === "string") {
+    const config = (modeProfilesConfig as Record<string, ModeProfileWithEnvelope>)[profileName];
+    const env = config?.envelope;
+    if (env && typeof env === "object") {
+      return {
+        layout: (env.layout as LayoutMode) ?? "full-viewport",
+        nav: (env.nav as NavMode) ?? "inherit",
+        palette: (env.palette as PaletteMode) ?? "vars-only",
+        appClass: (env.appClass as AppClass) ?? "standard",
+        chrome: {
+          topBar: env.chrome?.topBar ?? true,
+          bottomBar: env.chrome?.bottomBar ?? false,
+          sidePanel: env.chrome?.sidePanel ?? false,
+          overlayHost: env.chrome?.overlayHost ?? true,
+        },
+      };
+    }
+  }
 
   // Container Creations (and TSX website screens): respect web/app/learning console
   if (matchPath(path, "Container_Creations/*") || path.includes("Container_Creations/ContainerCreationsWebsite")) {

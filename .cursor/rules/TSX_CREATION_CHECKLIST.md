@@ -50,6 +50,7 @@ Cursor must follow this checklist every time it generates a new TSX screen. This
 - [ ] **No** hardcoded layout dimensions, slot sizes, board columns, density, or zoom in TSX. These come from **useAutoStructure()** / **structureConfig** or template.
 - [ ] **No** assumption that "this screen is day view only" or "we always have 12 columns"; read from config (with defaults).
 - [ ] Layout **inside** the screen (e.g. flex for a toolbar) is fine; **structure-level** layout (timeline grid height, dashboard grid columns) must be config-driven. **No** registry edits; resolution is by convention.
+- [ ] **No** router.push or dispatchState; use behavior bridge for navigation. No hardcoded screen paths, feature names, or content (titles, labels, API paths); use config/structure.
 
 ---
 
@@ -87,7 +88,9 @@ Cursor must follow this checklist every time it generates a new TSX screen. This
 | Behavior policy   | From config (e.g. interaction.drag); TSX implements                  |
 | Registry          | None; resolution by convention (metadata, path pattern, default)   |
 | Existing screens  | Leave Planner and Onboarding unchanged                               |
+| Navigation / state | Behavior bridge only; no router.push or dispatchState in TSX        |
+| Content           | No hardcoded titles, labels, API paths, or screen paths; use config/structure |
 
 ---
 
-*Use with `TSX_BUILD_SYSTEM.md` (full law) and `TSX_STRUCTURE_ENGINE_OVERVIEW.md` (engine overview).*
+*Use with `TSX_BUILD_SYSTEM.md` (full law) and `TSX_STRUCTURE_ENGINE_OVERVIEW.md` (engine overview). See also `.cursor/rules/CONTENT_AND_PRESENTATION.md` for content/presentation and template-only laws.*

@@ -12,6 +12,7 @@ import type { EngineState } from "@/logic/runtime/engine-state";
 import { processDecisionState } from "@/logic/engines/decision/decision.engine";
 import { selectExecutionEngine } from "@/logic/engines/shared/engine-selector";
 import type { DecisionState } from "@/logic/engines/decision/decision-types";
+import { registerEngine } from "@/system/registry/engineRegistry";
 
 export type HIEngineId = "calculator" | "comparison" | "decision" | "shared";
 
@@ -102,3 +103,9 @@ export function runHIEngines(
     hi: hiResult,
   };
 }
+
+registerEngine({
+  name: "hi-engine-runner",
+  integratesWith: [],
+  description: "Post-processing runner for calculator/comparison/decision/shared",
+});

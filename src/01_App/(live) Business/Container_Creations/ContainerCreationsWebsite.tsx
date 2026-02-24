@@ -1,31 +1,33 @@
 "use client";
 
 /**
- * Container Creations website — TSX screen registered in the experience system.
- * Uses global layout engine (TSXScreenWithEnvelope from dev page) and global palette (state + palette-store).
- * Syncs contract.palette to global state so envelope and Palette Contract Inspector use the same source.
+ * Container Creations website — TSX screen (Template V2).
+ * Thin wrapper: fetches contract, syncs palette (wrapper only), passes props to template.
+ * Template receives screenPath, experience, layoutStyle from envelope; no router/state in template.
  */
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { useSyncExternalStore } from "react";
+import content from "./content";
 import { WebsiteTemplate } from "@/04_Presentation/components/organs/tsx/website/WebsiteTemplate";
 import { validateTsxWebsiteContract } from "@/04_Presentation/components/organs/tsx/website/validateContract";
 import { setDevWebsiteNodeOrder } from "@/app/ui/control-dock/dev-right-sidebar-store";
-import { getState, subscribeState, dispatchState } from "@/state/state-store";
-import { setPalette } from "@/engine/core/palette-store";
+import { dispatchState } from "@/state/state-store";
 import type { TsxWebsiteContract } from "@/04_Presentation/components/organs/tsx/website/types";
 
-export default function ContainerCreationsWebsite() {
-  const searchParams = useSearchParams();
-  const screenPath = searchParams.get("screen") ?? "tsx:(live) Business/Container_Creations/ContainerCreationsWebsite";
+type Props = {
+  screenPath?: string;
+  experience?: string;
+  layoutStyle?: React.CSSProperties;
+};
+
+export default function ContainerCreationsWebsite(props: Props) {
+  const screenPath = props.screenPath ?? content.defaultScreenPath;
+  const experience = props.experience ?? "website";
+  const layoutStyle = props.layoutStyle;
   const [contract, setContract] = useState<TsxWebsiteContract | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
-  const experience = (stateSnapshot?.values?.experience as string) ?? "website";
-
   useEffect(() => {
-    fetch("/api/sites/containercreations/contract")
+    fetch(content.apiContractPath)
       .then((res) => {
         if (!res.ok) throw new Error(res.statusText);
         return res.json();
@@ -38,10 +40,9 @@ export default function ContainerCreationsWebsite() {
         setContract(data as TsxWebsiteContract);
         setError(null);
         dispatchState("state.update", { key: "paletteName", value: validation.resolvedPaletteName });
-        setPalette(validation.resolvedPaletteName);
       })
       .catch((err) => {
-        setError(err?.message ?? "Failed to load contract");
+        setError(err?.message ?? content.labels.failedToLoadContract);
         setContract(null);
       });
   }, []);
@@ -55,7 +56,7 @@ export default function ContainerCreationsWebsite() {
   if (error) {
     return (
       <div style={{ padding: 24, color: "var(--color-text-primary)" }}>
-        Error: {error}
+        {content.labels.error}: {error}
       </div>
     );
   }
@@ -63,7 +64,7 @@ export default function ContainerCreationsWebsite() {
   if (!contract) {
     return (
       <div style={{ padding: 24, color: "var(--color-text-secondary)" }}>
-        Loading…
+        {content.labels.loading}
       </div>
     );
   }
@@ -73,6 +74,7 @@ export default function ContainerCreationsWebsite() {
       contract={contract}
       screenPath={screenPath}
       experience={experience}
+      layoutStyle={layoutStyle}
     />
   );
 }

@@ -1,0 +1,7 @@
+# Content and Presentation — Permanent Law
+
+- **Website is a presentation, not a separate product.** A "website" is one possible presentation of structured content. The same content (blueprint + content contract) must be morphable into website, learning flow, dashboard, presenter, planner, journal. Do not create a website subsystem. Use existing contracts and config only.
+- **Blueprint and content contracts are truth.** Structure and content keys are defined in BLUEPRINT_UNIVERSE_CONTRACT.md and CONTENT_DERIVATION_CONTRACT.md. Node shape: id, type, content, behavior, children. TSX templates consume data that conforms to these contracts; they do not define new schema or content format.
+- **TSX is template only.** TSX screens are dumb templates: they consume existing blueprint/content contracts, schema definitions, behavior verbs, layout/molecule system, and Director primitives. They render; they do not own routing, global state, or layout/chrome. No direct router or state in screens; use the behavior bridge (navigate action or CustomEvent "navigate").
+- **No hardcoded content in TSX.** Titles, labels, API paths, and screen paths must come from config, structureConfig, or resolver. Do not hardcode feature names or route literals.
+- **One state engine, one behavior bridge, one layout engine.** Do not use router.push or dispatchState inside TSX screens. Use the existing behavior listener and navigate contract.

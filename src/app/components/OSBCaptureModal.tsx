@@ -4,7 +4,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useSyncExternalStore } from "react";
 import { getState, dispatchState, subscribeState } from "@/state/state-store";
 import { runAction } from "@/logic/runtime/action-runner";
-import { getOSBSuggestion, type OSBSuggestion } from "@/logic/osb/osb-routing";
+import { getOSBSuggestion, getRouteLabel, getDefaultTrack, type OSBSuggestion } from "@/logic/osb/osb-routing";
 import { getJourneyPack } from "@/logic/planner/journey-registry";
 
 const CHIP_STYLE: React.CSSProperties = {
@@ -17,18 +17,6 @@ const CHIP_STYLE: React.CSSProperties = {
   fontWeight: 500,
 };
 const CHIP_PRIMARY_STYLE: React.CSSProperties = { ...CHIP_STYLE, background: "#fff3e0", borderColor: "#ffb74d" };
-
-function routeLabel(route: string): string {
-  const labels: Record<string, string> = {
-    journal: "Journal",
-    task: "Task",
-    note: "Note",
-    track: "Track",
-    plan: "Plan",
-    journey: "Journey",
-  };
-  return labels[route] ?? route;
-}
 
 export default function OSBCaptureModal() {
   const state = useSyncExternalStore(subscribeState, getState, getState);
@@ -62,7 +50,7 @@ export default function OSBCaptureModal() {
         const notes = (getState()?.values?.notes as string[]) ?? [];
         dispatchState("state.update", { key: "notes", value: [...notes, draft] });
       } else if (route === "track") {
-        dispatchState("journal.add", { track: trackHint || "think", key: "entry", value: draft });
+        dispatchState("journal.add", { track: trackHint || getDefaultTrack(), key: "entry", value: draft });
       }
       close();
     },
@@ -159,7 +147,7 @@ export default function OSBCaptureModal() {
                 style={suggestion?.primary && !suggestion?.journey ? CHIP_PRIMARY_STYLE : CHIP_STYLE}
                 onClick={() => handleRoute(suggestion?.primary ?? "task", suggestion?.trackHint)}
               >
-                {routeLabel(suggestion?.primary ?? "task")}
+                {getRouteLabel(suggestion?.primary ?? "task")}
                 {suggestion?.trackHint ? ` (${suggestion.trackHint})` : ""}
               </button>
               {suggestion?.secondary?.map((r) => (
@@ -169,7 +157,7 @@ export default function OSBCaptureModal() {
                   style={CHIP_STYLE}
                   onClick={() => handleRoute(r)}
                 >
-                  {routeLabel(r)}
+                  {getRouteLabel(r)}
                 </button>
               ))}
             </div>

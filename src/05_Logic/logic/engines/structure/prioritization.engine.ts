@@ -5,8 +5,12 @@
 import type { StructureItem, ResolvedRuleset } from "./structure.types";
 <<<<<<< HEAD
 import { nextOccurrences } from "./recurrence.engine";
+<<<<<<< HEAD
 =======
 >>>>>>> c529cf0 (Clean version)
+=======
+import { registerEngine } from "@/system/registry/engineRegistry";
+>>>>>>> fd7c776 (Full system commit – BusinessSignal analytics + PDF reporting + projection engines + dashboard integration)
 
 function toISO(d: Date): string {
   return d.toISOString().slice(0, 10);
@@ -135,3 +139,9 @@ export function applyCancelDay(
     return item;
   });
 }
+
+registerEngine({
+  name: "prioritization",
+  integratesWith: ["structure"],
+  description: "Priority and cancel-day rules for structure items",
+});

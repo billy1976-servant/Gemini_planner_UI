@@ -1,25 +1,32 @@
 "use client";
 
+/**
+ * Flows index — TSX template (Template V2).
+ * Content from local content.ts; navigation via CustomEvent("navigate"), no router.push.
+ */
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import content from "./content";
 import type { FlowListItem } from "@/logic/flows/flow-loader";
 import ButtonCompound from "@/components/molecules/button.compound";
 
-const ENGINE_VIEWER_SCREEN_PATH = "tsx:(live) Business/onboarding/FlowViewer";
+const c = content.flowsIndex;
+
+function navigateTo(to: string) {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent("navigate", { detail: { to } }));
+}
 
 export default function FlowsIndex() {
-  const router = useRouter();
   const params = useSearchParams();
   const project = params.get("project");
-  const [flows, setFlows] = useState<string[]>([]);
   const [flowItems, setFlowItems] = useState<FlowListItem[]>([]);
   const [selectedFlow, setSelectedFlow] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Only filter when project exists; if project is null → show ALL flows
   const filteredFlowItems =
-    project === "Container_Creations"
+    project === c.projectFilterKey
       ? flowItems.filter((f) => f.id.startsWith("container-"))
       : flowItems;
 
@@ -29,14 +36,12 @@ export default function FlowsIndex() {
       .then((data) => {
         if (data.error) {
           setError(data.error);
-          setFlows([]);
           setFlowItems([]);
         } else {
           const list = (data.flows ?? []) as FlowListItem[];
           setFlowItems(list);
-          setFlows(list.map((f) => f.id));
           const filtered =
-            project === "Container_Creations"
+            project === c.projectFilterKey
               ? list.filter((f: FlowListItem) => f.id.startsWith("container-"))
               : list;
           if (filtered.length > 0 && !selectedFlow) {
@@ -45,8 +50,7 @@ export default function FlowsIndex() {
         }
       })
       .catch((err) => {
-        setError(err?.message ?? "Failed to load flows");
-        setFlows([]);
+        setError(err?.message ?? c.failedToLoadFlows);
         setFlowItems([]);
       })
       .finally(() => setLoading(false));
@@ -60,15 +64,15 @@ export default function FlowsIndex() {
 
   const handleOpen = () => {
     if (!selectedFlow) return;
-    const params = new URLSearchParams();
-    params.set("screen", ENGINE_VIEWER_SCREEN_PATH);
-    params.set("flow", selectedFlow);
-    params.set("view", "client");
-    router.push(`/dev?${params.toString()}`);
+    const q = new URLSearchParams();
+    q.set("screen", c.viewerScreenPath);
+    q.set("flow", selectedFlow);
+    q.set("view", "client");
+    navigateTo(`/dev?${q.toString()}`);
   };
 
   const handleReturn = () => {
-    router.push("/");
+    navigateTo(c.homePath);
   };
 
   return (
@@ -99,7 +103,7 @@ export default function FlowsIndex() {
             fontWeight: 600,
           }}
         >
-          Flow Tester
+          {c.title}
         </h1>
 
         {loading && (
@@ -109,7 +113,7 @@ export default function FlowsIndex() {
               marginBottom: "var(--spacing-md, 16px)",
             }}
           >
-            Loading flows…
+            {c.loadingFlows}
           </p>
         )}
         {error && (
@@ -138,7 +142,7 @@ export default function FlowsIndex() {
                 borderRadius: "var(--radius-sm, 6px)",
                 fontSize: "var(--font-size-sm, 14px)",
               }}
-              aria-label="Select flow"
+              aria-label={c.selectFlowAria}
             >
               {filteredFlowItems.map((f) => (
                 <option key={f.id} value={f.id}>
@@ -147,7 +151,7 @@ export default function FlowsIndex() {
               ))}
             </select>
             <ButtonCompound
-              content={{ label: "Open Flow" }}
+              content={{ label: c.openFlow }}
               onTap={handleOpen}
             />
           </>
@@ -155,13 +159,13 @@ export default function FlowsIndex() {
 
         {!loading && !error && filteredFlowItems.length === 0 && (
           <p style={{ color: "var(--color-text-muted, #888)" }}>
-            No flows found.
+            {c.noFlowsFound}
           </p>
         )}
 
         <div style={{ marginTop: "var(--spacing-md, 20px)" }}>
           <ButtonCompound
-            content={{ label: "← Return to main screen" }}
+            content={{ label: c.returnToMain }}
             onTap={handleReturn}
           />
         </div>

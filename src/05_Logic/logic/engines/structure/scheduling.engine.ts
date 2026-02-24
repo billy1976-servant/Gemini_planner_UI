@@ -4,6 +4,7 @@
 
 import type { StructureItem, Block, ResolvedRuleset, ScheduledItem } from "./structure.types";
 import { isDueOn } from "./recurrence.engine";
+import { registerEngine } from "@/system/registry/engineRegistry";
 
 /**
  * Return scheduled items for the given date: tasks that are due on that date,
@@ -23,3 +24,9 @@ export function scheduledForDate(
   }));
   return result;
 }
+
+registerEngine({
+  name: "scheduling",
+  integratesWith: ["structure"],
+  description: "Task-to-date and block/slot scheduling",
+});

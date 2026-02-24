@@ -1,5 +1,6 @@
 // src/logic/engines/25x.engine.ts
 
+import { registerEngine } from "@/system/registry/engineRegistry";
 
 /**
  * ============================================================
@@ -52,4 +53,9 @@ export function run25X(action: any, state: Record<string, any>) {
   };
 }
 
+registerEngine({
+  name: "25x",
+  integratesWith: ["calculatorInput", "calculatorResult"],
+  description: "25X loss/intent scoring action handler",
+});
 

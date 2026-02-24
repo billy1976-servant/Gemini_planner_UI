@@ -3,35 +3,37 @@
 /**
  * WebsiteTemplate — TSX website screen content.
  * Uses global palette system (envelope applies palette from state/palette-store).
- * Does not apply palette locally; does not bypass global layout engine.
- * Rerenders when experience mode changes (consumes state via parent).
+ * Layout style comes from envelope/profile (layoutStyle prop), not from experience branching.
  */
 import React from "react";
 import { useAutoStructure } from "@/lib/tsx-structure";
 import { useNodeOrder } from "./useNodeOrder";
 import { NodeRenderer } from "./NodeRenderer";
 import type { TsxWebsiteContract } from "./types";
+import { registerTemplate } from "@/system/registry/templateRegistry";
 
-const EXPERIENCE_LAYOUT: Record<string, React.CSSProperties> = {
-  website: { maxWidth: "100%", padding: "0" },
-  app: { maxWidth: "100%", padding: "0.5rem 1rem" },
-  learning: { maxWidth: "min(800px, 100%)", margin: "0 auto", padding: "1.5rem 1rem" },
+const DEFAULT_LAYOUT_STYLE: React.CSSProperties = {
+  maxWidth: "100%",
+  padding: "0",
 };
 
 export function WebsiteTemplate({
   contract,
   screenPath,
   experience,
+  layoutStyle,
 }: {
   contract: TsxWebsiteContract;
   screenPath: string;
-  /** Current experience mode (website/app/learning) from global state; screen rerenders when it changes. */
+  /** For data-tsx-experience and class only; layout decisions come from envelope. */
   experience?: string;
+  /** From envelope/profile; content-area layout (maxWidth, padding). */
+  layoutStyle?: React.CSSProperties;
 }) {
   useAutoStructure();
   const orderedNodes = useNodeOrder(contract.nodes, contract.nodeOrder, screenPath);
   const exp = (experience ?? "website").toLowerCase();
-  const experienceStyle = EXPERIENCE_LAYOUT[exp] ?? EXPERIENCE_LAYOUT.website;
+  const style = layoutStyle ?? DEFAULT_LAYOUT_STYLE;
 
   return (
     <div
@@ -44,7 +46,7 @@ export function WebsiteTemplate({
         flexDirection: "column",
         minHeight: "100%",
         width: "100%",
-        ...experienceStyle,
+        ...style,
       }}
     >
       {orderedNodes.map((node) => (
@@ -53,3 +55,11 @@ export function WebsiteTemplate({
     </div>
   );
 }
+
+registerTemplate({
+  name: "WebsiteTemplate",
+  structureType: "list",
+  requiredStateKeys: [],
+  supportedEngines: [],
+  description: "Website presentation template (layout from envelope/profile)",
+});

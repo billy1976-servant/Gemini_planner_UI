@@ -13,6 +13,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { compileSiteToSchema } from "@/lib/site-compiler/compileSiteToSchema";
 import { normalizeSiteData } from "@/lib/site-compiler/normalizeSiteData";
+import { isHeroSection } from "@/lib/site-renderer/section-registry";
 import { generateSiteKey } from "./compile-website";
 
 function normalizeWebsiteUrl(input: string): string {
@@ -124,7 +125,7 @@ async function main() {
     let flowTitle = "Find Your Real Cost";
     const homepage = schema.pages?.find((p: any) => p.path === "/");
     if (homepage) {
-      const heroSection = homepage.sections?.find((s: any) => s.type === "hero" || s.role === "hero");
+      const heroSection = homepage.sections?.find((s: any) => isHeroSection(s));
       if (heroSection?.content?.heading) {
         flowTitle = heroSection.content.heading;
       } else if (homepage.title) {

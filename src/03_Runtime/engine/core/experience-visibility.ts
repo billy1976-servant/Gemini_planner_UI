@@ -1,16 +1,21 @@
 /**
- * Experience visibility filter — runtime-only.
- * Decides per node: render, collapse, hide, or step (learning).
- * Inputs: experience, node.type, node.depth, node.slot (if present), stepIndex, sectionKeys, activeSectionKey.
- * No mutation of the JSON tree.
- *
- * Depth semantics:
- * - Website: all depths render (full page).
- * - App: depth 0 = shell, depth 1 = panels (one expanded, rest collapsed), depth 2+ = widgets/cards.
- * - Learning: depth 1 = step, depth 2+ = lesson content.
+ * Experience visibility filter — config-driven.
+ * Strategy per experience from experience-visibility.json; no hardcoded experience branches.
  */
 
+import experienceVisibilityConfig from "../../../config/experience-visibility.json";
+
 export type ExperienceVisibilityResult = "render" | "collapse" | "hide" | "step";
+
+type VisibilityConfig = {
+  strategy: "renderAll" | "dashboard" | "step" | "maxDepth";
+  depth1Section?: "collapse";
+  useStepIndex?: boolean;
+  maxDepth?: number;
+};
+
+const CONFIG = experienceVisibilityConfig as Record<string, VisibilityConfig>;
+const DEFAULT_STRATEGY: VisibilityConfig = { strategy: "renderAll" };
 
 export function getExperienceVisibility(
   experience: string,
@@ -22,62 +27,36 @@ export function getExperienceVisibility(
 ): ExperienceVisibilityResult {
   const type = (node?.type ?? "").toString().toLowerCase();
   const sectionKey = (node?.id ?? node?.role) ?? "";
+  const cfg = CONFIG[experience] ?? DEFAULT_STRATEGY;
+  const strategy = cfg.strategy ?? "renderAll";
 
-  // website: full page, all visible (control baseline)
-  if (experience === "website") {
-    return "render";
+  if (strategy === "renderAll") return "render";
+
+  if (strategy === "maxDepth") {
+    const maxD = typeof cfg.maxDepth === "number" ? cfg.maxDepth : 2;
+    return depth <= maxD ? "render" : "hide";
   }
 
-  // app: dashboard — depth 0 = shell, depth 1 = panels (active full, others collapsed), depth 2+ = widgets
-  if (experience === "app") {
+  if (strategy === "dashboard") {
     if (depth === 0) return "render";
     if (depth === 1 && type !== "section") return "hide";
     if (depth === 1 && type === "section") {
       const active = activeSectionKey ?? sectionKeys[0] ?? "";
-      return sectionKey === active ? "render" : "collapse";
+      return sectionKey === active ? "render" : (cfg.depth1Section === "collapse" ? "collapse" : "hide");
     }
     return "render";
   }
 
-  // learning: step engine — only one section at a time (stepIndex)
-  if (experience === "learning") {
+  if (strategy === "step") {
     if (depth === 0) return "render";
     if (depth === 1) {
       if (type !== "section") return "hide";
-      const currentKey = sectionKeys[stepIndex];
-      if (currentKey === undefined || sectionKey !== currentKey) return "hide";
-      return "render";
-    }
-    return "render";
-  }
-
-  // focus: only one section visible, no navigation (use currentStepIndex or activeSectionKey as single source)
-  if (experience === "focus") {
-    if (depth === 0) return "render";
-    if (depth === 1) {
-      if (type !== "section") return "hide";
-      const currentKey = sectionKeys[stepIndex] ?? sectionKeys[0];
+      const currentKey = cfg.useStepIndex
+        ? sectionKeys[stepIndex] ?? sectionKeys[0]
+        : sectionKeys[0];
       return sectionKey === currentKey ? "render" : "hide";
     }
     return "render";
-  }
-
-  // presentation: one section = one slide (same as learning step model)
-  if (experience === "presentation") {
-    if (depth === 0) return "render";
-    if (depth === 1) {
-      if (type !== "section") return "hide";
-      const currentKey = sectionKeys[stepIndex];
-      if (currentKey === undefined || sectionKey !== currentKey) return "hide";
-      return "render";
-    }
-    return "render";
-  }
-
-  // kids: hide deep nodes, big blocks only (depth 0–2 render, depth 3+ hide)
-  if (experience === "kids") {
-    if (depth <= 2) return "render";
-    return "hide";
   }
 
   return "render";

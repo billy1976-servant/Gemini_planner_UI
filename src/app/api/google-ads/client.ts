@@ -2,6 +2,14 @@ export const runtime = "nodejs";
 
 import { GoogleAdsApi, Customer } from "google-ads-api";
 
+// =============================
+// 🔴 GO LIVE INSTRUCTIONS
+// =============================
+// 1. Set GOOGLE_ADS_MODE=live in .env.local
+// 2. Ensure GOOGLE_ADS_DEVELOPER_TOKEN has Basic access (Google Ads API)
+// 3. Ensure GOOGLE_ADS_CUSTOMER_ID is your production account
+// 4. Restart the server after changing .env.local
+
 const REQUIRED_ENV_VARS = [
   "GOOGLE_ADS_DEVELOPER_TOKEN",
   "GOOGLE_ADS_CLIENT_ID",
@@ -15,6 +23,21 @@ function readEnv(name: string): string | undefined {
   if (raw == null) return undefined;
   const trimmed = raw.trim();
   return trimmed.length ? trimmed : undefined;
+}
+
+/**
+ * Returns current Google Ads mode. Throws if GOOGLE_ADS_MODE is missing or invalid.
+ */
+export function getGoogleAdsMode(): "mock" | "live" {
+  const raw = readEnv("GOOGLE_ADS_MODE");
+  if (!raw) {
+    throw new Error("GOOGLE_ADS_MODE is required. Set to 'mock' or 'live' in .env.local");
+  }
+  const mode = raw.toLowerCase().trim();
+  if (mode !== "mock" && mode !== "live") {
+    throw new Error(`GOOGLE_ADS_MODE must be 'mock' or 'live', got: ${raw}`);
+  }
+  return mode;
 }
 
 /**

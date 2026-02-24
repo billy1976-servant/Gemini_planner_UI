@@ -5,6 +5,7 @@ import type { EducationFlow } from "@/logic/flows/flow-loader";
 import type { EngineState } from "../runtime/engine-state";
 import { deriveEngineState } from "../runtime/engine-state";
 import type { PresentationModel } from "./presentation-types";
+import { registerEngine } from "@/system/registry/engineRegistry";
 
 export type RoutingRule = {
   when: {
@@ -157,3 +158,9 @@ function applyRoutingAction(
   // Default: continue linear
   return currentStepIndex + 1;
 }
+
+registerEngine({
+  name: "flow-router",
+  integratesWith: [],
+  description: "Signal-based next-step routing for flows",
+});
