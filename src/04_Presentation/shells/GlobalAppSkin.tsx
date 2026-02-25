@@ -398,27 +398,6 @@ interface GlobalAppSkinProps {
 function GlobalAppSkin({ children }: GlobalAppSkinProps) {
   const rootRef = React.useRef<HTMLDivElement>(null);
   const contentRef = React.useRef<HTMLDivElement>(null);
-  React.useEffect(() => {
-    const rootEl = rootRef.current;
-    const contentEl = contentRef.current;
-    if (rootEl && contentEl) {
-      fetch("http://127.0.0.1:7243/ingest/24224569-7f6c-4cce-b36c-15950dc8c06a", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          location: "GlobalAppSkin.tsx",
-          message: "Shell dimensions",
-          data: {
-            rootHeight: rootEl.offsetHeight,
-            contentHeight: contentEl.offsetHeight,
-            viewportHeight: window.innerHeight,
-          },
-          timestamp: Date.now(),
-          hypothesisId: "H1,H2,H3",
-        }),
-      }).catch(() => {});
-    }
-  }, [children]);
 
   return (
     <div

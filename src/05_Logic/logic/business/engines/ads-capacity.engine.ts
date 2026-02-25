@@ -39,7 +39,7 @@ export function runAdsCapacity(input: AdsCapacityInput): AdsCapacityOutput {
     aggressiveLift = DEFAULT_AGGRESSIVE_LIFT,
   } = input;
 
-  const budget = currentBudget ?? totals.cost || 0;
+  const budget = currentBudget ?? (totals.cost || 0);
   const roas = totals.roas ?? 0;
   const cpa = totals.cpa ?? 0;
 

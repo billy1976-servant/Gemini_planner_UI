@@ -47,13 +47,6 @@ export async function GET(
     const normalizedContent = fs.readFileSync(normalizedPath, "utf-8");
     const normalizedSite = JSON.parse(normalizedContent);
     
-    // #region agent log
-    try {
-      const productsCount = Array.isArray(normalizedSite.products) ? normalizedSite.products.length : 0;
-      fetch('http://127.0.0.1:7242/ingest/9a3b6649-09e2-46b1-ba72-7998690e9ef2',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'normalized/route.ts:48',message:'Normalized site products count',data:{domain,productsCount},timestamp:Date.now(),sessionId:'debug-session',runId:'normalized-products',hypothesisId:'H1'})}).catch(()=>{});
-    } catch {}
-    // #endregion
-    
     return NextResponse.json(normalizedSite, {
       headers: {
         "Cache-Control": "no-cache, no-store, must-revalidate",

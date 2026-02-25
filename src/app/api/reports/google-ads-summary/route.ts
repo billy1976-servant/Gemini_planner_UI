@@ -1,8 +1,10 @@
 export const runtime = "nodejs";
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getCampaignsData } from "@/app/api/google-ads/get-campaigns-data";
 import { normalizeCampaignsToSignals } from "@/logic/business/business-signal";
+import { getBusinessById } from "@/logic/business/business-model";
+import { getSignalsForBusiness } from "@/logic/business/csv-signals-store";
 import { runAdsAggregation } from "@/logic/business/engines/ads-aggregation.engine";
 import { runAdsRanking } from "@/logic/business/engines/ads-ranking.engine";
 import { runAdsTrend } from "@/logic/business/engines/ads-trend.engine";
@@ -42,15 +44,40 @@ function deriveImpressionShareSummary(signals: BusinessSignal[]): ImpressionShar
 
 /**
  * GET /api/reports/google-ads-summary
+ * Optional ?businessId= — when present and business is CSV, use CSV signals; else use Google Ads data.
  * Reuse insights pipeline (including saturation, demand, efficiency, market depth, bundle); render HTML for print-to-PDF.
- * No duplicated math.
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const { campaigns, hourlyPerformance } = await getCampaignsData();
-    const signals = normalizeCampaignsToSignals(campaigns, hourlyPerformance);
+    const businessId = request.nextUrl.searchParams.get("businessId")?.trim() ?? null;
+    let signals: BusinessSignal[];
+    let totalBudget = 0;
+
+    if (businessId) {
+      const business = getBusinessById(businessId);
+      if (business?.dataSourceType === "csv") {
+        signals = getSignalsForBusiness(businessId);
+        if (signals.length === 0) {
+          const emptyHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"/><title>Report</title></head><body><p>No CSV data. Upload data in the Data tab first, or use &quot;Test with sample CSV&quot; for CSV Upload.</p><p><a href="/">Back to workspace</a></p></body></html>`;
+          return new NextResponse(emptyHtml, {
+            headers: { "Content-Type": "text/html; charset=utf-8" },
+          });
+        }
+        totalBudget = 0;
+      } else {
+        const { campaigns, hourlyPerformance } = await getCampaignsData();
+        signals = normalizeCampaignsToSignals(campaigns, hourlyPerformance);
+        totalBudget = campaigns.reduce((s, c) => s + c.budget, 0);
+      }
+    } else {
+      const { campaigns, hourlyPerformance } = await getCampaignsData();
+      signals = normalizeCampaignsToSignals(campaigns, hourlyPerformance);
+      totalBudget = campaigns.reduce((s, c) => s + c.budget, 0);
+    }
+    console.log("Loaded signals count:", signals.length);
 
     const aggregated = runAdsAggregation({ signals });
+    const effectiveBudget = totalBudget || aggregated.totals.cost || 0;
     const ranking = runAdsRanking({
       byState: aggregated.byState,
       byHour: aggregated.byHour,
@@ -60,11 +87,10 @@ export async function GET() {
       impressions: 0, clicks: 0, cost: 0, conversions: 0, revenue: 0, roas: 0, cpa: 0, conversionRate: 0,
     };
     const trend = runAdsTrend({ current: aggregated.totals, previous });
-    const totalBudget = campaigns.reduce((s, c) => s + c.budget, 0);
     const impressionShareSummary = deriveImpressionShareSummary(signals);
     const capacity = runAdsCapacity({
       totals: aggregated.totals,
-      currentBudget: totalBudget,
+      currentBudget: effectiveBudget,
       impressionShare: impressionShareSummary?.impressionShare,
     });
     const projectionHistory = getProjectionSnapshots();

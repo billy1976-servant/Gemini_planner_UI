@@ -1,0 +1,31 @@
+/**
+ * Indicator tokens from indicator-map.ts mapped to CSS classes.
+ * No inline red/green in UI; use these classes with getIndicator / getIndicatorForMetric.
+ */
+.indicatorStrongPositive,
+.indicator-green {
+  color: #22c55e;
+}
+.indicatorModeratePositive,
+.indicator-light-green {
+  color: #86efac;
+}
+.indicatorNeutral,
+.indicator-gray {
+  color: #6b7280;
+}
+.indicatorModerateNegative,
+.indicator-light-red {
+  color: #fca5a5;
+}
+.indicatorStrongNegative,
+.indicator-red {
+  color: #ef4444;
+}
+
+/* Token names from DEFAULT_COLORS */
+.indicator-strongPositive { color: #22c55e; }
+.indicator-moderatePositive { color: #86efac; }
+.indicator-neutral { color: #6b7280; }
+.indicator-moderateNegative { color: #fca5a5; }
+.indicator-strongNegative { color: #ef4444; }

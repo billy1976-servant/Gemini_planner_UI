@@ -1,8 +1,10 @@
 export const runtime = "nodejs";
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getCampaignsData } from "../get-campaigns-data";
 import { normalizeCampaignsToSignals } from "@/logic/business/business-signal";
+import { getBusinessById } from "@/logic/business/business-model";
+import { getSignalsForBusiness } from "@/logic/business/csv-signals-store";
 import { runAdsAggregation } from "@/logic/business/engines/ads-aggregation.engine";
 import { runAdsRanking } from "@/logic/business/engines/ads-ranking.engine";
 import { runAdsTrend } from "@/logic/business/engines/ads-trend.engine";
@@ -45,17 +47,73 @@ function deriveImpressionShareSummary(signals: BusinessSignal[]): ImpressionShar
   };
 }
 
+function noDataResponse() {
+  return NextResponse.json({
+    noData: true,
+    executiveSummary: {
+      totalSpend: 0,
+      totalRevenue: 0,
+      roas: 0,
+      cpa: 0,
+      topState: "—",
+      topHour: null,
+      worstState: "—",
+      growthOpportunities: [],
+    },
+    highlights: [],
+    ranking: { topStates: [], worstStates: [], topHours: [], worstHours: [] },
+    trends: { periodOverPeriodDelta: { cost: 0, conversions: 0, roas: 0, cpa: 0 }, trendDirection: "flat", numericSlope: 0 },
+    capacity: { projectedSafeBudget: 0, projectedAggressiveBudget: 0, expectedROASAtExpansion: 0, marginalCPARisk: 0 },
+    recommendations: [],
+    growthOpportunities: [],
+    projectionConfidenceScore: 0,
+    saturation: null,
+    demand: null,
+    efficiencyHistory: null,
+    marketDepth: null,
+    bundleImpact: null,
+    byCampaign: {},
+    byHour: {},
+    byState: {},
+  });
+}
+
 /**
- * GET /api/google-ads/insights
- * Normalize → aggregate → rank → trend → capacity → saturation → demand → efficiency history → market depth → bundle impact → insights.
- * No duplicated math; all logic in business engines.
+ * GET /api/google-ads/insights?businessId=optional
+ * If businessId present and business is CSV: use signals from in-memory CSV store; if none, return noData.
+ * Otherwise: getCampaignsData → normalize → same pipeline.
+ * Single pipeline; no duplicated aggregation.
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const { campaigns, hourlyPerformance } = await getCampaignsData();
-    const signals = normalizeCampaignsToSignals(campaigns, hourlyPerformance);
+    console.log("INSIGHTS ROUTE HIT");
+    const businessId = request.nextUrl.searchParams.get("businessId")?.trim() ?? null;
+    console.log("INSIGHTS USING BUSINESS:", businessId);
+    let signals: BusinessSignal[];
+    let totalBudget = 0;
+
+    if (businessId) {
+      const business = getBusinessById(businessId);
+      if (business?.dataSourceType === "csv") {
+        signals = getSignalsForBusiness(businessId);
+        console.log("INSIGHTS SIGNALS RETURNED:", signals?.length ?? 0);
+        console.log("STORE SIZE DURING READ:", signals?.length);
+        if (signals.length === 0) return noDataResponse();
+        totalBudget = 0;
+      } else {
+        const { campaigns, hourlyPerformance } = await getCampaignsData();
+        signals = normalizeCampaignsToSignals(campaigns, hourlyPerformance);
+        totalBudget = campaigns.reduce((s, c) => s + c.budget, 0);
+      }
+    } else {
+      const { campaigns, hourlyPerformance } = await getCampaignsData();
+      signals = normalizeCampaignsToSignals(campaigns, hourlyPerformance);
+      totalBudget = campaigns.reduce((s, c) => s + c.budget, 0);
+    }
+    console.log("Loaded signals count:", signals.length);
 
     const aggregated = runAdsAggregation({ signals });
+    const effectiveBudget = totalBudget || aggregated.totals.cost || 0;
     const ranking = runAdsRanking({
       byState: aggregated.byState,
       byHour: aggregated.byHour,
@@ -75,11 +133,10 @@ export async function GET() {
       current: aggregated.totals,
       previous,
     });
-    const totalBudget = campaigns.reduce((s, c) => s + c.budget, 0);
     const impressionShareSummary = deriveImpressionShareSummary(signals);
     const capacity = runAdsCapacity({
       totals: aggregated.totals,
-      currentBudget: totalBudget,
+      currentBudget: effectiveBudget,
       impressionShare: impressionShareSummary?.impressionShare,
     });
 
@@ -134,6 +191,7 @@ export async function GET() {
     });
 
     return NextResponse.json({
+      noData: false,
       executiveSummary: insights.executiveSummary,
       highlights: insights.highlights,
       ranking: {
@@ -152,6 +210,9 @@ export async function GET() {
       efficiencyHistory: insights.efficiencyHistory,
       marketDepth: insights.marketDepth,
       bundleImpact: insights.bundleImpact,
+      byCampaign: aggregated.byCampaign,
+      byHour: aggregated.byHour,
+      byState: aggregated.byState,
     });
   } catch (error: any) {
     if (error.message?.includes("GOOGLE_ADS_MODE")) {

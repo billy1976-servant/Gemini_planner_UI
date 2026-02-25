@@ -260,9 +260,16 @@ export default function GoogleAdsDashboard() {
 
   const selectedCampaign = campaigns.find((c) => c.id === selectedCampaignId);
 
+  const workspaceUrl = "/dev?screen=" + encodeURIComponent("tsx:(live) Business/workspace/WorkspaceLayout");
+
   return (
     <div style={{ padding: 24, fontFamily: "system-ui", maxWidth: 1200, margin: "0 auto" }}>
       <h1>Google Ads Dashboard</h1>
+      <p style={{ marginBottom: 8 }}>
+        <a href={workspaceUrl} style={{ fontSize: 14, color: "#2563eb" }}>
+          Open Multi-Business Workspace →
+        </a>
+      </p>
       <p style={{ color: "#666", marginBottom: 24 }}>
         {adsMode != null ? (
           <strong>Google Ads Mode: {adsMode === "mock" ? "MOCK" : "LIVE"}</strong>

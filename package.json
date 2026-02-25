@@ -49,6 +49,8 @@
     "test:organs:layer6": "ts-node -r tsconfig-paths/register src/organs/organs.layer6.test.ts",
     "test:organs:layer7": "ts-node -r tsconfig-paths/register src/organs/organs.layer7.test.ts",
     "test:param-keys": "ts-node -r tsconfig-paths/register src/contracts/param-key-mapping.test.ts",
+    "test:csv": "ts-node -r tsconfig-paths/register src/05_Logic/logic/business/csv/universal-csv.test.ts",
+    "test:csv-e2e": "ts-node -r tsconfig-paths/register src/05_Logic/logic/business/csv/e2e-csv-import.ts",
     "test:showcase-visual": "ts-node -r tsconfig-paths/register src/contracts/showcase-visual-quality.test.ts",
     "test:e2e": "playwright test",
     "screen": "playwright test runtime-pipeline-contract.spec.ts --reporter=html",
@@ -71,15 +73,17 @@
     "lucide-react": "^0.563.0",
     "next": "14.2.3",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "react-is": "^18.3.1",
+    "recharts": "^3.7.0"
   },
   "devDependencies": {
-    "@shopify/cli": "^3.90.1",
     "@playwright/test": "^1.58.1",
+    "@shopify/cli": "^3.90.1",
     "@types/react": "19.2.6",
     "ts-node": "^10.9.1",
-    "tsx": "^4.7.0",
     "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.7.0",
     "typescript": "5.5.3"
   }
 }

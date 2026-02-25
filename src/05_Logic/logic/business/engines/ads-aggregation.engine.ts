@@ -116,6 +116,8 @@ export function runAdsAggregation(input: AdsAggregationInput): AdsAggregationOut
   }
   for (const s of hourlySignals) {
     addHour(s.hour!, s.metrics);
+    // When region is present, also group by region so each unique region produces a bucket.
+    if (s.region) addState(s.region, s.metrics);
   }
 
   // Totals from campaign-level only to avoid double-counting when hourly also present
