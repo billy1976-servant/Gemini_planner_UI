@@ -1,0 +1,80 @@
+.section {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1rem;
+  border: none;
+  background: #fff;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #111827;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.trigger:hover {
+  background: #f9fafb;
+}
+
+.triggerContent {
+  flex: 1;
+}
+
+.chevron {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  color: #6b7280;
+}
+
+.panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.25s ease-out;
+}
+
+.panelOpen {
+  max-height: 2000px;
+  transition: max-height 0.35s ease-in;
+}
+
+.panelInner {
+  padding: 0 1rem 1rem;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  justify-content: flex-end;
+}
+
+.controlBtn {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.controlBtn:hover:not(:disabled) {
+  background: #f3f4f6;
+}
+
+.controlBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

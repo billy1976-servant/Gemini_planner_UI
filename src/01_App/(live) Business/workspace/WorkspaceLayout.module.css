@@ -1,0 +1,543 @@
+.root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #f8fafc;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.businessSelect,
+.dateRangeSelect {
+  padding: 0.35rem 0.6rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  background: #fff;
+}
+
+.dateRangeSelect {
+  margin-left: 0.5rem;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+}
+
+.clarityToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.clarityLabel {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.clarityButton {
+  padding: 0.35rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  background: #fff;
+  cursor: pointer;
+}
+
+.clarityButton:hover {
+  background: #f3f4f6;
+}
+
+.clarityButton[aria-pressed="true"] {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.sidebar {
+  width: 52px;
+  flex-shrink: 0;
+  background: #fff;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.2s ease;
+}
+
+.sidebarExpanded {
+  width: 180px;
+}
+
+.sidebarToggle {
+  flex-shrink: 0;
+  padding: 0.5rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.sidebarToggle:hover {
+  color: #111;
+  background: #f3f4f6;
+}
+
+.sidebarNav {
+  display: flex;
+  flex-direction: column;
+  padding: 0.25rem 0;
+}
+
+.sidebarItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #374151;
+  text-align: left;
+  width: 100%;
+}
+
+.sidebarItem:hover {
+  background: #f3f4f6;
+}
+
+.sidebarItemActive {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.sidebarIcon {
+  flex-shrink: 0;
+  width: 1.25rem;
+  display: inline-block;
+}
+
+.sidebarLabel {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.main {
+  flex: 1;
+  overflow: auto;
+  padding: 1rem;
+}
+
+/* Shared section / dashboard */
+.section {
+  padding: 1rem;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.emptyState {
+  color: #6b7280;
+  margin: 0;
+}
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.healthBadge {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.healthBadge[data-health="healthy"] {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.healthBadge[data-health="warning"] {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.healthBadge[data-health="critical"] {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.healthBadge[data-health="unknown"] {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+
+.metricCard {
+  padding: 0.75rem;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.metricLabel {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.metricValue {
+  color: #374151;
+}
+
+.collapsibleSection {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.collapsibleHead {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: none;
+  background: #f9fafb;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+}
+
+.collapsibleHead:hover {
+  background: #f3f4f6;
+}
+
+.collapsibleBody {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem 0;
+}
+
+.dataTabPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.dataSource {
+  padding: 0.5rem 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.uploadButton {
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.uploadButton:hover {
+  background: #f3f4f6;
+}
+
+.refreshButton {
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.refreshButton:hover {
+  background: #f3f4f6;
+}
+
+.projectionsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.projectionsList li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+}
+
+.sectionTitle {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+}
+
+.uploadResult {
+  font-size: 0.875rem;
+  margin: 0.5rem 0 0 0;
+  color: #6b7280;
+}
+
+.projectionsChart {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #fff;
+  border-radius: 8px;
+  min-height: 200px;
+}
+
+/* Empty state panel (Phase 7) */
+.emptyStatePanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.emptyStateMessage {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  color: #64748b;
+  text-align: center;
+}
+
+.emptyStateButton {
+  padding: 0.5rem 1.25rem;
+  border: 1px solid #3b82f6;
+  border-radius: 8px;
+  background: #fff;
+  color: #2563eb;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.emptyStateButton:hover {
+  background: #eff6ff;
+}
+
+/* Overview page */
+.overviewPage {
+  padding: 0.25rem 0;
+}
+
+.sectionSummary {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.businessHealthTrigger {
+  background: linear-gradient(135deg, #f0fdf4 0%, #fff 100%) !important;
+}
+
+.chartBlock {
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.chartTitle {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.whyText {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.rankingTable {
+  margin-bottom: 1rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.table td {
+  padding: 0.4rem 0.5rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.recommendationList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.recommendationList li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.875rem;
+}
+
+.snapshotSelector {
+  margin-bottom: 1rem;
+}
+
+.snapshotSelector label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #475569;
+  margin-bottom: 0.35rem;
+}
+
+.select {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  background: #fff;
+  min-width: 240px;
+}
+
+.compareResult {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  font-size: 0.875rem;
+}
+
+.compareResult p {
+  margin: 0.25rem 0 0 0;
+}
+
+.compareResult p:first-child {
+  margin-top: 0;
+}
+
+.reportActions {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.reportButton {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  color: #334155;
+  font-size: 0.875rem;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.reportButton:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.explainer {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #64748b;
+}
+
+.gaugeBlock {
+  margin-bottom: 1rem;
+}
+
+.reportsPage {
+  padding: 0.5rem 0;
+}
+
+.reportsPageTitle {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.reportsPageDesc {
+  margin: 0 0 1.25rem 0;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.settingsPage {
+  padding: 0.5rem 0;
+}
+
+.settingsPageTitle {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.settingsPageDesc {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.pageTitle {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+}

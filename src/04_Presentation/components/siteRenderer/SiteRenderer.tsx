@@ -58,9 +58,6 @@ function normalizeSections(
   return sections.map((section) => {
     if (section.type === 'product-grid') {
       const productGridSection = section as ProductGridSection;
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/9a3b6649-09e2-46b1-ba72-7998690e9ef2',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'SiteRenderer.tsx:59',message:'normalizeSections processing product-grid',data:{sectionHasProducts:!!productGridSection.products,sectionProductsLength:productGridSection.products?.length||0,allProductsLength:allProducts.length,willUseSectionProducts:!!(productGridSection.products&&productGridSection.products.length>0),willUseAllProducts:!(productGridSection.products&&productGridSection.products.length>0)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-      // #endregion
       // If section doesn't have products or products array is empty, inject model.products
       const products = productGridSection.products && productGridSection.products.length > 0
         ? productGridSection.products
@@ -70,9 +67,6 @@ function normalizeSections(
         ...productGridSection,
         products: products.map(normalizeProduct),
       };
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/9a3b6649-09e2-46b1-ba72-7998690e9ef2',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'SiteRenderer.tsx:68',message:'normalizeSections after normalization',data:{normalizedProductsLength:normalized.products.length,firstProduct:normalized.products[0]?{id:normalized.products[0].id,name:normalized.products[0].name,imagesLength:normalized.products[0].images?.length||0}:null},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-      // #endregion
       return normalized;
     }
     return section;
@@ -206,11 +200,6 @@ export default function SiteRenderer({ model, pagePath = "/" }: SiteRendererProp
       <div className="min-h-screen">
         {page.sections.map((section, index) => {
           console.log(`[SiteRenderer] Rendering section ${index}:`, section.type);
-          // #region agent log
-          if (section.type && section.type.includes("product")) {
-            fetch('http://127.0.0.1:7242/ingest/9a3b6649-09e2-46b1-ba72-7998690e9ef2',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'SiteRenderer.tsx:186',message:'Full section object for product type',data:{sectionType:section.type,section:JSON.parse(JSON.stringify(section)),productsCount:(section as any).products?.length||0,productsShape:(section as any).products?.[0]?{hasId:!!(section as any).products[0].id,hasName:!!(section as any).products[0].name,hasImages:!!(section as any).products[0].images,imagesType:Array.isArray((section as any).products[0].images)?'array':'other',firstImageShape:(section as any).products[0].images?.[0]?{hasUrl:!!(section as any).products[0].images[0].url,hasAlt:!!(section as any).products[0].images[0].alt}:null}:null},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-          }
-          // #endregion
           return <SectionRenderer key={index} section={section} />;
         })}
       </div>
@@ -219,11 +208,6 @@ export default function SiteRenderer({ model, pagePath = "/" }: SiteRendererProp
 }
 
 function SectionRenderer({ section }: { section: PageSection }) {
-  // #region agent log
-  if (section.type && section.type.includes("product")) {
-    fetch('http://127.0.0.1:7242/ingest/9a3b6649-09e2-46b1-ba72-7998690e9ef2',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'SiteRenderer.tsx:192',message:'SectionRenderer received product section',data:{sectionType:section.type,sectionTypeExact:section.type,hasProducts:(section as any).products!==undefined,productsIsArray:Array.isArray((section as any).products),productsLength:(section as any).products?.length||0},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-  }
-  // #endregion
   switch (section.type) {
     case "hero":
       return <HeroSection section={section} />;

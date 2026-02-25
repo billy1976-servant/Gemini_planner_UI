@@ -67,12 +67,6 @@ export default function ExperienceRenderer({
     dispatchState("state.update", { key: "currentStepIndex", value: clampedStep + 1 });
   };
 
-  // #region agent log
-  React.useEffect(() => {
-    fetch('http://127.0.0.1:7243/ingest/24224569-7f6c-4cce-b36c-15950dc8c06a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ExperienceRenderer.tsx:71',message:'ExperienceRenderer render',data:{experience,nodeType:node?.type,hasNode:!!node,sectionKeysCount:sectionKeys.length},timestamp:Date.now(),hypothesisId:'H4'})}).catch(()=>{});
-  }, [experience, node, sectionKeys.length]);
-  // #endregion
-
   const rendererContent = (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
       <div style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
@@ -126,11 +120,6 @@ export default function ExperienceRenderer({
 
   // ---- Experience-specific composition ----
   if (experience === "app") {
-    // #region agent log
-    React.useEffect(() => {
-      fetch('http://127.0.0.1:7243/ingest/24224569-7f6c-4cce-b36c-15950dc8c06a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ExperienceRenderer.tsx:119',message:'App experience wrapper rendered',data:{experience:'app',wrapperStyle:appWrapperStyle},timestamp:Date.now(),hypothesisId:'H4'})}).catch(()=>{});
-    }, []);
-    // #endregion
     return (
       <div
         data-experience="app"
@@ -241,11 +230,6 @@ export default function ExperienceRenderer({
   }
 
   // Website (baseline) or unknown experience
-  // #region agent log
-  React.useEffect(() => {
-    fetch('http://127.0.0.1:7243/ingest/24224569-7f6c-4cce-b36c-15950dc8c06a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ExperienceRenderer.tsx:230',message:'Website/unknown experience wrapper',data:{experience,hasWrapperStyle:experience==='website'},timestamp:Date.now(),hypothesisId:'H4'})}).catch(()=>{});
-  }, [experience]);
-  // #endregion
   return (
     <div
       data-experience={experience}

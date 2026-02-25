@@ -8,10 +8,6 @@ interface ProductGridProps {
 }
 
 export default function ProductGrid({ section }: ProductGridProps) {
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/9a3b6649-09e2-46b1-ba72-7998690e9ef2',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ProductGrid.tsx:10',message:'ProductGrid received section',data:{sectionType:section.type,hasProducts:!!section.products,productsIsArray:Array.isArray(section.products),productsLength:section.products?.length||0,firstProduct:section.products?.[0]?{id:section.products[0].id,name:section.products[0].name,hasImages:!!section.products[0].images,imagesLength:section.products[0].images?.length||0,firstImage:section.products[0].images?.[0]?{url:section.products[0].images[0].url,alt:section.products[0].images[0].alt}:null}:null},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-  // #endregion
-  
   // Safety check: ensure products array exists and is not empty
   if (!section.products || !Array.isArray(section.products) || section.products.length === 0) {
     console.warn("[ProductGrid] No products to display", { section });
@@ -44,9 +40,6 @@ export default function ProductGrid({ section }: ProductGridProps) {
 }
 
 function ProductCard({ product }: { product: ProductModel }) {
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/9a3b6649-09e2-46b1-ba72-7998690e9ef2',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ProductGrid.tsx:36',message:'ProductCard received product',data:{productId:product.id,productName:product.name,hasImages:!!product.images,imagesIsArray:Array.isArray(product.images),imagesLength:product.images?.length||0,firstImage:product.images?.[0]?{hasUrl:!!product.images[0].url,url:product.images[0].url,hasAlt:!!product.images[0].alt,alt:product.images[0].alt}:null,productShape:{hasId:!!product.id,hasName:!!product.name,hasDescription:!!product.description,hasPrice:!!product.price,hasUrl:!!product.url}},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-  // #endregion
   return (
     <div className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow overflow-hidden">
       {product.images.length > 0 && (

@@ -5,11 +5,6 @@
  * instead of random scraped text like "American Express".
  */
 
-import fs from "fs";
-import path from "path";
-
-const DEBUG_LOG_PATH = path.join(process.cwd(), ".cursor", "debug.log");
-
 export interface NavItem {
   label: string;
   href?: string;
@@ -197,10 +192,6 @@ export function derivePagesFromNav(
   sections: Section[],
   options?: DerivePagesOptions
 ): DerivedPage[] {
-  // #region agent log
-  try { fs.appendFileSync(DEBUG_LOG_PATH, JSON.stringify({location:'derivePagesFromNav.ts:170',message:'derivePagesFromNav entry',data:{navigationCount:navigation?.length||0,navigationItems:navigation?.map(n=>({label:n.label,href:(n as any).href,path:(n as any).path}))||[],sectionsCount:sections?.length||0,hasProducts:!!options?.products,productsCount:options?.products?.length||0},timestamp:Date.now(),sessionId:'debug-session',runId:'run2',hypothesisId:'D'}) + '\n'); } catch {}
-  // #endregion
-  
   const pages: DerivedPage[] = [];
   const pageMap = new Map<string, DerivedPage>();
 
@@ -283,14 +274,8 @@ export function derivePagesFromNav(
       // If label is payment token but slug looks like a real page, ignore label and use slug
       if (labelIsPaymentToken && !slugIsPaymentToken && (slug.includes("/pages/") || slug.includes("/blogs/") || slug.includes("/contact") || slug.includes("/faq") || slug.includes("/install"))) {
         // Label is wrong (payment icon), but slug is valid - process it using slug only
-        // #region agent log
-        try { fs.appendFileSync(DEBUG_LOG_PATH, JSON.stringify({location:'derivePagesFromNav.ts:237',message:'derivePagesFromNav: ignoring payment token label, using slug',data:{label:navItem.label,slug,pageId,willProcess:true},timestamp:Date.now(),sessionId:'debug-session',runId:'run2',hypothesisId:'D'}) + '\n'); } catch {}
-        // #endregion
       } else if (labelIsPaymentToken || slugIsPaymentToken) {
         // Both are payment-related, skip
-        // #region agent log
-        try { fs.appendFileSync(DEBUG_LOG_PATH, JSON.stringify({location:'derivePagesFromNav.ts:243',message:'derivePagesFromNav: skipping payment token item',data:{label:navItem.label,slug,labelIsPaymentToken,slugIsPaymentToken},timestamp:Date.now(),sessionId:'debug-session',runId:'run2',hypothesisId:'D'}) + '\n'); } catch {}
-        // #endregion
         return;
       }
       
@@ -307,10 +292,6 @@ export function derivePagesFromNav(
       // ✅ FIX: Detect page type from SLUG primarily (label may be wrong)
       // Use slug for detection, fallback to label only if slug doesn't match
       const pageType = detectPageType(slug, navItem.label);
-      
-      // #region agent log
-      try { fs.appendFileSync(DEBUG_LOG_PATH, JSON.stringify({location:'derivePagesFromNav.ts:259',message:'derivePagesFromNav: detected page type',data:{slug,label:navItem.label,pageType,pageId},timestamp:Date.now(),sessionId:'debug-session',runId:'run2',hypothesisId:'D'}) + '\n'); } catch {}
-      // #endregion
       
       // ✅ FIX: Determine title - prefer pageType or slug-based title over potentially wrong label
       let title = navItem.label.trim();
@@ -353,10 +334,6 @@ export function derivePagesFromNav(
         source: "navigation",
         detectedType: pageType || "content"
       });
-      
-      // #region agent log
-      try { fs.appendFileSync(DEBUG_LOG_PATH, JSON.stringify({location:'derivePagesFromNav.ts:298',message:'derivePagesFromNav: created page from nav',data:{pageId,title,slug,pageType:pageType||'content',navLabel:navItem.label,navPath},timestamp:Date.now(),sessionId:'debug-session',runId:'run2',hypothesisId:'D'}) + '\n'); } catch {}
-      // #endregion
     });
   }
   
@@ -538,10 +515,6 @@ export function derivePagesFromNav(
     slug: p.slug,
     source: p.id === "products" || p.slug.startsWith("/category/") ? "products" : "navigation"
   })));
-  
-  // #region agent log
-  try { fs.appendFileSync(DEBUG_LOG_PATH, JSON.stringify({location:'derivePagesFromNav.ts:407',message:'derivePagesFromNav: returning final pages',data:{finalPagesCount:finalPages.length,finalPages:finalPages.map(p=>({id:p.id,title:p.title,slug:p.slug}))},timestamp:Date.now(),sessionId:'debug-session',runId:'run2',hypothesisId:'E'}) + '\n'); } catch {}
-  // #endregion
   
   return finalPages;
 }
