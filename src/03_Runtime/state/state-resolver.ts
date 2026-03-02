@@ -29,6 +29,13 @@ export type DerivedState = {
      - Do not store layout presets in values
   ==================================================== */
   layoutByScreen?: Record<string, { section: Record<string, string>; card: Record<string, string>; organ: Record<string, string> }>;
+
+  /* ====================================================
+     dashboardLayout — widget rects (x,y,w,h) per screen
+     - Written by dashboard.layout / dashboard.updateWidget
+     - Separate from layoutByScreen (preset IDs)
+  ==================================================== */
+  dashboardLayout?: Record<string, { widgets: Array<{ id: string; x: number; y: number; w: number; h: number }> }>;
 };
 
 
@@ -43,6 +50,7 @@ export function deriveState(log: StateEvent[]): DerivedState {
     interactions: [],
     values: {}, // 🔧 ADD
     layoutByScreen: {},
+    dashboardLayout: {},
   };
 
 
@@ -147,6 +155,32 @@ export function deriveState(log: StateEvent[]): DerivedState {
       continue;
     }
 
+
+    /* =========================
+       DASHBOARD LAYOUT (widget rects per screen)
+    ========================== */
+    if (intent === "dashboard.layout") {
+      const screenKey = typeof payload.screenKey === "string" ? payload.screenKey : "default";
+      const widgets = Array.isArray(payload.widgets) ? payload.widgets : [];
+      const valid = widgets.filter(
+        (w: any) => w && typeof w.id === "string" && typeof w.x === "number" && typeof w.y === "number" && typeof w.w === "number" && typeof w.h === "number"
+      );
+      derived.dashboardLayout![screenKey] = { widgets: valid };
+      continue;
+    }
+    if (intent === "dashboard.updateWidget") {
+      const screenKey = typeof payload.screenKey === "string" ? payload.screenKey : "default";
+      const widgetId = payload.widgetId;
+      const rect = payload.rect;
+      if (typeof widgetId !== "string" || !rect || typeof rect.x !== "number" || typeof rect.y !== "number" || typeof rect.w !== "number" || typeof rect.h !== "number") continue;
+      if (!derived.dashboardLayout![screenKey]) derived.dashboardLayout![screenKey] = { widgets: [] };
+      const list = derived.dashboardLayout![screenKey].widgets;
+      const idx = list.findIndex((w) => w.id === widgetId);
+      const entry = { id: widgetId, x: rect.x, y: rect.y, w: rect.w, h: rect.h };
+      if (idx >= 0) list[idx] = entry;
+      else list.push(entry);
+      continue;
+    }
 
     /* =========================
        INTERACTIONS (APPEND-ONLY)

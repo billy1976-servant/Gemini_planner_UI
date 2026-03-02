@@ -53,8 +53,8 @@ function loadOrganIndex(): OrganIndex | null {
   }
 }
 
-/** Contract-derived: allowed content keys per molecule type (empty = no content slots). */
-const ALLOWED_CONTENT_KEYS: Record<string, string[]> = {
+/** Contract-derived: allowed content keys per molecule type (empty = no content slots). Single source for run-apps audit. */
+export const ALLOWED_CONTENT_KEYS: Record<string, string[]> = {
   button: ["label"],
   avatar: ["media", "text"],
   chip: ["title", "body", "media"],

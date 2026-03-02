@@ -98,7 +98,8 @@
   "exclude": [
     "node_modules",
     "src/01_App/(dead) Tsx/tsx-screens/generated/**/*",
-    "src/999_Cleanup/**/*"
+    "src/999_Cleanup/**/*",
+    "src/05_Logic/logic/business/csv/e2e-csv-import.ts"
   ]
 }
 

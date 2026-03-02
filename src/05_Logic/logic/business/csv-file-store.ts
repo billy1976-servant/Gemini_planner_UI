@@ -101,3 +101,19 @@ export function getCsvFile(businessId: string, filename: string): string | null 
     return null;
   }
 }
+
+/** Remove a stored CSV file and its manifest entry. */
+export function deleteCsvFile(businessId: string, filename: string): boolean {
+  if (typeof fs.unlinkSync !== "function") return false;
+  const filePath = csvFilePath(businessId, filename);
+  const list = readManifest(businessId);
+  const filtered = list.filter((e) => e.filename !== filename);
+  if (filtered.length === list.length && !fs.existsSync(filePath)) return false;
+  try {
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    writeManifest(businessId, filtered);
+    return true;
+  } catch {
+    return false;
+  }
+}

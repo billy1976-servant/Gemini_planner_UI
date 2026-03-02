@@ -128,7 +128,7 @@ export const PRIMITIVE_REGISTRY: Record<string, PrimitiveDef> = {
 };
 
 /** Ordered list of primitive keys (exactly 25). */
-export const PRIMITIVE_KEYS = Object.keys(PRIMITIVE_REGISTRY) as readonly [
+export const PRIMITIVE_KEYS = Object.keys(PRIMITIVE_REGISTRY) as unknown as readonly [
   "visibility",
   "disabled",
   "variant",

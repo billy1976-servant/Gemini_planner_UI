@@ -40,11 +40,22 @@ import {
   structureEnsureTaskTemplateRows,
   structureSetScheduledSection,
   structureParseToStaging,
+  structureReorderItems,
+  structureMoveItem,
+  structureAddTreeNode,
+  structureRemoveTreeNode,
+  structureReorderTreeChildren,
   calendarSetDay,
   calendarSetWeek,
   calendarSetMonth,
   calendarSetDate,
 } from "@/logic/actions/structure.actions";
+import {
+  dashboardSetLayout,
+  dashboardAddWidget,
+  dashboardRemoveWidget,
+} from "@/logic/actions/dashboard.actions";
+import { wizardNext, wizardPrev, wizardGoTo } from "@/logic/actions/wizard.actions";
 
 
 /**
@@ -114,6 +125,19 @@ const registry: Record<string, ActionHandler> = {
   "structure:ensureTaskTemplateRows": structureEnsureTaskTemplateRows,
   "structure:setScheduledSection": structureSetScheduledSection,
   "structure:parseToStaging": structureParseToStaging,
+  "structure:reorderItems": structureReorderItems,
+  "structure:moveItem": structureMoveItem,
+  "structure:addTreeNode": structureAddTreeNode,
+  "structure:removeTreeNode": structureRemoveTreeNode,
+  "structure:reorderTreeChildren": structureReorderTreeChildren,
+
+  "dashboard:setLayout": dashboardSetLayout,
+  "dashboard:addWidget": dashboardAddWidget,
+  "dashboard:removeWidget": dashboardRemoveWidget,
+
+  "wizard:next": wizardNext,
+  "wizard:prev": wizardPrev,
+  "wizard:goTo": wizardGoTo,
 
   // V6: Calendar view state (structure.calendarView, structure.selectedDate)
   "calendar.today": calendarSetDay,
@@ -131,6 +155,14 @@ const registry: Record<string, ActionHandler> = {
  */
 export function getActionHandler(name: string) {
   return registry[name];
+}
+
+/**
+ * Return all registered action names (for discovery / BUILD_AUTHORITY_SURFACE).
+ * Does not mutate registry.
+ */
+export function getActionNames(): string[] {
+  return Object.keys(registry);
 }
 
 

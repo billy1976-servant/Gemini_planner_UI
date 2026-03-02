@@ -483,8 +483,8 @@ export function AdsTab({
                 const m = byCampaign[ad.campaignId] ?? execSummary;
                 const roas = m?.roas ?? 0;
                 const cpa = m?.cpa ?? 0;
-                const cost = m?.cost ?? execSummary?.totalSpend ?? 0;
-                const revenue = m?.revenue ?? execSummary?.totalRevenue ?? 0;
+                const cost = (m && "cost" in m ? m.cost : execSummary?.totalSpend) ?? 0;
+                const revenue = (m && "revenue" in m ? m.revenue : execSummary?.totalRevenue) ?? 0;
                 const ind = getIndicator(roas, slope, { metric: "roas" });
                 return (
                   <div key={ad.id} className={styles.metricCard}>

@@ -1,0 +1,29 @@
+{
+  "id": "kill_waste",
+  "label": "Kill Waste",
+  "description": "Identify low ROAS, high-cost segments with no conversions for reallocation.",
+  "segmentTypes": ["state", "hour", "campaign"],
+  "rules": {
+    "waste": {
+      "minCost": 0,
+      "maxRoas": 0.8,
+      "minClicks": 0,
+      "maxConversions": 0
+    },
+    "winners": {
+      "minRoas": 1.5,
+      "minConversions": 1,
+      "minCost": 0
+    }
+  },
+  "scoring": {
+    "cost": 0.2,
+    "roas": -1.0,
+    "cpa": 0.4,
+    "conversions": -0.6
+  },
+  "reallocation": {
+    "enabled": true,
+    "percentOfSpendToMove": 0.1
+  }
+}

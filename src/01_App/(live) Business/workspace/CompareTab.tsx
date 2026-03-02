@@ -125,7 +125,7 @@ function getMetricsForDimension(
 /** List metric keys that exist and have a displayable value (number). */
 function getMetricKeys(metrics: AggregatedMetrics | undefined): string[] {
   if (!metrics || typeof metrics !== "object") return [];
-  return Object.keys(metrics).filter((k) => typeof (metrics as Record<string, unknown>)[k] === "number");
+  return Object.keys(metrics).filter((k) => typeof (metrics as unknown as Record<string, unknown>)[k] === "number");
 }
 
 export function CompareTab({
@@ -249,7 +249,7 @@ export function CompareTab({
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 {metricKeys.map((key) => {
-                  const val = (metrics as Record<string, unknown>)[key];
+                  const val = (metrics as unknown as Record<string, unknown>)[key];
                   const num = typeof val === "number" ? val : 0;
                   const display = key === "conversionRate" || key === "roas" ? (key === "conversionRate" ? (num * 100).toFixed(2) + "%" : num.toFixed(2)) : Number.isFinite(num) ? num.toLocaleString() : String(val);
                   return (

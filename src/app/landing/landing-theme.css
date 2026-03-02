@@ -1,0 +1,34 @@
+/* Container Creations landing — industrial premium. No warning red; minimal clutter. */
+.landing-container-creations {
+  --landing-steel-bg: #1a1d23;
+  --landing-steel-bg-alt: #25282e;
+  --landing-steel-border: #2d3239;
+  --landing-steel-fg: #e2e8f0;
+  --landing-steel-muted: #64748b;
+  --landing-cta-bg: #334155;
+  --landing-cta-border: #475569;
+  --landing-radius: 8px;
+  --landing-font-base: "DM Sans", system-ui, sans-serif;
+  --landing-font-heading: "Poppins", "DM Sans", system-ui, sans-serif;
+
+  /* Override generic tokens so JsonSkinEngine sections pick up steel palette */
+  --color-bg-primary: #1a1d23;
+  --color-bg-secondary: #25282e;
+  --color-border: #2d3239;
+  --color-text-primary: #e2e8f0;
+  --color-primary: #334155;
+
+  background: var(--landing-steel-bg);
+  color: var(--landing-steel-fg);
+  font-family: var(--landing-font-base);
+  min-height: 100vh;
+}
+
+.landing-container-creations .landing-shop-bar {
+  background: var(--landing-steel-bg);
+  border-bottom-color: var(--landing-steel-border);
+}
+
+.landing-container-creations button:hover {
+  filter: brightness(1.1);
+}

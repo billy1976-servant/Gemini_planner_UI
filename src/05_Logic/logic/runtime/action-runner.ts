@@ -1,6 +1,21 @@
 // src/logic/runtime/action-runner.ts
 
 import { getActionHandler } from "@/logic/engine-system/engine-contract";
+
+/** Dev-only: log missing action handlers (non-fatal). */
+const missingHandlers: { name: string; ts: number }[] = [];
+const MAX_MISSING_LOG = 50;
+
+function recordMissingActionHandler(name: string): void {
+  if (process.env.NODE_ENV !== "production") {
+    missingHandlers.push({ name, ts: Date.now() });
+    if (missingHandlers.length > MAX_MISSING_LOG) missingHandlers.shift();
+  }
+}
+
+export function getMissingActionHandlers(): { name: string; ts: number }[] {
+  return [...missingHandlers];
+}
 import { getCapabilityLevel } from "@/03_Runtime/capability/capability-store";
 import {
   CAPABILITY_ACTION_MAP,
@@ -60,7 +75,12 @@ export function runAction(action: any, state: Record<string, any>) {
   const handler = getActionHandler(action.name);
 
   if (!handler) {
-    console.error("[action-runner] No handler for action:", action.name);
+    if (process.env.NODE_ENV !== "production") {
+      recordMissingActionHandler(action.name);
+      console.warn("[action-runner] No handler for action:", action.name);
+    } else {
+      console.error("[action-runner] No handler for action:", action.name);
+    }
     return state;
   }
 

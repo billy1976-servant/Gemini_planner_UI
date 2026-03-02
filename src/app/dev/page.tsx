@@ -110,6 +110,8 @@ businessContext.keys().forEach((key) => {
 const EXPLICIT_TSX_MAP: Record<string, () => Promise<any>> = {
   "(live) Business/Container_Creations/ContainerCreationsWebsite": () =>
     import("@/01_App/(live) Business/Container_Creations/ContainerCreationsWebsite"),
+  "(live) Business/Container_Creations/ContainerCreationsLanding": () =>
+    import("@/01_App/(live) Business/Container_Creations/ContainerCreationsLanding"),
 };
 
 function resolveTsxScreen(path: string) {
@@ -459,9 +461,13 @@ export default function DevPage() {
       if (!screenParamDecoded) return screenParamDecoded;
       if (screenParamDecoded.startsWith("tsx:")) return screenParamDecoded;
       if (screenParamDecoded.startsWith("onboarding/")) return `tsx:${screenParamDecoded}`;
-      // Container Creations website: URL often has Container_Creations/ContainerCreationsWebsite without tsx: prefix
-      if (screenParamDecoded === "Container_Creations/ContainerCreationsWebsite" || screenParamDecoded.replace(/\\/g, "/") === "Container_Creations/ContainerCreationsWebsite") {
+      // Container Creations: short path without tsx: prefix
+      const ccPath = screenParamDecoded.replace(/\\/g, "/");
+      if (ccPath === "Container_Creations/ContainerCreationsWebsite") {
         return "tsx:(live) Business/Container_Creations/ContainerCreationsWebsite";
+      }
+      if (ccPath === "Container_Creations/ContainerCreationsLanding") {
+        return "tsx:(live) Business/Container_Creations/ContainerCreationsLanding";
       }
       return screenParamDecoded;
     })();

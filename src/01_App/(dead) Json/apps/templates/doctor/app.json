@@ -1,0 +1,17 @@
+{
+  "id": "screenRoot",
+  "type": "screen",
+  "state": {
+    "currentView": "|home"
+  },
+  "children": [
+    {
+      "id": "|Home",
+      "type": "Section",
+      "children": [],
+      "content": {
+        "title": "Welcome to Riverside Family Medical"
+      }
+    }
+  ]
+}

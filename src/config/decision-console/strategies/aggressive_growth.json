@@ -1,0 +1,29 @@
+{
+  "id": "aggressive_growth",
+  "label": "Aggressive Growth",
+  "description": "Aggressive reallocation from waste to winners; higher percent moved.",
+  "segmentTypes": ["state", "hour", "campaign"],
+  "rules": {
+    "waste": {
+      "minCost": 5,
+      "maxRoas": 0.5,
+      "minClicks": 0,
+      "maxConversions": 0
+    },
+    "winners": {
+      "minRoas": 2.0,
+      "minConversions": 1,
+      "minCost": 0
+    }
+  },
+  "scoring": {
+    "cost": 0.25,
+    "roas": -1.0,
+    "cpa": 0.3,
+    "conversions": -0.65
+  },
+  "reallocation": {
+    "enabled": true,
+    "percentOfSpendToMove": 0.2
+  }
+}

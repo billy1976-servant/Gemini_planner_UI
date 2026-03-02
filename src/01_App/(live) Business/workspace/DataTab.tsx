@@ -28,6 +28,7 @@ export function DataTab({
   const [ingestError, setIngestError] = React.useState<string | null>(null);
   const [filesLoading, setFilesLoading] = React.useState(false);
   const [previewLoading, setPreviewLoading] = React.useState(false);
+  const [deleteLoading, setDeleteLoading] = React.useState(false);
 
   const isCsvBusiness = business?.dataSourceType === "csv";
   const canUpload = Boolean(businessId && isCsvBusiness);
@@ -46,6 +47,20 @@ export function DataTab({
     fetch(`/api/business/csv/files?businessId=${encodeURIComponent(businessId)}`)
       .then((r) => r.json())
       .then((d: { ok?: boolean; files?: { filename: string }[] }) => {
+        // #region agent log
+        fetch("http://127.0.0.1:7242/ingest/7e15e045-3112-419f-8116-3226c0884ac1", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "df01c7" },
+          body: JSON.stringify({
+            sessionId: "df01c7",
+            location: "DataTab.tsx:fetchFilesList",
+            message: "Data tab: files API response for businessId",
+            data: { businessId, ok: d.ok, fileNames: Array.isArray(d.files) ? d.files.map((f) => f.filename) : [] },
+            timestamp: Date.now(),
+            hypothesisId: "E",
+          }),
+        }).catch(() => {});
+        // #endregion
         if (d.ok && Array.isArray(d.files)) {
           const names = d.files.map((f) => f.filename);
           setFileList(names);
@@ -152,6 +167,34 @@ export function DataTab({
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
+  async function handleDeleteFile() {
+    if (!businessId || !selectedFilename || !isCsvBusiness) return;
+    if (!confirm(`Delete "${selectedFilename}"? This cannot be undone.`)) return;
+    setDeleteLoading(true);
+    try {
+      const res = await fetch(
+        `/api/business/csv/files?businessId=${encodeURIComponent(businessId)}&filename=${encodeURIComponent(selectedFilename)}`,
+        { method: "DELETE" }
+      );
+      const data = await res.json().catch(() => ({}));
+      if (data.ok) {
+        setFilesByName((prev) => {
+          const next = { ...prev };
+          delete next[selectedFilename!];
+          return next;
+        });
+        setFileList((prev) => prev.filter((n) => n !== selectedFilename));
+        setSelectedFilename(null);
+        fetchStoredCount();
+        onRefresh();
+      } else {
+        setIngestError(data.reason ?? "Delete failed");
+      }
+    } finally {
+      setDeleteLoading(false);
+    }
+  }
+
   return (
     <div className={styles.dataTabPanel}>
       <section className={styles.section}>
@@ -216,6 +259,26 @@ export function DataTab({
                 </option>
               ))}
             </select>
+            {selectedFilename && (
+              <button
+                type="button"
+                onClick={handleDeleteFile}
+                disabled={deleteLoading}
+                style={{
+                  marginLeft: 8,
+                  padding: "0.35rem 0.6rem",
+                  fontSize: "0.8125rem",
+                  color: "#b91c1c",
+                  background: "#fef2f2",
+                  border: "1px solid #fecaca",
+                  borderRadius: 6,
+                  cursor: deleteLoading ? "not-allowed" : "pointer",
+                }}
+                aria-label={`Delete file ${selectedFilename}`}
+              >
+                {deleteLoading ? "Deleting…" : "Delete file"}
+              </button>
+            )}
             {previewLoading && selectedFilename && (
               <span style={{ fontSize: "0.8125rem", color: "#64748b", marginLeft: 8 }}>Loading preview…</span>
             )}

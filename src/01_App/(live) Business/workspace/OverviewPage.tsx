@@ -180,7 +180,7 @@ export function OverviewPage({
     return <EmptyStatePanel onGoToData={onNavigateToData} />;
   }
 
-  const summary = insights.executiveSummary ?? {};
+  const summary: NonNullable<InsightsResponse["executiveSummary"]> = insights.executiveSummary ?? ({} as NonNullable<InsightsResponse["executiveSummary"]>);
   const roas = summary.roas ?? 0;
   const slope = insights.trends?.numericSlope ?? 0;
   const roasIndicator = getIndicator(roas, slope, { metric: "roas" });

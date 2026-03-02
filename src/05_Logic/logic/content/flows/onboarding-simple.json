@@ -9,8 +9,8 @@
       "id": "monthly-ad-spend",
       "title": "Monthly ad spend",
       "body": "How much do you spend a month on online marketing ads?",
-      "image": "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&h=400&fit=crop",
-      "imageAlt": "Digital marketing",
+      "image": "/images/MAIN_IMAGE_KIT.jpg",
+      "imageAlt": "Main product kit",
       "inputType": "number",
       "inputKey": "ad_spend",
       "inputLabel": "Amount ($)",
@@ -27,8 +27,8 @@
       "id": "wasted-clicks",
       "title": "Ad spend waste",
       "body": "Do you feel like you're paying for clicks that never turn into real customers?",
-      "image": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop",
-      "imageAlt": "Analytics",
+      "image": "/images/Measurements_Type_A_1500x765_crop_center.jpg",
+      "imageAlt": "Measurements",
       "choices": [
         {
           "id": "yes-often",
@@ -63,8 +63,8 @@
       "id": "ad-confidence",
       "title": "Ad confidence",
       "body": "Do you feel confident you know which ads are actually making you money?",
-      "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop",
-      "imageAlt": "Confidence",
+      "image": "/images/SkyDOME_-_Installed_on_Roof_1500sq.jpg.webp",
+      "imageAlt": "Skydome installed on roof",
       "choices": [
         {
           "id": "no-idea",

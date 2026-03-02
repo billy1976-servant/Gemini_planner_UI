@@ -8,9 +8,10 @@ import { TimelineTab } from "./TimelineTab";
 import { DataTab } from "./DataTab";
 import { ReportsTab } from "./ReportsTab";
 import { AdsTab } from "./AdsTab";
+import { DecisionConsoleTab } from "./DecisionConsoleTab";
 import styles from "./WorkspaceLayout.module.css";
 
-export type ViewId = "command" | "compare" | "timeline" | "data" | "reports" | "ads";
+export type ViewId = "command" | "compare" | "timeline" | "data" | "reports" | "ads" | "decision";
 
 const NAV_ITEMS: { id: ViewId; label: string; icon: string }[] = [
   { id: "command", label: "Command", icon: "▣" },
@@ -19,6 +20,7 @@ const NAV_ITEMS: { id: ViewId; label: string; icon: string }[] = [
   { id: "data", label: "Data", icon: "◫" },
   { id: "reports", label: "Reports", icon: "▤" },
   { id: "ads", label: "Ads", icon: "◆" },
+  { id: "decision", label: "Decision", icon: "◇" },
 ];
 
 export default function WorkspaceLayout() {
@@ -29,6 +31,23 @@ export default function WorkspaceLayout() {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
 
   const currentBusiness = businessId ? getBusiness(businessId) ?? businesses[0] : businesses[0];
+
+  // #region agent log
+  React.useEffect(() => {
+    fetch("http://127.0.0.1:7242/ingest/7e15e045-3112-419f-8116-3226c0884ac1", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "df01c7" },
+      body: JSON.stringify({
+        sessionId: "df01c7",
+        location: "WorkspaceLayout.tsx:headerBusinesses",
+        message: "Header business dropdown source (Data tab uses this)",
+        data: { businesses: businesses.map((b) => ({ id: b.id, name: b.name })), selectedBusinessId: businessId },
+        timestamp: Date.now(),
+        hypothesisId: "B",
+      }),
+    }).catch(() => {});
+  }, [businesses, businessId]);
+  // #endregion
 
   const refreshKey = `${businessId}-${activeView}`;
 
@@ -135,6 +154,9 @@ export default function WorkspaceLayout() {
               businessId={currentBusiness.id}
               onNavigateToData={() => setActiveView("data")}
             />
+          )}
+          {activeView === "decision" && (
+            <DecisionConsoleTab key={refreshKey} businessId={businessId} />
           )}
         </main>
       </div>

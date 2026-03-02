@@ -18,9 +18,8 @@ export async function GET(request: NextRequest) {
     if (!business || business.dataSourceType !== "csv") {
       return NextResponse.json({ count: 0 }, { status: 200 });
     }
-    console.log("GET SIGNALS FOR:", businessId);
     const signals = getSignalsForBusiness(businessId);
-    console.log("Loaded signals count:", signals.length);
+    console.log("[diag] signals businessId=%s count=%s", businessId, signals.length);
     return NextResponse.json({ count: signals.length });
   } catch (error) {
     console.error("[csv/signals] Error:", error);

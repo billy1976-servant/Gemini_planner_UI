@@ -54,6 +54,8 @@ type StructureSlice = {
   parserConfig?: ParserPipelineConfig;
   /** V2: Section scheduling — selected folder/section for day (SCHEDULED WORK DAY / SCHEDULED [section]). */
   scheduledSection?: string;
+  /** Ordered item ids for list/board/gallery; if missing, order = items array order (backfilled in getSlice). */
+  itemOrder?: string[];
 };
 
 const EMPTY_SLICE: StructureSlice = {
@@ -72,6 +74,12 @@ function getSlice(): StructureSlice {
       const withBase = { ...slice, tree: [...BASE_PLANNER_TREE] };
       writeSlice(withBase);
       return withBase;
+    }
+    // Backfill itemOrder from items order if missing
+    if (!slice.itemOrder?.length && slice.items.length > 0) {
+      const withOrder = { ...slice, itemOrder: slice.items.map((i) => i.id) };
+      writeSlice(withOrder);
+      return withOrder;
     }
     return slice;
   }
@@ -122,7 +130,12 @@ export function structureAddItem(
   const idx = items.findIndex((i) => i.id === item.id);
   if (idx >= 0) items[idx] = item;
   else items.push(item);
-  writeSlice({ ...slice, items });
+  const itemOrder = slice.itemOrder ?? slice.items.map((i) => i.id);
+  if (!itemOrder.includes(item.id)) {
+    writeSlice({ ...slice, items, itemOrder: [...itemOrder, item.id] });
+  } else {
+    writeSlice({ ...slice, items });
+  }
 }
 
 export function structureAddItems(
@@ -132,13 +145,17 @@ export function structureAddItems(
   const slice = getSlice();
   const list = Array.isArray(action.items) ? action.items : [];
   const items = [...slice.items];
+  let itemOrder = slice.itemOrder ?? slice.items.map((i) => i.id);
   for (const partial of list) {
     const item = normalizeItem(partial ?? {});
     const idx = items.findIndex((i) => i.id === item.id);
     if (idx >= 0) items[idx] = item;
-    else items.push(item);
+    else {
+      items.push(item);
+      if (!itemOrder.includes(item.id)) itemOrder = [...itemOrder, item.id];
+    }
   }
-  writeSlice({ ...slice, items });
+  writeSlice({ ...slice, items, itemOrder });
 }
 
 export function structureUpdateItem(
@@ -162,7 +179,133 @@ export function structureDeleteItem(
   const id = action.id;
   if (!id) return;
   const items = slice.items.filter((i) => i.id !== id);
-  writeSlice({ ...slice, items });
+  const itemOrder = slice.itemOrder?.filter((oid) => oid !== id) ?? items.map((i) => i.id);
+  writeSlice({ ...slice, items, itemOrder });
+}
+
+/** Reorder items by new id order (list/gallery) or within a container. Payload: { itemIds: string[] } or { fromIndex, toIndex }. */
+export function structureReorderItems(
+  action: { itemIds?: string[]; fromIndex?: number; toIndex?: number },
+  _state: Record<string, any>
+): void {
+  const slice = getSlice();
+  if (action.itemIds && Array.isArray(action.itemIds)) {
+    const seen = new Set(slice.items.map((i) => i.id));
+    const ordered = [...action.itemIds].filter((id) => seen.has(id));
+    const rest = slice.itemOrder?.filter((id) => !action.itemIds!.includes(id)) ?? slice.items.map((i) => i.id).filter((id) => !action.itemIds!.includes(id));
+    writeSlice({ ...slice, itemOrder: [...ordered, ...rest] });
+    return;
+  }
+  const from = action.fromIndex;
+  const to = action.toIndex;
+  if (typeof from !== "number" || typeof to !== "number") return;
+  const order = slice.itemOrder ?? slice.items.map((i) => i.id);
+  if (from < 0 || to < 0 || from >= order.length || to >= order.length) return;
+  const next = [...order];
+  const [removed] = next.splice(from, 1);
+  next.splice(to, 0, removed);
+  writeSlice({ ...slice, itemOrder: next });
+}
+
+/** Move item to another container (e.g. card to column). Payload: { id: string, toContainerId: string }. For board, toContainerId = column id (categoryId). */
+export function structureMoveItem(
+  action: { id?: string; toContainerId?: string },
+  _state: Record<string, any>
+): void {
+  const slice = getSlice();
+  const id = action.id;
+  const toContainerId = action.toContainerId;
+  if (!id || toContainerId == null) return;
+  const item = slice.items.find((i) => i.id === id);
+  if (!item) return;
+  structureUpdateItem({ id, patch: { categoryId: String(toContainerId) } }, _state);
+}
+
+function findNodeInTree(nodes: StructureTreeNode[], id: string): StructureTreeNode | null {
+  for (const n of nodes) {
+    if (n.id === id) return n;
+    if (n.children?.length) {
+      const found = findNodeInTree(n.children, id);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
+function addChildToTree(nodes: StructureTreeNode[], parentId: string, newNode: StructureTreeNode): StructureTreeNode[] {
+  return nodes.map((n) => {
+    if (n.id === parentId) {
+      return { ...n, children: [...(n.children ?? []), newNode] };
+    }
+    if (n.children?.length) {
+      return { ...n, children: addChildToTree(n.children, parentId, newNode) };
+    }
+    return n;
+  });
+}
+
+/** Add a tree node (e.g. board column). Payload: { parentId?: string, node: { id, name } }. If parentId missing, appends to first root's children. */
+export function structureAddTreeNode(
+  action: { parentId?: string; node?: { id?: string; name?: string } },
+  _state: Record<string, any>
+): void {
+  const slice = getSlice();
+  const nodePayload = action.node;
+  if (!nodePayload?.id) return;
+  const newNode: StructureTreeNode = {
+    id: String(nodePayload.id),
+    name: typeof nodePayload.name === "string" ? nodePayload.name : String(nodePayload.id),
+    children: [],
+  };
+  const parentId = action.parentId ?? slice.tree[0]?.id ?? "";
+  const tree =
+    parentId && findNodeInTree(slice.tree, parentId)
+      ? addChildToTree(slice.tree, parentId, newNode)
+      : slice.tree.length === 0
+        ? [newNode]
+        : addChildToTree(slice.tree, slice.tree[0].id, newNode);
+  writeSlice({ ...slice, tree });
+}
+
+/** Remove a tree node by id. Items with categoryId equal to this id are left as-is (caller may reassign). */
+export function structureRemoveTreeNode(
+  action: { id?: string },
+  _state: Record<string, any>
+): void {
+  const slice = getSlice();
+  const id = action.id;
+  if (!id) return;
+  const excludeId = id;
+  const filterOut = (nodes: StructureTreeNode[]): StructureTreeNode[] =>
+    nodes.filter((n) => n.id !== excludeId).map((n) => ({
+      ...n,
+      children: n.children?.length ? filterOut(n.children) : undefined,
+    }));
+  const tree = filterOut(slice.tree);
+  writeSlice({ ...slice, tree });
+}
+
+/** Reorder a parent's children. Payload: { parentId: string, childIds: string[] }. */
+export function structureReorderTreeChildren(
+  action: { parentId?: string; childIds?: string[] },
+  _state: Record<string, any>
+): void {
+  const slice = getSlice();
+  const parentId = action.parentId;
+  const childIds = action.childIds;
+  if (!parentId || !Array.isArray(childIds) || childIds.length === 0) return;
+  const parent = findNodeInTree(slice.tree, parentId);
+  if (!parent?.children?.length) return;
+  const byId = new Map(parent.children.map((c) => [c.id, c]));
+  const ordered = childIds.map((id) => byId.get(id)).filter(Boolean) as StructureTreeNode[];
+  const rest = parent.children.filter((c) => !childIds.includes(c.id));
+  const newChildren = [...ordered, ...rest];
+  const replaceChildren = (nodes: StructureTreeNode[]): StructureTreeNode[] =>
+    nodes.map((n) =>
+      n.id === parentId ? { ...n, children: newChildren } : { ...n, children: n.children?.length ? replaceChildren(n.children) : n.children }
+    );
+  const tree = replaceChildren(slice.tree);
+  writeSlice({ ...slice, tree });
 }
 
 export function structureSetBlocksForDate(

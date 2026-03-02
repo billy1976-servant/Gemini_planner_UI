@@ -48,6 +48,7 @@ export async function POST(request: NextRequest) {
 
     const result = universalCsvToSignals(csv, { lenient: true });
     setSignalsForBusiness(businessId, result.signals);
+    console.log("[diag] ingest businessId=%s rowCount=%s signalCount=%s", businessId, result.rowCount, result.signals.length);
 
     const previewRows = rows.slice(0, PREVIEW_ROW_LIMIT);
     return NextResponse.json({
