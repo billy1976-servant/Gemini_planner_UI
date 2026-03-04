@@ -12,9 +12,10 @@ export function ColumnStripOrgan({
   children,
   className,
 }: OrganProps<"columnStrip"> & { children?: React.ReactNode }) {
+  const s = slots ?? {};
   return (
     <Section id={organId} role={LAYOUT_ID} layout={LAYOUT_ID} params={{ internalLayoutId: LAYOUT_ID }}>
-      {slots["columnStrip.title"]}
+      {s["columnStrip.title"]}
       {children}
     </Section>
   );

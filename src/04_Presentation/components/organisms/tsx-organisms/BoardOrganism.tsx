@@ -14,7 +14,7 @@ import Section from "@/components/molecules/section.compound";
 import Button from "@/components/molecules/button.compound";
 import Card from "@/components/molecules/card.compound";
 import { getState, subscribeState } from "@/state/state-store";
-import { createOnAction, orderItemsById } from "./shared";
+import { createOnAction, orderItemsById, ORGAN_CARD_PLACEHOLDER_PARAMS } from "./shared";
 
 const LAYOUT_ROOT = "organism-root";
 const LAYOUT_LIST = "organ-listcontent";
@@ -42,17 +42,17 @@ export function BoardOrganism() {
       <ToolbarOrgan
         organId="toolbar"
         slots={{
-          "toolbar.actions": <Card content={{ title: "Board actions" }} />,
-          "toolbar.breadcrumb": <Card content={{ title: "Home / Board" }} />,
-          "toolbar.viewToggles": <Card content={{ title: "View" }} />,
+          "toolbar.actions": <Card content={{ title: "Board actions" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
+          "toolbar.breadcrumb": <Card content={{ title: "Home / Board" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
+          "toolbar.viewToggles": <Card content={{ title: "View" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
         }}
         onAction={onAction}
       />
       <Section layout={LAYOUT_ROOT} role={LAYOUT_ROOT} id="board-main">
-        <SidebarOrgan organId="sidebar" slots={{ "sidebar.content": <Card content={{ title: "Board nav" }} /> }} onAction={onAction} />
+        <SidebarOrgan organId="sidebar" slots={{ "sidebar.content": <Card content={{ title: "Board nav" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} /> }} onAction={onAction} />
         <Section layout={LAYOUT_LIST} role={LAYOUT_LIST} id="board-content">
-          <FilterBarOrgan organId="filterBar" slots={{ "filterBar.controls": <Card content={{ title: "Filters" }} /> }} onAction={onAction} />
-          <ColumnStripOrgan organId="columnStrip" slots={{ "columnStrip.title": <Card content={{ title: "Board" }} /> }} onAction={onAction}>
+          <FilterBarOrgan organId="filterBar" slots={{ "filterBar.controls": <Card content={{ title: "Filters" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} /> }} onAction={onAction} />
+          <ColumnStripOrgan organId="columnStrip" slots={{ "columnStrip.title": <Card content={{ title: "Board" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} /> }} onAction={onAction}>
             {columns.length > 0
               ? columns.map((col) => {
                   const cards = orderedItems.filter((i: { categoryId?: string }) => i.categoryId === col.id);
@@ -61,12 +61,12 @@ export function BoardOrganism() {
                       key={col.id}
                       organId="boardColumn"
                       slots={{
-                        "boardColumn.header": <Card content={{ title: col.name }} />,
+                        "boardColumn.header": <Card content={{ title: col.name }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
                         "boardColumn.cards": (
                           <>
                             {cards.map((card: { id: string; title?: string }) => (
                               <Section key={card.id} layout="organ-filterbar" role="organ-filterbar" id={card.id}>
-                                <Card content={{ title: card.title }} />
+                                <Card content={{ title: card.title }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />
                                 <Button
                                   content={{ label: "×" }}
                                   behavior={{ type: "Action", params: { name: "structure:deleteItem", id: card.id } }}
@@ -87,7 +87,7 @@ export function BoardOrganism() {
                             ))}
                           </>
                         ),
-                        "boardColumn.footer": <Card content={{ title: "Add card" }} />,
+                        "boardColumn.footer": <Card content={{ title: "Add card" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
                       }}
                       onAction={onAction}
                     />
@@ -97,8 +97,8 @@ export function BoardOrganism() {
                 <BoardColumnOrgan
                   organId="boardColumn"
                   slots={{
-                    "boardColumn.header": <Card content={{ title: "No columns" }} />,
-                    "boardColumn.cards": <Card content={{ title: "Add column with structure:addTreeNode (parentId: life)" }} />,
+                    "boardColumn.header": <Card content={{ title: "No columns" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
+                    "boardColumn.cards": <Card content={{ title: "Add column with structure:addTreeNode (parentId: life)" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
                     "boardColumn.footer": null,
                   }}
                   onAction={onAction}
@@ -107,7 +107,7 @@ export function BoardOrganism() {
           </ColumnStripOrgan>
           <SelectionBarOrgan
             organId="selectionBar"
-            slots={{ "selectionBar.label": <Card content={{ title: "0 selected" }} />, "selectionBar.actions": null }}
+            slots={{ "selectionBar.label": <Card content={{ title: "0 selected" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />, "selectionBar.actions": null }}
             onAction={onAction}
           />
         </Section>

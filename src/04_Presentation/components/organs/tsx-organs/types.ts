@@ -74,10 +74,12 @@ export type SlotKey =
 /**
  * Props for any organ. Slots are keyed by canonical slot keys; organs render only their slots.
  * No engine logic, no store writes, no domain imports. Emit via onAction.
+ * When an organ is rendered standalone (e.g. from tsx-organs menu), slots may be omitted; organs must guard (slots ?? {}).
  */
 export interface OrganProps<T extends OrganId = OrganId> {
   organId: T;
-  slots: Record<string, React.ReactNode>;
+  /** Optional when organ is rendered in isolation (dev menu); organisms always pass slots. */
+  slots?: Record<string, React.ReactNode>;
   onAction?: (actionName: string, payload?: unknown) => void;
   className?: string;
 }

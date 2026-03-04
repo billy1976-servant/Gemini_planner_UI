@@ -13,7 +13,7 @@ import Section from "@/components/molecules/section.compound";
 import Button from "@/components/molecules/button.compound";
 import Card from "@/components/molecules/card.compound";
 import { getState, subscribeState } from "@/state/state-store";
-import { createOnAction } from "./shared";
+import { createOnAction, ORGAN_CARD_PLACEHOLDER_PARAMS } from "./shared";
 
 const LAYOUT_ROOT = "organism-root";
 
@@ -38,20 +38,20 @@ export function DetailOrganism() {
       <ToolbarOrgan
         organId="toolbar"
         slots={{
-          "toolbar.actions": <Card content={{ title: "Detail actions" }} />,
-          "toolbar.breadcrumb": <Card content={{ title: "Home / Detail" }} />,
-          "toolbar.viewToggles": <Card content={{ title: "View" }} />,
+          "toolbar.actions": <Card content={{ title: "Detail actions" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
+          "toolbar.breadcrumb": <Card content={{ title: "Home / Detail" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
+          "toolbar.viewToggles": <Card content={{ title: "View" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
         }}
         onAction={onAction}
       />
       <Section layout={LAYOUT_ROOT} role={LAYOUT_ROOT} id="detail-main">
-        <SidebarOrgan organId="sidebar" slots={{ "sidebar.content": <Card content={{ title: "Detail nav" }} /> }} onAction={onAction} />
+        <SidebarOrgan organId="sidebar" slots={{ "sidebar.content": <Card content={{ title: "Detail nav" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} /> }} onAction={onAction} />
         <SplitPaneOrgan
           organId="splitPane"
           slots={{
             "splitPane.primary": (
               <Section layout="organ-detailcontent" role="organ-detailcontent" id="detail-master">
-                {masterList.length > 0 ? masterList : <Card content={{ title: "No items" }} />}
+                {masterList.length > 0 ? masterList : <Card content={{ title: "No items" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />}
               </Section>
             ),
             "splitPane.secondary": (
@@ -60,16 +60,16 @@ export function DetailOrganism() {
                 slots={{
                   "detailContent.body": selected ? (
                     <>
-                      <Card content={{ title: selected.title }} />
-                      <Card content={{ title: `ID: ${selected.id}` }} />
-                      <Card content={{ title: `Category: ${selected.categoryId}` }} />
+                      <Card content={{ title: selected.title }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />
+                      <Card content={{ title: `ID: ${selected.id}` }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />
+                      <Card content={{ title: `Category: ${selected.categoryId}` }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />
                       <Button
                         content={{ label: "Delete" }}
                         behavior={{ type: "Action", params: { name: "structure:deleteItem", id: selected.id } }}
                       />
                     </>
                   ) : null,
-                  "detailContent.emptyState": <Card content={{ title: "No selection" }} />,
+                  "detailContent.emptyState": <Card content={{ title: "No selection" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
                 }}
                 onAction={onAction}
               />
@@ -80,7 +80,7 @@ export function DetailOrganism() {
       </Section>
       <SelectionBarOrgan
         organId="selectionBar"
-        slots={{ "selectionBar.label": <Card content={{ title: "0 selected" }} />, "selectionBar.actions": null }}
+        slots={{ "selectionBar.label": <Card content={{ title: "0 selected" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />, "selectionBar.actions": null }}
         onAction={onAction}
       />
     </>

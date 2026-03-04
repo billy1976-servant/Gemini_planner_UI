@@ -498,7 +498,7 @@ export default function RootLayout({ children }: any) {
       </head>
       <body className="app-body">
         <Suspense fallback={<div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>Loading...</div>}>
-          {pathname === "/landing" ? (
+          {pathname === "/landing" || pathname === "/flow" || pathname === "/onboarding" ? (
             children
           ) : isUserMode ? (
             <UserLayoutChrome>{children}</UserLayoutChrome>

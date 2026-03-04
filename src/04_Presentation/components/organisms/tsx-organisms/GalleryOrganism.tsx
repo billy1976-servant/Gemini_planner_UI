@@ -15,7 +15,7 @@ import Section from "@/components/molecules/section.compound";
 import Button from "@/components/molecules/button.compound";
 import Card from "@/components/molecules/card.compound";
 import { getState, subscribeState } from "@/state/state-store";
-import { createOnAction, orderItemsById } from "./shared";
+import { createOnAction, orderItemsById, ORGAN_CARD_PLACEHOLDER_PARAMS } from "./shared";
 
 const LAYOUT_ROOT = "organism-root";
 const LAYOUT_LIST = "organ-listcontent";
@@ -56,7 +56,7 @@ export function GalleryOrganism() {
             />
           </>
         ),
-        "toolbar.breadcrumb": <Card content={{ title: item.title }} />,
+        "toolbar.breadcrumb": <Card content={{ title: item.title }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
         "toolbar.viewToggles": null,
       }}
       onAction={onAction}
@@ -75,9 +75,9 @@ export function GalleryOrganism() {
         onAction={onAction}
       />
       <Section layout={LAYOUT_ROOT} role={LAYOUT_ROOT} id="gallery-main">
-        <SidebarOrgan organId="sidebar" slots={{ "sidebar.content": <Card content={{ title: "Gallery nav" }} /> }} onAction={onAction} />
+        <SidebarOrgan organId="sidebar" slots={{ "sidebar.content": <Card content={{ title: "Gallery nav" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} /> }} onAction={onAction} />
         <Section layout={LAYOUT_LIST} role={LAYOUT_LIST} id="gallery-content">
-          <FilterBarOrgan organId="filterBar" slots={{ "filterBar.controls": <Card content={{ title: "Filters" }} /> }} onAction={onAction} />
+          <FilterBarOrgan organId="filterBar" slots={{ "filterBar.controls": <Card content={{ title: "Filters" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} /> }} onAction={onAction} />
           <GalleryGridOrgan
             organId="galleryGrid"
             slots={{
@@ -89,7 +89,7 @@ export function GalleryOrganism() {
           />
           <SelectionBarOrgan
             organId="selectionBar"
-            slots={{ "selectionBar.label": <Card content={{ title: "0 selected" }} />, "selectionBar.actions": null }}
+            slots={{ "selectionBar.label": <Card content={{ title: "0 selected" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />, "selectionBar.actions": null }}
             onAction={onAction}
           />
         </Section>
@@ -105,8 +105,8 @@ export function GalleryOrganism() {
                   <LightboxOrgan
                     organId="lightbox"
                     slots={{
-                      "lightbox.item": <Card content={{ title: lightboxItem?.title ?? lightboxId }} />,
-                      "lightbox.caption": <Card content={{ title: "Caption" }} />,
+                      "lightbox.item": <Card content={{ title: lightboxItem?.title ?? lightboxId }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
+                      "lightbox.caption": <Card content={{ title: "Caption" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
                     }}
                     onAction={onAction}
                   />

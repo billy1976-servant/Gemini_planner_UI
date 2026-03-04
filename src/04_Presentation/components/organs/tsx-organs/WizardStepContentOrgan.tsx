@@ -7,9 +7,10 @@ import Section from "@/components/molecules/section.compound";
 const LAYOUT_ID = "organ-wizardstepcontent";
 
 export function WizardStepContentOrgan({ organId, slots, className }: OrganProps<"wizardStepContent">) {
+  const s = slots ?? {};
   return (
     <Section id={organId} role={LAYOUT_ID} layout={LAYOUT_ID} params={{ internalLayoutId: LAYOUT_ID }}>
-      {slots["wizardStepContent.body"]}
+      {s["wizardStepContent.body"]}
     </Section>
   );
 }

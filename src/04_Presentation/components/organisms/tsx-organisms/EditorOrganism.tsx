@@ -12,7 +12,7 @@ import Section from "@/components/molecules/section.compound";
 import Card from "@/components/molecules/card.compound";
 import Field from "@/components/molecules/field.compound";
 import { getState, subscribeState } from "@/state/state-store";
-import { createOnAction } from "./shared";
+import { createOnAction, ORGAN_CARD_PLACEHOLDER_PARAMS } from "./shared";
 
 const LAYOUT_ROOT = "organism-root";
 
@@ -33,7 +33,7 @@ export function EditorOrganism() {
         onAction={onAction}
       />
       <Section layout={LAYOUT_ROOT} role={LAYOUT_ROOT} id="editor-main">
-        <SidebarOrgan organId="sidebar" slots={{ "sidebar.content": <Card content={{ title: "Editor nav" }} /> }} onAction={onAction} />
+        <SidebarOrgan organId="sidebar" slots={{ "sidebar.content": <Card content={{ title: "Editor nav" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} /> }} onAction={onAction} />
         <SplitPaneOrgan
           organId="splitPane"
           slots={{
@@ -41,7 +41,7 @@ export function EditorOrganism() {
               <EditorContentOrgan
                 organId="editorContent"
                 slots={{
-                  "editorContent.toolbar": <Card content={{ title: "Format" }} />,
+                  "editorContent.toolbar": <Card content={{ title: "Format" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
                   "editorContent.body": (
                     <Field id="editorDraft" content={{ label: "Editor content (state.update → editorDraft)" }} />
                   ),
@@ -51,8 +51,8 @@ export function EditorOrganism() {
             ),
             "splitPane.secondary": (
               <Section layout="organ-detailcontent" role="organ-detailcontent" id="editor-preview">
-                <Card content={{ title: "Preview" }} />
-                <Card content={{ title: draft || "—" }} />
+                <Card content={{ title: "Preview" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />
+                <Card content={{ title: draft || "—" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />
               </Section>
             ),
           }}

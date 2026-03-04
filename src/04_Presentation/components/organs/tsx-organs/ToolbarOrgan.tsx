@@ -7,6 +7,7 @@ import Section from "@/components/molecules/section.compound";
 const LAYOUT_ID = "organ-toolbar";
 
 export function ToolbarOrgan({ organId, slots, onAction, className }: OrganProps<"toolbar">) {
+  const s = slots ?? {};
   return (
     <Section
       id={organId}
@@ -14,9 +15,9 @@ export function ToolbarOrgan({ organId, slots, onAction, className }: OrganProps
       layout={LAYOUT_ID}
       params={{ internalLayoutId: LAYOUT_ID }}
     >
-      {slots["toolbar.actions"]}
-      {slots["toolbar.breadcrumb"]}
-      {slots["toolbar.viewToggles"]}
+      {s["toolbar.actions"]}
+      {s["toolbar.breadcrumb"]}
+      {s["toolbar.viewToggles"]}
     </Section>
   );
 }

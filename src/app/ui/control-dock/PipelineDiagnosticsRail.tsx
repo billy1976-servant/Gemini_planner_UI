@@ -97,12 +97,17 @@ const ICON_BUTTON_BASE: React.CSSProperties = {
 };
 
 export default function PipelineDiagnosticsRail() {
+  const [mounted, setMounted] = useState(false);
   const [openPanel, setOpenPanel] = useState<PanelId | null>(null);
   const [diagnosticsTab, setDiagnosticsTab] = useState<TabId>("pipeline");
   const [panelWidth, setPanelWidth] = useState(PANEL_WIDTH);
   const [isDragging, setIsDragging] = useState(false);
   const railRef = useRef<HTMLDivElement>(null);
   const devMobileMode = useDevMobileMode();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
   const layoutSnapshot = useSyncExternalStore(subscribeLayout, getLayout, getLayout);
@@ -489,6 +494,6 @@ export default function PipelineDiagnosticsRail() {
     </div>
   );
 
-  if (typeof document === "undefined") return null;
+  if (!mounted || typeof document === "undefined") return null;
   return createPortal(rail, document.body);
 }

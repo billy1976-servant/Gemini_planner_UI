@@ -127,9 +127,12 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
   /** Build path and navigate; (dead) Tsx and (live)* use tsx: prefix so loader resolves TSX. */
   const navigate = (rootSection: string, category: string, folder: string, file?: string) => {
     const useTsx =
-      rootSection === "(dead) Tsx" || rootSection.includes("(live)");
+      rootSection === "(dead) Tsx" ||
+      rootSection.includes("(live)") ||
+      rootSection === "tsx-organisms" ||
+      rootSection === "tsx-organs";
     const prefix = useTsx
-      ? rootSection.includes("(live)")
+      ? rootSection.includes("(live)") || rootSection === "tsx-organisms" || rootSection === "tsx-organs"
         ? `tsx:${rootSection}/`
         : "tsx:"
       : "";

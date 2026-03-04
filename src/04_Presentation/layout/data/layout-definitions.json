@@ -251,7 +251,8 @@
     "organ-gallerygrid": { "containerWidth": "full", "container": { "width": "100%", "boxSizing": "border-box" } },
     "organ-lightbox": { "containerWidth": "contained", "container": { "width": "100%", "boxSizing": "border-box" } },
     "organism-root": { "containerWidth": "full", "container": { "width": "100%", "boxSizing": "border-box" } },
-    "organism-modal-overlay": { "containerWidth": "full", "container": { "width": "100%", "boxSizing": "border-box" } }
+    "organism-modal-overlay": { "containerWidth": "full", "container": { "width": "100%", "boxSizing": "border-box" } },
+    "organ-panel": { "containerWidth": "contained", "container": { "width": "100%", "boxSizing": "border-box" } }
   },
   "templates": {
     "startup-template": {
@@ -407,6 +408,7 @@
     "organ-gallerygrid": { "type": "column", "preset": null, "params": { "gap": "var(--spacing-2)", "align": "stretch", "padding": "var(--spacing-2) var(--spacing-3)" } },
     "organ-lightbox": { "type": "column", "preset": null, "params": { "gap": "var(--spacing-2)", "align": "stretch", "padding": "0" } },
     "organism-root": { "type": "row", "preset": null, "params": { "gap": "0", "align": "stretch", "padding": "0" } },
-    "organism-modal-overlay": { "type": "column", "preset": null, "params": { "gap": "0", "align": "center", "justify": "center", "padding": "0" } }
+    "organism-modal-overlay": { "type": "column", "preset": null, "params": { "gap": "0", "align": "center", "justify": "center", "padding": "0" } },
+    "organ-panel": { "type": "column", "preset": null, "params": { "gap": "var(--spacing-4)", "align": "stretch", "padding": "var(--spacing-5)" } }
   }
 }

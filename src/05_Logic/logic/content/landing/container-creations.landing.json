@@ -178,10 +178,52 @@
         ]
       },
       {
-        "id": "step-3-fit",
+        "id": "step-3-vent",
         "type": "section",
         "role": "content",
         "when": { "state": "landingStep", "equals": 3 },
+        "params": {
+          "maxWidth": 1000,
+          "margin": "auto",
+          "padding": 96,
+          "paddingTablet": 64,
+          "paddingMobile": 48,
+          "verticalSpacingDesktop": 96,
+          "verticalSpacingTablet": 64,
+          "verticalSpacingMobile": 48
+        },
+        "children": [
+          {
+            "type": "image",
+            "src": "/images/12_%20vent.png",
+            "params": {
+              "layout": "full",
+              "maxWidth": 1100,
+              "width": "100%",
+              "objectFit": "contain",
+              "aspectRatio": "16/9",
+              "borderRadius": 20,
+              "background": "#111"
+            },
+            "alt": "12 vent — airflow and moisture control"
+          },
+          {
+            "type": "text",
+            "content": { "text": "Airflow is king with moisture control." },
+            "params": { "variant": "subheadline", "fontSize": "18px", "opacity": 0.9 }
+          },
+          {
+            "type": "button",
+            "content": { "label": "Continue" },
+            "behavior": { "params": { "landingStep": 4 } }
+          }
+        ]
+      },
+      {
+        "id": "step-3-fit",
+        "type": "section",
+        "role": "content",
+        "when": { "state": "landingStep", "equals": 4 },
         "params": {
           "maxWidth": 1000,
           "margin": "auto",
@@ -227,7 +269,7 @@
           {
             "type": "button",
             "content": { "label": "Get my recommendation" },
-            "behavior": { "params": { "submitFitCheck": true, "landingStep": 4 } }
+            "behavior": { "params": { "submitFitCheck": true, "landingStep": 5 } }
           }
         ]
       },
@@ -235,7 +277,7 @@
         "id": "step-4-upgrade",
         "type": "section",
         "role": "content",
-        "when": { "state": "landingStep", "equals": 4 },
+        "when": { "state": "landingStep", "equals": 5 },
         "params": {
           "maxWidth": 1000,
           "margin": "auto",
@@ -293,7 +335,7 @@
         "id": "step-5-industry",
         "type": "section",
         "role": "content",
-        "when": { "state": "landingStep", "equals": 5 },
+        "when": { "state": "landingStep", "equals": 6 },
         "params": {
           "maxWidth": 1000,
           "margin": "auto",

@@ -12,9 +12,10 @@ export function TimelineLaneStripOrgan({
   children,
   className,
 }: OrganProps<"timelineLaneStrip"> & { children?: React.ReactNode }) {
+  const s = slots ?? {};
   return (
     <Section id={organId} role={LAYOUT_ID} layout={LAYOUT_ID} params={{ internalLayoutId: LAYOUT_ID }}>
-      {slots["timelineLaneStrip.title"]}
+      {s["timelineLaneStrip.title"]}
       {children}
     </Section>
   );

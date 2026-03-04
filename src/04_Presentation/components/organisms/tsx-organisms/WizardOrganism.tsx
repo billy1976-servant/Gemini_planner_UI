@@ -12,7 +12,7 @@ import Section from "@/components/molecules/section.compound";
 import Button from "@/components/molecules/button.compound";
 import Card from "@/components/molecules/card.compound";
 import { getState, subscribeState } from "@/state/state-store";
-import { createOnAction } from "./shared";
+import { createOnAction, ORGAN_CARD_PLACEHOLDER_PARAMS } from "./shared";
 
 const FLOW_ID = "default";
 const STEP_COUNT = 4;
@@ -43,9 +43,9 @@ export function WizardOrganism() {
       <ToolbarOrgan
         organId="toolbar"
         slots={{
-          "toolbar.actions": <Card content={{ title: "Wizard" }} />,
-          "toolbar.breadcrumb": <Card content={{ title: "Home / Wizard" }} />,
-          "toolbar.viewToggles": <Card content={{ title: "View" }} />,
+          "toolbar.actions": <Card content={{ title: "Wizard" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
+          "toolbar.breadcrumb": <Card content={{ title: "Home / Wizard" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
+          "toolbar.viewToggles": <Card content={{ title: "View" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
         }}
         onAction={onAction}
       />
@@ -54,7 +54,7 @@ export function WizardOrganism() {
         <WizardStepStripOrgan
           organId="wizardStepStrip"
           slots={{
-            "wizardStepStrip.steps": <Card content={{ title: `Step ${current + 1} of ${steps}` }} />,
+            "wizardStepStrip.steps": <Card content={{ title: `Step ${current + 1} of ${steps}` }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
             "wizardStepStrip.nav": (
               <>
                 <Button
@@ -78,7 +78,7 @@ export function WizardOrganism() {
           organId="wizardStepContent"
           slots={{
             "wizardStepContent.body": (
-              <Card content={{ title: `Step ${current + 1} content. Use Prev/Next or Go to 1.` }} />
+              <Card content={{ title: `Step ${current + 1} content. Use Prev/Next or Go to 1.` }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />
             ),
           }}
           onAction={onAction}

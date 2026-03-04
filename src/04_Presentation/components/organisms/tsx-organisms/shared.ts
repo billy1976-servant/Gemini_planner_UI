@@ -2,6 +2,15 @@
 
 import { dispatchOrganAction } from "@/engine/core/organ-action-bridge";
 
+/** Params so Card renders with visible surface when used as placeholder in organisms (avoids "just text"). */
+export const ORGAN_CARD_PLACEHOLDER_PARAMS = {
+  surface: {
+    background: "var(--color-surface-2, #f1f5f9)",
+    padding: "var(--spacing-2, 8px)",
+    radius: "var(--radius-md, 6px)",
+  },
+} as const;
+
 export function createOnAction() {
   return (name: string, payload?: unknown) => {
     const payloadObj =

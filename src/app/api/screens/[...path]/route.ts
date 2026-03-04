@@ -14,6 +14,17 @@ const INTEGRATIONS_TEST_ROOT = path.join(
 );
 
 /**
+ * JSON APPS ROOT — src/01_App/(dead) Json
+ * Serves HiClarify and other JSON screens (e.g. osb-home-registry.json).
+ */
+const JSON_APPS_ROOT = path.join(
+  process.cwd(),
+  "src",
+  "01_App",
+  "(dead) Json"
+);
+
+/**
  * TSX SCREEN ROOT — src/01_App/(dead) Tsx
  * Runtime resolution of TSX screens; returns marker, not source.
  */
@@ -104,6 +115,45 @@ export async function GET(
       });
     }
 
+    /* ===============================
+       JSON APPS (e.g. HiClarify/home/osb-home-registry.json)
+       Path may or may not include .json
+    =============================== */
+    const jsonSegments = params.path as string[];
+    const jsonPathNoExt = path.join(JSON_APPS_ROOT, ...jsonSegments);
+    const jsonPathWithExt = jsonPathNoExt.endsWith(".json")
+      ? jsonPathNoExt
+      : jsonPathNoExt + ".json";
+    const jsonPath = fs.existsSync(jsonPathWithExt)
+      ? jsonPathWithExt
+      : fs.existsSync(jsonPathNoExt)
+        ? jsonPathNoExt
+        : null;
+    if (jsonPath) {
+      try {
+        const fileContent = fs.readFileSync(jsonPath, "utf8");
+        if (!fileContent.trim()) {
+          return NextResponse.json(
+            { error: "File is empty", path: jsonPath },
+            { status: 500 }
+          );
+        }
+        const json = JSON.parse(fileContent);
+        return NextResponse.json(json, {
+          headers: {
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0",
+          },
+        });
+      } catch (parseError: unknown) {
+        const message = parseError instanceof Error ? parseError.message : String(parseError);
+        return NextResponse.json(
+          { error: `Invalid JSON: ${message}`, path: jsonPath },
+          { status: 500 }
+        );
+      }
+    }
 
     return NextResponse.json(
       {

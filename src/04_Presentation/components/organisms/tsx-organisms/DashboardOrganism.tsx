@@ -12,7 +12,7 @@ import Section from "@/components/molecules/section.compound";
 import Button from "@/components/molecules/button.compound";
 import Card from "@/components/molecules/card.compound";
 import { getState, subscribeState } from "@/state/state-store";
-import { createOnAction } from "./shared";
+import { createOnAction, ORGAN_CARD_PLACEHOLDER_PARAMS } from "./shared";
 
 const SCREEN_KEY = "tsx-dashboard";
 const LAYOUT_ROOT = "organism-root";
@@ -42,17 +42,17 @@ export function DashboardOrganism() {
               }}
             />
           ),
-          "toolbar.breadcrumb": <Card content={{ title: "Home / Dashboard" }} />,
-          "toolbar.viewToggles": <Card content={{ title: "View" }} />,
+          "toolbar.breadcrumb": <Card content={{ title: "Home / Dashboard" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
+          "toolbar.viewToggles": <Card content={{ title: "View" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
         }}
         onAction={onAction}
       />
       <Section layout={LAYOUT_ROOT} role={LAYOUT_ROOT} id="dashboard-main">
-        <SidebarOrgan organId="sidebar" slots={{ "sidebar.content": <Card content={{ title: "Dashboard nav" }} /> }} onAction={onAction} />
+        <SidebarOrgan organId="sidebar" slots={{ "sidebar.content": <Card content={{ title: "Dashboard nav" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} /> }} onAction={onAction} />
         <Section layout={LAYOUT_LIST} role={LAYOUT_LIST} id="dashboard-grid">
         <GridLayoutOrgan
           organId="gridLayout"
-          slots={{ "gridLayout.title": <Card content={{ title: "Dashboard" }} /> }}
+          slots={{ "gridLayout.title": <Card content={{ title: "Dashboard" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} /> }}
           onAction={onAction}
         >
           {layout.map((w: { id: string; w?: number; h?: number }) => (
@@ -62,7 +62,7 @@ export function DashboardOrganism() {
               slots={{
                 "widgetCell.content": (
                   <>
-                    <Card content={{ title: `Widget ${w.id}` }} />
+                    <Card content={{ title: `Widget ${w.id}` }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />
                     <Button
                       content={{ label: "Remove" }}
                       behavior={{
@@ -77,7 +77,7 @@ export function DashboardOrganism() {
             />
           ))}
           {layout.length === 0 && (
-            <Card content={{ title: "No widgets. Click \"Add widget\" in the toolbar." }} />
+            <Card content={{ title: "No widgets. Click \"Add widget\" in the toolbar." }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />
           )}
         </GridLayoutOrgan>
         </Section>

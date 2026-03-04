@@ -106,6 +106,27 @@
       },
       "internalLayoutIds": ["banner", "strip", "split", "full-width"],
       "defaultInternalLayoutId": "banner"
-    }
+    },
+    { "organId": "toolbar", "internalLayoutIds": ["organ-toolbar"], "defaultInternalLayoutId": "organ-toolbar" },
+    { "organId": "sidebar", "internalLayoutIds": ["organ-sidebar"], "defaultInternalLayoutId": "organ-sidebar" },
+    { "organId": "filterBar", "internalLayoutIds": ["organ-filterbar"], "defaultInternalLayoutId": "organ-filterbar" },
+    { "organId": "paginationBar", "internalLayoutIds": ["organ-paginationbar"], "defaultInternalLayoutId": "organ-paginationbar" },
+    { "organId": "selectionBar", "internalLayoutIds": ["organ-selectionbar"], "defaultInternalLayoutId": "organ-selectionbar" },
+    { "organId": "modal", "internalLayoutIds": ["organ-modal"], "defaultInternalLayoutId": "organ-modal" },
+    { "organId": "splitPane", "internalLayoutIds": ["organ-splitpane"], "defaultInternalLayoutId": "organ-splitpane" },
+    { "organId": "listContent", "internalLayoutIds": ["organ-listcontent"], "defaultInternalLayoutId": "organ-listcontent" },
+    { "organId": "columnStrip", "internalLayoutIds": ["organ-columnstrip"], "defaultInternalLayoutId": "organ-columnstrip" },
+    { "organId": "boardColumn", "internalLayoutIds": ["organ-boardcolumn"], "defaultInternalLayoutId": "organ-boardcolumn" },
+    { "organId": "gridLayout", "internalLayoutIds": ["organ-gridlayout"], "defaultInternalLayoutId": "organ-gridlayout" },
+    { "organId": "widgetCell", "internalLayoutIds": ["organ-widgetcell"], "defaultInternalLayoutId": "organ-widgetcell" },
+    { "organId": "editorContent", "internalLayoutIds": ["organ-editorcontent"], "defaultInternalLayoutId": "organ-editorcontent" },
+    { "organId": "timelineRuler", "internalLayoutIds": ["organ-timelineruler"], "defaultInternalLayoutId": "organ-timelineruler" },
+    { "organId": "timelineLaneStrip", "internalLayoutIds": ["organ-timelinelanestrip"], "defaultInternalLayoutId": "organ-timelinelanestrip" },
+    { "organId": "timelineLane", "internalLayoutIds": ["organ-timelinelane"], "defaultInternalLayoutId": "organ-timelinelane" },
+    { "organId": "detailContent", "internalLayoutIds": ["organ-detailcontent"], "defaultInternalLayoutId": "organ-detailcontent" },
+    { "organId": "wizardStepStrip", "internalLayoutIds": ["organ-wizardstepstrip"], "defaultInternalLayoutId": "organ-wizardstepstrip" },
+    { "organId": "wizardStepContent", "internalLayoutIds": ["organ-wizardstepcontent"], "defaultInternalLayoutId": "organ-wizardstepcontent" },
+    { "organId": "galleryGrid", "internalLayoutIds": ["organ-gallerygrid"], "defaultInternalLayoutId": "organ-gallerygrid" },
+    { "organId": "lightbox", "internalLayoutIds": ["organ-lightbox"], "defaultInternalLayoutId": "organ-lightbox" }
   ]
 }

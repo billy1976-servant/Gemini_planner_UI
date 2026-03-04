@@ -7,11 +7,12 @@ import Section from "@/components/molecules/section.compound";
 const LAYOUT_ID = "organ-listcontent";
 
 export function ListContentOrgan({ organId, slots, className }: OrganProps<"listContent">) {
-  const hasItems = slots["listContent.items"];
+  const s = slots ?? {};
+  const hasItems = s["listContent.items"];
   return (
     <Section id={organId} role={LAYOUT_ID} layout={LAYOUT_ID} params={{ internalLayoutId: LAYOUT_ID }}>
-      {slots["listContent.header"]}
-      {hasItems ?? slots["listContent.emptyState"]}
+      {s["listContent.header"]}
+      {hasItems ?? s["listContent.emptyState"]}
     </Section>
   );
 }

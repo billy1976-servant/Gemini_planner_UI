@@ -15,7 +15,7 @@ import Section from "@/components/molecules/section.compound";
 import Button from "@/components/molecules/button.compound";
 import Card from "@/components/molecules/card.compound";
 import { getState, subscribeState } from "@/state/state-store";
-import { createOnAction, orderItemsById } from "./shared";
+import { createOnAction, orderItemsById, ORGAN_CARD_PLACEHOLDER_PARAMS } from "./shared";
 
 const LAYOUT_ROOT = "organism-root";
 const LAYOUT_MODAL = "organism-modal-overlay";
@@ -51,7 +51,7 @@ export function ListOrganism() {
             />
           </>
         ),
-        "toolbar.breadcrumb": <Card content={{ title: item.title || item.id }} />,
+        "toolbar.breadcrumb": <Card content={{ title: item.title || item.id }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
         "toolbar.viewToggles": null,
       }}
       onAction={onAction}
@@ -59,7 +59,7 @@ export function ListOrganism() {
   ));
 
   const emptyRow = (
-    <Card content={{ title: "No items. Add with structure:addItem." }} />
+    <Card content={{ title: "No items. Add with structure:addItem." }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />
   );
 
   return (
@@ -80,15 +80,15 @@ export function ListOrganism() {
               }}
             />
           ),
-          "toolbar.breadcrumb": <Card content={{ title: "Home / List" }} />,
-          "toolbar.viewToggles": <Card content={{ title: "View" }} />,
+          "toolbar.breadcrumb": <Card content={{ title: "Home / List" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
+          "toolbar.viewToggles": <Card content={{ title: "View" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
         }}
         onAction={onAction}
       />
       <Section layout={LAYOUT_ROOT} role={LAYOUT_ROOT} id="list-main">
         <SidebarOrgan organId="sidebar" slots={{ "sidebar.content": <Card content={{ title: "Sidebar" }} /> }} onAction={onAction} />
         <Section layout={LAYOUT_LIST} role={LAYOUT_LIST} id="list-content">
-          <FilterBarOrgan organId="filterBar" slots={{ "filterBar.controls": <Card content={{ title: "Filters" }} /> }} onAction={onAction} />
+          <FilterBarOrgan organId="filterBar" slots={{ "filterBar.controls": <Card content={{ title: "Filters" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} /> }} onAction={onAction} />
           <ListContentOrgan
             organId="listContent"
             slots={{
@@ -100,7 +100,7 @@ export function ListOrganism() {
           />
           <PaginationBarOrgan
             organId="paginationBar"
-            slots={{ "paginationBar.label": <Card content={{ title: "Page 1" }} />, "paginationBar.extra": null }}
+            slots={{ "paginationBar.label": <Card content={{ title: "Page 1" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />, "paginationBar.extra": null }}
             onAction={onAction}
           />
           <SelectionBarOrgan
@@ -115,7 +115,7 @@ export function ListOrganism() {
           <ModalOrgan
             organId="modal"
             slots={{
-              "modal.title": <Card content={{ title: "Confirm delete" }} />,
+              "modal.title": <Card content={{ title: "Confirm delete" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
               "modal.content": (
                 <>
                   <Button

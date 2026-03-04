@@ -7,10 +7,11 @@ import Section from "@/components/molecules/section.compound";
 const LAYOUT_ID = "organ-selectionbar";
 
 export function SelectionBarOrgan({ organId, slots, className }: OrganProps<"selectionBar">) {
+  const s = slots ?? {};
   return (
     <Section id={organId} role={LAYOUT_ID} layout={LAYOUT_ID} params={{ internalLayoutId: LAYOUT_ID }}>
-      {slots["selectionBar.label"]}
-      {slots["selectionBar.actions"]}
+      {s["selectionBar.label"]}
+      {s["selectionBar.actions"]}
     </Section>
   );
 }

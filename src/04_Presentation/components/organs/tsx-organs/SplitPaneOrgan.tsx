@@ -7,10 +7,11 @@ import Section from "@/components/molecules/section.compound";
 const LAYOUT_ID = "organ-splitpane";
 
 export function SplitPaneOrgan({ organId, slots, className }: OrganProps<"splitPane">) {
+  const s = slots ?? {};
   return (
     <Section id={organId} role={LAYOUT_ID} layout={LAYOUT_ID} params={{ internalLayoutId: LAYOUT_ID }}>
-      {slots["splitPane.primary"]}
-      {slots["splitPane.secondary"]}
+      {s["splitPane.primary"]}
+      {s["splitPane.secondary"]}
     </Section>
   );
 }

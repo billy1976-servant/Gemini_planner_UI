@@ -6,6 +6,7 @@
  */
 import React, { useMemo } from "react";
 import { useSyncExternalStore } from "react";
+import { useRouter } from "next/navigation";
 import ExperienceRenderer from "@/engine/core/ExperienceRenderer";
 import { getState, subscribeState, dispatchState } from "@/state/state-store";
 import { setCurrentScreenTree } from "@/engine/core/current-screen-tree-store";
@@ -64,7 +65,7 @@ export default function ContainerCreationsLanding() {
 
   const organInternalLayoutOverrides: Record<string, string> = {};
   const { treeForRender, sectionKeysFromTree, sectionLabels } = useMemo(() => {
-    const renderNode = json?.root ?? json;
+    const renderNode = (json?.root ?? json) as { type?: string; id?: string; children?: unknown[] } | undefined;
     const rawChildren = Array.isArray(renderNode?.children) ? renderNode.children : [];
     const children = assignSectionInstanceKeys(rawChildren);
     const docForOrgans = { meta: { domain: "offline", pageId: "landing", version: 1 }, nodes: children };
@@ -101,8 +102,65 @@ export default function ContainerCreationsLanding() {
   const experienceProfile = getExperienceProfile("website");
   const screenKey = json?.id ?? "container-creations-landing";
 
+  const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
+  const landingStep = (stateSnapshot?.values?.landingStep as number) ?? 0;
+  const treeWithChildren = treeForRender as { children?: { id?: string }[] };
+  const heroFilteredTree =
+    landingStep === 0 && Array.isArray(treeWithChildren?.children)
+      ? { ...treeForRender, children: treeWithChildren.children.filter((c) => c?.id !== "step-0-hero") }
+      : treeForRender;
+
+  const handleHeroExplore = () => {
+    dispatchState("state.update", { key: "landingStep", value: 1 });
+  };
+
+  const handleStampedContinue = () => {
+    dispatchState("state.update", { key: "landingStep", value: 2 });
+  };
+
+  const handleMeasureContinue = () => {
+    dispatchState("state.update", { key: "landingStep", value: 3 });
+  };
+
+  const handleVentContinue = () => {
+    dispatchState("state.update", { key: "landingStep", value: 4 });
+  };
+
+  const router = useRouter();
+  function startFlow(mode: string) {
+    if (mode === "fit") {
+      router.push("/flow?step=fit");
+    }
+    if (mode === "light") {
+      router.push("/flow?step=skylight");
+    }
+    if (mode === "guide") {
+      router.push("/flow?step=intro");
+    }
+  }
+
+  React.useEffect(() => {
+    const sections = document.querySelectorAll(".reveal-section");
+    if (sections.length === 0) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, [landingStep]);
+
   return (
-    <div className="landing-container-creations" data-landing="container-creations">
+    <div
+      className={`landing-container-creations${landingStep === 0 ? " landing-step-hero" : ""}${landingStep === 1 ? " landing-step-stamped" : ""}${landingStep === 2 ? " measure-step-active" : ""}`}
+      data-landing="container-creations"
+    >
       <header
         className="landing-shop-bar"
         style={{
@@ -138,26 +196,382 @@ export default function ContainerCreationsLanding() {
       <main
         style={{
           flex: 1,
-          minHeight: "calc(100vh - 52px)",
-          padding: "1.5rem 1rem",
-          maxWidth: 720,
-          margin: "0 auto",
+          minHeight: landingStep === 2 ? "100vh" : "calc(100vh - 52px)",
+          ...(landingStep === 0
+            ? {}
+            : landingStep === 2
+              ? { padding: 0 }
+              : { padding: "1.5rem 1rem", maxWidth: 720, margin: "0 auto" }),
         }}
       >
-        <ExperienceRenderer
-          key={screenKey}
-          node={treeForRender}
-          defaultState={{ ...initialState, ...json?.state }}
-          profileOverride={experienceProfile}
-          sectionLayoutPresetOverrides={{}}
-          cardLayoutPresetOverrides={{}}
-          organInternalLayoutOverrides={organInternalLayoutOverrides}
-          screenId={screenKey}
-          behaviorProfile="default"
-          experience="website"
-          sectionKeys={sectionKeysFromTree}
-          sectionLabels={sectionLabels}
-        />
+        {landingStep === 0 ? (
+          <>
+            <section
+              style={{
+                position: "relative",
+                width: "100%",
+                overflow: "hidden",
+              }}
+            >
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  display: "block",
+                }}
+              >
+                <source src="/Videos/hero-install.mp4.mp4" type="video/mp4" />
+              </video>
+              <img
+                src="/images/logo-container-creations.webp"
+                alt="Container Creations"
+                style={{
+                  position: "absolute",
+                  top: "20px",
+                  left: "20px",
+                  width: "140px",
+                  height: "auto",
+                  zIndex: 10,
+                }}
+              />
+              <a
+                href="#flow"
+                style={{
+                  position: "absolute",
+                  top: "24px",
+                  right: "24px",
+                  color: "#fff",
+                  fontWeight: 600,
+                  textDecoration: "none",
+                  zIndex: 10,
+                }}
+              >
+                Shop Now
+              </a>
+            </section>
+            <div className="hero-intro">
+              <h1 className="hero-title">
+                Upgrade Your Shipping Container
+              </h1>
+              <p className="hero-subtitle">
+                Ventilation • Natural Light • Structural Integration
+              </p>
+              <div className="hero-badge">
+                60-Minute DIY Install • No Welding Required
+              </div>
+              <button
+                type="button"
+                className="hero-cta"
+                onClick={handleHeroExplore}
+              >
+                Explore the Container Upgrade System
+              </button>
+            </div>
+            <section
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                marginTop: "30px",
+                marginBottom: "40px",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  gap: "16px",
+                  flexWrap: "wrap",
+                  justifyContent: "center",
+                }}
+              >
+                <button
+                  onClick={() => startFlow("fit")}
+                  style={{
+                    padding: "14px 22px",
+                    borderRadius: "8px",
+                    border: "1px solid #d0d0d0",
+                    background: "#ffffff",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  Test Fit Your Container
+                </button>
+                <button
+                  onClick={() => startFlow("light")}
+                  style={{
+                    padding: "14px 22px",
+                    borderRadius: "8px",
+                    border: "1px solid #d0d0d0",
+                    background: "#ffffff",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  Add Instant Light
+                </button>
+                <button
+                  onClick={() => startFlow("guide")}
+                  style={{
+                    padding: "14px 22px",
+                    borderRadius: "8px",
+                    border: "1px solid #d0d0d0",
+                    background: "#ffffff",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  What To Know Before Buying
+                </button>
+              </div>
+            </section>
+          </>
+        ) : landingStep === 1 ? (
+          <div className="landing-content-block">
+            <section
+              className="stamped-section"
+              style={{
+                textAlign: "center",
+                maxWidth: 720,
+                margin: "0 auto",
+                padding: "48px 24px 56px",
+              }}
+            >
+              <h2
+                style={{
+                  fontSize: "clamp(1.75rem, 4vw, 2.5rem)",
+                  fontWeight: 700,
+                  letterSpacing: "-0.02em",
+                  lineHeight: 1.2,
+                  margin: "0 0 16px",
+                }}
+              >
+                Precision-Stamped Structural Steel
+              </h2>
+              <p
+                style={{
+                  fontSize: "1.125rem",
+                  opacity: 0.85,
+                  margin: "0 0 40px",
+                  lineHeight: 1.5,
+                }}
+              >
+                The Original Container Roof Adapter — Formed from a Single
+                20-Gauge Steel Press.
+              </p>
+              <div style={{ marginBottom: 16 }}>
+                <video
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  src="/Videos/pressed-steel.mp4.mp4"
+                  style={{
+                    width: "100%",
+                    maxWidth: 560,
+                    height: "auto",
+                    display: "block",
+                    margin: "0 auto",
+                  }}
+                />
+                <p
+                  style={{
+                    fontSize: "0.875rem",
+                    opacity: 0.8,
+                    margin: "12px auto 0",
+                    maxWidth: 480,
+                    lineHeight: 1.45,
+                  }}
+                >
+                  Each base is formed in a single industrial press — not
+                  assembled from multiple welded parts.
+                </p>
+              </div>
+              <h3
+                style={{
+                  fontSize: "1.25rem",
+                  fontWeight: 600,
+                  margin: "0 0 20px",
+                  textAlign: "left",
+                }}
+              >
+                Structural Integrity Checklist
+              </h3>
+              <ul
+                style={{
+                  listStyle: "none",
+                  padding: 0,
+                  margin: "0 0 28px",
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+                  gap: "20px 32px",
+                  textAlign: "left",
+                }}
+              >
+                {[
+                  {
+                    title: "20-Gauge Structural Steel",
+                    sub: "Built for the strength of container roofs.",
+                  },
+                  {
+                    title: "Single-Stamp Formed Base",
+                    sub: "Pressed from one piece of steel for strength and consistency.",
+                  },
+                  {
+                    title: "No Welded Seams",
+                    sub: "Eliminates weak joints and distortion points.",
+                  },
+                  {
+                    title: "Precision-Formed Seal Surface",
+                    sub: "Creates a tight, consistent weather seal.",
+                  },
+                  {
+                    title: "Original Patented Design",
+                    sub: "The first vent base engineered specifically for containers.",
+                  },
+                ].map((item, i) => (
+                  <li
+                    key={i}
+                    style={{
+                      display: "flex",
+                      gap: 12,
+                      alignItems: "flex-start",
+                      fontSize: "0.9375rem",
+                      lineHeight: 1.45,
+                    }}
+                  >
+                    <span
+                      style={{ flexShrink: 0 }}
+                      aria-hidden
+                    >
+                      <svg
+                        width="22"
+                        height="22"
+                        viewBox="0 0 22 22"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        style={{ display: "block" }}
+                      >
+                        <circle cx="11" cy="11" r="10" fill="#16a34a" />
+                        <path
+                          d="M6 11l3.5 3.5L16 8"
+                          stroke="#fff"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </span>
+                    <span>
+                      <strong style={{ display: "block", marginBottom: 2 }}>
+                        {item.title}
+                      </strong>
+                      <span style={{ opacity: 0.9 }}>{item.sub}</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <p
+                style={{
+                  fontSize: "1rem",
+                  opacity: 0.9,
+                  margin: "0 0 28px",
+                  lineHeight: 1.5,
+                }}
+              >
+                This isn't a generic roof vent. It's a structural adapter system
+                for container roofs.
+              </p>
+              <button
+                type="button"
+                className="hero-cta"
+                onClick={handleStampedContinue}
+              >
+                Check Your Structural Fit
+              </button>
+            </section>
+          </div>
+        ) : landingStep === 2 ? (
+          <div
+            style={{
+              width: "100%",
+              minHeight: "100vh",
+              background: "#fff",
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <div
+              style={{
+                width: "100%",
+                maxWidth: 900,
+                paddingLeft: 24,
+                paddingRight: 24,
+              }}
+            >
+              <section className="stamped-section measure-roof-section" style={{ textAlign: "center" }}>
+                <p style={{ fontSize: 18, opacity: 0.9, marginBottom: 0 }}>
+                  Check your roof corrugation before ordering.
+                </p>
+                <img
+                  src="/images/Measure-roof.jpg.jpg"
+                  alt="Measure your container roof"
+                  style={{
+                    width: "100%",
+                    maxWidth: 520,
+                    height: "auto",
+                    display: "block",
+                    margin: "24px auto",
+                  }}
+                />
+                <button
+                  type="button"
+                  className="hero-cta"
+                  onClick={handleMeasureContinue}
+                >
+                  Ventilate your container
+                </button>
+              </section>
+            </div>
+          </div>
+        ) : landingStep === 3 ? (
+          <div className="landing-content-block">
+            <section className="stamped-section vent-section">
+              <h2>12″ vent — airflow and moisture control</h2>
+              <img
+                src="/images/12_%20vent.png"
+                alt="12 vent comparison — airflow and moisture control"
+                className="measure-roof-image"
+              />
+              <button
+                type="button"
+                className="hero-cta"
+                onClick={handleVentContinue}
+              >
+                Continue
+              </button>
+            </section>
+          </div>
+        ) : (
+          <ExperienceRenderer
+            key={screenKey}
+            node={heroFilteredTree}
+            defaultState={{ ...initialState, ...json?.state }}
+            profileOverride={experienceProfile}
+            sectionLayoutPresetOverrides={{}}
+            cardLayoutPresetOverrides={{}}
+            organInternalLayoutOverrides={organInternalLayoutOverrides}
+            screenId={screenKey}
+            behaviorProfile="default"
+            experience="website"
+            sectionKeys={sectionKeysFromTree}
+            sectionLabels={sectionLabels}
+          />
+        )}
       </main>
     </div>
   );

@@ -62,20 +62,20 @@ const PANEL_STYLE: React.CSSProperties = {
   maxWidth: "100%",
   minWidth: 0,
   flex: "1 1 auto",
-  background: "linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)",
+  background: "var(--color-surface-1)",
   borderLeft: "none",
   padding: "var(--spacing-5)",
   overflowY: "auto",
   overflowX: "visible",
   fontSize: "var(--font-size-sm)",
-  boxShadow: "-4px 0 16px rgba(0,0,0,0.04)",
+  boxShadow: "var(--shadow-panel)",
   boxSizing: "border-box",
 };
 
 const TITLE_STYLE: React.CSSProperties = {
   fontWeight: 600,
   marginBottom: "var(--spacing-4)",
-  color: "rgba(0,0,0,0.82)",
+  color: "var(--color-text-primary)",
 };
 
 const ROW_STYLE: React.CSSProperties = {
@@ -85,17 +85,17 @@ const ROW_STYLE: React.CSSProperties = {
 const LABEL_STYLE: React.CSSProperties = {
   display: "block",
   marginBottom: "var(--spacing-2)",
-  color: "rgba(0,0,0,0.6)",
+  color: "var(--color-text-secondary)",
 };
 
 const SELECT_STYLE: React.CSSProperties = {
   width: "100%",
   padding: "var(--spacing-2) var(--spacing-3)",
-  borderRadius: "10px",
-  border: "1px solid rgba(0,0,0,0.08)",
-  background: "#ffffff",
+  borderRadius: "var(--radius-md)",
+  border: "1px solid var(--color-border)",
+  background: "var(--color-surface-1)",
   fontSize: "inherit",
-  boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+  boxShadow: "var(--shadow-sm)",
 };
 
 const MIN_ROW_HEIGHT = 80;
@@ -213,7 +213,7 @@ export default function OrganPanel({
     return (
       <aside style={PANEL_STYLE} data-organ-panel>
         <div style={TITLE_STYLE}>Layout</div>
-        <p style={{ color: "rgba(0,0,0,0.5)", margin: 0 }}>
+        <p style={{ color: "var(--color-text-secondary)", margin: 0 }}>
           No sections on this screen. Load a website-style app (e.g. demo-blueprint-site).
         </p>
       </aside>
@@ -260,11 +260,11 @@ export default function OrganPanel({
   return (
     <aside ref={panelScrollRef} style={PANEL_STYLE} data-organ-panel>
       <div style={TITLE_STYLE}>Layout controls</div>
-      <p style={{ color: "rgba(0,0,0,0.5)", marginBottom: "var(--spacing-4)", marginTop: 0, fontSize: "var(--font-size-xs)" }}>
+      <p style={{ color: "var(--color-text-secondary)", marginBottom: "var(--spacing-4)", marginTop: 0, fontSize: "var(--font-size-xs)" }}>
         Section layout, card layout, and organ internal layout (dev). Applies to this screen only.
       </p>
       <div style={{ marginBottom: "var(--spacing-4)", display: "flex", gap: "var(--spacing-2)", alignItems: "center", flexWrap: "wrap" }}>
-        <span style={{ fontSize: "var(--font-size-xs)", color: "rgba(0,0,0,0.55)" }}>Mode:</span>
+        <span style={{ fontSize: "var(--font-size-xs)", color: "var(--color-text-secondary)" }}>Mode:</span>
         {(["visual", "live", "text"] as const).map((mode) => (
           <button
             key={mode}
@@ -274,11 +274,11 @@ export default function OrganPanel({
               padding: "6px 12px",
               borderRadius: "8px",
               border: "none",
-              background: layoutViewMode === mode ? "linear-gradient(180deg, #3b82f6 0%, #2563eb 100%)" : "rgba(255,255,255,0.9)",
-              color: layoutViewMode === mode ? "#fff" : "rgba(0,0,0,0.8)",
+              background: layoutViewMode === mode ? "var(--color-primary)" : "var(--color-surface-1)",
+              color: layoutViewMode === mode ? "var(--color-on-primary)" : "var(--color-text-primary)",
               fontSize: "var(--font-size-xs)",
               cursor: "pointer",
-              boxShadow: layoutViewMode === mode ? "0 2px 6px rgba(59, 130, 246, 0.35)" : "0 1px 3px rgba(0,0,0,0.06)",
+              boxShadow: layoutViewMode === mode ? "var(--shadow-md)" : "var(--shadow-sm)",
               transition: "background 0.2s ease, box-shadow 0.2s ease",
               textTransform: "capitalize",
             }}
@@ -287,7 +287,7 @@ export default function OrganPanel({
           </button>
         ))}
       </div>
-      <div style={{ marginBottom: "var(--spacing-4)", display: "flex", gap: 0, alignItems: "stretch", border: "1px solid rgba(0,0,0,0.08)", borderRadius: "10px", overflow: "hidden", background: "rgba(255,255,255,0.6)" }}>
+      <div style={{ marginBottom: "var(--spacing-4)", display: "flex", gap: 0, alignItems: "stretch", border: "1px solid var(--color-border)", borderRadius: "var(--radius-md)", overflow: "hidden", background: "var(--color-surface-1)" }}>
         {(["section", "internal"] as const).map((mode) => (
           <button
             key={mode}
@@ -297,8 +297,8 @@ export default function OrganPanel({
               flex: 1,
               padding: "8px 12px",
               border: "none",
-              background: layoutMode === mode ? "linear-gradient(180deg, #3b82f6 0%, #2563eb 100%)" : "transparent",
-              color: layoutMode === mode ? "#fff" : "rgba(0,0,0,0.7)",
+              background: layoutMode === mode ? "var(--color-primary)" : "transparent",
+              color: layoutMode === mode ? "var(--color-on-primary)" : "var(--color-text-primary)",
               fontSize: "var(--font-size-xs)",
               fontWeight: 600,
               cursor: "pointer",
@@ -392,7 +392,7 @@ export default function OrganPanel({
           justifyContent: "flex-start",
           paddingTop: "var(--spacing-3)",
           paddingBottom: "var(--spacing-3)",
-          borderBottom: "1px solid rgba(0,0,0,0.06)",
+          borderBottom: "1px solid var(--color-border)",
         };
 
         const useLivePreview = layoutViewMode === "live" && screenModel != null;
@@ -520,7 +520,7 @@ export default function OrganPanel({
                       <>
                         {onSectionLayoutPresetOverride && onCardLayoutPresetOverride && hasCardSlot ? (
                           <>
-                            <div style={{ marginBottom: "var(--spacing-2)", display: "flex", gap: 0, alignItems: "stretch", border: "1px solid rgba(0,0,0,0.08)", borderRadius: "8px", overflow: "hidden", background: "rgba(255,255,255,0.5)" }}>
+                            <div style={{ marginBottom: "var(--spacing-2)", display: "flex", gap: 0, alignItems: "stretch", border: "1px solid var(--color-border)", borderRadius: "var(--radius-md)", overflow: "hidden", background: "var(--color-surface-1)" }}>
                               {(["sectionLayout", "cardLayout"] as const).map((mode) => {
                                 const isActive = getLayoutPickerMode(sectionKey) === mode;
                                 return (
@@ -532,8 +532,8 @@ export default function OrganPanel({
                                       flex: 1,
                                       padding: "6px 10px",
                                       border: "none",
-                                      background: isActive ? "linear-gradient(180deg, #3b82f6 0%, #2563eb 100%)" : "transparent",
-                                      color: isActive ? "#fff" : "rgba(0,0,0,0.65)",
+                                      background: isActive ? "var(--color-primary)" : "transparent",
+                                      color: isActive ? "var(--color-on-primary)" : "var(--color-text-secondary)",
                                       fontSize: "var(--font-size-xs)",
                                       fontWeight: 500,
                                       cursor: "pointer",

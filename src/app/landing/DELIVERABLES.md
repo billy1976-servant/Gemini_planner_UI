@@ -1,5 +1,28 @@
 # Container Creations Landing — Deliverables
 
+## Container Creations design tokens
+
+Use these so the onboarding page and any future Container Creations pages stay aligned with the landing.
+
+| Token / element | Value / location |
+|-----------------|------------------|
+| **CSS file** | `src/app/landing/landing-theme.css` |
+| **Page wrapper** | `.landing-container-creations` |
+| **Content (narrow)** | `max-width: 720px`, `margin: 0 auto`, padding e.g. `1.5rem 1rem` or `48px 24px 56px` |
+| **Content (wide, e.g. measure)** | `max-width: 900px`, padding `24px` |
+| **Typography base** | `--landing-font-base: "DM Sans", system-ui, sans-serif` |
+| **Typography heading** | `--landing-font-heading: "Poppins", "DM Sans", system-ui, sans-serif` |
+| **Hero title** | `.hero-title` — 40px, 700 |
+| **Hero subtitle** | `.hero-subtitle` — 18px, opacity 0.9 |
+| **Section heading** | `.stamped-section h2` — 32px, 700; or `clamp(1.75rem, 4vw, 2.5rem)` |
+| **Primary CTA** | `.hero-cta` — 14px 30px padding, 18px font, 8px radius, `#2b7cff` |
+| **Steel palette** | `--landing-steel-bg: #1a1d23`, `--landing-steel-fg: #e2e8f0`, `--landing-steel-border: #2d3239`, `--landing-steel-muted: #64748b` |
+| **White steps** | Classes `.landing-step-hero`, `.landing-step-stamped`, `.measure-step-active` |
+
+**Layout classes:** `.landing-content-block`, `.stamped-section`, `.measure-roof-section`, `.vent-section`, `.hero-intro`, `.hero-container`, `.hero-video`.
+
+---
+
 ## Final JSON structure
 
 **File:** `src/05_Logic/logic/content/landing/container-creations.landing.json`
@@ -42,7 +65,10 @@ src/
       landing-theme.css     # Industrial steel palette (CSS vars)
       DELIVERABLES.md       # This file
   app/
-    layout.tsx              # pathname === "/landing" → render children only (no chrome)
+    layout.tsx              # pathname === "/landing" | "/flow" | "/onboarding" → render children only (no chrome)
+  app/
+    onboarding/
+      page.tsx              # 6-step instructional onboarding; uses landing-theme.css only
   05_Logic/
     logic/
       content/landing/

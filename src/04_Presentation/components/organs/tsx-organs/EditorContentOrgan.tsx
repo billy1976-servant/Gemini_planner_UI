@@ -7,10 +7,11 @@ import Section from "@/components/molecules/section.compound";
 const LAYOUT_ID = "organ-editorcontent";
 
 export function EditorContentOrgan({ organId, slots, className }: OrganProps<"editorContent">) {
+  const s = slots ?? {};
   return (
     <Section id={organId} role={LAYOUT_ID} layout={LAYOUT_ID} params={{ internalLayoutId: LAYOUT_ID }}>
-      {slots["editorContent.toolbar"]}
-      {slots["editorContent.body"]}
+      {s["editorContent.toolbar"]}
+      {s["editorContent.body"]}
     </Section>
   );
 }

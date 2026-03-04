@@ -10,6 +10,7 @@
   --landing-radius: 8px;
   --landing-font-base: "DM Sans", system-ui, sans-serif;
   --landing-font-heading: "Poppins", "DM Sans", system-ui, sans-serif;
+  --landing-content-max: 1100px;
 
   /* Override generic tokens so JsonSkinEngine sections pick up steel palette */
   --color-bg-primary: #1a1d23;
@@ -22,6 +23,8 @@
   color: var(--landing-steel-fg);
   font-family: var(--landing-font-base);
   min-height: 100vh;
+  container-type: inline-size;
+  container-name: landing;
 }
 
 .landing-container-creations .landing-shop-bar {
@@ -29,6 +32,380 @@
   border-bottom-color: var(--landing-steel-border);
 }
 
+/* Hero step (step 0): no dark background; light page so video is the focus */
+.landing-container-creations.landing-step-hero {
+  background: #fff;
+  color: #1a1d23;
+}
+
+.landing-container-creations.landing-step-hero .landing-shop-bar {
+  background: #fff;
+  border-bottom-color: #e2e8f0;
+}
+
+.landing-container-creations.landing-step-hero .landing-shop-bar a {
+  color: #1a1d23;
+  border-color: #e2e8f0;
+}
+
+.landing-container-creations.landing-step-hero .hero-intro .hero-title,
+.landing-container-creations.landing-step-hero .hero-intro .hero-subtitle,
+.landing-container-creations.landing-step-hero .hero-intro .hero-badge {
+  color: #1a1d23;
+}
+
+/* Stamped 20-gauge screen (step 1): white page, dark text, no black video sides */
+.landing-container-creations.landing-step-stamped {
+  background: #fff;
+  color: #1a1d23;
+}
+
+.landing-container-creations.landing-step-stamped .landing-shop-bar {
+  background: #fff;
+  border-bottom-color: #e2e8f0;
+}
+
+.landing-container-creations.landing-step-stamped .landing-shop-bar a {
+  color: #1a1d23;
+  border-color: #e2e8f0;
+}
+
+.landing-container-creations.landing-step-stamped .stamped-section h2,
+.landing-container-creations.landing-step-stamped .stamped-section p {
+  color: #1a1d23;
+}
+
+.landing-container-creations.landing-step-stamped .stamped-section video {
+  background: #fff;
+}
+
+/* Measure screen: white page, no black bars */
+.landing-container-creations.measure-step-active {
+  background: #fff;
+  color: #1a1d23;
+}
+
+.landing-container-creations.measure-step-active .landing-shop-bar {
+  background: #fff;
+  border-bottom-color: #e2e8f0;
+}
+
+.landing-container-creations.measure-step-active .landing-shop-bar a {
+  color: #1a1d23;
+  border-color: #e2e8f0;
+}
+
 .landing-container-creations button:hover {
   filter: brightness(1.1);
+}
+
+/* Hero section — full video fit, logo top-left on video (Container Creations) */
+.landing-container-creations .hero-container {
+  position: relative;
+  width: 100%;
+}
+
+.landing-container-creations .hero-brand {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 140px;
+  z-index: 5;
+}
+
+.landing-container-creations .hero-video {
+  position: relative;
+  width: 100%;
+}
+
+.landing-container-creations .hero-video video {
+  width: 100%;
+  height: auto;
+  max-height: 70vh;
+  object-fit: contain;
+  display: block;
+}
+
+.landing-container-creations .hero-intro {
+  text-align: center;
+  padding: 40px 20px;
+  max-width: min(900px, var(--landing-content-max, 1100px));
+  margin: auto;
+}
+
+.landing-container-creations .hero-intro .hero-title {
+  font-size: 40px;
+  font-weight: 700;
+}
+
+.landing-container-creations .hero-intro .hero-subtitle {
+  font-size: 18px;
+  margin-top: 10px;
+  opacity: 0.9;
+}
+
+.landing-container-creations .hero-badge {
+  margin-top: 16px;
+  font-weight: 600;
+}
+
+.landing-container-creations .hero-cta {
+  margin-top: 28px;
+  padding: 14px 30px;
+  font-size: 18px;
+  border-radius: 8px;
+  background: #2b7cff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+/* Narrow layout: tighten hero/shop-bar (container query so dev frame and real viewport both work) */
+@container landing (max-width: 768px) {
+  .landing-container-creations .hero-intro {
+    padding: 24px 16px;
+  }
+  .landing-container-creations .hero-intro .hero-title {
+    font-size: clamp(1.5rem, 6vw, 40px);
+  }
+  .landing-container-creations .hero-intro .hero-subtitle {
+    font-size: 1rem;
+  }
+  .landing-container-creations .landing-shop-bar {
+    padding: 0.5rem 1rem;
+  }
+}
+
+/* Stamped steel screen (same formatting as front page) */
+.landing-container-creations .landing-content-block {
+  padding: 40px 20px;
+  max-width: var(--landing-content-max, 1100px);
+  margin: 0 auto;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.landing-container-creations .landing-content-block img {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.landing-container-creations .stamped-section {
+  text-align: center;
+}
+
+.landing-container-creations .stamped-section h2 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.landing-container-creations .stamped-section p {
+  font-size: 18px;
+  opacity: 0.9;
+  margin-bottom: 24px;
+}
+
+.landing-container-creations .stamped-section video {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin-bottom: 28px;
+  vertical-align: top;
+}
+
+.landing-container-creations .stamped-section .hero-cta {
+  margin-top: 0;
+}
+
+/* Measurement screen: white background, diagram only (no banner) */
+.landing-container-creations .measure-screen-block {
+  background: white;
+}
+
+.landing-container-creations .measure-roof-section {
+  color: #1a1d23;
+}
+
+.landing-container-creations .measure-roof-section .measure-diagram-wrap {
+  max-width: 520px;
+  margin: 0 auto 28px;
+  overflow: hidden;
+  /* Crop to show diagram only; banner at top is clipped */
+  max-height: 56vh;
+}
+
+.landing-container-creations .measure-roof-section .measure-diagram-wrap .measure-roof-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  object-position: bottom center;
+  vertical-align: top;
+}
+
+.landing-container-creations .vent-section .measure-roof-image {
+  width: 100%;
+  height: auto;
+  max-height: min(70vh, 800px);
+  object-fit: contain;
+  object-position: top center;
+  display: block;
+  margin-bottom: 28px;
+  vertical-align: top;
+}
+
+/* Scroll reveal */
+.landing-container-creations .reveal-section {
+  opacity: 0;
+  transform: translateY(60px);
+  transition: all 0.8s ease;
+  padding: 40px 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.landing-container-creations .reveal-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.landing-container-creations .reveal-section video {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin-top: 16px;
+  vertical-align: top;
+}
+
+/* Container Creations TSX page: two-column product sections + framed media */
+.landing-container-creations .cc-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px 32px;
+  align-items: start;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px 20px 32px;
+}
+
+/* Stack to single column when narrow (after base rule so this wins in cascade) */
+@container landing (max-width: 768px) {
+  .landing-container-creations .cc-two-col {
+    grid-template-columns: 1fr;
+    padding: 20px 16px 28px;
+  }
+}
+@media (max-width: 768px) {
+  .landing-container-creations .cc-two-col {
+    grid-template-columns: 1fr;
+    padding: 20px 16px 28px;
+  }
+}
+
+.landing-container-creations .cc-two-col .cc-text {
+  min-width: 0;
+}
+
+.landing-container-creations .cc-two-col .cc-text h2 {
+  margin: 0 0 12px;
+  font-size: clamp(1.5rem, 3vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.landing-container-creations .cc-two-col .cc-text p {
+  margin: 0 0 16px;
+  font-size: 1rem;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+.landing-container-creations .cc-media-card {
+  background: var(--landing-steel-bg-alt, #25282e);
+  border: 1px solid var(--landing-steel-border, #2d3239);
+  border-radius: var(--landing-radius, 8px);
+  overflow: hidden;
+  padding: 0;
+}
+
+.landing-container-creations .cc-media-card img,
+.landing-container-creations .cc-media-card video {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.landing-container-creations .cc-step-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-top: 24px;
+}
+
+/* Portrait video container: full width, no letterboxing, crop to fill (mobile-first) */
+.landing-container-creations .videoContainer {
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.landing-container-creations .videoContainer video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Step 1 stamped section: single-column flow with consistent vertical spacing */
+.landing-container-creations .cc-stamped-section > * + * {
+  margin-top: 0;
+}
+
+.landing-container-creations .cc-stamped-section .cc-stamped-heading {
+  margin-bottom: 24px;
+}
+
+.landing-container-creations .cc-stamped-section .cc-stamped-description {
+  margin-bottom: 28px;
+}
+
+.landing-container-creations .cc-stamped-section .cc-stamped-video-wrap {
+  margin-bottom: 12px;
+}
+
+.landing-container-creations .cc-stamped-section .cc-stamped-video-caption {
+  margin-bottom: 28px;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  opacity: 0.85;
+}
+
+.landing-container-creations .cc-stamped-section .cc-stamped-checklist-heading {
+  margin-bottom: 12px;
+}
+
+.landing-container-creations .cc-stamped-section .cc-stamped-checklist {
+  margin-bottom: 28px;
+}
+
+.landing-container-creations.landing-step-stamped .cc-two-col .cc-text h2,
+.landing-container-creations.landing-step-stamped .cc-two-col .cc-text p,
+.landing-container-creations.landing-step-stamped .cc-two-col .cc-text li,
+.landing-container-creations.measure-step-active .cc-two-col .cc-text h2,
+.landing-container-creations.measure-step-active .cc-two-col .cc-text p {
+  color: #1a1d23;
+}
+
+.landing-container-creations.landing-step-stamped .cc-stamped-section .cc-stamped-heading,
+.landing-container-creations.landing-step-stamped .cc-stamped-section .cc-stamped-description,
+.landing-container-creations.landing-step-stamped .cc-stamped-section .cc-stamped-description p,
+.landing-container-creations.landing-step-stamped .cc-stamped-section .cc-stamped-video-caption,
+.landing-container-creations.landing-step-stamped .cc-stamped-section .cc-stamped-checklist-heading,
+.landing-container-creations.landing-step-stamped .cc-stamped-section .cc-stamped-checklist,
+.landing-container-creations.landing-step-stamped .cc-stamped-section .cc-stamped-checklist li {
+  color: #1a1d23;
 }

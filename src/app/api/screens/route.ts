@@ -15,6 +15,8 @@ function findRepoRoot(start: string): string {
 
 const REPO_ROOT = findRepoRoot(process.cwd());
 const O1_APP_BASE = path.join(REPO_ROOT, "src", "01_App");
+const TSX_ORGANISMS_ROOT = path.join(REPO_ROOT, "src", "04_Presentation", "components", "organisms", "tsx-organisms");
+const TSX_ORGANS_ROOT = path.join(REPO_ROOT, "src", "04_Presentation", "components", "organs", "tsx-organs");
 
 export type ScreensIndexItem = {
   category: string;
@@ -175,6 +177,28 @@ function collectGenericUnderRoot(rootPath: string, rootName: string): ScreensInd
   });
 }
 
+function collectTsxDirectFiles(rootPath: string, rootName: string, categoryName: string): ScreensIndexItem | null {
+  if (!fs.existsSync(rootPath)) return null;
+  const entries = fs.readdirSync(rootPath, { withFileTypes: true });
+  const directFiles = entries
+    .filter(
+      (f) =>
+        f.isFile() &&
+        f.name.endsWith(".tsx") &&
+        !f.name.endsWith(".d.ts") &&
+        !f.name.startsWith("_template")
+    )
+    .map((f) => f.name.replace(/\.tsx$/, ""));
+  if (directFiles.length === 0) return null;
+  return {
+    category: categoryName,
+    directFiles,
+    folders: {},
+    rootSection: rootName,
+    displayName: rootName,
+  };
+}
+
 /**
  * GET /api/screens
  * Scans src/01_App/* — each directory is a root section.
@@ -216,6 +240,11 @@ export async function GET() {
         result.push(...collectGenericUnderRoot(rootPath, rootSection));
       }
     }
+
+    const organismsItem = collectTsxDirectFiles(TSX_ORGANISMS_ROOT, "tsx-organisms", "organisms");
+    if (organismsItem) result.push(organismsItem);
+    const organsItem = collectTsxDirectFiles(TSX_ORGANS_ROOT, "tsx-organs", "organs");
+    if (organsItem) result.push(organsItem);
 
     return NextResponse.json(result);
   } catch (e: unknown) {

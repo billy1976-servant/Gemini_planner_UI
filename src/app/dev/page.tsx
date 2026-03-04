@@ -82,6 +82,17 @@ const businessContext = (require as any).context(
   /\.tsx$/
 );
 
+const organismsContext = (require as any).context(
+  "../../04_Presentation/components/organisms/tsx-organisms",
+  false,
+  /\.tsx$/
+);
+const organsContext = (require as any).context(
+  "../../04_Presentation/components/organs/tsx-organs",
+  false,
+  /\.tsx$/
+);
+
 // Normalize context keys (Windows + Unix safe)
 function normalizeContextKey(key: string) {
   return key
@@ -91,16 +102,35 @@ function normalizeContextKey(key: string) {
     .replace(/\.tsx$/, "");
 }
 
+/** Resolve module to component: support both default and named exports (organisms/organs use named). */
+function resolveTsxModule(mod: any, normalizedKey: string): React.ComponentType<any> {
+  const name = normalizedKey.split("/").pop() ?? normalizedKey;
+  return mod?.default ?? mod?.[name] ?? mod;
+}
+
 const AUTO_TSX_MAP: Record<string, () => Promise<any>> = {};
 
 tsxContext.keys().forEach((key) => {
   const normalized = normalizeContextKey(key);
-  AUTO_TSX_MAP[normalized] = () => Promise.resolve(tsxContext(key));
+  AUTO_TSX_MAP[normalized] = () =>
+    Promise.resolve(tsxContext(key)).then((m) => resolveTsxModule(m, normalized));
 });
 
 businessContext.keys().forEach((key) => {
   const normalized = normalizeContextKey(key);
-  AUTO_TSX_MAP[`(live) Business/${normalized}`] = () => Promise.resolve(businessContext(key));
+  AUTO_TSX_MAP[`(live) Business/${normalized}`] = () =>
+    Promise.resolve(businessContext(key)).then((m) => resolveTsxModule(m, normalized));
+});
+
+organismsContext.keys().forEach((key: string) => {
+  const normalized = normalizeContextKey(key);
+  AUTO_TSX_MAP[`tsx-organisms/organisms/${normalized}`] = () =>
+    Promise.resolve(organismsContext(key)).then((m) => resolveTsxModule(m, normalized));
+});
+organsContext.keys().forEach((key: string) => {
+  const normalized = normalizeContextKey(key);
+  AUTO_TSX_MAP[`tsx-organs/organs/${normalized}`] = () =>
+    Promise.resolve(organsContext(key)).then((m) => resolveTsxModule(m, normalized));
 });
 
 

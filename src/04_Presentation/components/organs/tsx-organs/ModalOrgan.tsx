@@ -7,6 +7,7 @@ import Section from "@/components/molecules/section.compound";
 const LAYOUT_ID = "organ-modal";
 
 export function ModalOrgan({ organId, slots, onAction, className }: OrganProps<"modal">) {
+  const s = slots ?? {};
   return (
     <Section
       id={organId}
@@ -14,8 +15,8 @@ export function ModalOrgan({ organId, slots, onAction, className }: OrganProps<"
       layout={LAYOUT_ID}
       params={{ internalLayoutId: LAYOUT_ID }}
     >
-      {slots["modal.title"]}
-      {slots["modal.content"]}
+      {s["modal.title"]}
+      {s["modal.content"]}
     </Section>
   );
 }

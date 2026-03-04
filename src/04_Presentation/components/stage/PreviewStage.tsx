@@ -69,7 +69,7 @@ export default function PreviewStage({ children }: PreviewStageProps) {
     );
   }
 
-  // TABLET MODE — Centered 768px frame
+  // TABLET MODE — Centered frame aligned with content max (1100px) so landings and two-col layouts are not cramped
   if (mode === "tablet") {
     return (
       <div
@@ -91,7 +91,7 @@ export default function PreviewStage({ children }: PreviewStageProps) {
           data-preview-frame="tablet"
           style={{
             width: "100%",
-            maxWidth: "768px",
+            maxWidth: "1100px",
             minHeight: "calc(100vh - 64px)",
             background: "#ffffff",
             boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
