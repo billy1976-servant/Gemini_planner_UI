@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 export type ScreensIndex = {
   category: string;
@@ -100,6 +100,7 @@ type CascadingScreenMenuProps = {
 export default function CascadingScreenMenu({ index, currentScreen = "" }: CascadingScreenMenuProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const containerRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [expandedRoots, setExpandedRoots] = useState<Set<string>>(new Set());
@@ -140,7 +141,9 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
       file === undefined
         ? `${prefix}${category}/${folder}`
         : `${prefix}${category}/${folder}/${file}`;
-    router.replace(`${base}?screen=${encodeURIComponent(screenPath)}`);
+    const params = new URLSearchParams(searchParams?.toString() ?? "");
+    params.set("screen", screenPath);
+    router.replace(`${base}?${params.toString()}`);
     closeMenu();
   };
 

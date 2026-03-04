@@ -360,3 +360,27 @@ body.dev-mobile-mode .cascading-screen-menu-item {
 body.dev-mobile-mode .cascading-screen-menu-panel .cascading-screen-menu-item:not(:last-child) {
   border-bottom: 1px solid #e5e7eb;
 }
+
+/* ============================================================================
+   Phone device preview — force mobile layout when devicePreviewMode === "phone"
+   ============================================================================ */
+.preview-mobile {
+  width: 390px;
+  max-width: 100%;
+  margin: 0 auto;
+  container-type: inline-size;
+  container-name: preview-mobile;
+  box-sizing: border-box;
+}
+
+.preview-mobile * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Simulate mobile breakpoint: container is 390px so (max-width: 420px) is true */
+@container preview-mobile (max-width: 420px) {
+  .preview-mobile > * {
+    min-width: 0; /* allow flex/grid children to shrink in mobile layout */
+  }
+}

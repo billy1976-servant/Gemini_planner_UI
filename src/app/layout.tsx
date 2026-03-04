@@ -13,9 +13,11 @@ import "@/styles/dev-mobile.css";
 import "@/styles/navigator-density.css";
 import { getBaseUrl } from "@/lib/app-base-url";
 import DevicePreviewToggle from "@/dev/DevicePreviewToggle";
+import EditorPreviewToggle from "@/07_Dev_Tools/editor/EditorPreviewToggle";
 import VerticalSpacingReport from "@/diagnostics/VerticalSpacingReport";
 import { getPhoneFrameEnabled, subscribePhoneFrameEnabled } from "@/dev/phone-frame-store";
 import { getDevicePreviewMode, subscribeDevicePreviewMode } from "@/dev/device-preview-store";
+import { getDevMode, setDevMode, subscribeDevMode } from "@/dev/dev-mode-store";
 
 /** Stage max-width by device mode (Desktop / Tablet / Phone buttons). Locked dimensions. */
 const STAGE_MAX_WIDTH_PHONE = 420;
@@ -111,6 +113,7 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
   const layoutSnapshot = useSyncExternalStore(subscribeLayout, getLayout, getLayout);
   const phoneFrameEnabled = useSyncExternalStore(subscribePhoneFrameEnabled, getPhoneFrameEnabled, getPhoneFrameEnabled);
   const devicePreviewMode = useSyncExternalStore(subscribeDevicePreviewMode, getDevicePreviewMode, getDevicePreviewMode);
+  const devMode = useSyncExternalStore(subscribeDevMode, getDevMode, getDevMode);
   const templateList = getTemplateList();
 
   const stageMaxWidth =
@@ -131,6 +134,9 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
 
   const [showSections, setShowSections] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+  const hasHydratedDevMode = useRef(false);
+  const searchParamsRef = useRef("");
+  searchParamsRef.current = searchParams?.toString() ?? "";
 
   useEffect(() => {
     console.log("[MOUNT]", "RootLayout");
@@ -164,6 +170,41 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
     console.log("[layout.tsx] phoneFrameEnabled changed to:", phoneFrameEnabled);
   }, [phoneFrameEnabled]);
 
+  /*
+   * ACCEPTANCE TESTS (manual):
+   * 1. User->Dev click: In User mode click floating "Dev"; chrome stays visible, no revert to User.
+   * 2. Dev->User click: In Dev mode click "User"; chrome disappears, floating Dev appears, no revert to Dev.
+   * 3. Screen change preserves mode: In Dev mode pick another screen from menu; URL has mode=dev, chrome stays.
+   * 4. Behavior navigation preserves mode: Navigate via behavior listener to a screen; URL includes current mode.
+   * 5. Refresh preserves mode: Load /dev?mode=user then refresh; still User. Load /dev?mode=dev then refresh; still Dev.
+   * 6. Phone/Frame toggles: Toggle Device or Phone Frame in Dev mode; chrome does not disappear (no devMode flip).
+   */
+  /* ONE-TIME hydration: URL or localStorage -> store. Store is single source of truth after this. */
+  useEffect(() => {
+    if (hasHydratedDevMode.current) return;
+    if (typeof window === "undefined") return;
+    hasHydratedDevMode.current = true;
+    const q = searchParams?.get("mode");
+    if (q === "user" || q === "dev") {
+      setDevMode(q);
+    } else {
+      try {
+        const ls = window.localStorage.getItem("devMode");
+        if (ls === "user" || ls === "dev") setDevMode(ls);
+      } catch {
+        /* keep default store value */
+      }
+    }
+  }, [searchParams]);
+
+  /* Preview content: when Dev + Phone mode, wrap in .preview-mobile for 390px container and mobile layout */
+  const previewContent =
+    devMode === "dev" && devicePreviewMode === "phone" ? (
+      <div className="preview-mobile">{children}</div>
+    ) : (
+      children
+    );
+
   /* Apply palette to document root so app-chrome + content both inherit */
   usePaletteCSS();
 
@@ -179,7 +220,7 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
 
   /* ============================================================
      🔁 INSTALL BEHAVIOR ROUTER (ONCE)
-     Developer workspace: screen nav goes to /dev?screen=...
+     Developer workspace: screen nav goes to /dev?screen=...; preserve mode and other params.
   ============================================================ */
   useEffect(() => {
     installBehaviorListener((to: string) => {
@@ -188,12 +229,14 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
         dispatchState("state:currentView", { value: to });
         return;
       }
-      // Full path (e.g. /dev?screen=...&flow=... or /): use as-is
       if (to.startsWith("/")) {
         router.replace(to);
         return;
       }
-      router.replace(`/dev?screen=${encodeURIComponent(to)}`);
+      const params = new URLSearchParams(searchParamsRef.current || "");
+      params.set("screen", to);
+      params.set("mode", getDevMode());
+      router.replace(`/dev?${params.toString()}`);
     });
   }, [router]);
 
@@ -228,7 +271,36 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
   return (
     <>
         <DevHome />
-        {/* Navigator: no key — identity stable; palette changes only update CSS, never remount. */}
+        {devMode === "user" && (
+          <button
+            type="button"
+            onClick={() => {
+              setDevMode("dev");
+              const params = new URLSearchParams(searchParams?.toString() ?? "");
+              params.set("mode", "dev"); /* always persist store value; no reliance on URL for mode */
+              router.replace(`/dev?${params.toString()}`, { scroll: false });
+            }}
+            style={{
+              position: "fixed",
+              top: 12,
+              right: 12,
+              zIndex: 9999,
+              padding: "8px 14px",
+              fontSize: "12px",
+              fontWeight: 600,
+              color: "#fff",
+              background: "#1976d2",
+              border: "1px solid #1565c0",
+              borderRadius: "6px",
+              cursor: "pointer",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+            }}
+          >
+            Dev
+          </button>
+        )}
+        {/* Navigator: only when Dev mode */}
+        {devMode === "dev" && (
         <div className={navCompactDesktop ? "nav-compact-desktop" : undefined}>
         <div className="app-chrome">
           <button
@@ -278,6 +350,7 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
           </button>
 
           <DevicePreviewToggle />
+          <EditorPreviewToggle screenPath={currentScreen || ""} />
 
           <span className="app-chrome-hint" title="Experience, Palette, Template: right sidebar pills." aria-hidden="true">
             Right sidebar: Experience, Palette, Template
@@ -288,9 +361,9 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
           </button>
         </div>
         </div>
+        )}
 
-
-        {showSections && (
+        {devMode === "dev" && showSections && (
           <div id="section-layout-panel" className="app-section-layout-panel">
             <VerticalSpacingReport />
           </div>
@@ -305,7 +378,11 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
             ...(isOnboardingTsx ? { background: "linear-gradient(135deg, #2d3436 0%, #1e272e 100%)" } : {}),
           }}
         >
-          {phoneFrameEnabled ? (
+          {devMode === "user" ? (
+            <div style={{ width: "100%", minHeight: "100vh", position: "relative" }}>
+              {children}
+            </div>
+          ) : phoneFrameEnabled ? (
             <div
               style={{
                 display: "flex",
@@ -346,7 +423,7 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
                   }}
                 >
                   <div style={{ flex: 1, minHeight: 0, overflowY: "auto", overflowX: "hidden", padding: 0, margin: 0 }}>
-                    {children}
+                    {previewContent}
                   </div>
                   {!isOnboardingTsx && (
                     <div
@@ -417,7 +494,7 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
                       margin: 0,
                     }}
                   >
-                    {children}
+                    {previewContent}
                   </div>
                   {!isOnboardingTsx && (
                     <div

@@ -245,9 +245,9 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
       ref={sidebarRef}
       style={{
         position: "fixed",
-        top: 0,
+        top: headerHeight,
         right: 0,
-        height: "100vh",
+        height: `calc(100vh - ${headerHeight}px)`,
         width: openPanel ? panelWidth + GRIP_WIDTH + RAIL_WIDTH : RAIL_WIDTH,
         minWidth: RAIL_WIDTH,
         display: "flex",

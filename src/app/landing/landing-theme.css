@@ -11,6 +11,7 @@
   --landing-font-base: "DM Sans", system-ui, sans-serif;
   --landing-font-heading: "Poppins", "DM Sans", system-ui, sans-serif;
   --landing-content-max: 1100px;
+  --landing-phone-width: 390px;
 
   /* Override generic tokens so JsonSkinEngine sections pick up steel palette */
   --color-bg-primary: #1a1d23;
@@ -321,6 +322,26 @@
   opacity: 0.9;
 }
 
+/* Hero video wrap: no phone-style constraints on desktop; layout controls viewport */
+.landing-container-creations .landing-hero-video-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
+.landing-container-creations .landing-hero-video-wrap video {
+  width: 100%;
+  height: auto;
+  display: block;
+  vertical-align: top;
+}
+
+.landing-container-creations .landing-phone-video-wrap video {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
 .landing-container-creations .cc-media-card {
   background: var(--landing-steel-bg-alt, #25282e);
   border: 1px solid var(--landing-steel-border, #2d3239);
@@ -408,4 +429,154 @@
 .landing-container-creations.landing-step-stamped .cc-stamped-section .cc-stamped-checklist,
 .landing-container-creations.landing-step-stamped .cc-stamped-section .cc-stamped-checklist li {
   color: #1a1d23;
+}
+
+/* Vent Installation Checklist — below step content (not sticky; desktop not constrained) */
+.landing-container-creations .stepTracker {
+  max-width: var(--landing-content-max, 1100px);
+  margin: 0 auto;
+  padding: 32px 20px 40px;
+  border-top: 1px solid var(--landing-steel-border, #2d3239);
+}
+
+.landing-container-creations .stepTracker-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: inherit;
+}
+
+.landing-container-creations .stepTracker-description {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  margin: 0 0 20px;
+  opacity: 0.9;
+}
+
+.landing-container-creations .stepTracker-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.landing-container-creations .stepTracker-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 14px;
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9375rem;
+  color: inherit;
+  transition: background 0.15s ease;
+}
+
+.landing-container-creations .stepTracker-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.landing-container-creations .stepTracker-item--current {
+  background: rgba(37, 99, 235, 0.15);
+  font-weight: 700;
+}
+
+.landing-container-creations .stepTracker-item--current:hover {
+  background: rgba(37, 99, 235, 0.22);
+}
+
+.landing-container-creations .stepTracker-icon {
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.landing-container-creations .stepTracker-item--done .stepTracker-icon {
+  color: #22c55e;
+}
+
+.landing-container-creations .stepTracker-item--current .stepTracker-icon {
+  color: #2563eb;
+}
+
+.landing-container-creations .stepTracker-item--todo .stepTracker-icon {
+  opacity: 0.6;
+}
+
+.landing-container-creations .stepTracker-label {
+  flex: 1;
+}
+
+/* Light steps: checklist border */
+.landing-container-creations.landing-step-hero .stepTracker,
+.landing-container-creations.landing-step-stamped .stepTracker,
+.landing-container-creations.measure-step-active .stepTracker {
+  border-top-color: #e2e8f0;
+}
+
+.landing-container-creations.landing-step-hero .stepTracker-item:hover,
+.landing-container-creations.landing-step-stamped .stepTracker-item:hover,
+.landing-container-creations.measure-step-active .stepTracker-item:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.landing-container-creations.landing-step-hero .stepTracker-item--current,
+.landing-container-creations.landing-step-stamped .stepTracker-item--current,
+.landing-container-creations.measure-step-active .stepTracker-item--current {
+  background: rgba(37, 99, 235, 0.12);
+}
+
+.landing-container-creations.landing-step-hero .stepTracker-item--current:hover,
+.landing-container-creations.landing-step-stamped .stepTracker-item--current:hover,
+.landing-container-creations.measure-step-active .stepTracker-item--current:hover {
+  background: rgba(37, 99, 235, 0.18);
+}
+
+/* Developer-only: onboarding grid view (when DEV_FLOW_EDITOR is true) */
+.landing-container-creations .dev-flow-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  padding: 24px 20px 40px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.landing-container-creations .dev-flow-grid .dev-step {
+  border: 1px solid #ddd;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  overflow: auto;
+}
+
+.landing-container-creations .dev-flow-grid .dev-step h3 {
+  margin: 0 0 16px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a1d23;
+}
+
+/* Editor mode: cards always phone-width regardless of shell (Desktop/Tablet/Phone); horizontal scroll */
+.landing-container-creations .dev-flow-grid.editor-cards-phone {
+  grid-template-columns: repeat(3, 390px) !important;
+  overflow-x: auto;
+  overflow-y: visible;
+  max-width: 100%;
+  width: 100%;
+  justify-content: start;
+}
+
+.landing-container-creations .dev-flow-grid.editor-cards-phone .dev-step {
+  min-width: 390px !important;
+  max-width: 390px !important;
+  width: 390px !important;
+  box-sizing: border-box;
 }

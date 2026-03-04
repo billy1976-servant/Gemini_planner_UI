@@ -31,7 +31,6 @@ const RAIL_WIDTH = 48;
 const PANEL_WIDTH = 360;
 const PANEL_WIDTH_MIN = 200;
 const PANEL_WIDTH_MAX = 600;
-const HEADER_HEIGHT = 56;
 const GRIP_WIDTH = 8;
 
 /** Which panel is open: diagnostics (with tabs), inspector, or debugger */
@@ -333,12 +332,12 @@ export default function PipelineDiagnosticsRail() {
       style={{
         position: "fixed",
         left: 0,
-        top: HEADER_HEIGHT,
-        height: `calc(100vh - ${HEADER_HEIGHT}px)`,
+        top: 0,
+        height: "100vh",
         width: openPanel ? RAIL_WIDTH + panelWidth + GRIP_WIDTH : RAIL_WIDTH,
         display: "flex",
         flexDirection: "row",
-        zIndex: 899,
+        zIndex: 500,
         pointerEvents: "auto",
         transition: isDragging ? "none" : "width 0.2s ease",
       }}
