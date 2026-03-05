@@ -55,7 +55,7 @@ export function BoardOrganism() {
           <ColumnStripOrgan organId="columnStrip" slots={{ "columnStrip.title": <Card content={{ title: "Board" }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} /> }} onAction={onAction}>
             {columns.length > 0
               ? columns.map((col) => {
-                  const cards = orderedItems.filter((i: { categoryId?: string }) => i.categoryId === col.id);
+                  const cards = orderedItems.filter((i: { id: string; categoryId?: string }) => i.categoryId === col.id);
                   return (
                     <BoardColumnOrgan
                       key={col.id}

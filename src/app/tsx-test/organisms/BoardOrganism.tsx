@@ -44,7 +44,7 @@ export function BoardOrganism() {
         <ColumnStripOrgan organId="columnStrip" slots={{ "columnStrip.title": <strong>Board</strong> }} onAction={onAction}>
           {columns.length > 0 ? (
             columns.map((col) => {
-              const cards = orderedItems.filter((i) => i.categoryId === col.id);
+              const cards = orderedItems.filter((i: { id: string; categoryId?: string }) => i.categoryId === col.id);
               return (
                 <BoardColumnOrgan
                   key={col.id}
@@ -58,7 +58,7 @@ export function BoardOrganism() {
                             key={card.id}
                             style={{ padding: "0.5rem", marginBottom: "0.25rem", background: "#f5f5f5", borderRadius: 4 }}
                           >
-                            {card.title}
+                            {(card as { id: string; title?: string }).title ?? card.id}
                             <button
                               type="button"
                               style={{ marginLeft: "0.5rem" }}

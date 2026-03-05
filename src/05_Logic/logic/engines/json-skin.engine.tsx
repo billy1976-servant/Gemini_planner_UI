@@ -332,7 +332,7 @@ function JsonNode({ node, state }: { node: any; state: any }) {
       if (layout === "slider") {
         const beforeSrc = node.params?.beforeSrc ?? srcList[0] ?? "";
         const afterSrc = node.params?.afterSrc ?? srcList[1] ?? "";
-        const sliderObjectFit = (node.params?.objectFit as React.CSSProperties["objectFit"]) ?? "contain";
+        const sliderObjectFit = (node.params?.objectFit as "fill" | "none" | "cover" | "contain") ?? "contain";
         const sliderMaxWidth = node.params?.maxWidth;
         return (
           <div

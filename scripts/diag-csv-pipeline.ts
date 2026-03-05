@@ -4,6 +4,8 @@
  * Uses BASE_URL from env (default http://localhost:3000).
  * Same sample CSV as e2e / DataTab flow.
  */
+export {};
+
 const BASE_URL = process.env.BASE_URL ?? "http://localhost:3000";
 const BUSINESS_ID = "csv-placeholder";
 
@@ -21,7 +23,7 @@ function fail(step: string, raw: unknown): never {
   process.exit(1);
 }
 
-async function main(): Promise<void> {
+async function runDiagCsvPipeline(): Promise<void> {
   console.log("DIAG: BASE_URL =", BASE_URL);
   console.log("1. POST ingest...");
 
@@ -95,7 +97,7 @@ async function main(): Promise<void> {
   process.exit(0);
 }
 
-main().catch((err) => {
+runDiagCsvPipeline().catch((err) => {
   console.error("\n--- FAIL ---");
   console.error("Uncaught:", err);
   process.exit(1);

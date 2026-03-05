@@ -5,6 +5,7 @@
  * Contracts are documentation only; no programmatic validation is run.
  * This script exits successfully for compatibility with existing scripts.
  */
+export {};
 const ROOT = "src/01_App/(dead) Json";
 
 function main() {

@@ -28,7 +28,7 @@ export function ListOrganism() {
           key={item.id}
           style={{ padding: "0.5rem 0.75rem", borderBottom: "1px solid #eee", display: "flex", justifyContent: "space-between", alignItems: "center" }}
         >
-          <span>{item.title || item.id}</span>
+          <span>{(item as { id: string; title?: string }).title || item.id}</span>
           <span style={{ display: "flex", gap: "0.25rem" }}>
             <button
               type="button"

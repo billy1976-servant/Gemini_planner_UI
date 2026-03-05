@@ -60,7 +60,7 @@ export default function LandingPage() {
   const organInternalLayoutOverrides: Record<string, string> = {};
   const { treeForRender, sectionKeysFromTree, sectionLabels } = useMemo(() => {
     const renderNode = json?.root ?? json;
-    const rawChildren = Array.isArray(renderNode?.children) ? renderNode.children : [];
+    const rawChildren = Array.isArray((renderNode as { children?: unknown[] })?.children) ? (renderNode as { children?: unknown[] }).children : [];
     const children = assignSectionInstanceKeys(rawChildren);
     const docForOrgans = { meta: { domain: "offline", pageId: "landing", version: 1 }, nodes: children };
     const expandedDoc = expandOrgansInDocument(docForOrgans as any, loadOrganVariant, organInternalLayoutOverrides);

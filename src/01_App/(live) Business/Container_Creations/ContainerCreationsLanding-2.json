@@ -1,0 +1,137 @@
+{
+  "shopUrl": "https://containercreations.com",
+  "header": {
+    "logoSrc": "/images/logo-container-creations.webp",
+    "logoAlt": "Container Creations",
+    "shopNowLabel": "Shop Now"
+  },
+  "stepTracker": {
+    "title": "Vent Installation Checklist",
+    "description": "Follow these steps to verify your container ventilation before cutting the roof opening."
+  },
+  "screens": [
+    {
+      "id": "intro",
+      "stepLabel": "Intro",
+      "layout": "hero",
+      "title": "Upgrade Your Shipping Container",
+      "subtitle": "Ventilation • Natural Light • Structural Integration",
+      "content": [
+        { "type": "badge", "text": "60-Minute DIY Install • No Welding Required" }
+      ],
+      "media": [
+        { "type": "video", "src": "/Videos/hero-install.mp4.mp4" }
+      ],
+      "buttons": [
+        { "type": "link", "label": "Shop Now", "hrefKey": "shopUrl", "nodeId": "shop-now-hero" },
+        { "type": "goto", "label": "Explore the Container Upgrade System", "target": "structural-fit", "nodeId": "explore-container" }
+      ]
+    },
+    {
+      "id": "structural-fit",
+      "stepLabel": "Verify Container Type",
+      "layout": "stamped",
+      "title": "Precision-Stamped Structural Steel",
+      "content": [
+        { "type": "paragraph", "text": "The Original Container Roof Adapter — Formed from a Single 20-Gauge Steel Press." },
+        { "type": "paragraph", "text": "This isn't a generic roof vent. It's a structural adapter system for container roofs." },
+        { "type": "checklist", "heading": "Structural Integrity Checklist", "items": [
+          { "title": "20-Gauge Structural Steel", "sub": "Built for the strength of container roofs." },
+          { "title": "Single-Stamp Formed Base", "sub": "Pressed from one piece of steel for strength and consistency." },
+          { "title": "No Welded Seams", "sub": "Eliminates weak joints and distortion points." },
+          { "title": "Precision-Formed Seal Surface", "sub": "Creates a tight, consistent weather seal." },
+          { "title": "Original Patented Design", "sub": "The first vent base engineered specifically for containers." }
+        ]}
+      ],
+      "media": [
+        { "type": "video", "src": "/Videos/pressed-steel.mp4.mp4", "caption": "Each base is formed in a single industrial press — not assembled from multiple welded parts." }
+      ],
+      "buttons": [
+        { "type": "back", "label": "Back", "nodeId": "step1-back" },
+        { "type": "next", "label": "Check Your Structural Fit", "nodeId": "structural-fit" }
+      ]
+    },
+    {
+      "id": "ventilation",
+      "stepLabel": "Measure Roof Opening",
+      "layout": "twoCol",
+      "title": "Check your roof corrugation before ordering.",
+      "content": [
+        { "type": "paragraph", "text": "Measure your roof rib height so we can recommend the right adapter." }
+      ],
+      "media": [
+        { "type": "image", "src": "/images/Measure-roof.jpg.jpg", "alt": "Measure your container roof" }
+      ],
+      "buttons": [
+        { "type": "back", "label": "Back", "nodeId": "step2-back" },
+        { "type": "next", "label": "Ventilate your container", "nodeId": "ventilation" }
+      ]
+    },
+    {
+      "id": "continue",
+      "stepLabel": "Verify Vent Fit",
+      "layout": "twoCol",
+      "title": "12″ vent — airflow and moisture control",
+      "content": [
+        { "type": "paragraph", "text": "Optimized for container roofs. Airflow is king with moisture control." }
+      ],
+      "media": [
+        { "type": "image", "src": "/images/12_%20vent.png", "alt": "12 vent — airflow and moisture control" }
+      ],
+      "buttons": [
+        { "type": "back", "label": "Back", "nodeId": "step3-back" },
+        { "type": "next", "label": "Continue", "nodeId": "continue" }
+      ]
+    },
+    {
+      "id": "why-we-lead",
+      "stepLabel": "Calculate Airflow",
+      "layout": "twoCol",
+      "title": "Cut Once. Upgrade Fully.",
+      "content": [
+        { "type": "paragraph", "text": "See the difference natural light makes." },
+        { "type": "paragraph", "text": "You're already cutting structural steel." },
+        { "type": "paragraph", "text": "Upgrade light while you're there." }
+      ],
+      "media": [
+        { "type": "beforeAfter", "before": "/images/Container%20Images%20(1).jpg", "after": "/images/Container%20Images%20(1).jpg", "altBefore": "Container without skylight", "altAfter": "Same space with natural light" }
+      ],
+      "buttons": [
+        { "type": "back", "label": "Back", "nodeId": "step4-back" },
+        { "type": "next", "label": "See why we lead", "nodeId": "why-we-lead" }
+      ]
+    },
+    {
+      "id": "choose-vent",
+      "stepLabel": "Choose Vent Size",
+      "layout": "twoColImageLeft",
+      "title": "Built to Outlast the Container.",
+      "content": [
+        { "type": "paragraph", "text": "Formed 20-gauge adapter. No weld distortion. Designed for container rib transfer. Hundreds of 5-star installs." },
+        { "type": "paragraph", "text": "★★★★★", "className": "stars" },
+        { "type": "paragraph", "text": "I ordered a second set immediately after I opened the box.", "className": "testimonial" },
+        { "type": "paragraph", "text": "– David S, Payson AZ", "className": "testimonial-attribution" }
+      ],
+      "media": [
+        { "type": "image", "src": "/images/Container%20Images%20(8).jpg", "alt": "Final install" }
+      ],
+      "buttons": [
+        { "type": "back", "label": "Back", "nodeId": "step5-back" },
+        { "type": "link", "label": "Build My Container System", "hrefKey": "shopUrl", "nodeId": "build-my-system" }
+      ]
+    },
+    {
+      "id": "final-recommendation",
+      "stepLabel": "Final Recommendation",
+      "layout": "textOnly",
+      "title": "Final Recommendation",
+      "content": [
+        { "type": "paragraph", "text": "Summary and recommended vent size based on your inputs. (Step 7 placeholder for dev grid.)" }
+      ],
+      "media": [],
+      "buttons": [
+        { "type": "link", "label": "Build My Container System", "hrefKey": "shopUrl", "nodeId": "build-my-system-final" }
+      ]
+    }
+  ]
+}

@@ -81,7 +81,21 @@ check(
   "src/01_App/apps-tsx must exist"
 );
 
-// (apps-json/apps dependency removed — no require.context, no folder check)
+// 2b) Runtime safe-json-loader: require.context points at apps-json/apps (physical: 01_App/(dead) Json/apps)
+const loaderPath = path.join(ROOT, "src", "03_Runtime", "runtime", "loaders", "safe-json-loader.ts");
+const loaderContent = fs.existsSync(loaderPath) ? fs.readFileSync(loaderPath, "utf8") : "";
+const loaderDir = path.join(ROOT, "src", "03_Runtime", "runtime", "loaders");
+const jsonAppsResolved = path.resolve(loaderDir, "../../../01_App/(dead) Json/apps");
+check(
+  "require.context: safe-json-loader uses context for JSON apps",
+  /require.*\.context\s*\(/.test(loaderContent) && /01_App\/\(dead\) Json\/apps/.test(loaderContent),
+  "src/03_Runtime/runtime/loaders/safe-json-loader.ts must use require.context pointing at 01_App/(dead) Json/apps"
+);
+check(
+  "require.context: apps-json/apps folder exists",
+  fs.existsSync(jsonAppsResolved) && fs.statSync(jsonAppsResolved).isDirectory(),
+  `JSON apps directory does not exist: ${jsonAppsResolved}`
+);
 
 // 3) next.config.js: no @/apps-tsx override to a non-existent path
 const nextConfigPath = path.join(ROOT, "next.config.js");

@@ -51,7 +51,7 @@ export function ListOrganism() {
             />
           </>
         ),
-        "toolbar.breadcrumb": <Card content={{ title: item.title || item.id }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
+        "toolbar.breadcrumb": <Card content={{ title: (item as { id: string; title?: string }).title || item.id }} params={ORGAN_CARD_PLACEHOLDER_PARAMS} />,
         "toolbar.viewToggles": null,
       }}
       onAction={onAction}

@@ -39,7 +39,7 @@ export function GalleryOrganism() {
                     key={item.id}
                     style={{ padding: "0.5rem", border: "1px solid #ddd", borderRadius: 4, display: "flex", flexDirection: "column", gap: 4 }}
                   >
-                    <span>{item.title}</span>
+                    <span>{(item as { id: string; title?: string }).title ?? item.id}</span>
                     <span style={{ display: "flex", gap: 4 }}>
                       <button type="button" onClick={() => onAction("structure:reorderItems", { fromIndex: idx, toIndex: idx - 1 })} disabled={idx === 0}>
                         ↑
