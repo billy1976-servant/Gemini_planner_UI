@@ -78,6 +78,8 @@ export type TemplateProfile = {
   sectionBackgroundPattern?: SectionBackgroundPattern;
   /** Optional capability overrides (Level C). Domain → level; only listed keys override global. */
   capabilities?: Partial<Record<string, string>>;
+  /** Screen-ID nav targets: elementId → { toScreenId, toAnchor }. Read from layout data; no subscription. */
+  navTargets?: Record<string, { toScreenId?: string; toAnchor?: string }>;
 };
 
 import templatesData from "./template-profiles.json";

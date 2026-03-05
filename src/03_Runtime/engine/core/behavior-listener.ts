@@ -65,7 +65,11 @@ if (typeof window !== "undefined") {
 }
 
 
-export function installBehaviorListener(navigate: (to: string) => void) {
+export type NavigatePayload =
+  | string
+  | { toScreenId?: string; toAnchor?: string };
+
+export function installBehaviorListener(navigate: (to: NavigatePayload) => void) {
   if (typeof window === "undefined") return;
   installCount += 1;
   if (installed) {
@@ -81,16 +85,23 @@ export function installBehaviorListener(navigate: (to: string) => void) {
 
 
   /* =========================
-     NAVIGATION
+     NAVIGATION (toScreenId + toAnchor for screen-id system; to/screenId/target for legacy)
   ========================= */
   window.addEventListener("navigate", (e: any) => {
     const detail = e?.detail ?? {};
     const args = typeof detail === "object" && detail !== null ? detail : {};
+    const toScreenId = args.toScreenId as string | undefined;
+    const toAnchor = args.toAnchor as string | undefined;
     const destination =
+      toScreenId ??
       (args.to as string | undefined) ??
       (args.screenId as string | undefined) ??
       (args.target as string | undefined);
 
+    if (toScreenId) {
+      navigate({ toScreenId, toAnchor });
+      return;
+    }
     if (destination) {
       navigate(destination);
       return;

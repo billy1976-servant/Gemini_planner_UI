@@ -43,6 +43,7 @@ export function buildTemplateFromTree(
     label?: string;
     containerWidth?: "contained" | "edge-to-edge" | "narrow" | "wide" | "full" | "split";
     visualPreset?: string;
+    navTargets?: Record<string, { toScreenId?: string; toAnchor?: string }>;
   } = {}
 ): Omit<TemplateProfile, "id" | "label"> & { id: string; label: string } {
   const nodes = Array.isArray((root as any)?.children)
@@ -51,13 +52,17 @@ export function buildTemplateFromTree(
   const sections = collectSectionsFromTree(nodes);
   const id = options.id ?? `user-template-${Date.now()}`;
   const label = options.label ?? `User Template ${new Date().toLocaleDateString()}`;
-  return {
+  const out: Omit<TemplateProfile, "id" | "label"> & { id: string; label: string } = {
     id,
     label,
     visualPreset: options.visualPreset ?? "default",
     containerWidth: options.containerWidth ?? "contained",
     sections,
   };
+  if (options.navTargets && Object.keys(options.navTargets).length > 0) {
+    (out as TemplateProfile).navTargets = options.navTargets;
+  }
+  return out;
 }
 
 /**

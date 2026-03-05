@@ -3,6 +3,9 @@ import type { StateEvent } from "./state";
 import { logRuntimeDecision } from "@/engine/devtools/runtime-decision-trace";
 import { PipelineDebugStore } from "@/devtools/pipeline-debug-store";
 
+/** Set to true to enable state-resolver and nav merge logging (e.g. window.__DEBUG_STATE_RESOLVER__ = true). */
+const DEBUG_STATE_RESOLVER = typeof (globalThis as any).window !== "undefined" && (globalThis as any).window.__DEBUG_STATE_RESOLVER__ === true;
+
 
 /* ======================================================
    DERIVED STATE SHAPE (EXTEND-ONLY)
@@ -26,9 +29,17 @@ export type DerivedState = {
   /* ====================================================
      layoutByScreen — layout override target for renderer
      - Written by layout.override; consumed by page → JsonRenderer
-     - Do not store layout presets in values
+     - navTargets: elementId → { toScreenId, toAnchor } for screen-id navigation
   ==================================================== */
-  layoutByScreen?: Record<string, { section: Record<string, string>; card: Record<string, string>; organ: Record<string, string> }>;
+  layoutByScreen?: Record<
+    string,
+    {
+      section: Record<string, string>;
+      card: Record<string, string>;
+      organ: Record<string, string>;
+      navTargets?: Record<string, { toScreenId?: string; toAnchor?: string }>;
+    }
+  >;
 
   /* ====================================================
      dashboardLayout — widget rects (x,y,w,h) per screen
@@ -98,7 +109,7 @@ export function deriveState(log: StateEvent[]): DerivedState {
       const key = payload.key;
       if (typeof key === "string") {
         derived.values![key] = payload.value;
-        if (process.env.NODE_ENV !== "production") {
+        if (DEBUG_STATE_RESOLVER && typeof console !== "undefined" && console.log) {
           console.log("[state-resolver] state.update set", key, payload.value);
         }
       }
@@ -118,21 +129,67 @@ export function deriveState(log: StateEvent[]): DerivedState {
       }
       const t = type as "section" | "card" | "organ";
       if (t === "section" || t === "card" || t === "organ") {
-        derived.layoutByScreen![screenKey][t][sectionId] = presetId;
+        (derived.layoutByScreen![screenKey] as { section: Record<string, string>; card: Record<string, string>; organ: Record<string, string> })[t][sectionId] = presetId;
       }
-      console.log("FLOW 3 — STATE WRITE", {
-        screenKey,
-        type: t,
-        sectionId,
-        presetId,
-        stateAfter: derived.layoutByScreen?.[screenKey],
-      });
+      if (DEBUG_STATE_RESOLVER && typeof console !== "undefined" && console.log) {
+        console.log("FLOW 3 — STATE WRITE", {
+          screenKey,
+          type: t,
+          sectionId,
+          presetId,
+          stateAfter: derived.layoutByScreen?.[screenKey],
+        });
+      }
       if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
         PipelineDebugStore.mark("state-resolver", "layout.override", {
           screenKey,
           type: t,
           sectionId,
           presetId,
+        });
+      }
+      continue;
+    }
+
+    /* =========================
+       LAYOUT NAV TARGETS (per-screen element → screen id + anchor)
+    ========================== */
+    if (intent === "layout.setNavTargets") {
+      const { screenKey, navTargets: incomingNavTargets } = payload;
+      if (typeof screenKey !== "string" || !incomingNavTargets || typeof incomingNavTargets !== "object") continue;
+      if (!derived.layoutByScreen![screenKey]) {
+        derived.layoutByScreen![screenKey] = { section: {}, card: {}, organ: {} };
+      }
+      const cast = derived.layoutByScreen![screenKey] as { navTargets?: Record<string, { toScreenId?: string; toAnchor?: string }> };
+      const existing = cast.navTargets ?? {};
+      const existingKeysBefore = Object.keys(existing);
+      cast.navTargets = {
+        ...existing,
+        ...incomingNavTargets,
+      };
+      const mergedKeysAfter = Object.keys(cast.navTargets);
+      if (typeof (globalThis as any).window !== "undefined") {
+        const fn = (globalThis as any).window.__NAV_LOG_STATE_MERGE__;
+        if (typeof fn === "function") {
+          fn({
+            screenKey,
+            existingKeysBefore,
+            incomingKeys: Object.keys(incomingNavTargets),
+            mergedNavTargets: cast.navTargets,
+          });
+        }
+        // #region agent log
+        if (typeof (globalThis as any).fetch === "function") {
+          (globalThis as any).fetch('http://127.0.0.1:7242/ingest/7e15e045-3112-419f-8116-3226c0884ac1',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'22d4f7'},body:JSON.stringify({sessionId:'22d4f7',hypothesisId:'H3',location:'state-resolver.ts:layout.setNavTargets',message:'STATE_MERGE breakpoint',data:{stage:'STATE_MERGE',screenKey,existingKeysBefore,incomingKeys:Object.keys(incomingNavTargets),mergedKeysAfter,navTargetsMapKeys:mergedKeysAfter},timestamp:Date.now()})}).catch(()=>{});
+        }
+        // #endregion
+      }
+      if (DEBUG_STATE_RESOLVER && typeof console !== "undefined" && console.log) {
+        console.log("[NavDebug] resolver layout.setNavTargets", {
+          screenKey,
+          incomingKeys: Object.keys(incomingNavTargets),
+          existingKeysBefore,
+          mergedKeysAfter,
         });
       }
       continue;
@@ -193,22 +250,24 @@ export function deriveState(log: StateEvent[]): DerivedState {
 
 
   const intents = log.map((e) => e.intent);
-  logRuntimeDecision({
-    timestamp: Date.now(),
-    engineId: "state-deriver",
-    decisionType: "state-derivation",
-    inputsSeen: { logLength: log.length, intents: intents.slice(-50) },
-    ruleApplied: "deriveState branch per intent (state:currentView | journal.* | state.update | scan.* | interaction.record)",
-    decisionMade: {
-      hasCurrentView: derived.currentView !== undefined,
-      journalTracks: Object.keys(derived.journal),
-      valuesKeys: derived.values ? Object.keys(derived.values) : [],
-      layoutByScreenKeys: derived.layoutByScreen ? Object.keys(derived.layoutByScreen) : [],
-      scansCount: derived.scans?.length ?? 0,
-      interactionsCount: derived.interactions?.length ?? 0,
-    },
-    downstreamEffect: "derived state snapshot",
-  });
+  if (DEBUG_STATE_RESOLVER) {
+    logRuntimeDecision({
+      timestamp: Date.now(),
+      engineId: "state-deriver",
+      decisionType: "state-derivation",
+      inputsSeen: { logLength: log.length, intents: intents.slice(-50) },
+      ruleApplied: "deriveState branch per intent (state:currentView | journal.* | state.update | scan.* | interaction.record)",
+      decisionMade: {
+        hasCurrentView: derived.currentView !== undefined,
+        journalTracks: Object.keys(derived.journal),
+        valuesKeys: derived.values ? Object.keys(derived.values) : [],
+        layoutByScreenKeys: derived.layoutByScreen ? Object.keys(derived.layoutByScreen) : [],
+        scansCount: derived.scans?.length ?? 0,
+        interactionsCount: derived.interactions?.length ?? 0,
+      },
+      downstreamEffect: "derived state snapshot",
+    });
+  }
   return derived;
 }
 

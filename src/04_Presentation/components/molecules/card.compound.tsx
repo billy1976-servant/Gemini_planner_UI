@@ -75,6 +75,8 @@ export type CardCompoundProps = {
     body?: string;
   };
   behavior?: any;
+  /** Screen-ID navigation (from layout navTargets or explicit). No context; props only. */
+  nav?: { toScreenId?: string; toAnchor?: string };
   onTap?: () => void;
   children?: React.ReactNode;
 };
@@ -97,6 +99,7 @@ export default function CardCompound({
   params = {},
   content = {},
   behavior,
+  nav,
   onTap,
   children,
 }: CardCompoundProps) {
@@ -119,6 +122,12 @@ export default function CardCompound({
 
   const handleTap = () => {
     if (onTap) return onTap();
+    if (nav?.toScreenId) {
+      window.dispatchEvent(
+        new CustomEvent("navigate", { detail: { toScreenId: nav.toScreenId, toAnchor: nav.toAnchor } })
+      );
+      return;
+    }
     if (!behavior) return;
     if (behavior.type === "Navigation") {
       window.dispatchEvent(

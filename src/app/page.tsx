@@ -4,6 +4,7 @@ export const dynamic = "force-dynamic";
 import React, { useEffect, useMemo, useState } from "react";
 import nextDynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
+import { getScreenById, setScreenPaths, flattenIndexToPaths } from "@/07_Dev_Tools/nav/screen-registry";
 import { useSyncExternalStore } from "react";
 import ExperienceRenderer from "@/engine/core/ExperienceRenderer";
 import { loadScreen } from "@/engine/core/screen-loader";
@@ -58,14 +59,28 @@ export default function Page() {
 
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [screensReady, setScreensReady] = useState(false);
 
-  const rawPath =
+  const screenParam =
     searchParams?.get("screen")?.trim() ||
     currentView?.trim() ||
-    DEFAULT_SCREEN_PATH;
+    "";
+  const byId = screensReady && screenParam ? getScreenById(screenParam) : null;
+  const rawPath = byId ? byId.path : screenParam;
   const isValidPath =
     rawPath.startsWith("tsx:") || rawPath.includes("/");
   const effectivePath = isValidPath ? rawPath : DEFAULT_SCREEN_PATH;
+
+  useEffect(() => {
+    fetch("/api/screens")
+      .then((res) => (res.ok ? res.json() : []))
+      .then((list) => {
+        const arr = Array.isArray(list) ? list : [];
+        setScreenPaths(flattenIndexToPaths(arr));
+        setScreensReady(true);
+      })
+      .catch(() => setScreensReady(true));
+  }, []);
 
   useEffect(() => {
     loadScreen(effectivePath)

@@ -17,7 +17,7 @@ function isKnownTsxPath(normalized: string): boolean {
   return /^\(live\)\s+Business\//i.test(n) || /^Container_Creations\/ContainerCreationsWebsite$/i.test(n);
 }
 
-/** Format screen path for pill (readable, no clipping) */
+/** Full path for accessibility/title (e.g. "File: (dead) Tsx/Gibson Guitars/blueprint.tsx") */
 function formatScreenPillLabel(screen: string): string {
   if (!screen.trim()) return "";
   const normalized = screen.replace(/^tsx-screens\/|^tsx:/i, "").trim();
@@ -26,6 +26,18 @@ function formatScreenPillLabel(screen: string): string {
   const ext = useTsxExt ? ".tsx" : ".json";
   const path = hasExt ? normalized : `${normalized}${ext}`;
   return `File: ${path}`;
+}
+
+/** Last path segment only for compact pill display (e.g. "blueprint.tsx") */
+function getScreenPillDisplayName(screen: string): string {
+  if (!screen.trim()) return "";
+  const normalized = screen.replace(/^tsx-screens\/|^tsx:/i, "").trim();
+  const hasExt = /\.(tsx|json)$/i.test(normalized);
+  const useTsxExt = /^tsx:/i.test(screen) || isKnownTsxPath(normalized);
+  const ext = useTsxExt ? ".tsx" : ".json";
+  const path = hasExt ? normalized : `${normalized}${ext}`;
+  const segments = path.replace(/\\/g, "/").split("/").filter(Boolean);
+  return segments.length > 0 ? segments[segments.length - 1]! : path;
 }
 
 /** Root folder color: (dead) = red, (live) = green; only for 01_App roots with (dead)/(live) in name. */
@@ -189,8 +201,9 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
     a.localeCompare(b, undefined, { sensitivity: "base" })
   );
 
-  const pillLabel = currentScreen ? formatScreenPillLabel(currentScreen) : "";
-  const triggerText = pillLabel ? `${pillLabel} ▾` : "Screens ▾";
+  const pillDisplayName = currentScreen ? getScreenPillDisplayName(currentScreen) : "";
+  const pillFullPathTitle = currentScreen ? formatScreenPillLabel(currentScreen) : "";
+  const triggerText = pillDisplayName ? `${pillDisplayName} ▾` : "Screens ▾";
 
   const panelStyle: React.CSSProperties = {
     position: "relative",
@@ -211,8 +224,9 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-haspopup="menu"
+        title={pillFullPathTitle || "Select screen"}
         style={{
-          minWidth: pillLabel ? 180 : undefined,
+          minWidth: pillDisplayName ? 120 : undefined,
           maxWidth: 320,
           overflow: "visible",
           textOverflow: "ellipsis",

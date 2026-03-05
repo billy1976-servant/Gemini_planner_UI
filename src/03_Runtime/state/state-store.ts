@@ -200,6 +200,15 @@ if (typeof window !== "undefined") {
   );
   (window as any).TEST_STATE = () =>
     dispatchState("journal.set", { key: "test", value: "hello" });
+  // Dev-only: run navTargets persistence self-test once (uses __nav_test__ screenKey)
+  if (process.env.NODE_ENV === "development") {
+    setTimeout(() => {
+      try {
+        const { runNavTargetsPersistenceTest } = require("@/07_Dev_Tools/nav/nav-targets-persistence-test");
+        runNavTargetsPersistenceTest();
+      } catch (_) {}
+    }, 0);
+  }
 }
 
 

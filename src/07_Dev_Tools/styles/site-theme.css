@@ -748,3 +748,11 @@
     padding-right: 0 !important; /* DEBUG: Stripped container constraint */
   }
 }
+
+/* ============================================================================
+   Dev inline edit — /dev mode click-to-edit text
+   ============================================================================ */
+.dev-inline-edit:hover {
+  outline: 2px dashed #4da3ff;
+  cursor: text;
+}

@@ -53,7 +53,9 @@ import { dispatchState, getState, subscribeState } from "@/state/state-store";
 /* ============================================================
    🧠 BEHAVIOR LISTENER
 ============================================================ */
-import { installBehaviorListener } from "@/engine/core/behavior-listener";
+import { installBehaviorListener, type NavigatePayload } from "@/engine/core/behavior-listener";
+import { goToScreen } from "@/07_Dev_Tools/nav/navigate-to-screen";
+import { setScreenPaths, flattenIndexToPaths, getScreenIdByPath } from "@/07_Dev_Tools/nav/screen-registry";
 
 /* ============================================================
    🪪 IDENTITY–AUTH BRIDGE (System7.identity when auth capability on)
@@ -221,9 +223,21 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
   /* ============================================================
      🔁 INSTALL BEHAVIOR ROUTER (ONCE)
      Developer workspace: screen nav goes to /dev?screen=...; preserve mode and other params.
+     Screen-ID: goToScreen(router, toScreenId) for dev/user mode URLs.
   ============================================================ */
   useEffect(() => {
-    installBehaviorListener((to: string) => {
+    installBehaviorListener((payload: NavigatePayload) => {
+      const isObj = typeof payload === "object" && payload !== null && "toScreenId" in payload;
+      if (isObj && payload.toScreenId) {
+        goToScreen(router, payload.toScreenId, {
+          anchor: payload.toAnchor,
+          devMode: getDevMode(),
+          currentSearch: searchParamsRef.current ?? "",
+          replace: true,
+        });
+        return;
+      }
+      const to = typeof payload === "string" ? payload : (payload as { to?: string })?.to;
       if (typeof to !== "string") return;
       if (to.startsWith("|")) {
         dispatchState("state:currentView", { value: to });
@@ -233,10 +247,11 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
         router.replace(to);
         return;
       }
-      const params = new URLSearchParams(searchParamsRef.current || "");
-      params.set("screen", to);
-      params.set("mode", getDevMode());
-      router.replace(`/dev?${params.toString()}`);
+      goToScreen(router, to, {
+        devMode: getDevMode(),
+        currentSearch: searchParamsRef.current ?? "",
+        replace: true,
+      });
     });
   }, [router]);
 
@@ -260,7 +275,9 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
         return res.json();
       })
       .then(data => {
-        setIndex(Array.isArray(data) ? data : []);
+        const list = Array.isArray(data) ? data : [];
+        setIndex(list);
+        setScreenPaths(flattenIndexToPaths(list));
       })
       .catch(err => {
         console.error(err);
@@ -322,7 +339,11 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
           </button>
 
           <CascadingScreenMenu index={index} currentScreen={currentScreen} />
-
+          {currentScreen && (
+            <span className="app-chrome-screen-id" title={`Screen ID: ${getScreenIdByPath(currentScreen)}`} style={{ fontSize: 11, color: "#64748b", marginLeft: 4 }}>
+              ID: {getScreenIdByPath(currentScreen)}
+            </span>
+          )}
           <span className="app-chrome-spacer" aria-hidden="true" />
 
           <button
@@ -331,7 +352,9 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
             onClick={() => {
               const tree = getCurrentScreenTree();
               if (!tree) return;
-              const profile = buildTemplateFromTree(tree);
+              const screenKey = currentScreen ? currentScreen.replace(/[^a-zA-Z0-9]/g, "-") : "";
+              const navTargets = screenKey ? getState()?.layoutByScreen?.[screenKey]?.navTargets : undefined;
+              const profile = buildTemplateFromTree(tree, { navTargets });
               const payload = { ...profile } as Record<string, unknown>;
               delete payload.palette;
               delete payload.paletteName;
@@ -352,10 +375,6 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
           <DevicePreviewToggle />
           <EditorPreviewToggle screenPath={currentScreen || ""} />
 
-          <span className="app-chrome-hint" title="Experience, Palette, Template: right sidebar pills." aria-hidden="true">
-            Right sidebar: Experience, Palette, Template
-          </span>
-
           <button type="button" onClick={() => setShowSections(v => !v)}>
             Sections ▾
           </button>
@@ -375,6 +394,7 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
           style={{
             padding: 0,
             overflow: "visible",
+            ...(devMode === "dev" && !phoneFrameEnabled ? { paddingLeft: 48, paddingRight: 44 } : {}),
             ...(isOnboardingTsx ? { background: "linear-gradient(135deg, #2d3436 0%, #1e272e 100%)" } : {}),
           }}
         >
@@ -530,16 +550,31 @@ const HOME_VIEW = "HiClarify/home/home_screen";
 /** User/mobile mode (/) — minimal top bar; bottom nav hidden on home (OSB V2). */
 function UserLayoutChrome({ children }: { children: React.ReactNode }) {
   usePaletteCSS();
+  const router = useRouter();
   const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
   const currentView = (stateSnapshot?.values?.currentView as string) ?? "";
   const isHomeScreen = currentView === HOME_VIEW;
 
   useEffect(() => {
-    installBehaviorListener((to: string) => {
+    installBehaviorListener((payload: NavigatePayload) => {
+      const isObj = typeof payload === "object" && payload !== null && "toScreenId" in payload;
+      if (isObj && payload.toScreenId) {
+        goToScreen(router, payload.toScreenId, { devMode: "user", anchor: payload.toAnchor, replace: true });
+        return;
+      }
+      const to = typeof payload === "string" ? payload : (payload as { to?: string })?.to;
       if (typeof to !== "string") return;
-      dispatchState("state:currentView", { value: to });
+      if (to.startsWith("|")) {
+        dispatchState("state:currentView", { value: to });
+        return;
+      }
+      if (to.startsWith("/")) {
+        router.replace(to);
+        return;
+      }
+      goToScreen(router, to, { devMode: "user", replace: true });
     });
-  }, []);
+  }, [router]);
   useEffect(() => {
     const openOSB = () => dispatchState("state.update", { key: "osb_modalOpen", value: true });
     window.addEventListener("osb:open", openOSB);

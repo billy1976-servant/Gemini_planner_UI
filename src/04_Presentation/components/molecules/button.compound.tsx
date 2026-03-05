@@ -50,6 +50,8 @@ export type ButtonCompoundProps = {
     supportingText?: string;
   };
   behavior?: any;
+  /** Screen-ID navigation (from layout navTargets or explicit). No context; props only. */
+  nav?: { toScreenId?: string; toAnchor?: string };
   onTap?: () => void;
   children?: React.ReactNode;
 };
@@ -71,11 +73,17 @@ export default function ButtonCompound({
   params = {},
   content = {},
   behavior,
+  nav,
   onTap,
   children,
 }: ButtonCompoundProps) {
   const handleTap = () => {
     if (onTap) return onTap();
+    if (nav?.toScreenId) {
+      return window.dispatchEvent(
+        new CustomEvent("navigate", { detail: { toScreenId: nav.toScreenId, toAnchor: nav.toAnchor } })
+      );
+    }
     if (!behavior) return;
     if (behavior.type === "Navigation") {
       const destination = behavior.params?.to ?? behavior.params?.screenId;

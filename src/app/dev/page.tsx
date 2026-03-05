@@ -1,7 +1,7 @@
 "use client";
 // Hook order stabilized — no conditional hooks allowed
 export const dynamic = "force-dynamic";
-import React, { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import nextDynamic from "next/dynamic";
 import { useSyncExternalStore } from "react";
@@ -27,7 +27,26 @@ import {
   loadOrganVariant,
 } from "@/components/organs";
 import OrganPanel from "@/components/organs/OrganPanel";
+import DevNavigationPanel, { SAME_PAGE_SCREEN_ID } from "@/07_Dev_Tools/nav/DevNavigationPanel";
+import { getCanonicalNavScreenKey } from "@/07_Dev_Tools/nav/nav-screen-key";
+import { setNavDebug } from "@/07_Dev_Tools/nav/nav-debug-store";
+import { logNavClick, logNavRender, logNavExecution, installMutationObserverForNodeIds } from "@/07_Dev_Tools/nav/nav-instrumentation";
 import { setDevSidebarProps } from "@/app/ui/control-dock/dev-right-sidebar-store";
+
+const DEBUG_NAV = typeof process !== "undefined" && process.env.NODE_ENV === "development" && !!(typeof window !== "undefined" && (window as any).__DEBUG_NAV__);
+
+/** Wrapper: use screenKey from dev page when provided so panel and TsxNavCapture always share the same key. */
+function DevLayoutPanelContentForTsx({ screenKey: propScreenKey }: { screenKey?: string }) {
+  const searchParams = useSearchParams();
+  const screen = searchParams.get("screen");
+  const screenKey = propScreenKey ?? getCanonicalNavScreenKey(screen, {});
+  return (
+    <>
+      <DevNavigationPanel screenTree={null} screenKey={screenKey} />
+      <OrganPanel sectionKeysForPreset={[]} screenKey={screenKey} />
+    </>
+  );
+}
 import {
   getSectionLayoutPresetOverrides,
   getOverridesForScreen,
@@ -170,6 +189,79 @@ function resolveTsxScreen(path: string) {
   return null;
 }
 
+/** Wraps TSX preview and intercepts clicks on [data-node-id] when a nav target is set; dispatches "navigate" or scrolls to anchor for same-page flow. Only prevents default when a valid action (scroll or navigate) will occur. */
+function TsxNavCapture({ screenKey, children }: { screenKey: string; children: React.ReactNode }) {
+  const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
+  const navTargetsMap = stateSnapshot?.layoutByScreen?.[screenKey]?.navTargets;
+  useLayoutEffect(() => {
+    logNavRender({ screenKey, navTargetsMap, source: "tsx-capture" });
+  }, [screenKey, navTargetsMap]);
+
+  const handleClickCapture = useCallback(
+    (e: React.MouseEvent) => {
+      const target = e.target as Element;
+      const el = target.closest?.("[data-node-id]");
+      if (!el) return;
+      const id = el.getAttribute("data-node-id");
+      if (!id) return;
+      const navTargetsMapAtClick = getState()?.layoutByScreen?.[screenKey]?.navTargets;
+      const nav = navTargetsMapAtClick?.[id];
+      const resolvedNavTarget = nav ? { toScreenId: nav.toScreenId, toAnchor: nav.toAnchor } : undefined;
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/7e15e045-3112-419f-8116-3226c0884ac1',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'22d4f7'},body:JSON.stringify({sessionId:'22d4f7',hypothesisId:'H1,H2,H5',location:'dev/page.tsx:TsxNavCapture',message:'CLICK breakpoint line ~208',data:{stage:'CLICK_CAPTURE',screenKey,id,dataNodeId:id,navTargetsMapKeys:navTargetsMapAtClick?Object.keys(navTargetsMapAtClick):[],resolvedNavTarget},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
+      logNavClick({
+        screenKey,
+        elementId: id,
+        navTargetsMap: navTargetsMapAtClick ?? undefined,
+        resolvedNavTarget: resolvedNavTarget ?? undefined,
+        navTargetsMapEntryUsed: resolvedNavTarget ?? undefined,
+        eventPath: {
+          targetTag: target?.tagName ?? "",
+          targetId: (target as HTMLElement)?.id ?? "",
+          closestNodeId: id,
+        },
+      });
+      if (DEBUG_NAV && typeof console !== "undefined" && console.log) {
+        console.log("[NavDebug] TsxNavCapture read on click", { screenKey, elementId: id, resolvedNavTarget });
+      }
+      const clickData = { id, screenKey, navFound: !!nav, toScreenId: nav?.toScreenId, toAnchor: nav?.toAnchor, allKeys: navTargetsMap ? Object.keys(navTargetsMap) : [] };
+      setNavDebug({ type: "click", id, screenKey, navFound: !!nav, toScreenId: nav?.toScreenId, toAnchor: nav?.toAnchor, allKeys: navTargetsMap ? Object.keys(navTargetsMap) : [] });
+      fetch('http://127.0.0.1:7242/ingest/7e15e045-3112-419f-8116-3226c0884ac1',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'ea7e9f'},body:JSON.stringify({sessionId:'ea7e9f',hypothesisId:'H2,H5',location:'dev/page.tsx:TsxNavCapture',message:'click on data-node-id',data:clickData,timestamp:Date.now()})}).catch(()=>{});
+      if (typeof console !== "undefined" && console.log) console.log("[NavDebug] CLICK", clickData);
+      if (!nav) return;
+
+      logNavExecution(screenKey, id, { toScreenId: nav.toScreenId, toAnchor: nav.toAnchor });
+
+      if (nav.toScreenId === SAME_PAGE_SCREEN_ID && nav.toAnchor) {
+        const target = document.querySelector(nav.toAnchor);
+        if (target) {
+          e.preventDefault();
+          e.stopPropagation();
+          target.scrollIntoView({ behavior: "smooth" });
+        }
+        return;
+      }
+
+      if (nav.toScreenId) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.dispatchEvent(
+          new CustomEvent("navigate", {
+            detail: { toScreenId: nav.toScreenId, toAnchor: nav.toAnchor },
+          })
+        );
+        return;
+      }
+    },
+    [screenKey]
+  );
+  return (
+    <div onClickCapture={handleClickCapture} style={{ display: "contents" }}>
+      {children}
+    </div>
+  );
+}
 
 export default function DevPage() {
   const router = useRouter();
@@ -223,6 +315,22 @@ export default function DevPage() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Set Layout panel content for TSX screens; pass screenKey from dev page so panel and TsxNavCapture use the exact same key (no drift).
+  useEffect(() => {
+    if (!TsxComponent) return;
+    const navScreenKey = getCanonicalNavScreenKey(screen, {});
+    setDevSidebarProps({
+      layoutPanelContent: <DevLayoutPanelContentForTsx screenKey={navScreenKey} />,
+    });
+  }, [TsxComponent, screen]);
+
+  // Runtime trace: watch DOM for [data-node-id] add/remove/duplicate when TSX is shown
+  useEffect(() => {
+    if (TsxComponent && typeof document !== "undefined") {
+      installMutationObserverForNodeIds(document.body);
+    }
+  }, [TsxComponent]);
 
   // Measure section heights so panel rows align with each section (must run before any early return)
   useLayoutEffect(() => {
@@ -281,7 +389,7 @@ export default function DevPage() {
     for (let i = 0; i < str.length; i++) hash = ((hash << 5) - hash) + str.charCodeAt(i) | 0;
     return Math.abs(hash).toString(36);
   };
-  const screenKey = screen ? screen.replace(/[^a-zA-Z0-9]/g, "-") : (json ? `screen-${hashJson(json)}` : "screen-loading");
+  const screenKey = screen ? getCanonicalNavScreenKey(screen, {}) : (json ? getCanonicalNavScreenKey(null, { json }) : "screen-loading");
   const layoutFromState = useMemo(
     () => getLayoutOverridesFromState(screenKey),
     [screenKey, stateSnapshot?.layoutByScreen?.[screenKey]]
@@ -617,14 +725,18 @@ export default function DevPage() {
     // Do not clear the store here: TSX screens (e.g. ContainerCreationsWebsite) set
     // websiteScreenPath/websiteNodeOrder for the Nodes panel. Clearing on every render
     // caused the Nodes panel to lose recognition after opening another sidebar view.
+    // Layout panel content for TSX is set in useEffect above so sidebar does not reset during render.
     const screenPath = tsxMeta?.path ? (tsxMeta.path.startsWith("tsx:") ? tsxMeta.path : `tsx:${tsxMeta.path}`) : "tsx:HiClarify/HiClarifyOnboarding";
+    const screenKey = getCanonicalNavScreenKey(screen, {});
     return (
       <>
         {overlay}
         <PreviewStage>
-          <Suspense fallback={<div style={{ padding: 40 }}>Loading screen…</div>}>
-            <TSXScreenWithEnvelope screenPath={screenPath} Component={TsxComponent} />
-          </Suspense>
+          <TsxNavCapture screenKey={screenKey}>
+            <Suspense fallback={<div style={{ padding: 40 }}>Loading screen…</div>}>
+              <TSXScreenWithEnvelope screenPath={screenPath} Component={TsxComponent} />
+            </Suspense>
+          </TsxNavCapture>
         </PreviewStage>
       </>
     );
@@ -904,24 +1016,27 @@ export default function DevPage() {
   if (experience === "app") {
     setDevSidebarProps({
       layoutPanelContent: (
-        <OrganPanel
-          sectionKeysForPreset={sectionKeysForPreset}
-          sectionLabels={sectionLabels}
-          sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
-          onSectionLayoutPresetOverride={handleSectionLayoutPresetOverride}
-          cardLayoutPresetOverrides={cardLayoutPresetOverrides}
-          onCardLayoutPresetOverride={handleCardLayoutPresetOverride}
-          sectionPresetOptions={sectionPresetOptions}
-          sectionHeights={sectionHeights}
-          organIdBySectionKey={organIdBySectionKey}
-          organInternalLayoutOverrides={organInternalLayoutOverridesProp}
-          onOrganInternalLayoutOverride={handleOrganInternalLayoutOverride}
-          sectionNodesByKey={sectionByKey}
-          screenModel={treeForRender}
-          defaultState={json?.state}
-          profileOverride={effectiveProfile}
-          screenKey={screenKey}
-        />
+        <>
+          <DevNavigationPanel screenTree={treeForRender} screenKey={screenKey} />
+          <OrganPanel
+            sectionKeysForPreset={sectionKeysForPreset}
+            sectionLabels={sectionLabels}
+            sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
+            onSectionLayoutPresetOverride={handleSectionLayoutPresetOverride}
+            cardLayoutPresetOverrides={cardLayoutPresetOverrides}
+            onCardLayoutPresetOverride={handleCardLayoutPresetOverride}
+            sectionPresetOptions={sectionPresetOptions}
+            sectionHeights={sectionHeights}
+            organIdBySectionKey={organIdBySectionKey}
+            organInternalLayoutOverrides={organInternalLayoutOverridesProp}
+            onOrganInternalLayoutOverride={handleOrganInternalLayoutOverride}
+            sectionNodesByKey={sectionByKey}
+            screenModel={treeForRender}
+            defaultState={json?.state}
+            profileOverride={effectiveProfile}
+            screenKey={screenKey}
+          />
+        </>
       ),
       palettePreviewScreen: treeForRender,
       palettePreviewProps: {
@@ -976,24 +1091,27 @@ export default function DevPage() {
   }
   setDevSidebarProps({
     layoutPanelContent: (
-      <OrganPanel
-        sectionKeysForPreset={sectionKeysForPreset}
-        sectionLabels={sectionLabels}
-        sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
-        onSectionLayoutPresetOverride={handleSectionLayoutPresetOverride}
-        cardLayoutPresetOverrides={cardLayoutPresetOverrides}
-        onCardLayoutPresetOverride={handleCardLayoutPresetOverride}
-        sectionPresetOptions={sectionPresetOptions}
-        sectionHeights={sectionHeights}
-        organIdBySectionKey={organIdBySectionKey}
-        organInternalLayoutOverrides={organInternalLayoutOverridesProp}
-        onOrganInternalLayoutOverride={handleOrganInternalLayoutOverride}
-        sectionNodesByKey={sectionByKey}
-        screenModel={treeForRender}
-        defaultState={json?.state}
-        profileOverride={effectiveProfile}
-        screenKey={screenKey}
-      />
+      <>
+        <DevNavigationPanel screenTree={treeForRender} screenKey={screenKey} />
+        <OrganPanel
+          sectionKeysForPreset={sectionKeysForPreset}
+          sectionLabels={sectionLabels}
+          sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
+          onSectionLayoutPresetOverride={handleSectionLayoutPresetOverride}
+          cardLayoutPresetOverrides={cardLayoutPresetOverrides}
+          onCardLayoutPresetOverride={handleCardLayoutPresetOverride}
+          sectionPresetOptions={sectionPresetOptions}
+          sectionHeights={sectionHeights}
+          organIdBySectionKey={organIdBySectionKey}
+          organInternalLayoutOverrides={organInternalLayoutOverridesProp}
+          onOrganInternalLayoutOverride={handleOrganInternalLayoutOverride}
+          sectionNodesByKey={sectionByKey}
+          screenModel={treeForRender}
+          defaultState={json?.state}
+          profileOverride={effectiveProfile}
+          screenKey={screenKey}
+        />
+      </>
     ),
     palettePreviewScreen: treeForRender,
     palettePreviewProps: {

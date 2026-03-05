@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useSyncExternalStore } from "react";
+import { logContainerNodeIdsAfterRender } from "@/07_Dev_Tools/nav/nav-instrumentation";
 import BeforeAfterSlider from "@/04_Presentation/components/molecules/BeforeAfterSlider";
 import {
   getEditorMode,
@@ -55,7 +56,10 @@ const STRUCTURAL_CHECKLIST = [
   { title: "Original Patented Design", sub: "The first vent base engineered specifically for containers." },
 ];
 
+const COMPONENT_NAME = "ContainerCreationsLanding-2";
+
 export default function ContainerCreationsLanding2() {
+  const containerRef = useRef<HTMLDivElement>(null);
   const editorMode = useSyncExternalStore(subscribeEditorMode, getEditorMode, getEditorMode);
   const isEditor = editorMode === "editor";
   const shellDevice = useSyncExternalStore(
@@ -72,9 +76,13 @@ export default function ContainerCreationsLanding2() {
   const goNext = () => setStep((s) => Math.min(5, s + 1));
   const goBack = () => setStep((s) => Math.max(0, s - 1));
 
+  useEffect(() => {
+    logContainerNodeIdsAfterRender(containerRef, COMPONENT_NAME);
+  });
+
   const renderStep0 = () => (
     <>
-      <section className="landing-hero-video-wrap" style={{ position: "relative", width: "100%", overflow: "hidden" }}>
+      <section id="intro" className="landing-hero-video-wrap" style={{ position: "relative", width: "100%", overflow: "hidden" }}>
         {heroVideoError ? (
           <MediaPlaceholder label="Intro video" />
         ) : (
@@ -86,24 +94,25 @@ export default function ContainerCreationsLanding2() {
           href={SHOP_URL}
           target="_blank"
           rel="noopener noreferrer"
+          data-node-id="shop-now-hero"
           style={{ position: "absolute", top: 24, right: 24, color: "#fff", fontWeight: 600, textDecoration: "none", zIndex: 10 }}
         >
           Shop Now
         </a>
       </section>
-      <div className="hero-intro">
+      <section id="explore-container" className="hero-intro">
         <h1 className="hero-title">Upgrade Your Shipping Container</h1>
         <p className="hero-subtitle">Ventilation • Natural Light • Structural Integration</p>
         <div className="hero-badge">60-Minute DIY Install • No Welding Required</div>
-        <button type="button" className="hero-cta" onClick={goNext}>
+        <button type="button" className="hero-cta" onClick={goNext} data-node-id="explore-container">
           Explore the Container Upgrade System
         </button>
-      </div>
+      </section>
     </>
   );
 
   const renderStep1 = () => (
-    <div className="landing-content-block">
+    <section id="structural-fit" className="landing-content-block">
       <section className="cc-stamped-section">
         <h2 className="cc-stamped-heading">Precision-Stamped Structural Steel</h2>
         <div className="cc-stamped-description">
@@ -134,15 +143,15 @@ export default function ContainerCreationsLanding2() {
           ))}
         </ul>
         <div className="cc-step-nav">
-          <button type="button" onClick={goBack} style={{ padding: "10px 18px", borderRadius: 8, border: "1px solid #2d3239", background: "transparent", color: "#1a1d23", fontWeight: 600, cursor: "pointer" }}>Back</button>
-          <button type="button" className="hero-cta" onClick={goNext}>Check Your Structural Fit</button>
+          <button type="button" onClick={goBack} data-node-id="step1-back" style={{ padding: "10px 18px", borderRadius: 8, border: "1px solid #2d3239", background: "transparent", color: "#1a1d23", fontWeight: 600, cursor: "pointer" }}>Back</button>
+          <button type="button" className="hero-cta" onClick={goNext} data-node-id="structural-fit">Check Your Structural Fit</button>
         </div>
       </section>
-    </div>
+    </section>
   );
 
   const renderStep2 = () => (
-    <div style={{ width: "100%", background: "#fff", display: "flex", justifyContent: "center" }}>
+    <section id="ventilation" style={{ width: "100%", background: "#fff", display: "flex", justifyContent: "center" }}>
       <div className="landing-content-block">
         <div className="cc-two-col">
           <div className="cc-text">
@@ -154,33 +163,33 @@ export default function ContainerCreationsLanding2() {
           </div>
         </div>
         <div className="cc-step-nav">
-          <button type="button" onClick={goBack} style={{ padding: "10px 18px", borderRadius: 8, border: "1px solid #2d3239", background: "transparent", color: "#1a1d23", fontWeight: 600, cursor: "pointer" }}>Back</button>
-          <button type="button" className="hero-cta" onClick={goNext}>Ventilate your container</button>
+          <button type="button" onClick={goBack} data-node-id="step2-back" style={{ padding: "10px 18px", borderRadius: 8, border: "1px solid #2d3239", background: "transparent", color: "#1a1d23", fontWeight: 600, cursor: "pointer" }}>Back</button>
+          <button type="button" className="hero-cta" onClick={goNext} data-node-id="ventilation">Ventilate your container</button>
         </div>
       </div>
-    </div>
+    </section>
   );
 
   const renderStep3 = () => (
-    <div className="landing-content-block">
+    <section id="continue" className="landing-content-block">
       <div className="cc-two-col">
         <div className="cc-text">
           <h2>12″ vent — airflow and moisture control</h2>
           <p>Optimized for container roofs. Airflow is king with moisture control.</p>
           <div className="cc-step-nav">
-            <button type="button" onClick={goBack} style={{ padding: "10px 18px", borderRadius: 8, border: "1px solid var(--landing-steel-border)", background: "transparent", color: "var(--landing-steel-fg)", fontWeight: 600, cursor: "pointer" }}>Back</button>
-            <button type="button" className="hero-cta" onClick={goNext}>Continue</button>
+            <button type="button" onClick={goBack} data-node-id="step3-back" style={{ padding: "10px 18px", borderRadius: 8, border: "1px solid var(--landing-steel-border)", background: "transparent", color: "var(--landing-steel-fg)", fontWeight: 600, cursor: "pointer" }}>Back</button>
+            <button type="button" className="hero-cta" onClick={goNext} data-node-id="continue">Continue</button>
           </div>
         </div>
         <div className="cc-media-card">
           <img src="/images/12_%20vent.png" alt="12 vent — airflow and moisture control" style={{ width: "100%", height: "auto" }} />
         </div>
       </div>
-    </div>
+    </section>
   );
 
   const renderStep4 = () => (
-    <div className="landing-content-block">
+    <section id="why-we-lead" className="landing-content-block">
       <div className="cc-two-col">
         <div className="cc-text">
           <h2>Cut Once. Upgrade Fully.</h2>
@@ -188,8 +197,8 @@ export default function ContainerCreationsLanding2() {
           <p>You&apos;re already cutting structural steel.</p>
           <p>Upgrade light while you&apos;re there.</p>
           <div className="cc-step-nav">
-            <button type="button" onClick={goBack} style={{ padding: "10px 18px", borderRadius: 8, border: "1px solid var(--landing-steel-border)", background: "transparent", color: "var(--landing-steel-fg)", fontWeight: 600, cursor: "pointer" }}>Back</button>
-            <button type="button" className="hero-cta" onClick={goNext}>See why we lead</button>
+            <button type="button" onClick={goBack} data-node-id="step4-back" style={{ padding: "10px 18px", borderRadius: 8, border: "1px solid var(--landing-steel-border)", background: "transparent", color: "var(--landing-steel-fg)", fontWeight: 600, cursor: "pointer" }}>Back</button>
+            <button type="button" className="hero-cta" onClick={goNext} data-node-id="why-we-lead">See why we lead</button>
           </div>
         </div>
         <div className="cc-media-card">
@@ -203,7 +212,7 @@ export default function ContainerCreationsLanding2() {
           />
         </div>
       </div>
-    </div>
+    </section>
   );
 
   const renderStep5 = () => (
@@ -219,8 +228,8 @@ export default function ContainerCreationsLanding2() {
           <p style={{ fontStyle: "italic", marginBottom: 4 }}>I ordered a second set immediately after I opened the box.</p>
           <p style={{ opacity: 0.85, marginBottom: 24 }}>– David S, Payson AZ</p>
           <div className="cc-step-nav">
-            <button type="button" onClick={goBack} style={{ padding: "10px 18px", borderRadius: 8, border: "1px solid var(--landing-steel-border)", background: "transparent", color: "var(--landing-steel-fg)", fontWeight: 600, cursor: "pointer" }}>Back</button>
-            <a href={SHOP_URL} target="_blank" rel="noopener noreferrer" className="hero-cta" style={{ display: "inline-block", textDecoration: "none", marginTop: 0 }}>Build My Container System</a>
+            <button type="button" onClick={goBack} data-node-id="step5-back" style={{ padding: "10px 18px", borderRadius: 8, border: "1px solid var(--landing-steel-border)", background: "transparent", color: "var(--landing-steel-fg)", fontWeight: 600, cursor: "pointer" }}>Back</button>
+            <a href={SHOP_URL} target="_blank" rel="noopener noreferrer" className="hero-cta" style={{ display: "inline-block", textDecoration: "none", marginTop: 0 }} data-node-id="build-my-system">Build My Container System</a>
           </div>
         </div>
       </div>
@@ -233,7 +242,7 @@ export default function ContainerCreationsLanding2() {
         <div className="cc-text">
           <h2>Final Recommendation</h2>
           <p>Summary and recommended vent size based on your inputs. (Step 7 placeholder for dev grid.)</p>
-          <a href={SHOP_URL} target="_blank" rel="noopener noreferrer" className="hero-cta" style={{ display: "inline-block", textDecoration: "none", marginTop: 16 }}>Build My Container System</a>
+          <a href={SHOP_URL} target="_blank" rel="noopener noreferrer" className="hero-cta" style={{ display: "inline-block", textDecoration: "none", marginTop: 16 }} data-node-id="build-my-system-final">Build My Container System</a>
         </div>
       </div>
     </div>
@@ -241,6 +250,7 @@ export default function ContainerCreationsLanding2() {
 
   return (
     <div
+      ref={containerRef}
       className={`landing-container-creations${isHero ? " landing-step-hero" : ""}${step === 1 ? " landing-step-stamped" : ""}${step === 2 ? " measure-step-active" : ""}`}
       data-landing="container-creations"
     >
@@ -258,7 +268,7 @@ export default function ContainerCreationsLanding2() {
           borderBottom: `1px solid ${isLightStep ? "#e2e8f0" : "var(--landing-steel-border, #2d3239)"}`,
         }}
       >
-        <a href={SHOP_URL} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center" }}>
+        <a href={SHOP_URL} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center" }} data-node-id="logo-link">
           <img
             src="/images/logo-container-creations.webp"
             alt="Container Creations"
@@ -269,6 +279,7 @@ export default function ContainerCreationsLanding2() {
           href={SHOP_URL}
           target="_blank"
           rel="noopener noreferrer"
+          data-node-id="shop-now-header"
           style={{
             padding: "0.5rem 1rem",
             fontSize: "0.9375rem",
@@ -348,6 +359,7 @@ export default function ContainerCreationsLanding2() {
                     type="button"
                     onClick={() => setStep(i)}
                     className={`stepTracker-item stepTracker-item--${status}`}
+                    data-node-id={`step-tracker-${i}`}
                   >
                     <span className="stepTracker-icon" aria-hidden>{icon}</span>
                     <span className="stepTracker-label">{label}</span>

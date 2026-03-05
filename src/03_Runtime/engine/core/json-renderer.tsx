@@ -744,6 +744,9 @@ export type ExperienceContext = {
 /** Passed when rendering a section as child of screen for engine-owned spacing. */
 export type SectionContext = { sectionIndex: number; totalSections: number };
 
+/** Nav targets from layout data (layoutByScreen[screenKey].navTargets); keyed by element id. */
+export type NavTargetsMap = Record<string, { toScreenId?: string; toAnchor?: string }>;
+
 export function renderNode(
   node: any,
   profile: any,
@@ -757,7 +760,8 @@ export function renderNode(
   forceCardCompatibility?: boolean,
   paletteOverride?: string,
   nodePath?: string,
-  sectionContext?: SectionContext | null
+  sectionContext?: SectionContext | null,
+  navTargets?: NavTargetsMap
 ): any {
   if (!node) return null;
   const effectivePath = nodePath ?? (node?.id ?? node?.role ?? `n_${depth}`);
@@ -1063,7 +1067,7 @@ export function renderNode(
       if (cardPresetId) itemNode.layout = cardPresetId;
 
       const uniqueKey = item.id || `item-${i}`;
-      return renderNode({ ...itemNode, key: uniqueKey }, profile, stateSnapshot, defaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides, experienceContext, depth + 1, forceCardCompatibility, paletteOverride, `${effectivePath}.items[${i}]`);
+      return renderNode({ ...itemNode, key: uniqueKey }, profile, stateSnapshot, defaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides, experienceContext, depth + 1, forceCardCompatibility, paletteOverride, `${effectivePath}.items[${i}]`, undefined, navTargets);
     });
   } else if (Array.isArray(resolvedNode.children)) {
     // Normal mode: render children
@@ -1087,7 +1091,8 @@ export function renderNode(
         forceCardCompatibility,
         paletteOverride,
         `${effectivePath}.children[${i}]`,
-        childSectionContext ?? undefined
+        childSectionContext ?? undefined,
+        navTargets
       );
     });
   }
@@ -1123,6 +1128,12 @@ export function renderNode(
     behavior,
     onTap: resolvedNode.onTap,
   };
+
+  if (navTargets && (typeKey === "button" || typeKey === "card")) {
+    const elementKey = resolvedNode.id ?? resolvedNode.role ?? effectivePath;
+    const nav = navTargets[elementKey] ?? navTargets[effectivePath];
+    if (nav && (nav.toScreenId || nav.toAnchor)) props.nav = nav;
+  }
 
   // Phase C: journal display injection (display-only)
   if (resolvedNode.type === "JournalHistory" || resolvedNode.type === "journalhistory") {
@@ -1672,8 +1683,12 @@ export default function JsonRenderer({
         }
       : null;
 
+  const navTargets =
+    (screenId && rawState?.layoutByScreen?.[screenId]?.navTargets) ??
+    (profileOverride as { navTargets?: NavTargetsMap } | undefined)?.navTargets ??
+    undefined;
   PipelineDebugStore.startRenderPass();
-  const result = renderNode(node, profile, stateSnapshot, effectiveDefaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides, experienceContext, 0, forceCardCompatibility, paletteOverride, node?.id ?? node?.role ?? "root");
+  const result = renderNode(node, profile, stateSnapshot, effectiveDefaultState, sectionLayoutPresetOverrides, cardLayoutPresetOverrides, organInternalLayoutOverrides, experienceContext, 0, forceCardCompatibility, paletteOverride, node?.id ?? node?.role ?? "root", undefined, navTargets);
   PipelineDebugStore.endRenderPass();
   recordStage("render", "pass", "Render cycle completed");
   
