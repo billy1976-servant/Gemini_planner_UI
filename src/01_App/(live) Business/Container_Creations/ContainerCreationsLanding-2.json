@@ -25,7 +25,10 @@
       "buttons": [
         { "type": "link", "label": "Shop Now", "hrefKey": "shopUrl", "nodeId": "shop-now-hero" },
         { "type": "goto", "label": "Explore the Container Upgrade System", "target": "structural-fit", "nodeId": "explore-container" }
-      ]
+      ],
+      "nextScreenId": "structural-fit",
+      "lightTheme": true,
+      "nodePosition": { "x": 100, "y": 80 }
     },
     {
       "id": "structural-fit",
@@ -49,7 +52,10 @@
       "buttons": [
         { "type": "back", "label": "Back", "nodeId": "step1-back" },
         { "type": "next", "label": "Check Your Structural Fit", "nodeId": "structural-fit" }
-      ]
+      ],
+      "nextScreenId": "ventilation",
+      "inlineControls": ["containerLength"],
+      "lightTheme": true
     },
     {
       "id": "ventilation",
@@ -65,7 +71,10 @@
       "buttons": [
         { "type": "back", "label": "Back", "nodeId": "step2-back" },
         { "type": "next", "label": "Ventilate your container", "nodeId": "ventilation" }
-      ]
+      ],
+      "nextScreenId": "continue",
+      "inlineControls": ["roofRibHeight"],
+      "lightTheme": true
     },
     {
       "id": "continue",
@@ -81,7 +90,9 @@
       "buttons": [
         { "type": "back", "label": "Back", "nodeId": "step3-back" },
         { "type": "next", "label": "Continue", "nodeId": "continue" }
-      ]
+      ],
+      "nextScreenId": "why-we-lead",
+      "inlineControls": ["ventFitVerified"]
     },
     {
       "id": "why-we-lead",
@@ -99,7 +110,9 @@
       "buttons": [
         { "type": "back", "label": "Back", "nodeId": "step4-back" },
         { "type": "next", "label": "See why we lead", "nodeId": "why-we-lead" }
-      ]
+      ],
+      "nextScreenId": "choose-vent",
+      "inlineControls": ["ventCount"]
     },
     {
       "id": "choose-vent",
@@ -118,7 +131,9 @@
       "buttons": [
         { "type": "back", "label": "Back", "nodeId": "step5-back" },
         { "type": "link", "label": "Build My Container System", "hrefKey": "shopUrl", "nodeId": "build-my-system" }
-      ]
+      ],
+      "nextScreenId": "final-recommendation",
+      "inlineControls": ["orderSizeConfirmed"]
     },
     {
       "id": "final-recommendation",
@@ -131,7 +146,8 @@
       "media": [],
       "buttons": [
         { "type": "link", "label": "Build My Container System", "hrefKey": "shopUrl", "nodeId": "build-my-system-final" }
-      ]
+      ],
+      "dynamicSummary": true
     }
   ]
 }

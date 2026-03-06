@@ -31,7 +31,7 @@ import DevNavigationPanel, { SAME_PAGE_SCREEN_ID } from "@/07_Dev_Tools/nav/DevN
 import { getCanonicalNavScreenKey } from "@/07_Dev_Tools/nav/nav-screen-key";
 import { setNavDebug } from "@/07_Dev_Tools/nav/nav-debug-store";
 import { logNavClick, logNavRender, logNavExecution, installMutationObserverForNodeIds } from "@/07_Dev_Tools/nav/nav-instrumentation";
-import { setDevSidebarProps } from "@/app/ui/control-dock/dev-right-sidebar-store";
+import { getDevSidebarProps, setDevSidebarProps } from "@/app/ui/control-dock/dev-right-sidebar-store";
 
 const DEBUG_NAV = typeof process !== "undefined" && process.env.NODE_ENV === "development" && !!(typeof window !== "undefined" && (window as any).__DEBUG_NAV__);
 
@@ -161,6 +161,8 @@ const EXPLICIT_TSX_MAP: Record<string, () => Promise<any>> = {
     import("@/01_App/(live) Business/Container_Creations/ContainerCreationsWebsite"),
   "(live) Business/Container_Creations/ContainerCreationsLanding": () =>
     import("@/01_App/(live) Business/Container_Creations/ContainerCreationsLanding"),
+  "container-creations-landing": () =>
+    import("@/01_App/(live) Business/Container_Creations/ContainerCreationsLanding-2"),
 };
 
 function resolveTsxScreen(path: string) {
@@ -317,10 +319,13 @@ export default function DevPage() {
   }, []);
 
   // Set Layout panel content for TSX screens; pass screenKey from dev page so panel and TsxNavCapture use the exact same key (no drift).
+  // Preserve existing sidebar state (landingScreenPath, landingConfig, websiteNodeOrder, etc.) when updating layoutPanelContent.
   useEffect(() => {
     if (!TsxComponent) return;
     const navScreenKey = getCanonicalNavScreenKey(screen, {});
+    const current = getDevSidebarProps() ?? {};
     setDevSidebarProps({
+      ...current,
       layoutPanelContent: <DevLayoutPanelContentForTsx screenKey={navScreenKey} />,
     });
   }, [TsxComponent, screen]);
@@ -726,6 +731,8 @@ export default function DevPage() {
     // websiteScreenPath/websiteNodeOrder for the Nodes panel. Clearing on every render
     // caused the Nodes panel to lose recognition after opening another sidebar view.
     // Layout panel content for TSX is set in useEffect above so sidebar does not reset during render.
+    // JSON-driven screens (config.screens): call registerJsonScreen(screenPath, config, onChange) or
+    // useRegisterJsonScreen(screenPath, config, setConfig) so the Nodes panel lists and edits nodes automatically.
     const screenPath = tsxMeta?.path ? (tsxMeta.path.startsWith("tsx:") ? tsxMeta.path : `tsx:${tsxMeta.path}`) : "tsx:HiClarify/HiClarifyOnboarding";
     const screenKey = getCanonicalNavScreenKey(screen, {});
     return (

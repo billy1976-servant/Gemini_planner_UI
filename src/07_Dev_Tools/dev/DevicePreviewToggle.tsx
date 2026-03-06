@@ -32,6 +32,23 @@ export default function DevicePreviewToggle() {
     getPhoneFrameEnabled
   );
 
+  const deviceModes: Array<{ id: "desktop" | "tablet" | "phone" | "phoneGrid"; label: string; icon?: React.ReactNode }> = [
+    { id: "desktop", label: "Desktop" },
+    { id: "tablet", label: "Tablet" },
+    { id: "phone", label: "Phone" },
+    {
+      id: "phoneGrid",
+      label: "Phone Grid",
+      icon: (
+        <span style={{ display: "inline-flex", gap: 2, alignItems: "center", marginRight: 4 }} aria-hidden>
+          <span style={{ width: 6, height: 10, background: "currentColor", borderRadius: 1, opacity: 0.9 }} />
+          <span style={{ width: 6, height: 10, background: "currentColor", borderRadius: 1, opacity: 0.9 }} />
+          <span style={{ width: 6, height: 10, background: "currentColor", borderRadius: 1, opacity: 0.9 }} />
+        </span>
+      ),
+    },
+  ];
+
   return (
     <div
       data-device-preview-toggle
@@ -41,35 +58,37 @@ export default function DevicePreviewToggle() {
         alignItems: "center",
       }}
     >
-      {(["desktop", "tablet", "phone"] as const).map((deviceMode) => (
+      {deviceModes.map(({ id, label, icon }) => (
         <button
-          key={deviceMode}
+          key={id}
           type="button"
-          onClick={() => setDevicePreviewMode(deviceMode)}
+          onClick={() => setDevicePreviewMode(id)}
           style={{
             padding: "4px 12px",
             fontSize: "12px",
-            fontWeight: mode === deviceMode ? 600 : 500,
-            color: mode === deviceMode ? "#ffffff" : "#aaa",
-            background: mode === deviceMode ? "#1976d2" : "transparent",
-            border: mode === deviceMode ? "1px solid #1565c0" : "1px solid #444",
+            fontWeight: mode === id ? 600 : 500,
+            color: mode === id ? "#ffffff" : "#aaa",
+            background: mode === id ? "#1976d2" : "transparent",
+            border: mode === id ? "1px solid #1565c0" : "1px solid #444",
             borderRadius: "4px",
             cursor: "pointer",
             transition: "all 0.15s ease",
-            textTransform: "capitalize",
+            display: "inline-flex",
+            alignItems: "center",
           }}
           onMouseEnter={(e) => {
-            if (mode !== deviceMode) {
+            if (mode !== id) {
               e.currentTarget.style.background = "#333";
             }
           }}
           onMouseLeave={(e) => {
-            if (mode !== deviceMode) {
+            if (mode !== id) {
               e.currentTarget.style.background = "transparent";
             }
           }}
         >
-          {deviceMode}
+          {icon}
+          {label}
         </button>
       ))}
       

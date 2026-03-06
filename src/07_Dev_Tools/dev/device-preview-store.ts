@@ -8,7 +8,7 @@
  * - Purely a preview tool
  */
 
-type DeviceMode = "desktop" | "tablet" | "phone";
+export type DeviceMode = "desktop" | "tablet" | "phone" | "phoneGrid";
 
 let currentMode: DeviceMode = "desktop";
 const listeners = new Set<() => void>();

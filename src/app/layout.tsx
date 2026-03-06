@@ -126,7 +126,7 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
         : STAGE_MAX_WIDTH_DESKTOP;
 
   // Do not auto-attach bottom nav for onboarding / Google-style / OsbHomeV2; clean stage rules (no play button + icons strip, neutral bg, no extra maxWidth)
-  const isOnboardingTsx = /HiClarifyOnboarding|onboarding|HiClarify\/HiClarifyOnboarding|OsbHomeV2/i.test(currentScreen || "");
+  const isOnboardingTsx = /HiClarifyOnboarding|onboarding|HiClarify\/HiClarifyOnboarding|OsbHomeV2|ContainerCreationsLanding/i.test(currentScreen || "");
 
   // State is source of truth; fall back to layout-store / palette-store when key is missing
   const experience = (stateSnapshot?.values?.experience ?? (layoutSnapshot as { experience?: string })?.experience) ?? "website";
@@ -394,6 +394,8 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
           style={{
             padding: 0,
             overflow: "visible",
+            overflowX: "hidden",
+            maxWidth: "100%",
             ...(devMode === "dev" && !phoneFrameEnabled ? { paddingLeft: 48, paddingRight: 44 } : {}),
             ...(isOnboardingTsx ? { background: "linear-gradient(135deg, #2d3436 0%, #1e272e 100%)" } : {}),
           }}
@@ -610,7 +612,7 @@ export default function RootLayout({ children }: any) {
       </head>
       <body className="app-body">
         <Suspense fallback={<div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>Loading...</div>}>
-          {pathname === "/landing" || pathname === "/flow" || pathname === "/onboarding" ? (
+          {pathname === "/landing" || pathname === "/flow" || pathname === "/onboarding" || pathname === "/container-creations" ? (
             children
           ) : isUserMode ? (
             <UserLayoutChrome>{children}</UserLayoutChrome>

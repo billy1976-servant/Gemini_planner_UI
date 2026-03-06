@@ -10,11 +10,19 @@ import {
 } from "@/07_Dev_Tools/editor/editor-mode-store";
 import { getDevicePreviewMode, subscribeDevicePreviewMode } from "@/07_Dev_Tools/dev/device-preview-store";
 import { getCardDevice } from "@/07_Dev_Tools/dev/preview-derivations";
+import {
+  getDevSidebarProps,
+  setSelectedLandingNodeId,
+  subscribeDevSidebarProps,
+} from "@/app/ui/control-dock/dev-right-sidebar-store";
+import { registerJsonScreen } from "@/app/ui/control-dock/editor/registerJsonScreen";
+import InlineEditableText from "@/app/ui/control-dock/editor/InlineEditableText";
+import { getOverride, subscribe } from "@/04_Presentation/components/organs/tsx/website/node-order-override-store";
 import "@/app/landing/landing-theme.css";
 
-import config from "./ContainerCreationsLanding-2.json";
-
 const COMPONENT_NAME = "ContainerCreationsLanding-2";
+
+const CONFIG_URL = "/api/container-creations-landing-config";
 
 type ContentBlock =
   | { type: "badge"; text: string }
@@ -33,6 +41,13 @@ type ButtonBlock =
   | { type: "next"; label: string; nodeId?: string }
   | { type: "back"; label: string; nodeId?: string };
 
+type InlineControlId =
+  | "containerLength"
+  | "roofRibHeight"
+  | "ventFitVerified"
+  | "ventCount"
+  | "orderSizeConfirmed";
+
 type Screen = {
   id: string;
   stepLabel: string;
@@ -42,6 +57,14 @@ type Screen = {
   content: ContentBlock[];
   media: MediaBlock[];
   buttons: ButtonBlock[];
+  nextScreenId?: string;
+  inlineControls?: InlineControlId[];
+  /** When true, textOnly layout shows getFinalRecommendationSummary() instead of content. */
+  dynamicSummary?: boolean;
+  /** When true, header and step use light theme (e.g. white background). */
+  lightTheme?: boolean;
+  /** Optional position for node graph editor. */
+  nodePosition?: { x: number; y: number };
 };
 
 type LandingConfig = {
@@ -51,10 +74,178 @@ type LandingConfig = {
   screens: Screen[];
 };
 
-const cfg = config as LandingConfig;
-const screens = cfg.screens;
+/** Step verification inputs. roofRibHeight = roof rib height in inches (vertical corrugation). */
+type StepInputs = {
+  containerLength: "20ft" | "40ft" | null;
+  roofRibHeight: number | null;
+  ventFitVerified: boolean;
+  ventCount: number | null;
+  orderSizeConfirmed: boolean;
+};
 
-function resolveHref(btn: ButtonBlock): string {
+const INITIAL_STEP_INPUTS: StepInputs = {
+  containerLength: null,
+  roofRibHeight: null,
+  ventFitVerified: false,
+  ventCount: null,
+  orderSizeConfirmed: false,
+};
+
+/** Roof rib height typical range (inches). Validation: within range = valid. */
+const ROOF_RIB_HEIGHT_MIN = 1.5;
+const ROOF_RIB_HEIGHT_MAX = 2.5;
+
+/** Inline select: compact, matches landing theme. */
+function InlineSelect<T extends string>({
+  label,
+  value,
+  options,
+  onChange,
+  isLight,
+  ariaLabel,
+}: {
+  label: string;
+  value: T | null;
+  options: { value: T; label: string }[];
+  onChange: (v: T) => void;
+  isLight?: boolean;
+  ariaLabel?: string;
+}) {
+  const border = isLight ? "#e2e8f0" : "var(--landing-steel-border)";
+  const fg = isLight ? "#1a1d23" : "var(--landing-steel-fg)";
+  return (
+    <div className="cc-inline-verify" style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
+      <label style={{ fontSize: "0.9375rem", color: fg }}>{label}</label>
+      <select
+        aria-label={ariaLabel ?? label}
+        value={value ?? ""}
+        onChange={(e) => onChange(e.target.value as T)}
+        style={{
+          padding: "6px 10px",
+          borderRadius: "var(--landing-radius, 8px)",
+          border: `1px solid ${border}`,
+          background: isLight ? "#fff" : "var(--landing-steel-bg-alt)",
+          color: fg,
+          fontSize: "0.9375rem",
+          minWidth: 72,
+        }}
+      >
+        <option value="">—</option>
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>{o.label}</option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+/** Inline number input with optional validate() returning { valid, message }. */
+function InlineNumberInput({
+  label,
+  value,
+  onChange,
+  min,
+  max,
+  step,
+  placeholder,
+  validate,
+  isLight,
+  ariaLabel,
+}: {
+  label: string;
+  value: number | null;
+  onChange: (v: number | null) => void;
+  min?: number;
+  max?: number;
+  step?: number;
+  placeholder?: string;
+  validate?: (v: number | null) => { valid: boolean; message?: string };
+  isLight?: boolean;
+  ariaLabel?: string;
+}) {
+  const border = isLight ? "#e2e8f0" : "var(--landing-steel-border)";
+  const fg = isLight ? "#1a1d23" : "var(--landing-steel-fg)";
+  const result = validate?.(value) ?? { valid: true };
+  return (
+    <div className="cc-inline-verify" style={{ marginTop: 12 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+        <label style={{ fontSize: "0.9375rem", color: fg }}>{label}</label>
+        <input
+          type="number"
+          aria-label={ariaLabel ?? label}
+          value={value ?? ""}
+          onChange={(e) => {
+            const raw = e.target.value.trim();
+            if (raw === "") onChange(null);
+            else {
+              const n = Number(raw);
+              if (!Number.isNaN(n)) onChange(n);
+            }
+          }}
+          min={min}
+          max={max}
+          step={step ?? 0.1}
+          placeholder={placeholder}
+          style={{
+            width: 64,
+            padding: "6px 8px",
+            borderRadius: "var(--landing-radius, 8px)",
+            border: `1px solid ${border}`,
+            background: isLight ? "#fff" : "var(--landing-steel-bg-alt)",
+            color: fg,
+            fontSize: "0.9375rem",
+          }}
+        />
+      </div>
+      {result.message != null && (
+        <span
+          style={{
+            fontSize: "0.875rem",
+            marginTop: 4,
+            display: "block",
+            color: result.valid ? "#16a34a" : "#b45309",
+          }}
+        >
+          {result.valid ? "✓ " : "⚠ "}{result.message}
+        </span>
+      )}
+    </div>
+  );
+}
+
+/** Inline checkbox: compact, matches landing theme. */
+function InlineCheckbox({
+  label,
+  checked,
+  onChange,
+  id,
+  isLight,
+  ariaLabel,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  id: string;
+  isLight?: boolean;
+  ariaLabel?: string;
+}) {
+  const fg = isLight ? "#1a1d23" : "var(--landing-steel-fg)";
+  return (
+    <div className="cc-inline-verify" style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12 }}>
+      <input
+        type="checkbox"
+        id={id}
+        aria-label={ariaLabel ?? label}
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        style={{ width: 18, height: 18, accentColor: "#2563eb" }}
+      />
+      <label htmlFor={id} style={{ fontSize: "0.9375rem", color: fg, cursor: "pointer" }}>{label}</label>
+    </div>
+  );
+}
+
+function resolveHref(btn: ButtonBlock, cfg: LandingConfig): string {
   if (btn.type === "link" && "hrefKey" in btn && btn.hrefKey === "shopUrl") {
     return cfg.shopUrl;
   }
@@ -85,7 +276,13 @@ function MediaPlaceholder({ label, className }: { label: string; className?: str
   );
 }
 
-function renderContentBlocks(content: ContentBlock[]) {
+type RenderContentBlocksOptions = {
+  isEditor: boolean;
+  screenId: string;
+  onParagraphChange: (blockIndex: number, text: string) => void;
+};
+
+function renderContentBlocks(content: ContentBlock[], options?: RenderContentBlocksOptions) {
   return content.map((block, i) => {
     if (block.type === "badge") {
       return <div key={i} className="hero-badge">{block.text}</div>;
@@ -98,6 +295,19 @@ function renderContentBlocks(content: ContentBlock[]) {
         Object.assign(style, { fontStyle: "italic", marginBottom: 4 });
       } else if (block.className === "testimonial-attribution") {
         Object.assign(style, { opacity: 0.85, marginBottom: 24 });
+      }
+      if (options?.isEditor && options.screenId) {
+        return (
+          <InlineEditableText
+            key={i}
+            value={block.text}
+            onChange={(v) => options.onParagraphChange(i, v)}
+            isEditing
+            as="p"
+            style={style}
+            multiline
+          />
+        );
       }
       return <p key={i} style={style}>{block.text}</p>;
     }
@@ -174,35 +384,271 @@ export default function ContainerCreationsLanding2() {
   );
   const cardDevice = getCardDevice(shellDevice, editorMode);
 
-  const [currentScreenId, setCurrentScreenId] = useState(screens[0].id);
+  const [config, setConfig] = useState<LandingConfig | null>(null);
+  const [configError, setConfigError] = useState<string | null>(null);
+
+  const cfg = config;
+  const screens = cfg?.screens ?? [];
+  const orderOverride = useSyncExternalStore(
+    subscribe,
+    () => getOverride("container-creations-landing"),
+    () => getOverride("container-creations-landing")
+  );
+  const orderedScreens =
+    orderOverride?.length && screens.length > 0
+      ? orderOverride
+          .map((id) => screens.find((s) => s.id === id))
+          .filter((s): s is Screen => s != null)
+      : screens;
+  const [currentScreenId, setCurrentScreenId] = useState<string | null>(null);
   const [failedMedia, setFailedMedia] = useState<Set<string>>(new Set());
+  const [stepInputs, setStepInputs] = useState<StepInputs>(INITIAL_STEP_INPUTS);
 
-  const currentIndex = screens.findIndex((s) => s.id === currentScreenId);
-  const currentScreen = screens[currentIndex] ?? screens[0];
-
-  const isHero = currentScreenId === "intro";
-  const isLightStep = ["intro", "structural-fit", "ventilation"].includes(currentScreenId);
-
-  const goToScreen = (id: string) => setCurrentScreenId(id);
-  const goNext = () => {
-    if (currentIndex < screens.length - 1) setCurrentScreenId(screens[currentIndex + 1].id);
-  };
-  const goBack = () => {
-    if (currentIndex > 0) setCurrentScreenId(screens[currentIndex - 1].id);
-  };
+  useEffect(() => {
+    const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
+    const variant = params.get("variant");
+    const query = variant ? `?variant=${encodeURIComponent(variant)}&t=${Date.now()}` : `?t=${Date.now()}`;
+    const url = `${CONFIG_URL}${query}`;
+    fetch(url, { cache: "no-store", headers: { Pragma: "no-cache" } })
+      .then((res) => {
+        if (!res.ok) throw new Error(res.statusText);
+        return res.json();
+      })
+      .then((data) => {
+        setConfig(data as LandingConfig);
+        if (Array.isArray(data?.screens) && data.screens.length > 0) {
+          setCurrentScreenId(data.screens[0].id);
+        }
+      })
+      .catch((err) => setConfigError(err?.message ?? "Failed to load config"));
+  }, []);
 
   useEffect(() => {
     logContainerNodeIdsAfterRender(containerRef, COMPONENT_NAME);
   });
 
-  function renderButtons(screen: Screen, useSteelStyle = false) {
+  /** Register landing flow with dev node sidebar when config is loaded (Nodes panel can show and reorder screens). */
+  useEffect(() => {
+    if (!config?.screens?.length) return;
+    registerJsonScreen("container-creations-landing", config as Parameters<typeof registerJsonScreen>[1], (newConfig) => setConfig(newConfig as LandingConfig));
+  }, [config]);
+
+  const devProps = useSyncExternalStore(subscribeDevSidebarProps, getDevSidebarProps, getDevSidebarProps);
+  const selectedLandingNodeId = devProps?.selectedLandingNodeId ?? null;
+
+  // Scroll selected node into view when selection changes (editor mode)
+  useEffect(() => {
+    if (!isEditor || !selectedLandingNodeId) return;
+    const el = document.querySelector(`[data-screen-id="${selectedLandingNodeId}"]`) ?? document.getElementById(selectedLandingNodeId);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [isEditor, selectedLandingNodeId]);
+
+  function updateScreenField(
+    screenId: string,
+    field: keyof Screen,
+    value: string | undefined
+  ) {
+    if (!config) return;
+    setConfig({
+      ...config,
+      screens: config.screens.map((s) =>
+        s.id === screenId ? { ...s, [field]: value } : s
+      ),
+    });
+  }
+
+  function updateScreenContentBlock(screenId: string, blockIndex: number, text: string) {
+    if (!config) return;
+    setConfig({
+      ...config,
+      screens: config.screens.map((s) => {
+        if (s.id !== screenId || !s.content?.[blockIndex]) return s;
+        const content = [...s.content];
+        const block = content[blockIndex];
+        if (block && "text" in block) {
+          content[blockIndex] = { ...block, text };
+        }
+        return { ...s, content };
+      }),
+    });
+  }
+
+  function updateScreenButtonLabel(screenId: string, buttonIndex: number, label: string) {
+    if (!config) return;
+    setConfig({
+      ...config,
+      screens: config.screens.map((s) => {
+        if (s.id !== screenId || !s.buttons?.[buttonIndex]) return s;
+        const buttons = [...s.buttons];
+        buttons[buttonIndex] = { ...buttons[buttonIndex], label };
+        return { ...s, buttons };
+      }),
+    });
+  }
+
+  if (configError) {
+    return (
+      <div style={{ padding: "2rem", textAlign: "center", color: "#94a3b8" }}>
+        Failed to load config: {configError}
+      </div>
+    );
+  }
+
+  if (!config || screens.length === 0 || currentScreenId == null) {
+    return (
+      <div style={{ padding: "2rem", textAlign: "center", color: "#94a3b8" }}>
+        Loading…
+      </div>
+    );
+  }
+
+  const currentIndex = orderedScreens.findIndex((s) => s.id === currentScreenId);
+  const currentScreen = orderedScreens[currentIndex] ?? orderedScreens[0];
+
+  const isHero = currentScreen.layout === "hero";
+  const isLightStep = currentScreen.lightTheme === true;
+
+  const goToScreen = (id: string) => setCurrentScreenId(id);
+  const goNext = () => {
+    if (currentScreen.nextScreenId) {
+      setCurrentScreenId(currentScreen.nextScreenId);
+    } else if (currentIndex < orderedScreens.length - 1) {
+      setCurrentScreenId(orderedScreens[currentIndex + 1].id);
+    }
+  };
+  const goBack = () => {
+    if (currentIndex > 0) setCurrentScreenId(orderedScreens[currentIndex - 1].id);
+  };
+
+  /** Renders a single inline control by type. Driven by screen.inlineControls from config. */
+  function renderInlineControl(type: InlineControlId, isLight: boolean): React.ReactNode {
+    switch (type) {
+      case "containerLength":
+        return (
+          <InlineSelect
+            key="containerLength"
+            label="Container length"
+            value={stepInputs.containerLength}
+            options={[{ value: "20ft", label: "20 ft" }, { value: "40ft", label: "40 ft" }]}
+            onChange={(v) => setStepInputs((p) => ({ ...p, containerLength: v }))}
+            isLight={isLight}
+            ariaLabel="Container length"
+          />
+        );
+      case "roofRibHeight":
+        return (
+          <InlineNumberInput
+            key="roofRibHeight"
+            label="Roof rib height (in.)"
+            value={stepInputs.roofRibHeight}
+            onChange={(v) => setStepInputs((p) => ({ ...p, roofRibHeight: v }))}
+            min={0.5}
+            max={5}
+            step={0.1}
+            placeholder="e.g. 2"
+            validate={(v) => {
+              if (v == null) return { valid: true };
+              if (v >= ROOF_RIB_HEIGHT_MIN && v <= ROOF_RIB_HEIGHT_MAX) return { valid: true, message: "Within typical range." };
+              return { valid: false, message: `Typical range is ${ROOF_RIB_HEIGHT_MIN}–${ROOF_RIB_HEIGHT_MAX} in. Confirm your measurement.` };
+            }}
+            isLight={isLight}
+            ariaLabel="Roof rib height in inches"
+          />
+        );
+      case "ventFitVerified":
+        return (
+          <InlineCheckbox
+            key="ventFitVerified"
+            id="vent-fit-verified"
+            label="I've verified the 12″ vent fits my roof."
+            checked={stepInputs.ventFitVerified}
+            onChange={(v) => setStepInputs((p) => ({ ...p, ventFitVerified: v }))}
+            isLight={isLight}
+            ariaLabel="Verify 12 inch vent fits my roof"
+          />
+        );
+      case "ventCount":
+        return (
+          <InlineNumberInput
+            key="ventCount"
+            label="Number of vents"
+            value={stepInputs.ventCount}
+            onChange={(v) => setStepInputs((p) => ({ ...p, ventCount: v }))}
+            min={1}
+            max={10}
+            step={1}
+            placeholder="1"
+            validate={(v) => {
+              if (v == null) return { valid: true };
+              if (v >= 1 && v <= 10) return { valid: true, message: `We recommend ${v} vent(s) for your setup.` };
+              return { valid: false, message: "Enter 1–10." };
+            }}
+            isLight={isLight}
+            ariaLabel="Number of vents"
+          />
+        );
+      case "orderSizeConfirmed":
+        return (
+          <InlineCheckbox
+            key="orderSizeConfirmed"
+            id="order-size-confirmed"
+            label="I'll order the recommended size."
+            checked={stepInputs.orderSizeConfirmed}
+            onChange={(v) => setStepInputs((p) => ({ ...p, orderSizeConfirmed: v }))}
+            isLight={isLight}
+            ariaLabel="Order recommended size"
+          />
+        );
+      default:
+        return null;
+    }
+  }
+
+  /** Renders inline verification controls from screen.inlineControls (config-driven). */
+  function renderInlineUI(screen: Screen, isLight: boolean) {
+    const controls = screen.inlineControls ?? [];
+    if (!controls.length) return null;
+    return <>{controls.map((type) => renderInlineControl(type, isLight))}</>;
+  }
+
+  /** Build final recommendation summary from stepInputs (config-driven; used when screen.dynamicSummary === true). */
+  function getFinalRecommendationSummary(): string {
+    const parts: string[] = [];
+    if (stepInputs.containerLength) parts.push(`Container: ${stepInputs.containerLength}.`);
+    if (stepInputs.roofRibHeight != null) parts.push(`Roof rib height: ${stepInputs.roofRibHeight} in.`);
+    const vents = stepInputs.ventCount ?? 1;
+    parts.push(`Recommended vents: ${vents} × 12-inch.`);
+    if (stepInputs.ventFitVerified) parts.push("Vent fit verified.");
+    if (stepInputs.orderSizeConfirmed) parts.push("Order size confirmed.");
+    return parts.length ? parts.join(" ") : "Complete the steps above to see your recommendation.";
+  }
+
+  function renderButtons(
+    screen: Screen,
+    useSteelStyle = false,
+    isEdit?: boolean,
+    onButtonLabelChange?: (buttonIndex: number, label: string) => void
+  ) {
     const btnStyle = useSteelStyle ? stepNavButtonStyleSteel : stepNavButtonStyle;
+    const labelNode = (btn: ButtonBlock, i: number) =>
+      isEdit && onButtonLabelChange ? (
+        <InlineEditableText
+          value={btn.label}
+          onChange={(v) => onButtonLabelChange(i, v)}
+          isEditing
+          as="span"
+        />
+      ) : (
+        btn.label
+      );
     return (
       <div className="cc-step-nav">
         {screen.buttons.map((btn, i) => {
           const nodeId = "nodeId" in btn ? btn.nodeId : undefined;
           if (btn.type === "link") {
-            const href = resolveHref(btn);
+            const href = resolveHref(btn, cfg);
             return (
               <a
                 key={i}
@@ -213,7 +659,7 @@ export default function ContainerCreationsLanding2() {
                 style={{ display: "inline-block", textDecoration: "none", marginTop: 0 }}
                 data-node-id={nodeId}
               >
-                {btn.label}
+                {labelNode(btn, i)}
               </a>
             );
           }
@@ -226,7 +672,7 @@ export default function ContainerCreationsLanding2() {
                 onClick={() => goToScreen(btn.target)}
                 data-node-id={nodeId}
               >
-                {btn.label}
+                {labelNode(btn, i)}
               </button>
             );
           }
@@ -239,7 +685,7 @@ export default function ContainerCreationsLanding2() {
                 onClick={goNext}
                 data-node-id={nodeId}
               >
-                {btn.label}
+                {labelNode(btn, i)}
               </button>
             );
           }
@@ -252,7 +698,7 @@ export default function ContainerCreationsLanding2() {
                 data-node-id={nodeId}
                 style={btnStyle}
               >
-                {btn.label}
+                {labelNode(btn, i)}
               </button>
             );
           }
@@ -317,12 +763,32 @@ export default function ContainerCreationsLanding2() {
 
   function renderScreen(screen: Screen) {
     const heroVideoFailed = screen.layout === "hero" && screen.media.some((m) => m.type === "video" && failedMedia.has(m.src));
+    const isSelected = isEditor && selectedLandingNodeId === screen.id;
+    const outlineStyle: React.CSSProperties = isSelected
+      ? { outline: "2px solid var(--color-accent, #1a73e8)", outlineOffset: 2 }
+      : {};
+    const selectNodeProps = isEditor
+      ? {
+          onClick: () => setSelectedLandingNodeId(screen.id),
+          role: "button" as const,
+          tabIndex: 0,
+          onKeyDown: (e: React.KeyboardEvent) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setSelectedLandingNodeId(screen.id);
+            }
+          },
+        }
+      : {};
+    const containerStyle: React.CSSProperties = isEditor ? { ...outlineStyle, cursor: "pointer" } : outlineStyle;
 
     switch (screen.layout) {
       case "hero": {
         const videoBlock = screen.media.find((m) => m.type === "video");
+        const heroLinkButton = screen.buttons.filter((b) => b.type === "link").slice(0, 1)[0];
+        const heroLinkIndex = heroLinkButton ? screen.buttons.indexOf(heroLinkButton) : -1;
         return (
-          <>
+          <div style={containerStyle} data-screen-id={screen.id} {...selectNodeProps}>
             <section id={screen.id} className="landing-hero-video-wrap" style={{ position: "relative", width: "100%", overflow: "hidden" }}>
               {videoBlock && videoBlock.type === "video" ? (
                 heroVideoFailed ? (
@@ -339,53 +805,91 @@ export default function ContainerCreationsLanding2() {
                   </video>
                 )
               ) : null}
-              {screen.buttons
-                .filter((b) => b.type === "link")
-                .slice(0, 1)
-                .map((btn, i) => (
-                  <a
-                    key={i}
-                    href={resolveHref(btn)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    data-node-id={"nodeId" in btn ? btn.nodeId : undefined}
-                    style={{ position: "absolute", top: 24, right: 24, color: "#fff", fontWeight: 600, textDecoration: "none", zIndex: 10 }}
-                  >
-                    {btn.label}
-                  </a>
-                ))}
+              {heroLinkButton && (
+                <a
+                  href={resolveHref(heroLinkButton, cfg)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-node-id={"nodeId" in heroLinkButton ? heroLinkButton.nodeId : undefined}
+                  style={{ position: "absolute", top: 24, right: 24, color: "#fff", fontWeight: 600, textDecoration: "none", zIndex: 10 }}
+                >
+                  {isEditor ? (
+                    <InlineEditableText
+                      value={heroLinkButton.label}
+                      onChange={(v) => updateScreenButtonLabel(screen.id, heroLinkIndex, v)}
+                      isEditing
+                      as="span"
+                    />
+                  ) : (
+                    heroLinkButton.label
+                  )}
+                </a>
+              )}
             </section>
             <section id="explore-container" className="hero-intro">
-              <h1 className="hero-title">{screen.title}</h1>
-              {screen.subtitle != null && <p className="hero-subtitle">{screen.subtitle}</p>}
-              {renderContentBlocks(screen.content)}
-              {screen.buttons
-                .filter((b) => b.type === "goto")
-                .map((btn, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    className="hero-cta"
-                    onClick={() => goToScreen(btn.target)}
-                    data-node-id={btn.nodeId}
-                  >
-                    {btn.label}
+              <div style={{ minHeight: "1.2em" }}>
+                <InlineEditableText
+                  value={screen.title}
+                  onChange={(v) => updateScreenField(screen.id, "title", v)}
+                  isEditing={isEditor}
+                  as="h1"
+                  className="hero-title"
+                />
+              </div>
+              {screen.subtitle != null || isEditor ? (
+                <InlineEditableText
+                  value={screen.subtitle ?? ""}
+                  onChange={(v) => updateScreenField(screen.id, "subtitle", v || undefined)}
+                  isEditing={isEditor}
+                  as="p"
+                  className="hero-subtitle"
+                  multiline
+                />
+              ) : null}
+              {renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t) } : undefined)}
+              {screen.buttons.filter((b) => b.type === "goto").map((btn, j) => {
+                const idx = screen.buttons.indexOf(btn);
+                return (
+                  <button key={j} type="button" className="hero-cta" onClick={() => goToScreen(btn.target)} data-node-id={btn.nodeId}>
+                    {isEditor ? <InlineEditableText value={btn.label} onChange={(v) => updateScreenButtonLabel(screen.id, idx, v)} isEditing as="span" /> : btn.label}
                   </button>
-                ))}
+                );
+              })}
             </section>
-          </>
+          </div>
         );
       }
 
       case "stamped":
         return (
-          <section id={screen.id} className="landing-content-block">
+          <section id={screen.id} className="landing-content-block" style={containerStyle} {...selectNodeProps}>
             <section className="cc-stamped-section">
-              <h2 className="cc-stamped-heading">{screen.title}</h2>
+              <div style={{ minHeight: "1.2em" }}>
+                <InlineEditableText
+                  value={screen.title}
+                  onChange={(v) => updateScreenField(screen.id, "title", v)}
+                  isEditing={isEditor}
+                  as="h2"
+                  className="cc-stamped-heading"
+                />
+              </div>
               <div className="cc-stamped-description">
-                {screen.content.filter((c) => c.type === "paragraph").map((c, i) => (
-                  <p key={i}>{c.type === "paragraph" ? c.text : ""}</p>
-                ))}
+                {screen.content.map((block, i) =>
+                  block.type === "paragraph" ? (
+                    isEditor ? (
+                      <InlineEditableText
+                        key={i}
+                        value={block.text}
+                        onChange={(v) => updateScreenContentBlock(screen.id, i, v)}
+                        isEditing
+                        as="p"
+                        multiline
+                      />
+                    ) : (
+                      <p key={i}>{block.text}</p>
+                    )
+                  ) : null
+                )}
               </div>
               <div className="landing-phone-video-wrap" style={{ marginBottom: 16 }}>
                 {screen.media.filter((m) => m.type === "video").map((m, i) => (
@@ -432,24 +936,45 @@ export default function ContainerCreationsLanding2() {
                   )}
                 </React.Fragment>
               ))}
-              {renderButtons(screen, false)}
+              {renderInlineUI(screen, true)}
+              {renderButtons(screen, false, isEditor, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
             </section>
           </section>
         );
 
       case "twoCol": {
-        const useLightCard = screen.id === "ventilation";
-        const isVentilation = screen.id === "ventilation";
+        const useLightCard = screen.lightTheme === true;
         const twoColContent = (
           <div className="cc-two-col">
             <div className="cc-text">
-              <h2 style={isVentilation ? { color: "#1a1d23" } : undefined}>{screen.title}</h2>
-              {screen.content.filter((c) => c.type === "paragraph").map((c, i) => (
-                <p key={i} style={isVentilation ? { color: "#1a1d23" } : undefined}>
-                  {c.type === "paragraph" ? c.text : ""}
-                </p>
-              ))}
-              {!isVentilation && renderButtons(screen, true)}
+              <div style={{ minHeight: "1.2em" }}>
+                <InlineEditableText
+                  value={screen.title}
+                  onChange={(v) => updateScreenField(screen.id, "title", v)}
+                  isEditing={isEditor}
+                  as="h2"
+                  style={useLightCard ? { color: "#1a1d23" } : undefined}
+                />
+              </div>
+              {screen.content.map((block, i) =>
+                block.type === "paragraph" ? (
+                  isEditor ? (
+                    <InlineEditableText
+                      key={i}
+                      value={block.text}
+                      onChange={(v) => updateScreenContentBlock(screen.id, i, v)}
+                      isEditing
+                      as="p"
+                      style={useLightCard ? { color: "#1a1d23" } : undefined}
+                      multiline
+                    />
+                  ) : (
+                    <p key={i} style={useLightCard ? { color: "#1a1d23" } : undefined}>{block.text}</p>
+                  )
+                ) : null
+              )}
+              {renderInlineUI(screen, useLightCard)}
+              {!useLightCard && renderButtons(screen, true, isEditor, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
             </div>
             <div className="cc-media-card" style={useLightCard ? { background: "#f1f5f9", borderColor: "#e2e8f0" } : undefined}>
               {screen.media.map((m, i) => {
@@ -474,18 +999,18 @@ export default function ContainerCreationsLanding2() {
             </div>
           </div>
         );
-        if (isVentilation) {
+        if (useLightCard) {
           return (
-            <section id={screen.id} style={{ width: "100%", background: "#fff", display: "flex", justifyContent: "center" }}>
+            <section id={screen.id} style={{ width: "100%", background: "#fff", display: "flex", justifyContent: "center", ...containerStyle }} {...selectNodeProps}>
               <div className="landing-content-block">
                 {twoColContent}
-                {renderButtons(screen, false)}
+                {renderButtons(screen, false, isEditor, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
               </div>
             </section>
           );
         }
         return (
-          <section id={screen.id} className="landing-content-block">
+          <section id={screen.id} className="landing-content-block" style={containerStyle} {...selectNodeProps}>
             {twoColContent}
           </section>
         );
@@ -493,7 +1018,7 @@ export default function ContainerCreationsLanding2() {
 
       case "twoColImageLeft":
         return (
-          <div className="landing-content-block">
+          <div className="landing-content-block" style={containerStyle} data-screen-id={screen.id} {...selectNodeProps}>
             <div className="cc-two-col">
               <div className="cc-media-card">
                 {screen.media.map((m, i) =>
@@ -503,18 +1028,30 @@ export default function ContainerCreationsLanding2() {
                 )}
               </div>
               <div className="cc-text">
-                <h2>{screen.title}</h2>
+                <div style={{ minHeight: "1.2em" }}>
+                  <InlineEditableText
+                    value={screen.title}
+                    onChange={(v) => updateScreenField(screen.id, "title", v)}
+                    isEditing={isEditor}
+                    as="h2"
+                  />
+                </div>
                 {screen.content.map((block, i) => {
                   if (block.type === "paragraph") {
                     const style: React.CSSProperties = {};
                     if (block.className === "stars") Object.assign(style, { fontSize: "1.25rem", marginBottom: 8 });
                     else if (block.className === "testimonial") Object.assign(style, { fontStyle: "italic", marginBottom: 4 });
                     else if (block.className === "testimonial-attribution") Object.assign(style, { opacity: 0.85, marginBottom: 24 });
-                    return <p key={i} style={style}>{block.text}</p>;
+                    return isEditor ? (
+                      <InlineEditableText key={i} value={block.text} onChange={(v) => updateScreenContentBlock(screen.id, i, v)} isEditing as="p" style={style} multiline />
+                    ) : (
+                      <p key={i} style={style}>{block.text}</p>
+                    );
                   }
                   return null;
                 })}
-                {renderButtons(screen, true)}
+                {renderInlineUI(screen, false)}
+                {renderButtons(screen, true, isEditor, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
               </div>
             </div>
           </div>
@@ -522,24 +1059,35 @@ export default function ContainerCreationsLanding2() {
 
       case "textOnly":
         return (
-          <div className="landing-content-block">
+          <div className="landing-content-block" style={containerStyle} data-screen-id={screen.id} {...selectNodeProps}>
             <div className="cc-two-col">
               <div className="cc-text">
-                <h2>{screen.title}</h2>
-                {renderContentBlocks(screen.content)}
+                <div style={{ minHeight: "1.2em" }}>
+                  <InlineEditableText
+                    value={screen.title}
+                    onChange={(v) => updateScreenField(screen.id, "title", v)}
+                    isEditing={isEditor}
+                    as="h2"
+                  />
+                </div>
+                {screen.dynamicSummary ? (
+                  <p style={{ marginBottom: 16 }}>{getFinalRecommendationSummary()}</p>
+                ) : (
+                  renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t) } : undefined)
+                )}
                 {screen.buttons.map((btn, i) => {
                   if (btn.type === "link") {
                     return (
                       <a
                         key={i}
-                        href={resolveHref(btn)}
+                        href={resolveHref(btn, cfg)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="hero-cta"
                         style={{ display: "inline-block", textDecoration: "none", marginTop: 16 }}
                         data-node-id={"nodeId" in btn ? btn.nodeId : undefined}
                       >
-                        {btn.label}
+                        {isEditor ? <InlineEditableText value={btn.label} onChange={(v) => updateScreenButtonLabel(screen.id, i, v)} isEditing as="span" /> : btn.label}
                       </a>
                     );
                   }
@@ -554,12 +1102,12 @@ export default function ContainerCreationsLanding2() {
     }
   }
 
-  const stepLabels = screens.map((s) => s.stepLabel);
+  const stepLabels = orderedScreens.map((s) => s.stepLabel);
 
   return (
     <div
       ref={containerRef}
-      className={`landing-container-creations${isHero ? " landing-step-hero" : ""}${currentScreenId === "structural-fit" ? " landing-step-stamped" : ""}${currentScreenId === "ventilation" ? " measure-step-active" : ""}`}
+      className={`landing-container-creations${currentScreen.layout === "hero" ? " landing-step-hero" : ""}${currentScreen.layout === "stamped" ? " landing-step-stamped" : ""}${currentScreen.layout === "twoCol" && currentScreen.lightTheme ? " measure-step-active" : ""}`}
       data-landing="container-creations"
     >
       <header
@@ -603,13 +1151,13 @@ export default function ContainerCreationsLanding2() {
         </a>
       </header>
 
-      <main style={{ flex: 1, minHeight: currentScreenId === "ventilation" && !isEditor ? "100vh" : "calc(100vh - 52px)" }}>
+      <main style={{ flex: 1, minHeight: currentScreen.layout === "twoCol" && currentScreen.lightTheme && !isEditor ? "100vh" : "calc(100vh - 52px)" }}>
         {isEditor ? (
           <div
             className="dev-flow-grid editor-cards-phone"
             data-card-device={cardDevice}
           >
-            {screens.map((screen, index) => (
+            {orderedScreens.map((screen, index) => (
               <div key={screen.id} className="dev-step">
                 <h3>Step {index + 1} – {screen.stepLabel}</h3>
                 {renderScreen(screen)}
@@ -618,7 +1166,7 @@ export default function ContainerCreationsLanding2() {
           </div>
         ) : (
           <>
-            {screens.map((screen) => currentScreenId === screen.id && (
+            {orderedScreens.map((screen) => currentScreenId === screen.id && (
               <React.Fragment key={screen.id}>{renderScreen(screen)}</React.Fragment>
             ))}
 
@@ -633,7 +1181,7 @@ export default function ContainerCreationsLanding2() {
                     <li key={label}>
                       <button
                         type="button"
-                        onClick={() => setCurrentScreenId(screens[i].id)}
+                        onClick={() => setCurrentScreenId(orderedScreens[i].id)}
                         className={`stepTracker-item stepTracker-item--${status}`}
                         data-node-id={`step-tracker-${i}`}
                       >

@@ -38,6 +38,11 @@ export async function loadScreen(path: string): Promise<any> {
     }
     path = decodedPath;
 
+    /* Container Creations landing (JSON flow) — resolved as TSX screen for dev Nodes panel */
+    if (path === "container-creations-landing") {
+      return { __type: "tsx-screen", path: "container-creations-landing" };
+    }
+
     /* ==================================================
        🚫 SCREEN IDS ARE DEAD — return fallback instead of throw
        ================================================== */

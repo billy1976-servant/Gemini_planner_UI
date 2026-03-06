@@ -24,12 +24,14 @@ import ExperienceRenderer from "@/engine/core/ExperienceRenderer";
 import { applyPaletteToElement } from "@/lib/site-renderer/palette-bridge";
 import PaletteContractInspector from "@/04_Presentation/diagnostics/PaletteContractInspector";
 import { useDevMobileMode } from "@/app/dev/useDevMobileMode";
+
 import TsxStructurePanel from "@/app/ui/control-dock/TsxStructurePanel";
 import { DevNodePanel } from "@/04_Presentation/components/organs/tsx/website/DevNodePanel";
 import {
   getDevSidebarProps,
   subscribeDevSidebarProps,
 } from "@/app/ui/control-dock/dev-right-sidebar-store";
+
 
 /** Wraps content and applies a specific palette's CSS variables to the wrapper so the content renders in that palette. */
 function PaletteFullPreviewFrame({
@@ -79,8 +81,8 @@ const EXPERIENCES = [
   { id: "learning", label: "Learning" },
 ] as const;
 
-/** Default panel width (280–320px target for inspector). Tiles/layout use full width; no clipping. */
-const FLOATING_PANEL_WIDTH = 320;
+/** Panel content width (360–420 range). Tiles/layout use full width; no clipping. */
+const FLOATING_PANEL_WIDTH = 340;
 const PANEL_WIDTH_MIN = 200;
 const PANEL_WIDTH_MAX = 600;
 const RAIL_WIDTH = 44;
@@ -170,6 +172,7 @@ export type RightFloatingSidebarProps = {
 };
 
 function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, palettePreviewProps }: RightFloatingSidebarProps) {
+
   const { openPanel, togglePanel, closePanel } = useDockState();
   const [panelWidth, setPanelWidth] = useState(FLOATING_PANEL_WIDTH);
   const [isDragging, setIsDragging] = useState(false);
@@ -245,9 +248,9 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
       ref={sidebarRef}
       style={{
         position: "fixed",
-        top: headerHeight,
+        top: 0,
         right: 0,
-        height: `calc(100vh - ${headerHeight}px)`,
+        height: "100vh",
         width: openPanel ? panelWidth + GRIP_WIDTH + RAIL_WIDTH : RAIL_WIDTH,
         minWidth: RAIL_WIDTH,
         display: "flex",
@@ -258,26 +261,45 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
         transition: isDragging ? "none" : "width 0.2s ease",
       }}
       data-dev-right-sidebar
+
       data-testid="dev-right-sidebar"
       data-dev-right-sidebar-open={String(!!openPanel)}
     >
-      {/* Only show when NEXT_PUBLIC_DEBUG_UI=true for dev diagnostics */}
-      {process.env.NEXT_PUBLIC_DEBUG_UI === "true" && (
-        <div
-          style={{
-            flexShrink: 0,
-            padding: "6px 10px",
-            fontSize: 11,
-            fontWeight: 700,
-            color: GOOGLE.textSecondary,
-            background: GOOGLE.surfaceHover,
-            borderBottom: `1px solid ${GOOGLE.border}`,
-            fontFamily: GOOGLE.fontFamily,
-          }}
+
+      data-dev-right-sidebar-open={String(!!openPanel)}
+    >
+      {devMobileMode && (
+        <button
+          type="button"
+          className="dev-mobile-hamburger--right"
+          onClick={() => togglePanel(openPanel ? null : "experience")}
+          aria-label={openPanel ? "Close sidebar" : "Open sidebar"}
+          aria-expanded={!!openPanel}
         >
-          DEV SIDEBAR (DEBUG)
-        </div>
+          <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
       )}
+      {/* Docked panel — full height, scrollable content; minWidth:0 so flex children can use full width */}
+
+      <div
+        data-dev-right-panel
+        style={{
+          flexShrink: 0,
+          padding: "6px 10px",
+          fontSize: 11,
+          fontWeight: 700,
+          color: GOOGLE.textSecondary,
+          background: GOOGLE.surfaceHover,
+          borderBottom: `1px solid ${GOOGLE.border}`,
+          fontFamily: GOOGLE.fontFamily,
+        }}
+      >
+        DEV SIDEBAR (DEBUG)
+      </div>
       <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "row" }}>
       {devMobileMode && (
         <button
@@ -337,9 +359,6 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
               <h3 style={{ margin: 0, fontSize: 14, fontWeight: 500, color: GOOGLE.textPrimary, fontFamily: GOOGLE.fontFamily }}>
                 {activeLabel}
               </h3>
-              <p style={{ margin: "4px 0 0", fontSize: 11, color: GOOGLE.textSecondary, fontFamily: GOOGLE.fontFamily }}>
-                Experience · Palette · Template
-              </p>
             </div>
             <div style={{ padding: "12px 16px", overflowY: "auto", overflowX: "visible", height: "100%", flex: 1, minHeight: 0, minWidth: 0, fontFamily: GOOGLE.fontFamily }} data-dev-panel-content>
             {openPanel === "experience" && (

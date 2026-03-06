@@ -366,6 +366,11 @@
   margin-top: 24px;
 }
 
+/* Inline verification row spacing (compact, within existing sections) */
+.landing-container-creations .cc-inline-verify + .cc-inline-verify {
+  margin-top: 4px;
+}
+
 /* Portrait video container: full width, no letterboxing, crop to fill (mobile-first) */
 .landing-container-creations .videoContainer {
   width: 100%;
