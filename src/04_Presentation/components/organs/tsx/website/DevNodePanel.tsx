@@ -165,6 +165,7 @@ function LandingConfigNodes({
           return (
             <div
               key={screen.id}
+              data-node-row-id={screen.id}
               role="button"
               tabIndex={0}
               onClick={() => onSelectNode?.(screen.id)}
@@ -180,12 +181,13 @@ function LandingConfigNodes({
                 justifyContent: "space-between",
                 padding: "10px 12px",
                 background: isSelected ? "var(--color-surface-hover, #e8eaed)" : "var(--color-surface-1, #f1f3f4)",
-                borderRadius: 8,
+                borderRadius: 6,
                 border: "1px solid var(--color-border, #dadce0)",
                 outline: isSelected ? "2px solid var(--color-accent, #1a73e8)" : "none",
                 outlineOffset: 1,
                 gap: 8,
                 cursor: onSelectNode ? "pointer" : undefined,
+                transition: "background 120ms ease",
               }}
               onMouseEnter={(e) => {
                 if (onSelectNode && !isSelected) {
@@ -273,6 +275,7 @@ export function DevNodePanel({ screenPath }: { screenPath: string }) {
     props.landingScreenPath === screenPath &&
     props?.landingConfig != null;
 
+  // Sync local selection to store (node list → canvas highlight)
   useEffect(() => {
     if (isLandingConfig) {
       setSelectedLandingNodeId(selectedNodeId);
@@ -282,6 +285,14 @@ export function DevNodePanel({ screenPath }: { screenPath: string }) {
     };
   }, [isLandingConfig, selectedNodeId]);
 
+  // Sync store to local when canvas click selects a node (canvas → node list selection + scroll)
+  useEffect(() => {
+    if (!isLandingConfig || props?.selectedLandingNodeId == null) return;
+    if (props.selectedLandingNodeId !== selectedNodeId) {
+      setSelectedNodeId(props.selectedLandingNodeId);
+    }
+  }, [isLandingConfig, props?.selectedLandingNodeId]);
+
   // Prevent invalid selection when config changes (e.g. screens removed)
   const screens = props?.landingConfig?.screens ?? [];
   useEffect(() => {
@@ -290,6 +301,15 @@ export function DevNodePanel({ screenPath }: { screenPath: string }) {
       setSelectedNodeId(null);
     }
   }, [isLandingConfig, selectedNodeId, screens]);
+
+  // Bidirectional scroll: when selection changes, scroll the node row into view in the list
+  useEffect(() => {
+    if (!isLandingConfig || !selectedNodeId) return;
+    const rowEl = document.querySelector(`[data-node-row-id="${selectedNodeId}"]`);
+    if (rowEl) {
+      rowEl.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+  }, [isLandingConfig, selectedNodeId]);
 
   function updateNode(nodeId: string, patch: Partial<LandingFlowScreen> & Record<string, unknown>) {
     const config = props?.landingConfig;
@@ -310,8 +330,33 @@ export function DevNodePanel({ screenPath }: { screenPath: string }) {
       ? props.landingConfig.screens.find((s) => s.id === selectedNodeId)
       : null;
     const isEditorMode = editorMode === "editor";
+    const baseOrder = props.landingConfig.screens.map((s) => s.id);
+    const effectiveOrder = override ?? baseOrder;
+    const orderedScreens = effectiveOrder
+      .map((id) => props.landingConfig!.screens.find((s) => s.id === id))
+      .filter((s): s is NonNullable<typeof s> => s != null);
+
+    const handleNodeListKeyDown = (e: React.KeyboardEvent) => {
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        const idx = selectedNodeId ? orderedScreens.findIndex((s) => s.id === selectedNodeId) : -1;
+        if (e.key === "ArrowDown" && idx >= 0 && idx < orderedScreens.length - 1) {
+          e.preventDefault();
+          setSelectedNodeId(orderedScreens[idx + 1].id);
+        } else if (e.key === "ArrowUp" && idx > 0) {
+          e.preventDefault();
+          setSelectedNodeId(orderedScreens[idx - 1].id);
+        }
+      }
+    };
+
     return (
-      <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+      <div
+        style={{ display: "flex", flexDirection: "column", gap: 0 }}
+        tabIndex={0}
+        onKeyDown={handleNodeListKeyDown}
+        role="region"
+        aria-label="Node list"
+      >
         <LandingConfigNodes
           config={props.landingConfig}
           orderOverride={override}

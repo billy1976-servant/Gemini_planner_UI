@@ -1154,7 +1154,7 @@ export default function ContainerCreationsLanding2() {
       <main style={{ flex: 1, minHeight: currentScreen.layout === "twoCol" && currentScreen.lightTheme && !isEditor ? "100vh" : "calc(100vh - 52px)" }}>
         {isEditor ? (
           <div
-            className="dev-flow-grid editor-cards-phone"
+            className={shellDevice === "phoneGrid" ? "dev-flow-grid editor-cards-phone" : "dev-flow-single"}
             data-card-device={cardDevice}
           >
             {orderedScreens.map((screen, index) => (

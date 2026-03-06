@@ -544,7 +544,32 @@
   background: rgba(37, 99, 235, 0.18);
 }
 
-/* Developer-only: onboarding grid view (when DEV_FLOW_EDITOR is true) */
+/* Developer-only: single preview (Desktop/Tablet/Phone) — no grid */
+.landing-container-creations .dev-flow-single {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px 20px 40px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.landing-container-creations .dev-flow-single .dev-step {
+  border: 1px solid #ddd;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  overflow: auto;
+}
+
+.landing-container-creations .dev-flow-single .dev-step h3 {
+  margin: 0 0 16px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a1d23;
+}
+
+/* Developer-only: grid view ONLY for Phone Grid device mode */
 .landing-container-creations .dev-flow-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

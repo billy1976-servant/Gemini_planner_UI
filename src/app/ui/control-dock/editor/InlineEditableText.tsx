@@ -150,7 +150,7 @@ export default function InlineEditableText({
       }}
       aria-label="Click to edit"
     >
-      {value || " "}
+      {value || "\u00a0"}
     </As>
   );
 }
