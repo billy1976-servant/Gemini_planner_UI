@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
+import { createPortal } from "react-dom";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 export type ScreensIndex = {
@@ -114,11 +115,33 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const containerRef = useRef<HTMLDivElement>(null);
+  const safeIndex = Array.isArray(index) ? index : [];
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
   const [open, setOpen] = useState(false);
+  const [panelPosition, setPanelPosition] = useState({ top: 0, left: 0 });
   const [expandedRoots, setExpandedRoots] = useState<Set<string>>(new Set());
   const [hoveredRootSection, setHoveredRootSection] = useState<string | null>(null);
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [hoveredFolder, setHoveredFolder] = useState<string | null>(null);
+  const [isOffline, setIsOffline] = useState(false);
+
+  useLayoutEffect(() => {
+    if (!open || !triggerRef.current) return;
+    const updatePosition = () => {
+      if (triggerRef.current) {
+        const rect = triggerRef.current.getBoundingClientRect();
+        setPanelPosition({ top: rect.bottom + 4, left: rect.left });
+      }
+    };
+    updatePosition();
+    window.addEventListener("scroll", updatePosition, true);
+    window.addEventListener("resize", updatePosition);
+    return () => {
+      window.removeEventListener("scroll", updatePosition, true);
+      window.removeEventListener("resize", updatePosition);
+    };
+  }, [open]);
 
   const base = pathname?.startsWith("/dev") ? "/dev" : "/";
 
@@ -168,12 +191,19 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
   }, [open]);
 
   useEffect(() => {
+    if (typeof navigator !== "undefined") setIsOffline(!navigator.onLine);
+  }, []);
+
+  useEffect(() => {
     if (!open) return;
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") closeMenu();
     };
     const onClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) closeMenu();
+      const target = e.target as Node;
+      const inTrigger = containerRef.current?.contains(target);
+      const inPanel = panelRef.current?.contains(target);
+      if (!inTrigger && !inPanel) closeMenu();
     };
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("click", onClickOutside, true);
@@ -185,7 +215,7 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
 
   const categoryObj =
     hoveredRootSection && hoveredCategory
-      ? index.find(
+      ? safeIndex.find(
           (x) => x.rootSection === hoveredRootSection && x.category === hoveredCategory
         )
       : null;
@@ -196,7 +226,7 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
   const hasLevel2 = (cat: ScreensIndex) =>
     (cat.directFiles?.length ?? 0) > 0 || Object.keys(cat.folders ?? {}).length > 0;
 
-  const byRoot = groupByRootSection(index);
+  const byRoot = groupByRootSection(safeIndex);
   const rootNames = Array.from(byRoot.keys()).sort((a, b) =>
     a.localeCompare(b, undefined, { sensitivity: "base" })
   );
@@ -219,6 +249,7 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
       style={{ position: "relative", zIndex: 60, display: "inline-block", overflow: "visible" }}
     >
       <button
+        ref={triggerRef}
         type="button"
         className="cascading-screen-menu-trigger"
         onClick={() => setOpen((v) => !v)}
@@ -231,9 +262,9 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
           overflow: "visible",
           textOverflow: "ellipsis",
           whiteSpace: "nowrap",
-          color: "var(--chrome-text)",
-          background: "rgba(255,255,255,0.12)",
-          border: "1px solid rgba(255,255,255,0.2)",
+          color: "var(--chrome-text, #1f2937)",
+          background: "rgba(255,255,255,0.2)",
+          border: "1px solid rgba(255,255,255,0.35)",
           borderRadius: "var(--radius-md)",
           paddingLeft: "var(--spacing-2)",
           paddingRight: "var(--spacing-3)",
@@ -242,36 +273,37 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
         {triggerText}
       </button>
 
-      {open && index.length > 0 && (
-        <div
-          className="cascading-screen-menu-panels"
-          role="menu"
-          style={{
-            position: "absolute",
-            zIndex: 9999,
-            top: "100%",
-            left: 0,
-            marginTop: 4,
-            display: "flex",
-            flexDirection: "column",
-            minWidth: 200,
-            pointerEvents: "auto",
-            background: "#ffffff",
-            color: "#111",
-            boxShadow: "0 12px 28px rgba(0,0,0,0.25)",
-            borderRadius: 10,
-          }}
-        >
+      {open && typeof document !== "undefined" &&
+        createPortal(
+          <div
+            ref={(el) => { panelRef.current = el; }}
+            className="cascading-screen-menu-panels"
+            role="menu"
+            style={{
+              position: "fixed",
+              zIndex: 10001,
+              top: panelPosition.top,
+              left: panelPosition.left,
+              display: "flex",
+              flexDirection: "column",
+              minWidth: 200,
+              pointerEvents: "auto",
+              background: "#ffffff",
+              color: "#111",
+              boxShadow: "0 12px 28px rgba(0,0,0,0.25)",
+              borderRadius: 10,
+            }}
+          >
           <div
             className="cascading-screen-menu-breadcrumb"
             style={{
-              padding: "10px 16px",
+              padding: "8px 12px",
               borderBottom: "1px solid #e5e7eb",
               background: "#f8fafc",
               flexShrink: 0,
+              minHeight: 36,
             }}
           >
-            <div style={{ fontSize: 12, color: "#64748b" }}>HIClarify Navigator</div>
             {hoveredRootSection && hoveredCategory && (
               <div style={{ fontSize: 12, color: "#64748b" }}>
                 {hoveredRootSection} → {hoveredCategory}
@@ -280,6 +312,11 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
             )}
           </div>
 
+          {safeIndex.length === 0 ? (
+            <div style={{ padding: "16px 20px", fontSize: 14, color: "#64748b" }}>
+              {isOffline ? "Offline — screens unavailable" : "Loading screens…"}
+            </div>
+          ) : (
           <div
             className="cascading-screen-menu-panels-inner"
             style={{ display: "flex", flex: 1, minHeight: 0 }}
@@ -424,8 +461,10 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
               </div>
             )}
           </div>
-        </div>
-      )}
+          )}
+        </div>,
+          document.body
+        )}
     </div>
   );
 }

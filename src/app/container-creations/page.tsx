@@ -1,7 +1,168 @@
 "use client";
 
-import ContainerCreationsLanding2 from "@/01_App/(live) Business/Container_Creations/ContainerCreationsLanding-2";
+import React, { useMemo, useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
+import ExperienceRenderer from "@/engine/core/ExperienceRenderer";
+import { loadScreen } from "@/engine/core/screen-loader";
+import { getState, subscribeState, dispatchState } from "@/state/state-store";
+import { setCurrentScreenTree } from "@/engine/core/current-screen-tree-store";
+import { getExperienceProfile } from "@/lib/layout/profile-resolver";
+import { composeOfflineScreen } from "@/lib/screens/compose-offline-screen";
+import {
+  assignSectionInstanceKeys,
+  expandOrgansInDocument,
+  loadOrganVariant,
+} from "@/components/organs";
+import { applySkinBindings } from "@/logic/bridges/skinBindings.apply";
+import { collectSectionKeysAndNodes, collectSectionLabels } from "@/layout";
+
+const SHOP_URL = "https://containercreations.com";
 
 export default function ContainerCreationsPage() {
-  return <ContainerCreationsLanding2 />;
+  const [json, setJson] = useState<Record<string, unknown> | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
+
+  useEffect(() => {
+    loadScreen("container-creations-landing")
+      .then((data) => {
+        if (data?.__type === "tsx-screen" || data?.title === "Landing config unavailable") {
+          setError(data?.message ?? "Screen unavailable");
+          setJson(null);
+          return;
+        }
+        setJson(data as Record<string, unknown>);
+        setError(null);
+      })
+      .catch((err) => {
+        setError(err?.message ?? "Failed to load screen");
+        setJson(null);
+      });
+  }, []);
+
+  const organInternalLayoutOverrides: Record<string, string> = {};
+  const initialState = useMemo(() => (json?.state as Record<string, unknown>) ?? { currentScreenId: "intro" }, [json?.state]);
+
+  useEffect(() => {
+    if (!initialState || !json) return;
+    Object.entries(initialState).forEach(([key, value]) => {
+      if (value !== undefined) {
+        dispatchState("state.update", { key, value });
+      }
+    });
+  }, [initialState, json]);
+
+  const { treeForRender, sectionKeysFromTree, sectionLabels } = useMemo(() => {
+    if (!json) return { treeForRender: null, sectionKeysFromTree: [] as string[], sectionLabels: {} as Record<string, string> };
+    const renderNode = (json.root ?? json) as { type?: string; id?: string; children?: unknown[] };
+    const rawChildren = Array.isArray(renderNode?.children) ? renderNode.children : [];
+    const children = assignSectionInstanceKeys(rawChildren);
+    const docForOrgans = { meta: { domain: "offline", pageId: "container-creations", version: 1 }, nodes: children };
+    const expandedDoc = expandOrgansInDocument(docForOrgans as any, loadOrganVariant, organInternalLayoutOverrides);
+    const skinData = (json as any).data ?? {};
+    const boundDoc = applySkinBindings(expandedDoc as any, skinData);
+    const finalChildren = (boundDoc as any)?.nodes ?? children;
+    const renderNodeWithChildren = { ...renderNode, children: finalChildren };
+    const experienceProfile = getExperienceProfile("website");
+    const composed = composeOfflineScreen({
+      rootNode: renderNodeWithChildren as any,
+      experienceProfile,
+      layoutState: {},
+    });
+    let tree = composed;
+    let { sectionKeys: keys, sectionByKey } = collectSectionKeysAndNodes(tree?.children ?? []);
+    if (keys.length === 0 && tree != null) {
+      tree = {
+        type: "section",
+        id: "auto-root",
+        children: Array.isArray(tree.children) ? tree.children : [tree],
+      } as any;
+      keys = ["auto-root"];
+      sectionByKey = { "auto-root": tree };
+    }
+    const labels = collectSectionLabels(keys, sectionByKey);
+    const globalPalette = stateSnapshot?.values?.paletteName as string | undefined;
+    tree = { ...tree, palette: globalPalette ?? (json as { palette?: string })?.palette };
+    return { treeForRender: tree, sectionKeysFromTree: keys, sectionLabels: labels };
+  }, [json, stateSnapshot]);
+
+  useEffect(() => {
+    if (treeForRender) setCurrentScreenTree(treeForRender);
+  }, [treeForRender]);
+
+  const experienceProfile = getExperienceProfile("website");
+  const screenKey = (json?.id as string) ?? "container-creations-landing";
+
+  if (error) {
+    return (
+      <div className="landing-container-creations" data-landing="container-creations">
+        <main style={{ flex: 1, minHeight: "100vh", width: "100%", maxWidth: "none", padding: 0, margin: 0, color: "var(--color-text-primary)" }}>
+          <p style={{ padding: "2rem" }}>Failed to load: {error}</p>
+        </main>
+      </div>
+    );
+  }
+
+  if (!json || !treeForRender) {
+    return (
+      <div className="landing-container-creations" data-landing="container-creations">
+        <main style={{ flex: 1, minHeight: "100vh", width: "100%", maxWidth: "none", padding: 0, margin: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--color-text-primary)" }}>
+          Loading…
+        </main>
+      </div>
+    );
+  }
+
+  return (
+    <div className="landing-container-creations" data-landing="container-creations">
+      <header
+        className="landing-shop-bar"
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 10,
+          display: "flex",
+          justifyContent: "flex-end",
+          alignItems: "center",
+          padding: "0.75rem 1.5rem",
+          background: "var(--color-bg-primary)",
+          borderBottom: "1px solid var(--color-border)",
+        }}
+      >
+        <a
+          href={SHOP_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            padding: "0.5rem 1rem",
+            fontSize: "0.9375rem",
+            fontWeight: 600,
+            color: "var(--color-text-primary)",
+            background: "transparent",
+            border: "1px solid var(--color-border)",
+            borderRadius: "6px",
+            textDecoration: "none",
+          }}
+        >
+          Shop Now
+        </a>
+      </header>
+      <main style={{ flex: 1, minHeight: "calc(100vh - 52px)", width: "100%", maxWidth: "none", padding: 0, margin: 0 }}>
+        <ExperienceRenderer
+          key={screenKey}
+          node={treeForRender}
+          defaultState={{ ...initialState, ...(json?.state as object) }}
+          profileOverride={experienceProfile}
+          sectionLayoutPresetOverrides={{}}
+          cardLayoutPresetOverrides={{}}
+          organInternalLayoutOverrides={organInternalLayoutOverrides}
+          screenId={screenKey}
+          behaviorProfile="default"
+          experience="website"
+          sectionKeys={sectionKeysFromTree}
+          sectionLabels={sectionLabels}
+        />
+      </main>
+    </div>
+  );
 }

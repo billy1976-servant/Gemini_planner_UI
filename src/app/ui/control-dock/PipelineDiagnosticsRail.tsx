@@ -33,6 +33,9 @@ const PANEL_WIDTH_MIN = 200;
 const PANEL_WIDTH_MAX = 600;
 const GRIP_WIDTH = 8;
 
+/** When true, render inline in editor flex layout (no portal). */
+export type PipelineDiagnosticsRailProps = { embedded?: boolean };
+
 /** Which panel is open: diagnostics (with tabs), inspector, or debugger */
 export type PanelId = "diagnostics" | "inspector" | "debugger";
 
@@ -95,7 +98,8 @@ const ICON_BUTTON_BASE: React.CSSProperties = {
   transition: "background 0.12s ease, transform 0.06s ease",
 };
 
-export default function PipelineDiagnosticsRail() {
+export default function PipelineDiagnosticsRail(props: PipelineDiagnosticsRailProps = {}) {
+  const { embedded = false } = props;
   const [mounted, setMounted] = useState(false);
   const [openPanel, setOpenPanel] = useState<PanelId | null>(null);
   const [diagnosticsTab, setDiagnosticsTab] = useState<TabId>("pipeline");
@@ -326,21 +330,35 @@ export default function PipelineDiagnosticsRail() {
       </div>
     ) : null;
 
-  const rail = (
-    <div
-      ref={railRef}
-      style={{
+  const railStyle: React.CSSProperties = embedded
+    ? {
+        width: openPanel ? RAIL_WIDTH + panelWidth + GRIP_WIDTH : RAIL_WIDTH,
+        minWidth: RAIL_WIDTH,
+        flexShrink: 0,
+        height: "100%",
+        minHeight: 0,
+        display: "flex",
+        flexDirection: "row",
+        pointerEvents: "auto",
+        transition: isDragging ? "none" : "width 0.2s ease",
+      }
+    : {
         position: "fixed",
         left: 0,
-        top: 0,
-        height: "100vh",
+        top: "var(--topbar-height, 56px)",
+        height: "calc(100vh - var(--topbar-height, 56px))",
         width: openPanel ? RAIL_WIDTH + panelWidth + GRIP_WIDTH : RAIL_WIDTH,
         display: "flex",
         flexDirection: "row",
-        zIndex: 500,
+        zIndex: 90,
         pointerEvents: "auto",
         transition: isDragging ? "none" : "width 0.2s ease",
-      }}
+      };
+
+  const rail = (
+    <div
+      ref={railRef}
+      style={railStyle}
       data-pipeline-diagnostics-rail
       data-dev-left-rail
       data-dev-left-rail-open={String(!!openPanel)}
@@ -493,6 +511,30 @@ export default function PipelineDiagnosticsRail() {
     </div>
   );
 
+  /* When embedded, always render something so the left sidebar column doesn't collapse before mount */
+  if (embedded) {
+    if (!mounted || typeof document === "undefined") {
+      return (
+        <div
+          data-dev-left-rail
+          data-pipeline-diagnostics-rail
+          style={{
+            width: RAIL_WIDTH,
+            minWidth: RAIL_WIDTH,
+            flexShrink: 0,
+            height: "100%",
+            minHeight: 0,
+            display: "flex",
+            flexDirection: "row",
+            background: THEME.surface,
+            borderRight: `1px solid ${THEME.border}`,
+          }}
+          aria-hidden
+        />
+      );
+    }
+    return rail;
+  }
   if (!mounted || typeof document === "undefined") return null;
   return createPortal(rail, document.body);
 }

@@ -9,6 +9,7 @@ import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from
 import { useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { useSearchParams } from "next/navigation";
+import { getCanonicalScreenKey } from "@/07_Dev_Tools/navigation/getDevScreenKey";
 import "@/editor/editor-theme.css";
 import { useDockState } from "./dock-state";
 import type { DockPanelId } from "./dock-state";
@@ -163,6 +164,8 @@ export type PalettePreviewProps = {
 };
 
 export type RightFloatingSidebarProps = {
+  /** When true, render inline in editor flex layout (no portal). */
+  embedded?: boolean;
   /** Optional: Layout section content (e.g. OrganPanel) */
   layoutPanelContent?: React.ReactNode;
   /** Optional: Screen tree for palette panel full-page live preview (same as passed to ExperienceRenderer). */
@@ -171,7 +174,7 @@ export type RightFloatingSidebarProps = {
   palettePreviewProps?: PalettePreviewProps;
 };
 
-function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, palettePreviewProps }: RightFloatingSidebarProps) {
+function RightFloatingSidebarInner({ embedded, layoutPanelContent, palettePreviewScreen, palettePreviewProps }: RightFloatingSidebarProps) {
 
   const { openPanel, togglePanel, closePanel } = useDockState();
   const [panelWidth, setPanelWidth] = useState(FLOATING_PANEL_WIDTH);
@@ -242,30 +245,40 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
     };
   }, [isDragging]);
 
-  const headerHeight = 56;
-  return (
-    <div
-      ref={sidebarRef}
-      style={{
+  const containerStyle: React.CSSProperties = embedded
+    ? {
+        width: openPanel ? panelWidth + GRIP_WIDTH + RAIL_WIDTH : RAIL_WIDTH,
+        minWidth: RAIL_WIDTH,
+        flexShrink: 0,
+        height: "100%",
+        minHeight: 0,
+        display: "flex",
+        flexDirection: "column",
+        opacity: 1,
+        pointerEvents: "auto",
+        transition: isDragging ? "none" : "width 0.2s ease",
+      }
+    : {
         position: "fixed",
-        top: 0,
+        top: "var(--topbar-height, 56px)",
         right: 0,
-        height: "100vh",
+        height: "calc(100vh - var(--topbar-height, 56px))",
         width: openPanel ? panelWidth + GRIP_WIDTH + RAIL_WIDTH : RAIL_WIDTH,
         minWidth: RAIL_WIDTH,
         display: "flex",
         flexDirection: "column",
-        zIndex: 999999,
+        zIndex: 90,
         opacity: 1,
         pointerEvents: "auto",
         transition: isDragging ? "none" : "width 0.2s ease",
-      }}
+      };
+
+  return (
+    <div
+      ref={sidebarRef}
+      style={containerStyle}
       data-dev-right-sidebar
-
       data-testid="dev-right-sidebar"
-      data-dev-right-sidebar-open={String(!!openPanel)}
-    >
-
       data-dev-right-sidebar-open={String(!!openPanel)}
     >
       {devMobileMode && (
@@ -283,39 +296,7 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
           </svg>
         </button>
       )}
-      {/* Docked panel — full height, scrollable content; minWidth:0 so flex children can use full width */}
-
-      <div
-        data-dev-right-panel
-        style={{
-          flexShrink: 0,
-          padding: "6px 10px",
-          fontSize: 11,
-          fontWeight: 700,
-          color: GOOGLE.textSecondary,
-          background: GOOGLE.surfaceHover,
-          borderBottom: `1px solid ${GOOGLE.border}`,
-          fontFamily: GOOGLE.fontFamily,
-        }}
-      >
-        DEV SIDEBAR (DEBUG)
-      </div>
       <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "row" }}>
-      {devMobileMode && (
-        <button
-          type="button"
-          className="dev-mobile-hamburger--right"
-          onClick={() => (openPanel ? closePanel() : togglePanel("experience"))}
-          aria-label={openPanel ? "Close sidebar" : "Open sidebar"}
-          aria-expanded={!!openPanel}
-        >
-          <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <line x1="3" y1="6" x2="21" y2="6" />
-            <line x1="3" y1="12" x2="21" y2="12" />
-            <line x1="3" y1="18" x2="21" y2="18" />
-          </svg>
-        </button>
-      )}
       {/* Resize grip — left edge of panel (between main content and panel) */}
       {openPanel && (
         <div
@@ -360,7 +341,7 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
                 {activeLabel}
               </h3>
             </div>
-            <div style={{ padding: "12px 16px", overflowY: "auto", overflowX: "visible", height: "100%", flex: 1, minHeight: 0, minWidth: 0, fontFamily: GOOGLE.fontFamily }} data-dev-panel-content>
+            <div style={{ padding: "12px 16px", overflowY: "auto", overflowX: "hidden", height: "100%", flex: 1, minHeight: 0, minWidth: 0, fontFamily: GOOGLE.fontFamily, wordBreak: "break-word" }} data-dev-panel-content>
             {openPanel === "experience" && (
               <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
                 {EXPERIENCES.map((exp) => {
@@ -723,10 +704,10 @@ function RightFloatingSidebarInner({ layoutPanelContent, palettePreviewScreen, p
               <CreateNewInterfacePanel />
             )}
             {openPanel === "tsx" && (
-              <TsxStructurePanel key={searchParams.get("screen") ?? ""} />
+              <TsxStructurePanel key={getCanonicalScreenKey(searchParams) ?? ""} />
             )}
             {openPanel === "nodes" && (
-              <DevNodePanel screenPath={searchParams.get("screen") ?? ""} />
+              <DevNodePanel screenPath={getCanonicalScreenKey(searchParams) ?? ""} />
             )}
             {openPanel === "expand" && (
               <div style={{ fontSize: 14, color: GOOGLE.textSecondary }}>
@@ -850,6 +831,7 @@ export default function RightFloatingSidebar(props: RightFloatingSidebarProps = 
     ...props,
   };
 
+  if (merged.embedded) return <RightFloatingSidebarInner {...merged} />;
   if (!mounted || typeof document === "undefined") return null;
   return createPortal(<RightFloatingSidebarInner {...merged} />, document.body);
 }

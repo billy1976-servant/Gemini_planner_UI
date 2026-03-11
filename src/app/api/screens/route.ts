@@ -199,15 +199,43 @@ function collectTsxDirectFiles(rootPath: string, rootName: string, categoryName:
   };
 }
 
+/** Minimal list when scan fails or 01_App missing so dropdown still shows known screens. */
+function getDefensiveFallbackList(): ScreensIndexItem[] {
+  return [
+    {
+      category: "Prayer_Stream",
+      directFiles: ["PrayerStreamOnboarding"],
+      folders: {},
+      rootSection: "(live) Business",
+      displayName: "(live) Business",
+    },
+    {
+      category: "Discipleship",
+      directFiles: ["GospelDiscipleship"],
+      folders: {},
+      rootSection: "(live) Gospel",
+      displayName: "(live) Gospel",
+    },
+  ];
+}
+
 /**
  * GET /api/screens
  * Scans src/01_App/* — each directory is a root section.
  * Returns categories with rootSection = displayName = dir.name (no renaming, no tsx: prefix).
+ * On any failure (missing paths, fs errors), returns 200 with defensive fallback list so dev viewer always loads.
  */
 export async function GET() {
+  const safeFallback = (): Response =>
+    NextResponse.json(getDefensiveFallbackList(), {
+      status: 200,
+      headers: { "Cache-Control": "no-cache, no-store, must-revalidate" },
+    });
+
   try {
     if (!fs.existsSync(O1_APP_BASE)) {
-      return NextResponse.json([]);
+      console.warn("[api/screens] O1_APP_BASE not found, returning fallback list only", O1_APP_BASE);
+      return safeFallback();
     }
 
     const rootDirs = fs
@@ -218,26 +246,31 @@ export async function GET() {
     const result: ScreensIndexItem[] = [];
 
     for (const dir of rootDirs) {
-      const rootPath = path.join(O1_APP_BASE, dir.name);
-      const rootSection = dir.name;
-      const displayName = dir.name;
+      try {
+        const rootPath = path.join(O1_APP_BASE, dir.name);
+        const rootSection = dir.name;
+        const displayName = dir.name;
 
-      if (dir.name === "(dead) Json") {
-        const categories = fs
-          .readdirSync(rootPath, { withFileTypes: true })
-          .filter((d): d is fs.Dirent => d.isDirectory())
-          .map((category) => ({
-            category: category.name,
-            directFiles: [] as string[],
-            folders: collectJsonFolders(path.join(rootPath, category.name)),
-            rootSection,
-            displayName,
-          }));
-        result.push(...categories);
-      } else if (dir.name === "(dead) Tsx") {
-        result.push(...collectTsxUnderRoot(rootPath));
-      } else {
-        result.push(...collectGenericUnderRoot(rootPath, rootSection));
+        if (dir.name === "(dead) Json") {
+          const categories = fs
+            .readdirSync(rootPath, { withFileTypes: true })
+            .filter((d): d is fs.Dirent => d.isDirectory())
+            .map((category) => ({
+              category: category.name,
+              directFiles: [] as string[],
+              folders: collectJsonFolders(path.join(rootPath, category.name)),
+              rootSection,
+              displayName,
+            }));
+          result.push(...categories);
+        } else if (dir.name === "(dead) Tsx") {
+          result.push(...collectTsxUnderRoot(rootPath));
+        } else {
+          result.push(...collectGenericUnderRoot(rootPath, rootSection));
+        }
+      } catch (perDirErr) {
+        const msg = perDirErr instanceof Error ? perDirErr.message : String(perDirErr);
+        console.warn("[api/screens] Skipping root dir", dir.name, msg);
       }
     }
 
@@ -246,13 +279,34 @@ export async function GET() {
     const organsItem = collectTsxDirectFiles(TSX_ORGANS_ROOT, "tsx-organs", "organs");
     if (organsItem) result.push(organsItem);
 
-    return NextResponse.json(result);
+    // Defensive fallbacks when fs missed a known screen (e.g. monorepo cwd, permissions)
+    const liveBusiness = "(live) Business";
+    const liveGospel = "(live) Gospel";
+    if (!result.some((x) => x.rootSection === liveBusiness && x.category === "Prayer_Stream")) {
+      result.push({
+        category: "Prayer_Stream",
+        directFiles: ["PrayerStreamOnboarding"],
+        folders: {},
+        rootSection: liveBusiness,
+        displayName: liveBusiness,
+      });
+    }
+    if (!result.some((x) => x.rootSection === liveGospel && x.category === "Discipleship")) {
+      result.push({
+        category: "Discipleship",
+        directFiles: ["GospelDiscipleship"],
+        folders: {},
+        rootSection: liveGospel,
+        displayName: liveGospel,
+      });
+    }
+
+    return NextResponse.json(result, {
+      headers: { "Cache-Control": "no-cache, no-store, must-revalidate" },
+    });
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : String(e);
     console.error("[api/screens] Error", message);
-    return NextResponse.json(
-      { error: message, path: O1_APP_BASE },
-      { status: 500 }
-    );
+    return safeFallback();
   }
 }

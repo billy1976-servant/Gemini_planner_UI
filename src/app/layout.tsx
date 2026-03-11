@@ -12,17 +12,17 @@ import "@/styles/site-theme.css";
 import "@/styles/dev-mobile.css";
 import "@/styles/navigator-density.css";
 import { getBaseUrl } from "@/lib/app-base-url";
+import { getCanonicalScreenKey } from "@/07_Dev_Tools/navigation/getDevScreenKey";
 import DevicePreviewToggle from "@/dev/DevicePreviewToggle";
 import EditorPreviewToggle from "@/07_Dev_Tools/editor/EditorPreviewToggle";
 import VerticalSpacingReport from "@/diagnostics/VerticalSpacingReport";
+import PipelineDiagnosticsRail from "@/app/ui/control-dock/PipelineDiagnosticsRail";
+import RightFloatingSidebar from "@/app/ui/control-dock/RightFloatingSidebar";
 import { getPhoneFrameEnabled, subscribePhoneFrameEnabled } from "@/dev/phone-frame-store";
 import { getDevicePreviewMode, subscribeDevicePreviewMode } from "@/dev/device-preview-store";
 import { getDevMode, setDevMode, subscribeDevMode } from "@/dev/dev-mode-store";
 
-/** Stage max-width by device mode (Desktop / Tablet / Phone buttons). Locked dimensions. */
-const STAGE_MAX_WIDTH_PHONE = 420;
-const STAGE_MAX_WIDTH_TABLET = 768;
-const STAGE_MAX_WIDTH_DESKTOP = 1100;
+/** Stage is always full viewport width; device icons do not resize container (breakpoint simulation only). */
 
 /* ============================================================
    🎨 PALETTE ENGINE (state is source of truth; palette-store used only as fallback)
@@ -69,6 +69,7 @@ import { installCapabilityDebug } from "@/03_Runtime/capability/capability-debug
 ============================================================ */
 import presentationProfiles from "@/lib/layout/presentation-profiles.json";
 import CascadingScreenMenu, { type ScreensIndex } from "@/app/components/CascadingScreenMenu";
+import GoogleLoginButton from "@/app/components/GoogleLoginButton";
 import OSBCaptureModal from "@/app/components/OSBCaptureModal";
 import { BottomNavOnly } from "@/04_Presentation/shells/GlobalAppSkin";
 import BottomNavBar_Text from "@/04_Presentation/shells/BottomNavBar_Text";
@@ -105,11 +106,14 @@ const EXPERIENCES: Record<string, any> = {
 function RootLayoutBody({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const currentScreen = searchParams.get("screen") ?? "";
-  const devMobileMode = useDevMobileMode();
-
   const [index, setIndex] = useState<ScreensIndex[]>([]);
+  const [urlReady, setUrlReady] = useState(false);
+  useEffect(() => {
+    setUrlReady(true);
+  }, []);
 
+  const currentScreen = urlReady ? (getCanonicalScreenKey(searchParams) ?? "") : "";
+  const devMobileMode = useDevMobileMode();
 
   const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
   const layoutSnapshot = useSyncExternalStore(subscribeLayout, getLayout, getLayout);
@@ -117,13 +121,6 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
   const devicePreviewMode = useSyncExternalStore(subscribeDevicePreviewMode, getDevicePreviewMode, getDevicePreviewMode);
   const devMode = useSyncExternalStore(subscribeDevMode, getDevMode, getDevMode);
   const templateList = getTemplateList();
-
-  const stageMaxWidth =
-    devicePreviewMode === "phone"
-      ? STAGE_MAX_WIDTH_PHONE
-      : devicePreviewMode === "tablet"
-        ? STAGE_MAX_WIDTH_TABLET
-        : STAGE_MAX_WIDTH_DESKTOP;
 
   // Do not auto-attach bottom nav for onboarding / Google-style / OsbHomeV2; clean stage rules (no play button + icons strip, neutral bg, no extra maxWidth)
   const isOnboardingTsx = /HiClarifyOnboarding|onboarding|HiClarify\/HiClarifyOnboarding|OsbHomeV2|ContainerCreationsLanding/i.test(currentScreen || "");
@@ -136,6 +133,7 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
 
   const [showSections, setShowSections] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+  const canvasPaletteScopeRef = useRef<HTMLDivElement>(null);
   const hasHydratedDevMode = useRef(false);
   const searchParamsRef = useRef("");
   searchParamsRef.current = searchParams?.toString() ?? "";
@@ -199,16 +197,20 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
     }
   }, [searchParams]);
 
-  /* Preview content: when Dev + Phone mode, wrap in .preview-mobile for 390px container and mobile layout */
+  /* Preview content: when Dev + device mode, constrain width (tablet 834px, phone 390px, phoneGrid 2-col grid) */
   const previewContent =
-    devMode === "dev" && devicePreviewMode === "phone" ? (
+    devMode === "dev" && devicePreviewMode === "tablet" ? (
+      <div className="preview-tablet">{children}</div>
+    ) : devMode === "dev" && devicePreviewMode === "phone" ? (
       <div className="preview-mobile">{children}</div>
+    ) : devMode === "dev" && devicePreviewMode === "phoneGrid" ? (
+      <div className="preview-phone-grid">{children}</div>
     ) : (
       children
     );
 
-  /* Apply palette to document root so app-chrome + content both inherit */
-  usePaletteCSS();
+  /* In dev mode, apply palette only to canvas content (palette-scope); editor shell uses --editor-* vars */
+  usePaletteCSS(devMode === "dev" ? canvasPaletteScopeRef : undefined);
 
   /* ============================================================
      🔗 DEMO: INITIAL EXPERIENCE FROM URL (seed state so dropdown reflects it)
@@ -264,23 +266,17 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
 
 
   /* ============================================================
-     📂 LOAD AVAILABLE SCREENS
+     📂 LOAD AVAILABLE SCREENS — never throw; empty index on failure so sidebar still renders
   ============================================================ */
   useEffect(() => {
     fetch("/api/screens")
-      .then(res => {
-        if (!res.ok) {
-          throw new Error(`Failed to load /api/screens (${res.status})`);
-        }
-        return res.json();
-      })
+      .then(res => (res.ok ? res.json() : Promise.resolve([])))
       .then(data => {
         const list = Array.isArray(data) ? data : [];
         setIndex(list);
         setScreenPaths(flattenIndexToPaths(list));
       })
-      .catch(err => {
-        console.error(err);
+      .catch(() => {
         setIndex([]);
       });
   }, []);
@@ -316,206 +312,132 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
             Dev
           </button>
         )}
-        {/* Navigator: only when Dev mode */}
+        {/* Navigator: stable editor layout (TopBar + EditorBody with Rail | Canvas | Sidebar) */}
         {devMode === "dev" && (
-        <div className={navCompactDesktop ? "nav-compact-desktop" : undefined}>
-        <div className="app-chrome">
-          <button
-            type="button"
-            className="app-chrome-home"
-            onClick={() => router.push("/dev")}
-            title="Go to dev home"
-            style={{
-              background: "none",
-              border: "none",
-              padding: 0,
-              cursor: "pointer",
-              font: "inherit",
-              color: "inherit",
-              textAlign: "left",
-            }}
-          >
-            <b>HIclarify Navigator</b>
-          </button>
-
-          <CascadingScreenMenu index={index} currentScreen={currentScreen} />
-          {currentScreen && (
-            <span className="app-chrome-screen-id" title={`Screen ID: ${getScreenIdByPath(currentScreen)}`} style={{ fontSize: 11, color: "#64748b", marginLeft: 4 }}>
-              ID: {getScreenIdByPath(currentScreen)}
-            </span>
-          )}
-          <span className="app-chrome-spacer" aria-hidden="true" />
-
-          <button
-            type="button"
-            className="app-chrome-save"
-            onClick={() => {
-              const tree = getCurrentScreenTree();
-              if (!tree) return;
-              const screenKey = currentScreen ? currentScreen.replace(/[^a-zA-Z0-9]/g, "-") : "";
-              const navTargets = screenKey ? getState()?.layoutByScreen?.[screenKey]?.navTargets : undefined;
-              const profile = buildTemplateFromTree(tree, { navTargets });
-              const payload = { ...profile } as Record<string, unknown>;
-              delete payload.palette;
-              delete payload.paletteName;
-              const json = serializeTemplateProfile(payload as ReturnType<typeof buildTemplateFromTree>);
-              const blob = new Blob([json], { type: "application/json" });
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement("a");
-              a.href = url;
-              a.download = `${profile.id}.json`;
-              a.click();
-              URL.revokeObjectURL(url);
-            }}
-            title="Download current section layouts as a template JSON file."
-          >
-            Save Layout
-          </button>
-
-          <DevicePreviewToggle />
-          <EditorPreviewToggle screenPath={currentScreen || ""} />
-
-          <button type="button" onClick={() => setShowSections(v => !v)}>
-            Sections ▾
-          </button>
-        </div>
-        </div>
-        )}
-
-        {devMode === "dev" && showSections && (
-          <div id="section-layout-panel" className="app-section-layout-panel">
-            <VerticalSpacingReport />
-          </div>
-        )}
-
-        <div
-          ref={contentRef}
-          className="app-content"
-          style={{
-            padding: 0,
-            overflow: "visible",
-            overflowX: "hidden",
-            maxWidth: "100%",
-            ...(devMode === "dev" && !phoneFrameEnabled ? { paddingLeft: 48, paddingRight: 44 } : {}),
-            ...(isOnboardingTsx ? { background: "linear-gradient(135deg, #2d3436 0%, #1e272e 100%)" } : {}),
-          }}
-        >
-          {devMode === "user" ? (
-            <div style={{ width: "100%", minHeight: "100vh", position: "relative" }}>
-              {children}
+          <div className="editor-root" style={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden" }}>
+            <div className="app-chrome" style={{ flexShrink: 0, position: "relative", zIndex: 10000 }} role="banner">
+              <div className="app-chrome-left" style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
+                <button
+                  type="button"
+                  className="app-chrome-home"
+                  onClick={() => router.push("/dev")}
+                  title="Go to dev home"
+                  style={{
+                    background: "none",
+                    border: "none",
+                    padding: 0,
+                    cursor: "pointer",
+                    font: "inherit",
+                    color: "var(--editor-text)",
+                    textAlign: "left",
+                  }}
+                >
+                  <b>HIclarify Navigator</b>
+                </button>
+                <CascadingScreenMenu index={index} currentScreen={currentScreen} />
+              </div>
+              <div className="app-chrome-center" style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1, minWidth: 0 }}>
+                <DevicePreviewToggle />
+              </div>
+              <div className="app-chrome-right" style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+                <EditorPreviewToggle screenPath={currentScreen || ""} />
+                <button
+                  type="button"
+                  className="app-chrome-save"
+                  onClick={() => {
+                    const tree = getCurrentScreenTree();
+                    if (!tree) return;
+                    const screenKey = currentScreen ? currentScreen.replace(/[^a-zA-Z0-9]/g, "-") : "";
+                    const navTargets = screenKey ? getState()?.layoutByScreen?.[screenKey]?.navTargets : undefined;
+                    const profile = buildTemplateFromTree(tree, { navTargets });
+                    const payload = { ...profile } as Record<string, unknown>;
+                    delete payload.palette;
+                    delete payload.paletteName;
+                    const json = serializeTemplateProfile(payload as ReturnType<typeof buildTemplateFromTree>);
+                    const blob = new Blob([json], { type: "application/json" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `${profile.id}.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  }}
+                  title="Download current section layouts as a template JSON file."
+                >
+                  Save Layout
+                </button>
+                <button type="button" onClick={() => setShowSections(v => !v)} title="Toggle sections report">
+                  Sections ▾
+                </button>
+                <GoogleLoginButton />
+              </div>
             </div>
-          ) : phoneFrameEnabled ? (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                minHeight: "100vh",
-                background: "#111",
-                overflow: "visible",
-              }}
-            >
+
+            {showSections && (
+              <div id="section-layout-panel" className="app-section-layout-panel" style={{ flexShrink: 0 }}>
+                <VerticalSpacingReport />
+              </div>
+            )}
+
+            <div className="editor-body">
+              <div className="editor-left-sidebar">
+                <PipelineDiagnosticsRail embedded />
+              </div>
               <div
-                data-phone-frame
+                ref={contentRef}
+                className="editor-canvas-area"
                 style={{
-                  width: "390px",
-                  height: "844px",
-                  borderRadius: "38px",
-                  background: "#000",
-                  boxShadow: "0 40px 120px rgba(0,0,0,0.6)",
-                  padding: "0 12px",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
+                  flex: 1,
+                  minWidth: 0,
+                  overflow: "auto",
+                  padding: 0,
+                  maxWidth: "100%",
+                  ...(isOnboardingTsx ? { background: "linear-gradient(135deg, #2d3436 0%, #1e272e 100%)" } : {}),
                 }}
               >
                 <div
-                  data-phone-frame-inner
-                  style={{
-                    position: "relative",
-                    width: "100%",
-                    height: "100%",
-                    borderRadius: "28px",
-                    background: "#fff",
-                    overflow: "hidden",
-                    display: "flex",
-                    flexDirection: "column",
-                    boxSizing: "border-box",
-                    maxWidth: "100%",
-                  }}
+                  ref={canvasPaletteScopeRef}
+                  className="palette-scope"
+                  style={{ minHeight: "100%", width: "100%" }}
                 >
-                  <div style={{ flex: 1, minHeight: 0, overflowY: "auto", overflowX: "hidden", padding: 0, margin: 0 }}>
-                    {previewContent}
-                  </div>
-                  {!isOnboardingTsx && (
-                    <div
-                      id="screen-ui-layer"
-                      data-screen-ui-layer
-                      style={{
-                        position: "absolute",
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        width: "100%",
-                        height: NAV_STRIP_HEIGHT,
-                        zIndex: 50,
-                        overflow: "visible",
-                      }}
-                    >
-                      <BottomNavBar_Text />
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div
+                <div
               className="app-shell"
               style={{
-                position: "relative",
                 width: "100%",
                 minHeight: "100vh",
-                overflow: "visible",
+                display: "flex",
+                flexDirection: "column",
+                flex: 1,
                 ...(isOnboardingTsx ? { background: "linear-gradient(135deg, #2d3436 0%, #1e272e 100%)" } : {}),
               }}
             >
               <div
                 className="stage-center"
                 style={{
-                  position: "absolute",
-                  inset: 0,
+                  flex: 1,
+                  minHeight: 0,
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "stretch",
-                  pointerEvents: "none",
+                  overflow: "hidden",
                 }}
               >
                 <div
                   className="json-stage"
                   data-json-stage
+                  data-device-mode={devicePreviewMode}
+                  data-current-screen={currentScreen ?? undefined}
                   style={{
-                    pointerEvents: "auto",
                     width: "100%",
-                    maxWidth: isOnboardingTsx ? "none" : `min(100%, ${stageMaxWidth}px)`,
-                    height: "100%",
-                    minHeight: "100vh",
-                    position: "relative",
+                    maxWidth: "none",
+                    flex: 1,
+                    minHeight: 0,
                     boxSizing: "border-box",
-                    overflow: "visible",
                     display: "flex",
                     flexDirection: "column",
                   }}
                 >
-                  <div
-                    style={{
-                      flex: 1,
-                      minHeight: 0,
-                      overflowY: "auto",
-                      overflowX: "hidden",
-                      padding: 0,
-                      margin: 0,
-                    }}
-                  >
+                  <div style={{ flex: 1, minHeight: 0, overflow: "auto", padding: 0, margin: 0 }}>
                     {previewContent}
                   </div>
                   {!isOnboardingTsx && (
@@ -523,14 +445,10 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
                       id="screen-ui-layer"
                       data-screen-ui-layer
                       style={{
-                        position: "absolute",
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
+                        flexShrink: 0,
                         width: "100%",
                         height: NAV_STRIP_HEIGHT,
                         zIndex: 50,
-                        overflow: "visible",
                       }}
                     >
                       <BottomNavBar_Text />
@@ -539,8 +457,30 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
                 </div>
               </div>
             </div>
-          )}
-        </div>
+                </div>
+              </div>
+              <div className="editor-right-sidebar">
+                <RightFloatingSidebar embedded />
+              </div>
+            </div>
+          </div>
+        )}
+        {devMode === "user" && (
+          <div
+            ref={contentRef}
+            className="app-content"
+            style={{
+              padding: 0,
+              overflow: "visible",
+              overflowX: "hidden",
+              maxWidth: "100%",
+            }}
+          >
+            <div style={{ width: "100%", minHeight: "100vh", position: "relative" }}>
+              {children}
+            </div>
+          </div>
+        )}
         <OSBCaptureModal />
         <MobileShell />
     </>

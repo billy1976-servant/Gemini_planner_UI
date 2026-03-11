@@ -404,8 +404,12 @@ export async function loadFlow(flowId: string, engineId?: string, screenParam?: 
 
   const availableFlowIds = Object.keys(FLOWS).join(", ");
   const availableOverrideIds = Object.keys(overrideFlowMap).join(", ");
-  console.warn(`[flow-loader] Flow "${flowId}" not found. Registered: [${availableFlowIds}], Override: [${availableOverrideIds}]`);
-  throw new Error(`Flow "${flowId}" not found. Use FlowRenderer with overrideFlow prop or register flow in FLOWS registry.`);
+  console.warn(`[flow-loader] Flow "${flowId}" not found. Registered: [${availableFlowIds}], Override: [${availableOverrideIds}]. Returning stub.`);
+  return {
+    id: flowId,
+    title: "Flow not found",
+    steps: [{ id: "placeholder", title: "Placeholder", body: `Flow "${flowId}" is not registered. Add it to FLOWS or /api/flows/list.`, choices: [] }],
+  } as EducationFlow;
 }
 
 /**

@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useSyncExternalStore } from "react";
+import { Monitor, Tablet, Smartphone, LayoutGrid } from "lucide-react";
 import {
   getDevicePreviewMode,
   setDevicePreviewMode,
@@ -13,11 +14,25 @@ import {
   subscribePhoneFrameEnabled,
 } from "./phone-frame-store";
 
+const ICON_SIZE = 24;
+const BUTTON_SIZE = 36;
+const PADDING = 6;
+const RADIUS = 6;
+
+const DEVICE_MODES: Array<{
+  id: "desktop" | "tablet" | "phone" | "phoneGrid";
+  label: string;
+  icon: React.ReactNode;
+}> = [
+  { id: "desktop", label: "Desktop", icon: <Monitor size={ICON_SIZE} strokeWidth={2} /> },
+  { id: "tablet", label: "Tablet", icon: <Tablet size={ICON_SIZE} strokeWidth={2} /> },
+  { id: "phone", label: "Phone", icon: <Smartphone size={ICON_SIZE} strokeWidth={2} /> },
+  { id: "phoneGrid", label: "Phone grid", icon: <LayoutGrid size={ICON_SIZE} strokeWidth={2} /> },
+];
+
 /**
- * DevicePreviewToggle — Top header control
- * 
- * Renders in app-chrome header (not inside canvas).
- * Purely presentation-layer control.
+ * DevicePreviewToggle — icon toolbar in TopBar center.
+ * Uses editor theme vars; no palette. 24px icons, 36px buttons, 6px padding/radius.
  */
 export default function DevicePreviewToggle() {
   const mode = useSyncExternalStore(
@@ -32,94 +47,95 @@ export default function DevicePreviewToggle() {
     getPhoneFrameEnabled
   );
 
-  const deviceModes: Array<{ id: "desktop" | "tablet" | "phone" | "phoneGrid"; label: string; icon?: React.ReactNode }> = [
-    { id: "desktop", label: "Desktop" },
-    { id: "tablet", label: "Tablet" },
-    { id: "phone", label: "Phone" },
-    {
-      id: "phoneGrid",
-      label: "Phone Grid",
-      icon: (
-        <span style={{ display: "inline-flex", gap: 2, alignItems: "center", marginRight: 4 }} aria-hidden>
-          <span style={{ width: 6, height: 10, background: "currentColor", borderRadius: 1, opacity: 0.9 }} />
-          <span style={{ width: 6, height: 10, background: "currentColor", borderRadius: 1, opacity: 0.9 }} />
-          <span style={{ width: 6, height: 10, background: "currentColor", borderRadius: 1, opacity: 0.9 }} />
-        </span>
-      ),
-    },
-  ];
-
   return (
     <div
       data-device-preview-toggle
       style={{
         display: "flex",
-        gap: "4px",
+        gap: 6,
         alignItems: "center",
       }}
     >
-      {deviceModes.map(({ id, label, icon }) => (
-        <button
-          key={id}
-          type="button"
-          onClick={() => setDevicePreviewMode(id)}
-          style={{
-            padding: "4px 12px",
-            fontSize: "12px",
-            fontWeight: mode === id ? 600 : 500,
-            color: mode === id ? "#ffffff" : "#aaa",
-            background: mode === id ? "#1976d2" : "transparent",
-            border: mode === id ? "1px solid #1565c0" : "1px solid #444",
-            borderRadius: "4px",
-            cursor: "pointer",
-            transition: "all 0.15s ease",
-            display: "inline-flex",
-            alignItems: "center",
-          }}
-          onMouseEnter={(e) => {
-            if (mode !== id) {
-              e.currentTarget.style.background = "#333";
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (mode !== id) {
-              e.currentTarget.style.background = "transparent";
-            }
-          }}
-        >
-          {icon}
-          {label}
-        </button>
-      ))}
-      
-      <div style={{ width: "1px", height: "24px", background: "#444", margin: "0 4px" }} />
-      
+      {DEVICE_MODES.map(({ id, label, icon }) => {
+        const isActive = mode === id;
+        return (
+          <button
+            key={id}
+            type="button"
+            onClick={() => setDevicePreviewMode(id)}
+            title={label}
+            aria-label={label}
+            aria-pressed={isActive}
+            style={{
+              width: BUTTON_SIZE,
+              height: BUTTON_SIZE,
+              padding: PADDING,
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: isActive ? "#fff" : "var(--editor-text-muted)",
+              background: isActive ? "var(--editor-accent)" : "transparent",
+              border: isActive ? "1px solid var(--editor-accent-hover)" : "1px solid var(--editor-border)",
+              borderRadius: RADIUS,
+              cursor: "pointer",
+              transition: "all 0.15s ease",
+              flexShrink: 0,
+            }}
+            onMouseEnter={(e) => {
+              if (!isActive) {
+                e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+                e.currentTarget.style.color = "var(--editor-text)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isActive) {
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.color = "var(--editor-text-muted)";
+              }
+            }}
+          >
+            {icon}
+          </button>
+        );
+      })}
+
+      <div style={{ width: 1, height: 22, background: "var(--editor-border)", margin: "0 4px", flexShrink: 0 }} />
+
       <button
         type="button"
         onClick={() => setPhoneFrameEnabled(!phoneFrameEnabled)}
+        title={phoneFrameEnabled ? "Hide phone frame" : "Show phone frame"}
+        aria-label={phoneFrameEnabled ? "Hide phone frame" : "Show phone frame"}
+        aria-pressed={phoneFrameEnabled}
         style={{
-          padding: "4px 12px",
-          fontSize: "12px",
-          fontWeight: phoneFrameEnabled ? 600 : 500,
-          color: phoneFrameEnabled ? "#ffffff" : "#aaa",
-          background: phoneFrameEnabled ? "#1976d2" : "transparent",
-          border: phoneFrameEnabled ? "1px solid #1565c0" : "1px solid #444",
-          borderRadius: "4px",
+          width: BUTTON_SIZE,
+          height: BUTTON_SIZE,
+          padding: PADDING,
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: phoneFrameEnabled ? "#fff" : "var(--editor-text-muted)",
+          background: phoneFrameEnabled ? "var(--editor-accent)" : "transparent",
+          border: phoneFrameEnabled ? "1px solid var(--editor-accent-hover)" : "1px solid var(--editor-border)",
+          borderRadius: RADIUS,
           cursor: "pointer",
           transition: "all 0.15s ease",
+          flexShrink: 0,
         }}
         onMouseEnter={(e) => {
           if (!phoneFrameEnabled) {
-            e.currentTarget.style.background = "#333";
+            e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+            e.currentTarget.style.color = "var(--editor-text)";
           }
         }}
         onMouseLeave={(e) => {
           if (!phoneFrameEnabled) {
             e.currentTarget.style.background = "transparent";
+            e.currentTarget.style.color = "var(--editor-text-muted)";
           }
         }}
       >
-        Phone Frame
+        <Smartphone size={ICON_SIZE} strokeWidth={2} style={{ opacity: phoneFrameEnabled ? 1 : 0.8 }} />
       </button>
     </div>
   );

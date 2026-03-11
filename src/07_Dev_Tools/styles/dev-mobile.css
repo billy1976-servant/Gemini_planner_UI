@@ -362,8 +362,23 @@ body.dev-mobile-mode .cascading-screen-menu-panel .cascading-screen-menu-item:no
 }
 
 /* ============================================================================
-   Phone device preview — force mobile layout when devicePreviewMode === "phone"
+   Device preview — constrain stage width by device mode (tablet, phone, phoneGrid)
    ============================================================================ */
+
+/* Tablet: 834px viewport simulation */
+.preview-tablet {
+  width: 834px;
+  max-width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.preview-tablet * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Phone: 390px viewport simulation */
 .preview-mobile {
   width: 390px;
   max-width: 100%;
@@ -383,4 +398,27 @@ body.dev-mobile-mode .cascading-screen-menu-panel .cascading-screen-menu-item:no
   .preview-mobile > * {
     min-width: 0; /* allow flex/grid children to shrink in mobile layout */
   }
+}
+
+/* Phone grid: 2 columns of 390px so grid layout (e.g. container-creations) has room */
+.preview-phone-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 390px);
+  gap: 24px;
+  justify-content: center;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.preview-phone-grid > * {
+  min-width: 0;
+  box-sizing: border-box;
+  /* Single child becomes grid container so its children (e.g. sections) flow into 2 columns */
+  display: grid;
+  grid-template-columns: repeat(2, 390px);
+  gap: 24px;
+  justify-content: center;
+  max-width: 100%;
 }

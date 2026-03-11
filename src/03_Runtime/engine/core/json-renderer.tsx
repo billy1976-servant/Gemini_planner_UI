@@ -1722,8 +1722,9 @@ export default function JsonRenderer({
           display: "flex",
           flexDirection: "column",
           width: "100%",
-          marginLeft: "auto",
-          marginRight: "auto",
+          maxWidth: "none",
+          padding: 0,
+          margin: 0,
           ["--motion-duration-scale" as string]: String(getMotionDurationScale(behaviorProfile)),
         }}
       >

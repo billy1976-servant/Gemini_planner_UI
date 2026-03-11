@@ -1,0 +1,81 @@
+"use client";
+
+import React from "react";
+import nextDynamic from "next/dynamic";
+
+/**
+ * Shared TSX screen resolver so root and dev both can resolve TSX by path.
+ * Used to render TSX screens through the same pipeline (ExperienceRenderer → JsonRenderer → JsonSkinEngine)
+ * via tsx-embed nodes with TsxEmbedProvider.
+ */
+
+const tsxContext = (require as any).context(
+  "../01_App/(dead) Tsx",
+  true,
+  /\.tsx$/
+);
+const businessContext = (require as any).context(
+  "../01_App/(live) Business",
+  true,
+  /\.tsx$/
+);
+
+function normalizeContextKey(key: string) {
+  return key
+    .replace(/^\.\//, "")
+    .replace(/^\.\\/, "")
+    .replace(/\\/g, "/")
+    .replace(/\.tsx$/, "");
+}
+
+function resolveTsxModule(mod: any, normalizedKey: string): React.ComponentType<any> {
+  const name = normalizedKey.split("/").pop() ?? normalizedKey;
+  return mod?.default ?? mod?.[name] ?? mod;
+}
+
+const AUTO_TSX_MAP: Record<string, () => Promise<any>> = {};
+tsxContext.keys().forEach((key: string) => {
+  const normalized = normalizeContextKey(key);
+  AUTO_TSX_MAP[normalized] = () =>
+    Promise.resolve(tsxContext(key)).then((m: any) => resolveTsxModule(m, normalized));
+});
+businessContext.keys().forEach((key: string) => {
+  const normalized = normalizeContextKey(key);
+  AUTO_TSX_MAP[`(live) Business/${normalized}`] = () =>
+    Promise.resolve(businessContext(key)).then((m: any) => resolveTsxModule(m, normalized));
+});
+
+const EXPLICIT_TSX_MAP: Record<string, () => Promise<any>> = {
+  "(live) Business/Container_Creations/ContainerCreationsWebsite": () =>
+    import("@/01_App/(live) Business/Container_Creations/ContainerCreationsWebsite"),
+  "(live) Business/Container_Creations/ContainerCreationsLanding": () =>
+    import("@/01_App/(live) Business/Container_Creations/ContainerCreationsLanding"),
+  "(live) Gospel/Discipleship/GospelDiscipleship": () =>
+    import("@/01_App/(live) Gospel/Discipleship/GospelDiscipleship"),
+};
+
+export function resolveTsxScreen(path: string): React.ComponentType<any> | null {
+  const normalized = path
+    .replace(/^tsx:/, "")
+    .replace(/\\/g, "/")
+    .trim();
+
+  if (EXPLICIT_TSX_MAP[normalized]) {
+    return nextDynamic(EXPLICIT_TSX_MAP[normalized], { ssr: false });
+  }
+  if (AUTO_TSX_MAP[normalized]) {
+    return nextDynamic(AUTO_TSX_MAP[normalized], { ssr: false });
+  }
+  const businessPath = `(live) Business/${normalized}`;
+  if (AUTO_TSX_MAP[businessPath]) {
+    return nextDynamic(AUTO_TSX_MAP[businessPath], { ssr: false });
+  }
+  if (EXPLICIT_TSX_MAP[businessPath]) {
+    return nextDynamic(EXPLICIT_TSX_MAP[businessPath], { ssr: false });
+  }
+  const gospelPath = `(live) Gospel/${normalized}`;
+  if (EXPLICIT_TSX_MAP[gospelPath]) {
+    return nextDynamic(EXPLICIT_TSX_MAP[gospelPath], { ssr: false });
+  }
+  return null;
+}

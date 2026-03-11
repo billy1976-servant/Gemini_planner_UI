@@ -1,0 +1,207 @@
+{
+  "shopUrl": "",
+  "header": {
+    "logoSrc": "/images/logo.webp",
+    "logoAlt": "Gospel Onboarding",
+    "shopNowLabel": ""
+  },
+  "stepTracker": {
+    "title": "The Gospel Walkthrough",
+    "description": "Answer the spiritual question and explore what the Bible teaches."
+  },
+  "screens": [
+    {
+      "id": "spiritual-question",
+      "stepLabel": "The Real Question",
+      "layout": "hero",
+      "title": "The Real Question",
+      "subtitle": "What are you going to do about eternity?",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Many people believe acknowledging Jesus is enough. But the Bible teaches that salvation involves turning from sin and following Him."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "goto",
+          "label": "Explore the Answer",
+          "target": "gospel-overview"
+        }
+      ],
+      "nextScreenId": "gospel-overview",
+      "lightTheme": true
+    },
+    {
+      "id": "gospel-overview",
+      "stepLabel": "Overview",
+      "layout": "stamped",
+      "title": "The Gospel in Five Truths",
+      "content": [
+        {
+          "type": "checklist",
+          "heading": "The Biblical Message",
+          "items": [
+            { "title": "1. God is Perfect", "sub": "God is holy and the creator of all things." },
+            { "title": "2. We Are Sinners", "sub": "Sin separates us from God." },
+            { "title": "3. Saved by Jesus", "sub": "Jesus died and rose to save us." },
+            { "title": "4. Respond to Jesus", "sub": "Repent and believe." },
+            { "title": "5. Grow in Jesus", "sub": "A new life follows true faith." }
+          ]
+        }
+      ],
+      "media": [],
+      "buttons": [
+        { "type": "next", "label": "Start the Journey" }
+      ],
+      "nextScreenId": "god-is-perfect"
+    },
+    {
+      "id": "god-is-perfect",
+      "stepLabel": "Truth",
+      "layout": "twoCol",
+      "title": "God is Perfect",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "God created everything and He is perfectly holy."
+        },
+        {
+          "type": "paragraph",
+          "text": "Because God is perfect, sin cannot exist in His presence."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "/images/gospel/god-perfect.jpg",
+          "alt": "God is perfect"
+        }
+      ],
+      "buttons": [
+        { "type": "next", "label": "Continue" }
+      ],
+      "nextScreenId": "we-are-sinners"
+    },
+    {
+      "id": "we-are-sinners",
+      "stepLabel": "The Problem",
+      "layout": "stamped",
+      "title": "We Are Sinners",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "The Bible teaches that all have sinned and fallen short of God's glory."
+        },
+        {
+          "type": "checklist",
+          "heading": "God's Goodness Test",
+          "items": [
+            { "title": "Have you ever lied?", "sub": "That makes us liars." },
+            { "title": "Have you ever stolen?", "sub": "That makes us thieves." },
+            { "title": "Have you ever used God's name in vain?", "sub": "That dishonors God." },
+            { "title": "Have you ever lusted?", "sub": "Jesus says that is adultery in the heart." }
+          ]
+        }
+      ],
+      "media": [],
+      "buttons": [
+        { "type": "next", "label": "What is the Solution?" }
+      ],
+      "nextScreenId": "saved-by-jesus"
+    },
+    {
+      "id": "saved-by-jesus",
+      "stepLabel": "The Solution",
+      "layout": "twoCol",
+      "title": "Saved by Jesus",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "God sent His Son Jesus to die for our sins and rise again."
+        },
+        {
+          "type": "paragraph",
+          "text": "Through Jesus we can be forgiven and reconciled with God."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "/images/gospel/cross.jpg",
+          "alt": "Jesus died for our sins"
+        }
+      ],
+      "buttons": [
+        { "type": "next", "label": "How Should We Respond?" }
+      ],
+      "nextScreenId": "respond-to-jesus"
+    },
+    {
+      "id": "respond-to-jesus",
+      "stepLabel": "The Response",
+      "layout": "textOnly",
+      "title": "Respond to Jesus",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Jesus calls people to repent and believe the gospel."
+        },
+        {
+          "type": "paragraph",
+          "text": "Repentance means turning from sin and trusting Christ as Lord."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        { "type": "next", "label": "What Happens Next?" }
+      ],
+      "nextScreenId": "grow-in-jesus"
+    },
+    {
+      "id": "grow-in-jesus",
+      "stepLabel": "The Result",
+      "layout": "twoColImageLeft",
+      "title": "Grow in Jesus",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Those who trust in Jesus begin a new life following Him."
+        },
+        {
+          "type": "paragraph",
+          "text": "This includes prayer, learning God's Word, and loving others."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "/images/gospel/new-life.jpg",
+          "alt": "Growing in Christ"
+        }
+      ],
+      "buttons": [
+        { "type": "next", "label": "Final Question" }
+      ],
+      "nextScreenId": "final-question"
+    },
+    {
+      "id": "final-question",
+      "stepLabel": "Final",
+      "layout": "textOnly",
+      "title": "The Final Question",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Do you believe Jesus died for your sins and rose again?"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        { "type": "goto", "label": "Yes — I want to follow Jesus", "target": "grow-in-jesus" },
+        { "type": "goto", "label": "I want to learn more", "target": "god-is-perfect" }
+      ]
+    }
+  ]
+}

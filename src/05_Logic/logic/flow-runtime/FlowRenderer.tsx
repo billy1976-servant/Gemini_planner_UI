@@ -88,8 +88,8 @@ const STORAGE_KEY = "integration-flow-engine-2-session-v2";
 ====================================================== */
 function createDefaultSession(): SessionState {
   return {
-    startedAt: Date.now(),
-    currentFlowId: "test-flow", // Registered flow
+    startedAt: 0,
+    currentFlowId: "",
     currentHIEngineId: "calculator",
     events: [],
     cards: {},
@@ -131,11 +131,18 @@ export default function FlowRenderer({
   const [session, setSession] = useState<SessionState>(createDefaultSession);
   const [availableFlows, setAvailableFlows] = useState<Array<{ id: string; title: string }>>([]);
   const [presentation, setPresentation] = useState<PresentationModel | null>(null);
-  // Get available HI engines
+  const [mounted, setMounted] = useState(false);
   const availableEngines = getAvailableHIEngines();
-  
-  // Debug: Log HI engines on render
-  console.log("[FlowRenderer] HI engines:", availableEngines);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && session.startedAt === 0) {
+      setSession((s) => ({ ...s, startedAt: Date.now() }));
+    }
+  }, [mounted, session.startedAt]);
 
   const engineState = useSyncExternalStore(
     subscribeEngineState,
@@ -263,11 +270,8 @@ export default function FlowRenderer({
 
   /* ---------- LOAD AVAILABLE FLOWS ---------- */
   useEffect(() => {
-    // Skip loading if overrideFlow is provided
-    if (overrideFlow) {
-      return;
-    }
-    
+    if (overrideFlow) return;
+
     getAvailableFlows()
       .then((flowIds) => {
         Promise.all(
@@ -279,7 +283,20 @@ export default function FlowRenderer({
               return { id, title: id };
             }
           })
-        ).then(setAvailableFlows);
+        ).then((flows) => {
+          setAvailableFlows(flows);
+          if (flows.length > 0) {
+            setSession((s) => {
+              if (s.currentFlowId === "") return { ...s, currentFlowId: flows[0].id };
+              return s;
+            });
+            const params = new URLSearchParams(searchParams.toString());
+            if (!params.has("flow")) {
+              params.set("flow", flows[0].id);
+              router.replace(`?${params.toString()}`, { scroll: false });
+            }
+          }
+        });
       })
       .catch(console.error);
   }, [screenParam, overrideFlow]);
@@ -395,8 +412,25 @@ export default function FlowRenderer({
     ? (overrideFlow.title || overrideFlow.id || currentFlowId)
     : (availableFlows.find((f) => f.id === currentFlowId)?.title || currentFlowId);
 
-  // Get execution engine ID for provider
   const executionEngineId = mapHIEngineToExecutionEngine(session.currentHIEngineId);
+
+  if (!mounted) {
+    return (
+      <div
+        style={{
+          minHeight: 200,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "radial-gradient(1200px 600px at 20% 0%, #1e293b 0%, #020617 60%)",
+          color: "#94a3b8",
+          fontSize: 14,
+        }}
+      >
+        Loading flow…
+      </div>
+    );
+  }
 
   return (
     <EngineRuntimeProvider
@@ -513,7 +547,7 @@ export default function FlowRenderer({
         }}
       >
         <div style={{ fontSize: 12, opacity: 0.7 }}>
-          Started: {new Date(session.startedAt).toLocaleTimeString()}
+          Started: {session.startedAt ? new Date(session.startedAt).toLocaleTimeString() : "—"}
         </div>
 
         <div style={{ marginTop: 8, fontSize: 12, opacity: 0.7 }}>

@@ -2,6 +2,8 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useSyncExternalStore } from "react";
+import { useSearchParams } from "next/navigation";
+import { getCanonicalScreenKey } from "@/07_Dev_Tools/navigation/getDevScreenKey";
 import { logContainerNodeIdsAfterRender } from "@/07_Dev_Tools/nav/nav-instrumentation";
 import BeforeAfterSlider from "@/04_Presentation/components/molecules/BeforeAfterSlider";
 import {
@@ -23,6 +25,20 @@ import "@/app/landing/landing-theme.css";
 const COMPONENT_NAME = "ContainerCreationsLanding-2";
 
 const CONFIG_URL = "/api/container-creations-landing-config";
+
+/**
+ * CONTENT RENDERING RULE (global — do not remove)
+ * -----------------------------------------------
+ * Layouts must NEVER filter content blocks by type. Every layout (hero, stamped, twoCol,
+ * twoColImageLeft, textOnly, and any future layout) must render content through the single
+ * universal renderer: renderContentBlocks(screen.content, options).
+ * - Layouts control structure only: image placement, stacking, columns, etc.
+ * - renderContentBlocks() controls which block types (paragraph, checklist, badge, heading,
+ *   and future types) are rendered. Add new block types only there.
+ * - Do NOT use screen.content.map(...) or filter by block.type in any layout.
+ * Result: Any JSON screen can include checklist, paragraph, video, images, future blocks
+ * and they will always render in both editor and preview.
+ */
 
 type ContentBlock =
   | { type: "badge"; text: string }
@@ -282,7 +298,9 @@ type RenderContentBlocksOptions = {
   onParagraphChange: (blockIndex: number, text: string) => void;
 };
 
+/** Universal content block renderer. Layouts must use this only — never map/filter screen.content by type. */
 function renderContentBlocks(content: ContentBlock[], options?: RenderContentBlocksOptions) {
+  const editorOpts = options;
   return content.map((block, i) => {
     if (block.type === "badge") {
       return <div key={i} className="hero-badge">{block.text}</div>;
@@ -296,7 +314,7 @@ function renderContentBlocks(content: ContentBlock[], options?: RenderContentBlo
       } else if (block.className === "testimonial-attribution") {
         Object.assign(style, { opacity: 0.85, marginBottom: 24 });
       }
-      if (options?.isEditor && options.screenId) {
+      if (editorOpts?.isEditor && editorOpts.screenId) {
         return (
           <InlineEditableText
             key={i}
@@ -349,6 +367,11 @@ function renderContentBlocks(content: ContentBlock[], options?: RenderContentBlo
         </React.Fragment>
       );
     }
+    // Unknown/future block types: do not filter out — render nothing but allow layout to stay consistent
+    if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
+      // eslint-disable-next-line no-console
+      console.warn("[ContainerCreationsLanding-2] Unknown content block type:", (block as { type?: string }).type);
+    }
     return null;
   });
 }
@@ -389,10 +412,12 @@ export default function ContainerCreationsLanding2() {
 
   const cfg = config;
   const screens = cfg?.screens ?? [];
+  const searchParams = useSearchParams();
+  const canonicalKey = getCanonicalScreenKey(searchParams);
   const orderOverride = useSyncExternalStore(
     subscribe,
-    () => getOverride("container-creations-landing"),
-    () => getOverride("container-creations-landing")
+    () => getOverride(canonicalKey ?? ""),
+    () => getOverride(canonicalKey ?? "")
   );
   const orderedScreens =
     orderOverride?.length && screens.length > 0
@@ -427,11 +452,11 @@ export default function ContainerCreationsLanding2() {
     logContainerNodeIdsAfterRender(containerRef, COMPONENT_NAME);
   });
 
-  /** Register landing flow with dev node sidebar when config is loaded (Nodes panel can show and reorder screens). */
+  /** Register landing flow with dev node sidebar when config is loaded. Delay until canonical key exists (no fallback). */
   useEffect(() => {
-    if (!config?.screens?.length) return;
-    registerJsonScreen("container-creations-landing", config as Parameters<typeof registerJsonScreen>[1], (newConfig) => setConfig(newConfig as LandingConfig));
-  }, [config]);
+    if (!config?.screens?.length || canonicalKey == null) return;
+    registerJsonScreen(canonicalKey, config as Parameters<typeof registerJsonScreen>[1], (newConfig) => setConfig(newConfig as LandingConfig));
+  }, [config, canonicalKey]);
 
   const devProps = useSyncExternalStore(subscribeDevSidebarProps, getDevSidebarProps, getDevSidebarProps);
   const selectedLandingNodeId = devProps?.selectedLandingNodeId ?? null;
@@ -762,6 +787,7 @@ export default function ContainerCreationsLanding2() {
   }
 
   function renderScreen(screen: Screen) {
+    // SAFETY: Every layout must use renderContentBlocks(screen.content, ...) only. No screen.content.map or block.type filtering.
     const heroVideoFailed = screen.layout === "hero" && screen.media.some((m) => m.type === "video" && failedMedia.has(m.src));
     const isSelected = isEditor && selectedLandingNodeId === screen.id;
     const outlineStyle: React.CSSProperties = isSelected
@@ -874,22 +900,7 @@ export default function ContainerCreationsLanding2() {
                 />
               </div>
               <div className="cc-stamped-description">
-                {screen.content.map((block, i) =>
-                  block.type === "paragraph" ? (
-                    isEditor ? (
-                      <InlineEditableText
-                        key={i}
-                        value={block.text}
-                        onChange={(v) => updateScreenContentBlock(screen.id, i, v)}
-                        isEditing
-                        as="p"
-                        multiline
-                      />
-                    ) : (
-                      <p key={i}>{block.text}</p>
-                    )
-                  ) : null
-                )}
+                {renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t) } : undefined)}
               </div>
               <div className="landing-phone-video-wrap" style={{ marginBottom: 16 }}>
                 {screen.media.filter((m) => m.type === "video").map((m, i) => (
@@ -905,37 +916,6 @@ export default function ContainerCreationsLanding2() {
                   ) : null
                 ))}
               </div>
-              {screen.content.filter((c) => c.type === "checklist").map((block, i) => (
-                <React.Fragment key={i}>
-                  {block.type === "checklist" && block.heading && (
-                    <h3 className="cc-stamped-checklist-heading" style={{ fontSize: "1.25rem", fontWeight: 600 }}>
-                      {block.heading}
-                    </h3>
-                  )}
-                  {block.type === "checklist" && (
-                    <ul className="cc-stamped-checklist" style={{ listStyle: "none", padding: 0 }}>
-                      {block.items.map((item, j) => {
-                        const title = typeof item === "string" ? item : item.title;
-                        const sub = typeof item === "string" ? undefined : item.sub;
-                        return (
-                          <li key={j} style={{ display: "flex", gap: 12, alignItems: "flex-start", fontSize: "0.9375rem", lineHeight: 1.45, marginBottom: 12 }}>
-                            <span style={{ flexShrink: 0 }} aria-hidden>
-                              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: "block" }}>
-                                <circle cx="11" cy="11" r="10" fill="#16a34a" />
-                                <path d="M6 11l3.5 3.5L16 8" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                              </svg>
-                            </span>
-                            <span>
-                              <strong style={{ display: "block", marginBottom: 2 }}>{title}</strong>
-                              {sub != null && <span style={{ opacity: 0.9 }}>{sub}</span>}
-                            </span>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  )}
-                </React.Fragment>
-              ))}
               {renderInlineUI(screen, true)}
               {renderButtons(screen, false, isEditor, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
             </section>
@@ -945,41 +925,11 @@ export default function ContainerCreationsLanding2() {
       case "twoCol": {
         const useLightCard = screen.lightTheme === true;
         const twoColContent = (
-          <div className="cc-two-col">
-            <div className="cc-text">
-              <div style={{ minHeight: "1.2em" }}>
-                <InlineEditableText
-                  value={screen.title}
-                  onChange={(v) => updateScreenField(screen.id, "title", v)}
-                  isEditing={isEditor}
-                  as="h2"
-                  style={useLightCard ? { color: "#1a1d23" } : undefined}
-                />
-              </div>
-              {screen.content.map((block, i) =>
-                block.type === "paragraph" ? (
-                  isEditor ? (
-                    <InlineEditableText
-                      key={i}
-                      value={block.text}
-                      onChange={(v) => updateScreenContentBlock(screen.id, i, v)}
-                      isEditing
-                      as="p"
-                      style={useLightCard ? { color: "#1a1d23" } : undefined}
-                      multiline
-                    />
-                  ) : (
-                    <p key={i} style={useLightCard ? { color: "#1a1d23" } : undefined}>{block.text}</p>
-                  )
-                ) : null
-              )}
-              {renderInlineUI(screen, useLightCard)}
-              {!useLightCard && renderButtons(screen, true, isEditor, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
-            </div>
+          <div className="cc-two-col cc-step-card">
             <div className="cc-media-card" style={useLightCard ? { background: "#f1f5f9", borderColor: "#e2e8f0" } : undefined}>
               {screen.media.map((m, i) => {
                 if (m.type === "image") {
-                  return <img key={i} src={m.src} alt={m.alt} style={{ width: "100%", height: "auto" }} />;
+                  return <img key={i} src={m.src} alt={m.alt} style={{ width: "100%", height: "auto", objectFit: "cover", display: "block" }} />;
                 }
                 if (m.type === "beforeAfter") {
                   return (
@@ -996,6 +946,22 @@ export default function ContainerCreationsLanding2() {
                 }
                 return null;
               })}
+            </div>
+            <div className="cc-text">
+              <div style={{ minHeight: "1.2em" }}>
+                <InlineEditableText
+                  value={screen.title}
+                  onChange={(v) => updateScreenField(screen.id, "title", v)}
+                  isEditing={isEditor}
+                  as="h2"
+                  style={useLightCard ? { color: "#1a1d23" } : undefined}
+                />
+              </div>
+              <div style={useLightCard ? { color: "#1a1d23" } : undefined}>
+                {renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t) } : undefined)}
+              </div>
+              {renderInlineUI(screen, useLightCard)}
+              {!useLightCard && renderButtons(screen, true, isEditor, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
             </div>
           </div>
         );
@@ -1019,11 +985,11 @@ export default function ContainerCreationsLanding2() {
       case "twoColImageLeft":
         return (
           <div className="landing-content-block" style={containerStyle} data-screen-id={screen.id} {...selectNodeProps}>
-            <div className="cc-two-col">
+            <div className="cc-two-col cc-step-card">
               <div className="cc-media-card">
                 {screen.media.map((m, i) =>
                   m.type === "image" ? (
-                    <img key={i} src={m.src} alt={m.alt} style={{ width: "100%", height: "auto" }} />
+                    <img key={i} src={m.src} alt={m.alt} style={{ width: "100%", height: "auto", objectFit: "cover", display: "block" }} />
                   ) : null
                 )}
               </div>
@@ -1036,20 +1002,7 @@ export default function ContainerCreationsLanding2() {
                     as="h2"
                   />
                 </div>
-                {screen.content.map((block, i) => {
-                  if (block.type === "paragraph") {
-                    const style: React.CSSProperties = {};
-                    if (block.className === "stars") Object.assign(style, { fontSize: "1.25rem", marginBottom: 8 });
-                    else if (block.className === "testimonial") Object.assign(style, { fontStyle: "italic", marginBottom: 4 });
-                    else if (block.className === "testimonial-attribution") Object.assign(style, { opacity: 0.85, marginBottom: 24 });
-                    return isEditor ? (
-                      <InlineEditableText key={i} value={block.text} onChange={(v) => updateScreenContentBlock(screen.id, i, v)} isEditing as="p" style={style} multiline />
-                    ) : (
-                      <p key={i} style={style}>{block.text}</p>
-                    );
-                  }
-                  return null;
-                })}
+                {renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t) } : undefined)}
                 {renderInlineUI(screen, false)}
                 {renderButtons(screen, true, isEditor, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
               </div>

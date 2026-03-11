@@ -68,8 +68,8 @@ export default function ExperienceRenderer({
   };
 
   const rendererContent = (
-    <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-      <div style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
+    <div style={{ height: "100vh", display: "flex", flexDirection: "column", width: "100%", maxWidth: "none" }}>
+      <div style={{ flex: 1, minHeight: 0, overflow: "auto", width: "100%", maxWidth: "none", padding: 0 }}>
         <JsonRenderer
           node={node}
           defaultState={defaultState}

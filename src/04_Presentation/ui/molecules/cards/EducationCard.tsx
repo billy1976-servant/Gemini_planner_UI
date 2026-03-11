@@ -44,53 +44,48 @@ export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, 
   const searchParams = useSearchParams();
   const router = useRouter();
   
-  // Get flow ID from query param or default to test-flow (registered flow)
-  const flowId = searchParams.get("flow") || "test-flow";
+  const flowId = searchParams.get("flow") ?? "";
   const [availableFlows, setAvailableFlows] = useState<string[]>([]);
-  
-  // Load available flows on mount
+
   useEffect(() => {
-    getAvailableFlows().then(setAvailableFlows).catch(console.error);
+    getAvailableFlows().then(setAvailableFlows).catch(() => {});
   }, []);
-  
-  // Load flow from JSON (not direct import)
+
   const [flow, setFlow] = useState<EducationFlow | null>(null);
-  const [flowLoading, setFlowLoading] = useState(true);
+  const [flowLoading, setFlowLoading] = useState(!!flowId);
   const [flowError, setFlowError] = useState<string | null>(null);
   const [lastFlowId, setLastFlowId] = useState<string | null>(null);
-  
-  // Get screen param for screen-specific flow loading
   const screenParam = searchParams.get("screen") ?? undefined;
 
-  // Load flow when flowId changes
   useEffect(() => {
+    if (!flowId) {
+      setFlow(null);
+      setFlowLoading(false);
+      setFlowError(null);
+      return;
+    }
     setFlowLoading(true);
     setFlowError(null);
-    
+
     loadFlow(flowId, undefined, screenParam)
       .then((loadedFlow) => {
         setFlow(loadedFlow);
         setFlowLoading(false);
-        
-        // Reinitialize state when flow changes (clean slate)
         const current = readEngineState();
         const currentFlowId = current.currentFlowId;
-        
-        // Only reset if flow actually changed
         if (currentFlowId !== flowId || lastFlowId !== flowId) {
           writeEngineState({
             [STEP_KEY]: 0,
             [OUTCOMES_KEY]: [],
             [RESULTS_KEY]: {},
-            currentFlowId: flowId, // Track current flow
+            currentFlowId: flowId,
           });
           setLocalStep(0);
           setLastFlowId(flowId);
         }
       })
       .catch((err) => {
-        console.error("[EducationCard] Failed to load flow:", err);
-        setFlowError(err.message);
+        setFlowError(err?.message ?? "Failed to load flow");
         setFlowLoading(false);
       });
   }, [flowId, lastFlowId, screenParam]);
@@ -170,9 +165,33 @@ export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, 
     );
   }
 
+  if (!flowId) {
+    return (
+      <div style={cardContainer}>
+        <div style={{ padding: 24, textAlign: "center", color: "#94a3b8", fontSize: 14 }}>
+          Select a flow from the dropdown above.
+        </div>
+      </div>
+    );
+  }
+  if (!flow && flowLoading) {
+    return (
+      <div style={cardContainer}>
+        <div style={{ padding: 24, textAlign: "center", color: "#94a3b8" }}>Loading flow…</div>
+      </div>
+    );
+  }
+  if (!flow) {
+    return (
+      <div style={cardContainer}>
+        <div style={{ padding: 24, textAlign: "center", color: "#94a3b8" }}>No flow loaded.</div>
+      </div>
+    );
+  }
+
   // INVARIANT: EngineState is authoritative - all step order, progress, and completion state comes from EngineState
   const engineStateData = engineState[ENGINE_STATE_KEY] as EngineState | undefined;
-  
+
   // Get step order, progress, and completion from EngineState (single source of truth)
   const orderedStepIds = engineStateData?.orderedStepIds ?? presentation?.stepOrder ?? flow.steps.map((s) => s.id);
   const currentStepIndex = engineStateData?.currentStepIndex ?? engineState[STEP_KEY] ?? localStep ?? 0;

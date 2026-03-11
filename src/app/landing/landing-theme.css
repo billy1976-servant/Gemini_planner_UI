@@ -1,99 +1,82 @@
-/* Container Creations landing — industrial premium. No warning red; minimal clutter. */
+/* Container Creations landing — inherits palette from system (usePaletteCSS on :root). */
 .landing-container-creations {
-  --landing-steel-bg: #1a1d23;
-  --landing-steel-bg-alt: #25282e;
-  --landing-steel-border: #2d3239;
-  --landing-steel-fg: #e2e8f0;
-  --landing-steel-muted: #64748b;
-  --landing-cta-bg: #334155;
-  --landing-cta-border: #475569;
-  --landing-radius: 8px;
-  --landing-font-base: "DM Sans", system-ui, sans-serif;
-  --landing-font-heading: "Poppins", "DM Sans", system-ui, sans-serif;
   --landing-content-max: 1100px;
   --landing-phone-width: 390px;
 
-  /* Override generic tokens so JsonSkinEngine sections pick up steel palette */
-  --color-bg-primary: #1a1d23;
-  --color-bg-secondary: #25282e;
-  --color-border: #2d3239;
-  --color-text-primary: #e2e8f0;
-  --color-primary: #334155;
-
-  background: var(--landing-steel-bg);
-  color: var(--landing-steel-fg);
-  font-family: var(--landing-font-base);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-base);
   min-height: 100vh;
   container-type: inline-size;
   container-name: landing;
 }
 
 .landing-container-creations .landing-shop-bar {
-  background: var(--landing-steel-bg);
-  border-bottom-color: var(--landing-steel-border);
+  background: var(--color-bg-primary);
+  border-bottom-color: var(--color-border);
 }
 
-/* Hero step (step 0): no dark background; light page so video is the focus */
+/* Hero step (step 0): use palette surface and text */
 .landing-container-creations.landing-step-hero {
-  background: #fff;
-  color: #1a1d23;
+  background: var(--color-surface-1);
+  color: var(--color-text-primary);
 }
 
 .landing-container-creations.landing-step-hero .landing-shop-bar {
-  background: #fff;
-  border-bottom-color: #e2e8f0;
+  background: var(--color-surface-1);
+  border-bottom-color: var(--color-border);
 }
 
 .landing-container-creations.landing-step-hero .landing-shop-bar a {
-  color: #1a1d23;
-  border-color: #e2e8f0;
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
 }
 
 .landing-container-creations.landing-step-hero .hero-intro .hero-title,
 .landing-container-creations.landing-step-hero .hero-intro .hero-subtitle,
 .landing-container-creations.landing-step-hero .hero-intro .hero-badge {
-  color: #1a1d23;
+  color: var(--color-text-primary);
 }
 
-/* Stamped 20-gauge screen (step 1): white page, dark text, no black video sides */
+/* Stamped step (step 1): use palette */
 .landing-container-creations.landing-step-stamped {
-  background: #fff;
-  color: #1a1d23;
+  background: var(--color-surface-1);
+  color: var(--color-text-primary);
 }
 
 .landing-container-creations.landing-step-stamped .landing-shop-bar {
-  background: #fff;
-  border-bottom-color: #e2e8f0;
+  background: var(--color-surface-1);
+  border-bottom-color: var(--color-border);
 }
 
 .landing-container-creations.landing-step-stamped .landing-shop-bar a {
-  color: #1a1d23;
-  border-color: #e2e8f0;
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
 }
 
 .landing-container-creations.landing-step-stamped .stamped-section h2,
 .landing-container-creations.landing-step-stamped .stamped-section p {
-  color: #1a1d23;
+  color: var(--color-text-primary);
 }
 
 .landing-container-creations.landing-step-stamped .stamped-section video {
-  background: #fff;
+  background: var(--color-surface-1);
 }
 
-/* Measure screen: white page, no black bars */
+/* Measure step: use palette */
 .landing-container-creations.measure-step-active {
-  background: #fff;
-  color: #1a1d23;
+  background: var(--color-surface-1);
+  color: var(--color-text-primary);
 }
 
 .landing-container-creations.measure-step-active .landing-shop-bar {
-  background: #fff;
-  border-bottom-color: #e2e8f0;
+  background: var(--color-surface-1);
+  border-bottom-color: var(--color-border);
 }
 
 .landing-container-creations.measure-step-active .landing-shop-bar a {
-  color: #1a1d23;
-  border-color: #e2e8f0;
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
 }
 
 .landing-container-creations button:hover {
@@ -155,8 +138,8 @@
   padding: 14px 30px;
   font-size: 18px;
   border-radius: 8px;
-  background: #2b7cff;
-  color: white;
+  background: var(--color-primary);
+  color: var(--color-on-primary, #fff);
   border: none;
   cursor: pointer;
 }
@@ -175,14 +158,24 @@
   .landing-container-creations .landing-shop-bar {
     padding: 0.5rem 1rem;
   }
+  /* Checklist visible on phone/tablet/narrow: ensure spacing and no clipping */
+  .landing-container-creations .cc-stamped-section .cc-stamped-checklist-heading,
+  .landing-container-creations .cc-stamped-section .cc-stamped-checklist {
+    margin-top: 16px;
+    margin-bottom: 24px;
+  }
+  .landing-container-creations .landing-content-block {
+    padding: 24px 16px;
+  }
 }
 
 /* Stamped steel screen (same formatting as front page) */
+/* overflow: visible so checklist and long content show on phone, tablet, and multi-phone views */
 .landing-container-creations .landing-content-block {
   padding: 40px 20px;
   max-width: var(--landing-content-max, 1100px);
   margin: 0 auto;
-  overflow: hidden;
+  overflow: visible;
   box-sizing: border-box;
 }
 
@@ -225,7 +218,7 @@
 }
 
 .landing-container-creations .measure-roof-section {
-  color: #1a1d23;
+  color: var(--color-text-primary);
 }
 
 .landing-container-creations .measure-roof-section .measure-diagram-wrap {
@@ -290,10 +283,38 @@
   padding: 24px 20px 32px;
 }
 
+/* Step card: stacked layout — image full width above text (3-column grid unchanged) */
+.landing-container-creations .cc-two-col.cc-step-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  max-width: 100%;
+}
+.landing-container-creations .cc-two-col.cc-step-card .cc-media-card {
+  width: 100%;
+  display: block;
+  border-radius: var(--radius-md, 8px) var(--radius-md, 8px) 0 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.landing-container-creations .cc-two-col.cc-step-card .cc-media-card img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+.landing-container-creations .cc-two-col.cc-step-card .cc-text {
+  padding: 24px 20px 32px;
+  flex: 1;
+}
+
 /* Stack to single column when narrow (after base rule so this wins in cascade) */
 @container landing (max-width: 768px) {
   .landing-container-creations .cc-two-col {
     grid-template-columns: 1fr;
+    padding: 20px 16px 28px;
+  }
+  .landing-container-creations .cc-two-col.cc-step-card .cc-text {
     padding: 20px 16px 28px;
   }
 }
@@ -301,6 +322,18 @@
   .landing-container-creations .cc-two-col {
     grid-template-columns: 1fr;
     padding: 20px 16px 28px;
+  }
+  .landing-container-creations .cc-two-col.cc-step-card .cc-text {
+    padding: 20px 16px 28px;
+  }
+  /* Checklist visible on phone/tablet (media query fallback) */
+  .landing-container-creations .cc-stamped-section .cc-stamped-checklist-heading,
+  .landing-container-creations .cc-stamped-section .cc-stamped-checklist {
+    margin-top: 16px;
+    margin-bottom: 24px;
+  }
+  .landing-container-creations .landing-content-block {
+    padding: 24px 16px;
   }
 }
 
@@ -343,9 +376,9 @@
 }
 
 .landing-container-creations .cc-media-card {
-  background: var(--landing-steel-bg-alt, #25282e);
-  border: 1px solid var(--landing-steel-border, #2d3239);
-  border-radius: var(--landing-radius, 8px);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md, 8px);
   overflow: hidden;
   padding: 0;
 }
@@ -387,6 +420,9 @@
 }
 
 /* Step 1 stamped section: single-column flow with consistent vertical spacing */
+.landing-container-creations .cc-stamped-section {
+  overflow: visible;
+}
 .landing-container-creations .cc-stamped-section > * + * {
   margin-top: 0;
 }
@@ -418,12 +454,20 @@
   margin-bottom: 28px;
 }
 
+/* Checklist must appear on phone, tablet, and multi-phone: ensure never hidden or clipped */
+.landing-container-creations .cc-stamped-section .cc-stamped-checklist,
+.landing-container-creations .cc-stamped-section .cc-stamped-checklist-heading {
+  display: block;
+  visibility: visible;
+  overflow: visible;
+}
+
 .landing-container-creations.landing-step-stamped .cc-two-col .cc-text h2,
 .landing-container-creations.landing-step-stamped .cc-two-col .cc-text p,
 .landing-container-creations.landing-step-stamped .cc-two-col .cc-text li,
 .landing-container-creations.measure-step-active .cc-two-col .cc-text h2,
 .landing-container-creations.measure-step-active .cc-two-col .cc-text p {
-  color: #1a1d23;
+  color: var(--color-text-primary);
 }
 
 .landing-container-creations.landing-step-stamped .cc-stamped-section .cc-stamped-heading,
@@ -433,7 +477,7 @@
 .landing-container-creations.landing-step-stamped .cc-stamped-section .cc-stamped-checklist-heading,
 .landing-container-creations.landing-step-stamped .cc-stamped-section .cc-stamped-checklist,
 .landing-container-creations.landing-step-stamped .cc-stamped-section .cc-stamped-checklist li {
-  color: #1a1d23;
+  color: var(--color-text-primary);
 }
 
 /* Vent Installation Checklist — below step content (not sticky; desktop not constrained) */
@@ -441,7 +485,7 @@
   max-width: var(--landing-content-max, 1100px);
   margin: 0 auto;
   padding: 32px 20px 40px;
-  border-top: 1px solid var(--landing-steel-border, #2d3239);
+  border-top: 1px solid var(--color-border);
 }
 
 .landing-container-creations .stepTracker-title {
@@ -504,11 +548,11 @@
 }
 
 .landing-container-creations .stepTracker-item--done .stepTracker-icon {
-  color: #22c55e;
+  color: var(--color-primary);
 }
 
 .landing-container-creations .stepTracker-item--current .stepTracker-icon {
-  color: #2563eb;
+  color: var(--color-primary);
 }
 
 .landing-container-creations .stepTracker-item--todo .stepTracker-icon {
@@ -523,7 +567,7 @@
 .landing-container-creations.landing-step-hero .stepTracker,
 .landing-container-creations.landing-step-stamped .stepTracker,
 .landing-container-creations.measure-step-active .stepTracker {
-  border-top-color: #e2e8f0;
+  border-top-color: var(--color-border);
 }
 
 .landing-container-creations.landing-step-hero .stepTracker-item:hover,
@@ -555,18 +599,19 @@
 }
 
 .landing-container-creations .dev-flow-single .dev-step {
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-border);
   padding: 20px;
   background: white;
   border-radius: 8px;
   overflow: auto;
+  min-height: 0; /* allow scroll in flex context so checklist is visible on phone/tablet */
 }
 
 .landing-container-creations .dev-flow-single .dev-step h3 {
   margin: 0 0 16px;
   font-size: 1rem;
   font-weight: 700;
-  color: #1a1d23;
+  color: var(--color-text-primary);
 }
 
 /* Developer-only: grid view ONLY for Phone Grid device mode */
@@ -580,18 +625,19 @@
 }
 
 .landing-container-creations .dev-flow-grid .dev-step {
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-border);
   padding: 20px;
   background: white;
   border-radius: 8px;
   overflow: auto;
+  min-height: 0; /* allow scroll in grid so checklist is visible in multi-phone view */
 }
 
 .landing-container-creations .dev-flow-grid .dev-step h3 {
   margin: 0 0 16px;
   font-size: 1rem;
   font-weight: 700;
-  color: #1a1d23;
+  color: var(--color-text-primary);
 }
 
 /* Editor mode: cards always phone-width regardless of shell (Desktop/Tablet/Phone); horizontal scroll */
@@ -608,5 +654,25 @@
   min-width: 390px !important;
   max-width: 390px !important;
   width: 390px !important;
+  box-sizing: border-box;
+}
+
+/* When device preview is Phone Grid, apply grid layout to landing inside .preview-phone-grid (dev layout) */
+.preview-phone-grid .landing-container-creations {
+  display: grid;
+  grid-template-columns: repeat(2, 390px);
+  gap: 24px;
+  justify-content: center;
+  max-width: 100%;
+  padding: 24px 20px 40px;
+  box-sizing: border-box;
+}
+
+.preview-phone-grid .landing-container-creations > * {
+  min-width: 0;
+  border: 1px solid var(--color-border, rgba(0,0,0,0.1));
+  border-radius: 8px;
+  padding: 20px;
+  background: var(--color-bg-primary, #fff);
   box-sizing: border-box;
 }

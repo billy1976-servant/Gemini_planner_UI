@@ -19,6 +19,7 @@
 import { dispatchState, getState } from "@/state/state-store";
 import { safeImportJson } from "@/engine/core/safe-json-import";
 import { makeFallbackScreen } from "@/engine/core/fallback-screen";
+import containerCreationsLandingJson from "@/05_Logic/logic/content/landing/container-creations.landing.json";
 
 export async function loadScreen(path: string): Promise<any> {
   try {
@@ -38,9 +39,9 @@ export async function loadScreen(path: string): Promise<any> {
     }
     path = decodedPath;
 
-    /* Container Creations landing (JSON flow) — resolved as TSX screen for dev Nodes panel */
+    /* Container Creations landing — single source: static JSON (same as /landing); render via ExperienceRenderer → JsonSkinEngine */
     if (path === "container-creations-landing") {
-      return { __type: "tsx-screen", path: "container-creations-landing" };
+      return Promise.resolve(containerCreationsLandingJson as any);
     }
 
     /* ==================================================

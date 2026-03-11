@@ -1,0 +1,13 @@
+"use client";
+
+import React from "react";
+import PrayerStreamOnboarding from "@/01_App/(live) Business/Prayer_Stream/PrayerStreamOnboarding";
+
+export default function PrayerStreamPage() {
+  return (
+    <div style={{ minHeight: "100vh", background: "var(--color-bg-primary, #020617)", color: "var(--color-text-primary, #e5e7eb)" }}>
+      <PrayerStreamOnboarding />
+    </div>
+  );
+}
+

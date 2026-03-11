@@ -1,14 +1,9 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import RegisterServiceWorker from "./pwa/RegisterServiceWorker";
 import InstallPromptUI from "./install/InstallPromptUI";
 import AuthControls from "./auth/AuthControls";
-
-const ContactsTestButton = dynamic(
-  () => import("./contacts/ContactsTestButton").then((m) => m.default),
-  { ssr: false }
-);
+import ContactsTestButton from "./contacts/ContactsTestButton";
 
 export default function MobileShell() {
   const isDev = process.env.NODE_ENV !== "production";

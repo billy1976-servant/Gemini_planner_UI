@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { Suspense } from "react";
 import { useSyncExternalStore } from "react";
 import { recordInteraction } from "@/logic/runtime/interaction-controller";
 import { readEngineState, subscribeEngineState, writeEngineState } from "@/logic/runtime/engine-bridge";
@@ -7,6 +7,9 @@ import { getState, subscribeState, dispatchState } from "@/state/state-store";
 import { registerEngine } from "@/system/registry/engineRegistry";
 import { resolveContainerCreationsFit } from "@/logic/landing/container-creations-fit";
 import BeforeAfterSlider from "@/04_Presentation/components/molecules/BeforeAfterSlider";
+import { getPaletteForResolution } from "@/engine/core/palette-resolver";
+import { resolveToken } from "@/engine/core/palette-resolve-token";
+import { useTsxEmbed } from "@/lib/tsx-embed-context";
 
 
 /* ======================================================
@@ -45,6 +48,8 @@ export function JsonSkinEngine({ screen }: { screen: any }) {
   // Only ONE section may render at a time
   const gatedChildren = selectActiveChildren(screen.children, state);
 
+  const palette = screen?.palette ? getPaletteForResolution(screen.palette) : undefined;
+
   if (gatedChildren.length === 0) {
     console.warn("[JsonSkinEngine] ⚠️ No children to render!");
   }
@@ -52,7 +57,7 @@ export function JsonSkinEngine({ screen }: { screen: any }) {
   return (
     <>
       {gatedChildren.map((node: any, i: number) => (
-        <JsonNode key={i} node={node} state={state} />
+        <JsonNode key={i} node={node} state={state} palette={palette} />
       ))}
     </>
   );
@@ -99,7 +104,9 @@ function selectActiveChildren(children: any[], state: any) {
 ====================================================== */
 
 
-function JsonNode({ node, state }: { node: any; state: any }) {
+function JsonNode({ node, state, palette }: { node: any; state: any; palette?: Record<string, any> }) {
+  const tsxEmbed = useTsxEmbed();
+
   if (!node) {
     return null;
   }
@@ -113,36 +120,77 @@ function JsonNode({ node, state }: { node: any; state: any }) {
   }
 
   switch (node.type) {
-    // ✅ CRITICAL FIX: Handle section nodes recursively
+    // TSX embed: render TSX screen through pipeline (Phase 1); component from TsxEmbedProvider
+    case "tsx-embed": {
+      const path = node?.params?.path ?? "";
+      const Component = tsxEmbed?.getComponent(path) ?? null;
+      if (!Component) return <div style={{ padding: 16, color: "#666" }}>TSX screen not found: {path || "(no path)"}</div>;
+      return (
+        <div style={{ width: "100%", maxWidth: "none", padding: 0, margin: 0 }}>
+          <Suspense fallback={<div style={{ padding: 24, textAlign: "center" }}>Loading…</div>}>
+            <Component />
+          </Suspense>
+        </div>
+      );
+    }
+
+    // Section: layout only from schema (params.containerLayout, params.wrapStyle); no page/screen/role-based layout
     case "section":
-      if (Array.isArray(node.children)) {
-        return (
-          <div style={{
-            marginBottom: "var(--spacing-6, 24px)",
-            padding: "var(--spacing-4, 16px)",
-            background: "var(--color-bg-secondary)",
-            borderRadius: "var(--radius-md)",
-            border: "1px solid var(--color-border)",
-            fontFamily: "var(--font-family-base)",
-          }}>
-            {node.children.map((child: any, i: number) => (
-              <JsonNode key={i} node={child} state={state} />
-            ))}
-          </div>
-        );
+      if (!Array.isArray(node.children)) return null;
+      const rawLayout = node?.params?.containerLayout;
+      const layout =
+        rawLayout === "full" || rawLayout === "contained" || rawLayout === "edge"
+          ? rawLayout
+          : "contained";
+      const rawWrap = node?.params?.wrapStyle;
+      const wrapStyle =
+        rawWrap === "card" || rawWrap === "block" || rawWrap === "none"
+          ? rawWrap
+          : "card";
+      const children = node.children.map((child: any, i: number) => (
+        <JsonNode key={i} node={child} state={state} palette={palette} />
+      ));
+      const layoutStyle: React.CSSProperties =
+        layout === "full"
+          ? { width: "100%", maxWidth: "none", padding: 0, boxSizing: "border-box" as const }
+          : layout === "edge"
+            ? { width: "100%", margin: 0, padding: 0, boxSizing: "border-box" as const }
+            : { maxWidth: "720px", margin: "0 auto", padding: "1.5rem 1rem", boxSizing: "border-box" as const };
+      let inner: React.ReactNode;
+      if (wrapStyle === "none") {
+        inner = <>{children}</>;
+      } else {
+        const cardBg = palette?.tokens?.cardBackground ?? palette?.cardBackground ?? "var(--color-bg-secondary)";
+        const borderColor = palette?.tokens?.border ?? palette?.border ?? "var(--color-border)";
+        const wrapperStyle: React.CSSProperties =
+          wrapStyle === "card"
+            ? {
+                marginBottom: "var(--spacing-6, 24px)",
+                padding: "var(--spacing-4, 16px)",
+                background: cardBg,
+                borderRadius: "var(--radius-md)",
+                border: `1px solid ${borderColor}`,
+                fontFamily: "var(--font-family-base)",
+              }
+            : {
+                marginBottom: "var(--spacing-6, 24px)",
+                fontFamily: "var(--font-family-base)",
+              };
+        inner = <div style={wrapperStyle}>{children}</div>;
       }
-      return null;
+      return <div style={layoutStyle}>{inner}</div>;
 
     case "text": {
       const variant = node.params?.variant ?? "body";
       const isHeadline = variant === "headline";
       const isSubheadline = variant === "subheadline";
+      const resolvedColor = resolveToken(node.params?.color, 0, palette) ?? node.params?.color ?? "var(--color-text-primary)";
       return (
         <p
           style={{
             marginBottom: "var(--spacing-3, 12px)",
             lineHeight: isHeadline ? 1.2 : "var(--line-height-normal, 1.6)",
-            color: "var(--color-text-primary)",
+            color: resolvedColor,
             fontSize: isHeadline ? "1.5rem" : isSubheadline ? "1.125rem" : "var(--font-size-base)",
             fontWeight: isHeadline ? 700 : 400,
             fontFamily: "var(--font-family-base)",
@@ -356,13 +404,14 @@ function JsonNode({ node, state }: { node: any; state: any }) {
       }
 
       if (layout === "side-by-side" && srcList.length >= 2) {
+        const resolvedBg = resolveToken(node.params?.background, 0, palette) ?? node.params?.background;
         const imgStyle = {
           width: node.params?.width ?? "100%",
           maxWidth: node.params?.maxWidth ?? "100%",
           aspectRatio: node.params?.aspectRatio ?? "16/9",
           objectFit: (node.params?.objectFit as React.CSSProperties["objectFit"]) ?? "contain",
           borderRadius: node.params?.borderRadius ?? "var(--radius-md)",
-          background: node.params?.background,
+          background: resolvedBg,
         };
         return (
           <div
@@ -411,13 +460,14 @@ function JsonNode({ node, state }: { node: any; state: any }) {
           </div>
         );
       }
+      const resolvedImgBg = resolveToken(node.params?.background, 0, palette) ?? node.params?.background;
       const imgStyle: React.CSSProperties = {
           width: node.params?.width ?? "100%",
           maxWidth: node.params?.maxWidth ?? "100%",
           aspectRatio: node.params?.aspectRatio ?? "16/9",
           objectFit: (node.params?.objectFit as React.CSSProperties["objectFit"]) ?? "contain",
           borderRadius: node.params?.borderRadius ?? "var(--radius-md)",
-          background: node.params?.background,
+          background: resolvedImgBg,
         };
       return (
         <div
@@ -472,7 +522,7 @@ function JsonNode({ node, state }: { node: any; state: any }) {
             borderRadius: node.params?.borderRadius ?? "var(--radius-md)",
             overflow: "hidden",
             marginBottom: "var(--spacing-4, 16px)",
-            background: node.params?.background ?? "var(--landing-steel-bg, #1a1d23)",
+            background: resolveToken(node.params?.background, 0, palette) ?? node.params?.background ?? "var(--landing-steel-bg, #1a1d23)",
           }}
         >
           {isEmbed ? (

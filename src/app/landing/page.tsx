@@ -86,8 +86,10 @@ export default function LandingPage() {
       sectionByKey = { "auto-root": tree };
     }
     const labels = collectSectionLabels(keys, sectionByKey);
+    const globalPalette = stateSnapshot?.values?.paletteName as string | undefined;
+    tree = { ...tree, palette: globalPalette ?? (json as { palette?: string })?.palette };
     return { treeForRender: tree, sectionKeysFromTree: keys, sectionLabels: labels };
-  }, [json]);
+  }, [json, stateSnapshot]);
 
   React.useEffect(() => {
     setCurrentScreenTree(treeForRender);
@@ -109,8 +111,8 @@ export default function LandingPage() {
           justifyContent: "flex-end",
           alignItems: "center",
           padding: "0.75rem 1.5rem",
-          background: "var(--landing-steel-bg, #1a1d23)",
-          borderBottom: "1px solid var(--landing-steel-border, #2d3239)",
+          background: "var(--color-bg-primary)",
+          borderBottom: "1px solid var(--color-border)",
         }}
       >
         <a
@@ -121,9 +123,9 @@ export default function LandingPage() {
             padding: "0.5rem 1rem",
             fontSize: "0.9375rem",
             fontWeight: 600,
-            color: "var(--landing-steel-fg, #e2e8f0)",
+            color: "var(--color-text-primary)",
             background: "transparent",
-            border: "1px solid var(--landing-steel-border, #2d3239)",
+            border: "1px solid var(--color-border)",
             borderRadius: "6px",
             textDecoration: "none",
           }}
@@ -135,9 +137,10 @@ export default function LandingPage() {
         style={{
           flex: 1,
           minHeight: "calc(100vh - 52px)",
-          padding: "1.5rem 1rem",
-          maxWidth: 720,
-          margin: "0 auto",
+          width: "100%",
+          maxWidth: "none",
+          padding: 0,
+          margin: 0,
         }}
       >
         <ExperienceRenderer

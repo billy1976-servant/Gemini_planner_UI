@@ -266,13 +266,14 @@ export function DevNodePanel({ screenPath }: { screenPath: string }) {
   const props = useSyncExternalStore(subscribeDevSidebarProps, getDevSidebarProps, getDevSidebarProps);
   const override = useSyncExternalStore(subscribe, () => getOverride(screenPath), () => getOverride(screenPath));
   const editorMode = useSyncExternalStore(subscribeEditorMode, getEditorMode, getEditorMode);
+  /** Strict equality: screenPath must be the canonical key (getCanonicalScreenKey) so read/write use the same key. */
   const isWebsiteScreen = props?.websiteScreenPath != null && props.websiteScreenPath === screenPath;
   const baseOrder = props?.websiteNodeOrder ?? [];
   const effectiveOrder = override ?? baseOrder;
   const landingFlowScreens = props?.landingFlowScreens ?? [];
   const isLandingConfig =
     props?.landingScreenPath != null &&
-    props.landingScreenPath === screenPath &&
+    props?.landingScreenPath === screenPath &&
     props?.landingConfig != null;
 
   // Sync local selection to store (node list → canvas highlight)

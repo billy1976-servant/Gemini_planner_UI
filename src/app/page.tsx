@@ -2,7 +2,6 @@
 export const dynamic = "force-dynamic";
 // Path contract: TSX resolution uses require.context("../01_App/apps-tsx", ...) (see scripts/validate-paths.js)
 import React, { useEffect, useMemo, useState } from "react";
-import nextDynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { getScreenById, setScreenPaths, flattenIndexToPaths } from "@/07_Dev_Tools/nav/screen-registry";
 import { useSyncExternalStore } from "react";
@@ -30,7 +29,8 @@ import {
   getDomainMicroLoaders,
   type ResolveCapabilityProfileOptions,
 } from "@/03_Runtime/capability";
-import { TSXScreenWithEnvelope } from "@/lib/tsx-structure/TSXScreenWithEnvelope";
+import { TsxEmbedProvider } from "@/lib/tsx-embed-context";
+import { resolveTsxScreen } from "@/lib/tsx-screen-resolver";
 import { AppShellDirector } from "@/lib/director/AppShellDirector";
 
 /** Canonical default when URL/state missing or invalid (bare id). Never pass bare ids to loadScreen. */
@@ -47,10 +47,16 @@ function isReturningUser(): boolean {
   }
 }
 
-const HiClarifyOnboarding = nextDynamic(
-  () => import("@/apps-tsx/HiClarify/HiClarifyOnboarding").then((m) => m.default),
-  { ssr: false }
-);
+/** Build synthetic json-skin tree so TSX screens render through the same pipeline (ExperienceRenderer → JsonRenderer → JsonSkinEngine). */
+function buildTsxEmbedTree(tsxPath: string) {
+  return {
+    type: "json-skin",
+    id: "tsx-wrapper",
+    children: [
+      { type: "tsx-embed", params: { path: tsxPath }, children: [] },
+    ],
+  };
+}
 
 export default function Page() {
   const searchParams = useSearchParams();
@@ -152,10 +158,39 @@ export default function Page() {
 
   if (isTsxScreen) {
     const tsxScreenPath = effectivePath.startsWith("tsx:") ? effectivePath : `tsx:${effectivePath}`;
+    const TsxComponent = resolveTsxScreen(tsxScreenPath);
+    const syntheticTree = buildTsxEmbedTree(tsxScreenPath);
+    const experienceProfile = getExperienceProfile(experience);
+    const treeForRender = composeOfflineScreen({
+      rootNode: syntheticTree as any,
+      experienceProfile,
+      layoutState: {},
+    });
+    setCurrentScreenTree(treeForRender);
+    const tsxEmbedValue = {
+      getComponent: (path: string) => (path === tsxScreenPath && TsxComponent ? TsxComponent : null),
+    };
     return (
       <CapabilityProvider>
         <AppShellDirector screenPath={tsxScreenPath} appSchema={null}>
-          <TSXScreenWithEnvelope screenPath={tsxScreenPath} Component={HiClarifyOnboarding} />
+          <TsxEmbedProvider value={tsxEmbedValue}>
+            <div style={{ display: "flex", flexDirection: "column", width: "100%", minHeight: "100vh", overflowY: "visible" }}>
+              <ExperienceRenderer
+                key={`tsx-${tsxScreenPath}`}
+                node={treeForRender}
+                defaultState={{}}
+                profileOverride={experienceProfile}
+                sectionLayoutPresetOverrides={{}}
+                cardLayoutPresetOverrides={{}}
+                organInternalLayoutOverrides={{}}
+                screenId={tsxScreenPath}
+                behaviorProfile="default"
+                experience={experience}
+                sectionKeys={["tsx-embed"]}
+                sectionLabels={{ "tsx-embed": "TSX Screen" }}
+              />
+            </div>
+          </TsxEmbedProvider>
         </AppShellDirector>
       </CapabilityProvider>
     );

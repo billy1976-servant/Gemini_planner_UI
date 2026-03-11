@@ -6,7 +6,6 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import nextDynamic from "next/dynamic";
 import { useSyncExternalStore } from "react";
 import ExperienceRenderer from "@/engine/core/ExperienceRenderer";
-import JsonRenderer from "@/engine/core/json-renderer";
 import PreviewStage from "@/components/stage/PreviewStage";
 import { recordStage } from "@/engine/debug/pipelineStageTrace";
 import { PipelineDebugStore } from "@/devtools/pipeline-debug-store";
@@ -76,7 +75,7 @@ import { validateScreenJson, logScreenJsonValidation } from "@/debug/validateScr
 import WebsiteShell from "@/lib/site-skin/shells/WebsiteShell";
 import LearningShell from "@/lib/site-skin/shells/LearningShell";
 import GoogleLoginButton from "@/app/components/GoogleLoginButton";
-import { TSXScreenWithEnvelope } from "@/lib/tsx-structure/TSXScreenWithEnvelope";
+import { TsxEmbedProvider } from "@/lib/tsx-embed-context";
 
 
 /* ============================================================
@@ -161,8 +160,8 @@ const EXPLICIT_TSX_MAP: Record<string, () => Promise<any>> = {
     import("@/01_App/(live) Business/Container_Creations/ContainerCreationsWebsite"),
   "(live) Business/Container_Creations/ContainerCreationsLanding": () =>
     import("@/01_App/(live) Business/Container_Creations/ContainerCreationsLanding"),
-  "container-creations-landing": () =>
-    import("@/01_App/(live) Business/Container_Creations/ContainerCreationsLanding-2"),
+  "(live) Gospel/Discipleship/GospelDiscipleship": () =>
+    import("@/01_App/(live) Gospel/Discipleship/GospelDiscipleship"),
 };
 
 function resolveTsxScreen(path: string) {
@@ -186,6 +185,11 @@ function resolveTsxScreen(path: string) {
 
   if (EXPLICIT_TSX_MAP[businessPath]) {
     return nextDynamic(EXPLICIT_TSX_MAP[businessPath], { ssr: false });
+  }
+
+  const gospelPath = `(live) Gospel/${normalized}`;
+  if (EXPLICIT_TSX_MAP[gospelPath]) {
+    return nextDynamic(EXPLICIT_TSX_MAP[gospelPath], { ssr: false });
   }
 
   return null;
@@ -612,6 +616,12 @@ export default function DevPage() {
       if (ccPath === "Container_Creations/ContainerCreationsLanding") {
         return "tsx:(live) Business/Container_Creations/ContainerCreationsLanding";
       }
+      if (ccPath === "Gospel/Discipleship/GospelDiscipleship") {
+        return "tsx:(live) Gospel/Discipleship/GospelDiscipleship";
+      }
+      if (ccPath === "Prayer_Stream/PrayerStreamOnboarding") {
+        return "tsx:(live) Business/Prayer_Stream/PrayerStreamOnboarding";
+      }
       return screenParamDecoded;
     })();
 
@@ -721,28 +731,46 @@ export default function DevPage() {
     return <div style={{ color: "red" }}>{error}</div>;
   }
 
-  if (!mounted) return null;
+  if (!mounted) return <div style={{ minHeight: 200, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--editor-text-muted, #64748b)" }} aria-hidden>Loading…</div>;
 
   const overlay = null;
-
+  const behaviorProfile = (stateSnapshot?.values?.behaviorProfile ?? "default") as string;
 
   if (TsxComponent) {
-    // Do not clear the store here: TSX screens (e.g. ContainerCreationsWebsite) set
-    // websiteScreenPath/websiteNodeOrder for the Nodes panel. Clearing on every render
-    // caused the Nodes panel to lose recognition after opening another sidebar view.
-    // Layout panel content for TSX is set in useEffect above so sidebar does not reset during render.
-    // JSON-driven screens (config.screens): call registerJsonScreen(screenPath, config, onChange) or
-    // useRegisterJsonScreen(screenPath, config, setConfig) so the Nodes panel lists and edits nodes automatically.
     const screenPath = tsxMeta?.path ? (tsxMeta.path.startsWith("tsx:") ? tsxMeta.path : `tsx:${tsxMeta.path}`) : "tsx:HiClarify/HiClarifyOnboarding";
     const screenKey = getCanonicalNavScreenKey(screen, {});
+    const syntheticTree = { type: "json-skin", id: "tsx-wrapper", children: [{ type: "tsx-embed", params: { path: screenPath }, children: [] }] };
+    const treeForRenderTsx = composeOfflineScreen({
+      rootNode: syntheticTree as any,
+      experienceProfile: effectiveProfile,
+      layoutState: { ...layoutSnapshot, experience, templateId: effectiveTemplateId, mode: effectiveLayoutMode },
+    });
+    setCurrentScreenTree(treeForRenderTsx);
+    const tsxEmbedValue = { getComponent: (path: string) => (path === screenPath ? TsxComponent : null) };
+    const jsonContentTsx = (
+      <ExperienceRenderer
+        key={`tsx-${screenPath}`}
+        node={treeForRenderTsx}
+        defaultState={{}}
+        profileOverride={effectiveProfile}
+        sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
+        cardLayoutPresetOverrides={cardLayoutPresetOverrides}
+        organInternalLayoutOverrides={organInternalLayoutOverrides}
+        screenId={screenKey}
+        behaviorProfile={behaviorProfile}
+        experience={experience}
+        sectionKeys={["tsx-embed"]}
+        sectionLabels={{ "tsx-embed": "TSX Screen" }}
+      />
+    );
     return (
       <>
         {overlay}
         <PreviewStage>
           <TsxNavCapture screenKey={screenKey}>
-            <Suspense fallback={<div style={{ padding: 40 }}>Loading screen…</div>}>
-              <TSXScreenWithEnvelope screenPath={screenPath} Component={TsxComponent} />
-            </Suspense>
+            <TsxEmbedProvider value={tsxEmbedValue}>
+              {jsonContentTsx}
+            </TsxEmbedProvider>
           </TsxNavCapture>
         </PreviewStage>
       </>
@@ -842,6 +870,10 @@ export default function DevPage() {
     treeForRender = wrapped;
     sectionKeysFromTree = ["auto-root"];
     sectionByKey = { "auto-root": wrapped };
+  }
+  const globalPalette = stateSnapshot?.values?.paletteName as string | undefined;
+  if (treeForRender != null && (globalPalette != null || (json as { palette?: string })?.palette != null)) {
+    treeForRender = { ...treeForRender, palette: globalPalette ?? (json as { palette?: string })?.palette };
   }
   const sectionKeysForPreset = sectionKeysFromTree;
   sectionKeysRef.current = sectionKeysForPreset;
@@ -982,8 +1014,7 @@ export default function DevPage() {
     });
     console.log("[LAYOUT INVESTIGATION] ===== END SUMMARY =====");
   }
-  
-  const behaviorProfile = (stateSnapshot?.values?.behaviorProfile ?? "default") as string;
+
   const jsonContent = (
     <ExperienceRenderer
       key={screenContainerKey}
@@ -1065,23 +1096,17 @@ export default function DevPage() {
         <div
           data-proof="pure-json-app"
           style={{
-            height: "100%",
             width: "100%",
+            maxWidth: "none",
+            padding: 0,
+            minHeight: "100%",
             display: "flex",
             flexDirection: "column",
             overflow: "hidden",
-            background: "#fff",
           }}
         >
           <div style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
-            <JsonRenderer
-              node={treeForRender}
-              experience="website"
-              defaultState={json?.state}
-              profileOverride={effectiveProfile}
-              screenId={screenKey}
-              behaviorProfile={behaviorProfile}
-            />
+            {jsonContent}
           </div>
         </div>
       </PreviewStage>

@@ -1,5 +1,6 @@
 {
   "id": "container-creations-landing",
+  "palette": "container-creations",
   "state": {
     "landingStep": 0,
     "intent": null,
@@ -17,6 +18,8 @@
         "role": "hero",
         "when": { "state": "landingStep", "equals": 0 },
         "params": {
+          "containerLayout": "full",
+          "wrapStyle": "none",
           "layout": "hero-split",
           "splitIndex": 5,
           "padding": 80,
@@ -33,7 +36,7 @@
             "params": {
               "variant": "headline",
               "fontSize": "clamp(32px, 4vw, 48px)",
-              "color": "#ffffff",
+              "color": "tokens.textPrimary",
               "maxLines": 2
             }
           },
@@ -44,7 +47,7 @@
               "variant": "subheadline",
               "fontSize": "18px",
               "opacity": 0.8,
-              "color": "#ffffff",
+              "color": "tokens.textPrimary",
               "maxLines": 1
             }
           },
@@ -76,7 +79,7 @@
               "maxWidth": 560,
               "borderRadius": 16,
               "objectFit": "contain",
-              "background": "#1a1d23",
+              "background": "tokens.surface",
               "autoplay": true,
               "muted": true,
               "loop": true,
@@ -111,7 +114,7 @@
               "objectFit": "contain",
               "aspectRatio": "16/9",
               "borderRadius": 20,
-              "background": "#111"
+              "background": "tokens.cardBackground"
             },
             "alt": "Install comparison"
           },
@@ -157,7 +160,7 @@
               "objectFit": "contain",
               "aspectRatio": "16/9",
               "borderRadius": 20,
-              "background": "#111"
+              "background": "tokens.cardBackground"
             },
             "alt": "Vent structural close-up"
           },
@@ -203,7 +206,7 @@
               "objectFit": "contain",
               "aspectRatio": "16/9",
               "borderRadius": 20,
-              "background": "#111"
+              "background": "tokens.cardBackground"
             },
             "alt": "12 vent — airflow and moisture control"
           },
@@ -250,7 +253,7 @@
               "objectFit": "contain",
               "aspectRatio": "16/9",
               "borderRadius": 20,
-              "background": "#111"
+              "background": "tokens.cardBackground"
             },
             "alt": "Measurement diagram"
           },
@@ -312,7 +315,7 @@
               "objectFit": "contain",
               "aspectRatio": "16/9",
               "borderRadius": 20,
-              "background": "#111"
+              "background": "tokens.cardBackground"
             },
             "alt": "Dark container vs same space with light"
           },
@@ -357,7 +360,7 @@
               "objectFit": "contain",
               "aspectRatio": "16/9",
               "borderRadius": 20,
-              "background": "#111"
+              "background": "tokens.cardBackground"
             },
             "alt": "Final install"
           },

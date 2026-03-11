@@ -1,28 +1,13 @@
 /**
  * Registry for screens that support Editor vs Preview mode.
- * Not hardcoded to one screen: rule-based + override lists for explicit inclusion/exclusion.
+ * On /dev, every screen is editor-capable so the toggle applies to every view.
  */
-
-/** Screen paths that are always editor-capable (e.g. explicit list for future screens). */
-const ALWAYS_EDITOR_CAPABLE: string[] = [];
-
-/** Screen paths (or substrings) that are never editor-capable (exclusion overrides). */
-const NEVER_EDITOR_CAPABLE: string[] = [];
 
 /**
- * Returns true if the given screen path supports editor mode (Editor / Preview toggle).
- * Rule: (live) TSX screens are capable; override lists allow explicit inclusion/exclusion.
+ * Returns true if the current context supports editor mode (Editor / Preview toggle).
+ * Rule: when on /dev path, every screen is editor-capable.
  */
-export function isEditorCapable(screenPath: string): boolean {
-  if (!screenPath || typeof screenPath !== "string") return false;
-
-  const normalized = screenPath.trim();
-  if (NEVER_EDITOR_CAPABLE.some((x) => normalized.includes(x))) return false;
-  if (ALWAYS_EDITOR_CAPABLE.some((x) => normalized.includes(x))) return true;
-
-  const isLive = normalized.includes("(live)");
-  const lower = normalized.toLowerCase();
-  const isTsx =
-    normalized.endsWith(".tsx") || lower.startsWith("tsx:");
-  return isLive && isTsx;
+export function isEditorCapable(_screenPath: string): boolean {
+  if (typeof window === "undefined") return false;
+  return window.location.pathname.startsWith("/dev");
 }

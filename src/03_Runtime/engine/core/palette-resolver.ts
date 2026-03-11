@@ -7,7 +7,7 @@ import defaultPalette from "@/palettes/default.json";
  * Optional palette override: when rendering a palette preview tile, pass the palette name
  * so token resolution uses that palette instead of the global store.
  */
-function getPaletteForResolution(paletteName?: string): Record<string, any> | undefined {
+export function getPaletteForResolution(paletteName?: string): Record<string, any> | undefined {
   if (!paletteName || typeof paletteName !== "string") return undefined;
   const p = (palettes as Record<string, any>)[paletteName];
   return p ? (p as Record<string, any>) : (defaultPalette as Record<string, any>);

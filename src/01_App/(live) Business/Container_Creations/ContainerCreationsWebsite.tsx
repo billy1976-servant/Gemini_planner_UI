@@ -6,7 +6,9 @@
  * Template receives screenPath, experience, layoutStyle from envelope; no router/state in template.
  */
 import React, { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import content from "./content";
+import { getCanonicalScreenKey } from "@/07_Dev_Tools/navigation/getDevScreenKey";
 import { WebsiteTemplate } from "@/04_Presentation/components/organs/tsx/website/WebsiteTemplate";
 import { validateTsxWebsiteContract } from "@/04_Presentation/components/organs/tsx/website/validateContract";
 import { setDevWebsiteNodeOrder } from "@/app/ui/control-dock/dev-right-sidebar-store";
@@ -20,6 +22,8 @@ type Props = {
 };
 
 export default function ContainerCreationsWebsite(props: Props) {
+  const searchParams = useSearchParams();
+  const canonicalKey = getCanonicalScreenKey(searchParams);
   const screenPath = props.screenPath ?? content.defaultScreenPath;
   const experience = props.experience ?? "website";
   const layoutStyle = props.layoutStyle;
@@ -48,10 +52,10 @@ export default function ContainerCreationsWebsite(props: Props) {
   }, []);
 
   useEffect(() => {
-    if (contract?.nodeOrder) {
-      setDevWebsiteNodeOrder(screenPath, contract.nodeOrder);
+    if (contract?.nodeOrder && canonicalKey != null) {
+      setDevWebsiteNodeOrder(canonicalKey, contract.nodeOrder);
     }
-  }, [contract?.nodeOrder, screenPath]);
+  }, [contract?.nodeOrder, canonicalKey]);
 
   if (error) {
     return (
