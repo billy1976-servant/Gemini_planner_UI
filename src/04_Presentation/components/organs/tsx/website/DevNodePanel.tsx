@@ -371,7 +371,7 @@ export function DevNodePanel({ screenPath }: { screenPath: string }) {
             screenIds={props.landingConfig.screens.map((s) => s.id)}
             selectedNodeId={selectedNodeId}
             onSelectNode={setSelectedNodeId}
-            onChange={(patch) => updateNode(selectedNodeId, patch)}
+            onChange={(patch) => updateNode(selectedNodeId, patch as Partial<LandingFlowScreen> & Record<string, unknown>)}
           />
         ) : null}
       </div>

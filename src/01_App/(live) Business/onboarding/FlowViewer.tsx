@@ -14,6 +14,7 @@ import { readEngineState, subscribeEngineState } from "@/logic/runtime/engine-br
 import type { EngineState } from "@/logic/runtime/engine-state";
 import { ENGINE_STATE_KEY } from "@/logic/runtime/engine-state";
 import { EducationCard } from "@/ui/molecules/cards";
+import { useWizardConfig } from "@/lib/tsx-structure/engines/wizard";
 
 const cv = content.flowViewer;
 
@@ -35,6 +36,7 @@ function buildFlowViewerUrl(flowId: string | null, engineId: string): string {
  * Content from content.ts; navigation via CustomEvent("navigate"), no router.push.
  */
 export default function FlowViewer() {
+  const wizardConfig = useWizardConfig();
   const searchParams = useSearchParams();
 
   const flowId = searchParams.get("flow") || null;
@@ -275,7 +277,13 @@ export default function FlowViewer() {
   };
 
   return (
-    <div style={containerStyle}>
+    <div
+      style={containerStyle}
+      data-structure-type="wizard"
+      data-wizard-progress-style={wizardConfig?.steps.progressStyle ?? "stepper"}
+      data-wizard-nav-placement={wizardConfig?.navigation.placement ?? "bottom"}
+      data-wizard-linear={wizardConfig?.linear ?? true}
+    >
       {/* Flow and Engine Selectors - hidden in client view */}
       {!clientMode && (
       <div style={selectorContainer}>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useDashboardConfig } from "@/lib/tsx-structure/engines/dashboard";
 import { useBusinesses } from "./useBusinesses";
 import { CommandCenterTab } from "./CommandCenterTab";
 import { CompareTab } from "./CompareTab";
@@ -24,6 +25,7 @@ const NAV_ITEMS: { id: ViewId; label: string; icon: string }[] = [
 ];
 
 export default function WorkspaceLayout() {
+  const dashboardConfig = useDashboardConfig();
   const { businesses, getBusiness } = useBusinesses();
   const [businessId, setBusinessId] = useState<string>(() => businesses[0]?.id ?? "");
   const [dateRange, setDateRange] = useState<string>("last-30");
@@ -52,7 +54,14 @@ export default function WorkspaceLayout() {
   const refreshKey = `${businessId}-${activeView}`;
 
   return (
-    <div className={styles.root}>
+    <div
+      className={styles.root}
+      data-structure-type="dashboard"
+      data-dashboard-grid-columns={dashboardConfig?.grid.columns ?? 12}
+      data-dashboard-grid-gap={dashboardConfig?.grid.gap ?? 16}
+      data-dashboard-widgets-resizable={dashboardConfig?.widgets.resizable ?? true}
+      data-dashboard-widgets-draggable={dashboardConfig?.widgets.draggable ?? true}
+    >
       <header className={styles.header}>
         <div className={styles.headerLeft}>
           <span className={styles.logo}>Workspace</span>

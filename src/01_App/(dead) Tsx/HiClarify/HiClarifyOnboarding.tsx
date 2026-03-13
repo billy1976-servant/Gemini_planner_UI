@@ -1,14 +1,20 @@
 "use client";
 
 import React from "react";
+import { useWizardConfig } from "@/lib/tsx-structure/engines/wizard";
 
 /**
  * Google-style onboarding: single view, 5 clean lines, centered stack.
  * No icons, no tabs, no play button, minimal style.
  */
 export default function HiClarifyOnboarding() {
+  const wizardConfig = useWizardConfig();
   return (
     <div
+      data-structure-type="wizard"
+      data-wizard-progress-style={wizardConfig?.steps.progressStyle ?? "minimal"}
+      data-wizard-nav-placement={wizardConfig?.navigation.placement ?? "bottom"}
+      data-wizard-linear={wizardConfig?.linear ?? true}
       style={{
         minHeight: "100vh",
         display: "flex",

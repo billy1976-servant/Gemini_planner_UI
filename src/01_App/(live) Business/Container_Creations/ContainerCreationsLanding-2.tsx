@@ -20,6 +20,8 @@ import {
 import { registerJsonScreen } from "@/app/ui/control-dock/editor/registerJsonScreen";
 import InlineEditableText from "@/app/ui/control-dock/editor/InlineEditableText";
 import { getOverride, subscribe } from "@/04_Presentation/components/organs/tsx/website/node-order-override-store";
+import { useWizardConfig } from "@/lib/tsx-structure/engines/wizard";
+import { renderContentBlocks, type LandingContentBlock } from "@/lib/landing-content-blocks";
 import "@/app/landing/landing-theme.css";
 
 const COMPONENT_NAME = "ContainerCreationsLanding-2";
@@ -70,7 +72,7 @@ type Screen = {
   layout: string;
   title: string;
   subtitle?: string;
-  content: ContentBlock[];
+  content: LandingContentBlock[];
   media: MediaBlock[];
   buttons: ButtonBlock[];
   nextScreenId?: string;
@@ -292,90 +294,6 @@ function MediaPlaceholder({ label, className }: { label: string; className?: str
   );
 }
 
-type RenderContentBlocksOptions = {
-  isEditor: boolean;
-  screenId: string;
-  onParagraphChange: (blockIndex: number, text: string) => void;
-};
-
-/** Universal content block renderer. Layouts must use this only — never map/filter screen.content by type. */
-function renderContentBlocks(content: ContentBlock[], options?: RenderContentBlocksOptions) {
-  const editorOpts = options;
-  return content.map((block, i) => {
-    if (block.type === "badge") {
-      return <div key={i} className="hero-badge">{block.text}</div>;
-    }
-    if (block.type === "paragraph") {
-      const style: React.CSSProperties = {};
-      if (block.className === "stars") {
-        Object.assign(style, { fontSize: "1.25rem", marginBottom: 8 });
-      } else if (block.className === "testimonial") {
-        Object.assign(style, { fontStyle: "italic", marginBottom: 4 });
-      } else if (block.className === "testimonial-attribution") {
-        Object.assign(style, { opacity: 0.85, marginBottom: 24 });
-      }
-      if (editorOpts?.isEditor && editorOpts.screenId) {
-        return (
-          <InlineEditableText
-            key={i}
-            value={block.text}
-            onChange={(v) => options.onParagraphChange(i, v)}
-            isEditing
-            as="p"
-            style={style}
-            multiline
-          />
-        );
-      }
-      return <p key={i} style={style}>{block.text}</p>;
-    }
-    if (block.type === "heading" && block.level === 3) {
-      return (
-        <h3 key={i} className="cc-stamped-checklist-heading" style={{ fontSize: "1.25rem", fontWeight: 600 }}>
-          {block.text}
-        </h3>
-      );
-    }
-    if (block.type === "checklist") {
-      return (
-        <React.Fragment key={i}>
-          {block.heading && (
-            <h3 className="cc-stamped-checklist-heading" style={{ fontSize: "1.25rem", fontWeight: 600 }}>
-              {block.heading}
-            </h3>
-          )}
-          <ul className="cc-stamped-checklist" style={{ listStyle: "none", padding: 0 }}>
-            {block.items.map((item, j) => {
-              const title = typeof item === "string" ? item : item.title;
-              const sub = typeof item === "string" ? undefined : item.sub;
-              return (
-                <li key={j} style={{ display: "flex", gap: 12, alignItems: "flex-start", fontSize: "0.9375rem", lineHeight: 1.45, marginBottom: 12 }}>
-                  <span style={{ flexShrink: 0 }} aria-hidden>
-                    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: "block" }}>
-                      <circle cx="11" cy="11" r="10" fill="#16a34a" />
-                      <path d="M6 11l3.5 3.5L16 8" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </span>
-                  <span>
-                    <strong style={{ display: "block", marginBottom: 2 }}>{title}</strong>
-                    {sub != null && <span style={{ opacity: 0.9 }}>{sub}</span>}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-        </React.Fragment>
-      );
-    }
-    // Unknown/future block types: do not filter out — render nothing but allow layout to stay consistent
-    if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
-      // eslint-disable-next-line no-console
-      console.warn("[ContainerCreationsLanding-2] Unknown content block type:", (block as { type?: string }).type);
-    }
-    return null;
-  });
-}
-
 const stepNavButtonStyle: React.CSSProperties = {
   padding: "10px 18px",
   borderRadius: 8,
@@ -397,6 +315,7 @@ const stepNavButtonStyleSteel: React.CSSProperties = {
 };
 
 export default function ContainerCreationsLanding2() {
+  const wizardConfig = useWizardConfig();
   const containerRef = useRef<HTMLDivElement>(null);
   const editorMode = useSyncExternalStore(subscribeEditorMode, getEditorMode, getEditorMode);
   const isEditor = editorMode === "editor";
@@ -872,7 +791,7 @@ export default function ContainerCreationsLanding2() {
                   multiline
                 />
               ) : null}
-              {renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t) } : undefined)}
+              {renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t), checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" } : { checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" })}
               {screen.buttons.filter((b) => b.type === "goto").map((btn, j) => {
                 const idx = screen.buttons.indexOf(btn);
                 return (
@@ -900,7 +819,7 @@ export default function ContainerCreationsLanding2() {
                 />
               </div>
               <div className="cc-stamped-description">
-                {renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t) } : undefined)}
+                {renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t), checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" } : { checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" })}
               </div>
               <div className="landing-phone-video-wrap" style={{ marginBottom: 16 }}>
                 {screen.media.filter((m) => m.type === "video").map((m, i) => (
@@ -958,7 +877,7 @@ export default function ContainerCreationsLanding2() {
                 />
               </div>
               <div style={useLightCard ? { color: "#1a1d23" } : undefined}>
-                {renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t) } : undefined)}
+                {renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t), checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" } : { checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" })}
               </div>
               {renderInlineUI(screen, useLightCard)}
               {!useLightCard && renderButtons(screen, true, isEditor, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
@@ -1002,7 +921,7 @@ export default function ContainerCreationsLanding2() {
                     as="h2"
                   />
                 </div>
-                {renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t) } : undefined)}
+                {renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t), checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" } : { checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" })}
                 {renderInlineUI(screen, false)}
                 {renderButtons(screen, true, isEditor, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
               </div>
@@ -1026,7 +945,7 @@ export default function ContainerCreationsLanding2() {
                 {screen.dynamicSummary ? (
                   <p style={{ marginBottom: 16 }}>{getFinalRecommendationSummary()}</p>
                 ) : (
-                  renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t) } : undefined)
+                  renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t), checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" } : { checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" })
                 )}
                 {screen.buttons.map((btn, i) => {
                   if (btn.type === "link") {
@@ -1056,12 +975,19 @@ export default function ContainerCreationsLanding2() {
   }
 
   const stepLabels = orderedScreens.map((s) => s.stepLabel);
+  const showStepProgress = wizardConfig?.steps.showProgress ?? true;
+  const progressStyle = wizardConfig?.steps.progressStyle ?? "stepper";
+  const navPlacement = wizardConfig?.navigation.placement ?? "bottom";
 
   return (
     <div
       ref={containerRef}
       className={`landing-container-creations${currentScreen.layout === "hero" ? " landing-step-hero" : ""}${currentScreen.layout === "stamped" ? " landing-step-stamped" : ""}${currentScreen.layout === "twoCol" && currentScreen.lightTheme ? " measure-step-active" : ""}`}
       data-landing="container-creations"
+      data-structure-type="wizard"
+      data-wizard-progress-style={progressStyle}
+      data-wizard-nav-placement={navPlacement}
+      data-wizard-linear={wizardConfig?.linear ?? true}
     >
       <header
         className="landing-shop-bar"
@@ -1123,7 +1049,8 @@ export default function ContainerCreationsLanding2() {
               <React.Fragment key={screen.id}>{renderScreen(screen)}</React.Fragment>
             ))}
 
-            <aside className="stepTracker" aria-label={cfg.stepTracker.title}>
+            {showStepProgress && (
+            <aside className="stepTracker" aria-label={cfg.stepTracker.title} data-wizard-progress-style={progressStyle}>
               <h3 className="stepTracker-title">{cfg.stepTracker.title}</h3>
               <p className="stepTracker-description">{cfg.stepTracker.description}</p>
               <ul className="stepTracker-list">
@@ -1146,6 +1073,7 @@ export default function ContainerCreationsLanding2() {
                 })}
               </ul>
             </aside>
+            )}
           </>
         )}
       </main>

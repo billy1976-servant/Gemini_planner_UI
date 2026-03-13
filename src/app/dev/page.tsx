@@ -76,6 +76,7 @@ import WebsiteShell from "@/lib/site-skin/shells/WebsiteShell";
 import LearningShell from "@/lib/site-skin/shells/LearningShell";
 import GoogleLoginButton from "@/app/components/GoogleLoginButton";
 import { TsxEmbedProvider } from "@/lib/tsx-embed-context";
+import { TSXScreenWithEnvelope } from "@/lib/tsx-structure/TSXScreenWithEnvelope";
 
 
 /* ============================================================
@@ -738,6 +739,10 @@ export default function DevPage() {
 
   if (TsxComponent) {
     const screenPath = tsxMeta?.path ? (tsxMeta.path.startsWith("tsx:") ? tsxMeta.path : `tsx:${tsxMeta.path}`) : "tsx:HiClarify/HiClarifyOnboarding";
+    const resolvedPathForEnvelope = screenPath.replace(/^tsx:/, "").trim();
+    const EnvelopeWrapped = () => (
+      <TSXScreenWithEnvelope screenPath={resolvedPathForEnvelope} Component={TsxComponent} />
+    );
     const screenKey = getCanonicalNavScreenKey(screen, {});
     const syntheticTree = { type: "json-skin", id: "tsx-wrapper", children: [{ type: "tsx-embed", params: { path: screenPath }, children: [] }] };
     const treeForRenderTsx = composeOfflineScreen({
@@ -746,7 +751,7 @@ export default function DevPage() {
       layoutState: { ...layoutSnapshot, experience, templateId: effectiveTemplateId, mode: effectiveLayoutMode },
     });
     setCurrentScreenTree(treeForRenderTsx);
-    const tsxEmbedValue = { getComponent: (path: string) => (path === screenPath ? TsxComponent : null) };
+    const tsxEmbedValue = { getComponent: (path: string) => (path === screenPath ? EnvelopeWrapped : null) };
     const jsonContentTsx = (
       <ExperienceRenderer
         key={`tsx-${screenPath}`}

@@ -54,7 +54,11 @@ This rule is the **permanent law** for how all new TSX screens must be built. It
 
 ---
 
-## 3. STRUCTURE TYPES (DOCUMENTED)
+## 3. STRUCTURE TYPES (8 CANONICAL TYPES)
+
+The engine defines **eight** structure types in `src/lib/tsx-structure/types.ts`: list, board, dashboard, editor, timeline, detail, wizard, gallery. All TSX screens resolve to one of these.
+
+**Application module → structure mapping (Phase 2):** PrayerStreamOnboarding, ContainerCreationsLanding, ContainerCreationsLanding-2, GospelDiscipleship, FlowViewer, HiClarifyOnboarding → **wizard**. WorkspaceLayout → **dashboard**. Other screens use resolver default (list) until explicitly mapped.
 
 ### list
 - **What it is:** Ordered, scrollable list of items; sort, filter, density, selection.

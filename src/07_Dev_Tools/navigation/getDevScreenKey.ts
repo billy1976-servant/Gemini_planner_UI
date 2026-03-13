@@ -3,7 +3,7 @@
  * Prefer getCanonicalScreenKey for all override/registration flows.
  */
 export function getDevScreenKey(
-  searchParams: URLSearchParams | ReadonlyURLSearchParams | { get: (k: string) => string | null }
+  searchParams: URLSearchParams | { get: (k: string) => string | null }
 ): string | null {
   return searchParams.get("screen") ?? null;
 }
@@ -15,7 +15,7 @@ export function getDevScreenKey(
  * registration or skip read/write when null.
  */
 export function getCanonicalScreenKey(
-  searchParams: URLSearchParams | ReadonlyURLSearchParams | { get: (k: string) => string | null }
+  searchParams: URLSearchParams | { get: (k: string) => string | null }
 ): string | null {
   return getDevScreenKey(searchParams);
 }

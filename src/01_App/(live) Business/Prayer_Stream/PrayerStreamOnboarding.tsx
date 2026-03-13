@@ -1,14 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useWizardConfig } from "@/lib/tsx-structure/engines/wizard";
+import { renderContentBlocks, type LandingContentBlock } from "@/lib/landing-content-blocks";
 import "@/app/landing/landing-theme.css";
-
-type ContentBlock =
-  | { type: "badge"; text: string }
-  | { type: "paragraph"; text: string }
-  | { type: "heading"; level?: number; text: string }
-  | { type: "checklist"; heading?: string; items: Array<{ title: string; sub: string } | string> }
-  | { type: "audio"; src: string; label?: string };
 
 type ButtonBlock =
   | { type: "link"; label: string; href: string }
@@ -21,7 +16,7 @@ type Screen = {
   stepLabel: string;
   layout: "welcome" | "play" | "reflection" | "complete" | (string & {});
   title: string;
-  content: ContentBlock[];
+  content: LandingContentBlock[];
   buttons: ButtonBlock[];
   nextScreenId?: string;
 };
@@ -31,119 +26,22 @@ type PrayerStreamConfig = {
   screens: Screen[];
 };
 
-type RenderContentBlocksOptions = {
-  prayerCount?: number | null;
-  lastPrayed?: string | null;
-};
-
-/** Universal content block renderer for Prayer Stream. Layouts must use this only — never map/filter screen.content by type. */
-function renderContentBlocks(content: ContentBlock[], options?: RenderContentBlocksOptions) {
-  return content.map((block, i) => {
-    if (block.type === "badge") {
-      return (
-        <div key={i} className="hero-badge">
-          {block.text}
-        </div>
-      );
-    }
-    if (block.type === "paragraph") {
-      return (
-        <p key={i} style={{ marginBottom: 12 }}>
-          {block.text}
-        </p>
-      );
-    }
-    if (block.type === "heading") {
-      const Tag = (block.level ?? 2) === 1 ? "h1" : (block.level ?? 2) === 3 ? "h3" : "h2";
-      return (
-        <Tag key={i} style={{ marginBottom: 12 }}>
-          {block.text}
-        </Tag>
-      );
-    }
-    if (block.type === "checklist") {
-      return (
-        <React.Fragment key={i}>
-          {block.heading && (
-            <h3 style={{ fontSize: "1.1rem", fontWeight: 600, marginBottom: 8 }}>
-              {block.heading}
-            </h3>
-          )}
-          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            {block.items.map((item, j) => {
-              const title = typeof item === "string" ? item : item.title;
-              const sub = typeof item === "string" ? undefined : item.sub;
-              return (
-                <li
-                  key={j}
-                  style={{
-                    display: "flex",
-                    gap: 10,
-                    alignItems: "flex-start",
-                    fontSize: "0.95rem",
-                    lineHeight: 1.45,
-                    marginBottom: 10,
-                  }}
-                >
-                  <span style={{ flexShrink: 0 }} aria-hidden>
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 22 22"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      style={{ display: "block" }}
-                    >
-                      <circle cx="11" cy="11" r="10" fill="#16a34a" />
-                      <path
-                        d="M6 11l3.5 3.5L16 8"
-                        stroke="#fff"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </span>
-                  <span>
-                    <strong style={{ display: "block", marginBottom: 2 }}>{title}</strong>
-                    {sub != null && <span style={{ opacity: 0.9 }}>{sub}</span>}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-        </React.Fragment>
-      );
-    }
-    if (block.type === "audio") {
-      return (
-        <div key={i} style={{ margin: "16px 0" }}>
-          {block.label && (
-            <p style={{ marginBottom: 8, fontWeight: 500 }}>
-              {block.label}
-            </p>
-          )}
-          <audio controls src={block.src} style={{ width: "100%" }}>
-            Your browser does not support the audio element.
-          </audio>
-        </div>
-      );
-    }
-    return null;
-  });
-}
-
 const CONFIG_URL = "/api/prayer-stream-config";
 const COUNT_KEY = "prayer-stream-count";
 const LAST_KEY = "prayer-stream-last";
 
 export default function PrayerStreamOnboarding() {
+  const wizardConfig = useWizardConfig();
   const [config, setConfig] = useState<PrayerStreamConfig | null>(null);
   const [configError, setConfigError] = useState<string | null>(null);
   const [currentScreenId, setCurrentScreenId] = useState<string | null>(null);
   const [prayerCount, setPrayerCount] = useState<number | null>(null);
   const [lastPrayed, setLastPrayed] = useState<string | null>(null);
   const [justPrayed, setJustPrayed] = useState(false);
+
+  const showStepProgress = wizardConfig?.steps.showProgress ?? true;
+  const progressStyle = wizardConfig?.steps.progressStyle ?? "stepper";
+  const navPlacement = wizardConfig?.navigation.placement ?? "bottom";
 
   useEffect(() => {
     fetch(CONFIG_URL, {
@@ -328,10 +226,7 @@ export default function PrayerStreamOnboarding() {
       </h2>
     );
 
-    const content = renderContentBlocks(screen.content, {
-      prayerCount,
-      lastPrayed,
-    });
+    const content = renderContentBlocks(screen.content, { prayerCount, lastPrayed });
 
     if (screen.layout === "welcome" || screen.layout === "reflection") {
       return (
@@ -405,6 +300,10 @@ export default function PrayerStreamOnboarding() {
     <div
       className="landing-container-creations"
       data-landing="prayer-stream"
+      data-structure-type="wizard"
+      data-wizard-progress-style={progressStyle}
+      data-wizard-nav-placement={navPlacement}
+      data-wizard-linear={wizardConfig?.linear ?? true}
       style={{
         minHeight: "100vh",
         background: "radial-gradient(circle at top, #0f172a 0, #020617 55%, #020617 100%)",
@@ -453,9 +352,11 @@ export default function PrayerStreamOnboarding() {
           {renderScreen(currentScreen)}
         </div>
 
+        {showStepProgress && (
         <aside
           className="stepTracker"
           aria-label={config.stepTracker?.title ?? "Prayer Stream steps"}
+          data-wizard-progress-style={progressStyle}
           style={{
             alignSelf: "flex-start",
             padding: "1.5rem 1.25rem",
@@ -508,6 +409,7 @@ export default function PrayerStreamOnboarding() {
             })}
           </ul>
         </aside>
+        )}
       </main>
     </div>
   );

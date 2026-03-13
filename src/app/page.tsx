@@ -31,6 +31,7 @@ import {
 } from "@/03_Runtime/capability";
 import { TsxEmbedProvider } from "@/lib/tsx-embed-context";
 import { resolveTsxScreen } from "@/lib/tsx-screen-resolver";
+import { TSXScreenWithEnvelope } from "@/lib/tsx-structure/TSXScreenWithEnvelope";
 import { AppShellDirector } from "@/lib/director/AppShellDirector";
 
 /** Canonical default when URL/state missing or invalid (bare id). Never pass bare ids to loadScreen. */
@@ -159,6 +160,10 @@ export default function Page() {
   if (isTsxScreen) {
     const tsxScreenPath = effectivePath.startsWith("tsx:") ? effectivePath : `tsx:${effectivePath}`;
     const TsxComponent = resolveTsxScreen(tsxScreenPath);
+    const resolvedPathForEnvelope = tsxScreenPath.replace(/^tsx:/, "").trim();
+    const EnvelopeWrapped = () => (
+      <TSXScreenWithEnvelope screenPath={resolvedPathForEnvelope} Component={TsxComponent} />
+    );
     const syntheticTree = buildTsxEmbedTree(tsxScreenPath);
     const experienceProfile = getExperienceProfile(experience);
     const treeForRender = composeOfflineScreen({
@@ -168,7 +173,7 @@ export default function Page() {
     });
     setCurrentScreenTree(treeForRender);
     const tsxEmbedValue = {
-      getComponent: (path: string) => (path === tsxScreenPath && TsxComponent ? TsxComponent : null),
+      getComponent: (path: string) => (path === tsxScreenPath && TsxComponent ? EnvelopeWrapped : null),
     };
     return (
       <CapabilityProvider>

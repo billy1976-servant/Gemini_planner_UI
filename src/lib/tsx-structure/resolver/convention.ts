@@ -17,8 +17,18 @@ export interface ConventionResult {
   overrides: Record<string, unknown>;
 }
 
-/** Co-located map: screenPath → ConventionResult. Build-time populated or empty. Stub: no dynamic file read. */
-const CO_LOCATED_MAP: Record<string, ConventionResult> = {};
+/** Co-located map: screenPath → ConventionResult. Build-time populated or empty. Phase 2: app screens → structure types. */
+const CO_LOCATED_MAP: Record<string, ConventionResult> = {
+  // Wizard (onboarding / step-based flows)
+  "(live) Business/Prayer_Stream/PrayerStreamOnboarding": { structureType: "wizard", templateId: "default", overrides: {} },
+  "(live) Business/Container_Creations/ContainerCreationsLanding": { structureType: "wizard", templateId: "default", overrides: {} },
+  "(live) Business/Container_Creations/ContainerCreationsLanding-2": { structureType: "wizard", templateId: "default", overrides: {} },
+  "(live) Gospel/Discipleship/GospelDiscipleship": { structureType: "wizard", templateId: "default", overrides: {} },
+  "(live) Business/onboarding/FlowViewer": { structureType: "wizard", templateId: "default", overrides: {} },
+  "HiClarify/HiClarifyOnboarding": { structureType: "wizard", templateId: "minimal", overrides: {} },
+  // Dashboard (tabbed workspace)
+  "(live) Business/workspace/WorkspaceLayout": { structureType: "dashboard", templateId: "default", overrides: {} },
+};
 
 /**
  * Match screenPath against a glob pattern (minimal glob: * matches any segment).
