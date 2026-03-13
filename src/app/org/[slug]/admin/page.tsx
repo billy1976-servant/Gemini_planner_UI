@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import type { OrganizationRecord } from "@/lib/universal-identity/types";
-import { OrgOnboardingBanner } from "@/01_App/(live) Gospel/Prayer/onboarding/OrgOnboardingBanner";
+import { OrgOnboardingBanner } from "@/01_App/Christian/Prayer/onboarding/OrgOnboardingBanner";
 
 type MemberRow = { userId: string; role: string; email: string; displayName: string };
 type GroupRow = Record<string, unknown>;

@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import PrayerStreamOnboarding from "@/01_App/(live) Business/Prayer_Stream/PrayerStreamOnboarding";
+import PrayerStreamOnboarding from "@/01_App/Business/Prayer_Stream/PrayerStreamOnboarding";
 import { TSXScreenWithEnvelope } from "@/lib/tsx-structure/TSXScreenWithEnvelope";
 
-const SCREEN_PATH = "(live) Business/Prayer_Stream/PrayerStreamOnboarding";
+const SCREEN_PATH = "Business/Prayer_Stream/PrayerStreamOnboarding";
 
 export default function PrayerStreamPage() {
   return (

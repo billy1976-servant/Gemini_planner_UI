@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getOrganizationBySlug } from "@/lib/universal-identity/org-store";
 import { requireOrgRole } from "@/lib/universal-identity/auth-helpers";
-import { getGroups } from "@/01_App/(live) Gospel/Prayer/data/store";
+import { getGroups } from "@/01_App/Christian/Prayer/data/store";
 
 export const dynamic = "force-dynamic";
 

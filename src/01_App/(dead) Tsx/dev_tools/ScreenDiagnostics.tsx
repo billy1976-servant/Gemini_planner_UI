@@ -10,10 +10,10 @@ import {
 } from "@/engine/core/diagnostics/error-classifier";
 
 /* -------------------------------------------------------------------------
-   TSX discovery — same pattern as page.tsx; diagnostics-only, no engine change.
-   Context from this file: src/apps-tsx/tsx-screens/diagnostics/ → root = ../..
+   TSX discovery — scope to (dead) Tsx only so we do not pull in 01_App/Christian, Business, etc.
+   Context from this file: 01_App/(dead) Tsx/dev_tools/ → root = .. = (dead) Tsx.
 ------------------------------------------------------------------------- */
-const tsxContext = typeof require !== "undefined" ? (require as any).context("../..", true, /\.tsx$/) : null;
+const tsxContext = typeof require !== "undefined" ? (require as any).context("..", true, /\.tsx$/) : null;
 const TSX_KEYS: string[] = tsxContext ? tsxContext.keys() : [];
 
 function normalizeTsxKey(key: string): string {

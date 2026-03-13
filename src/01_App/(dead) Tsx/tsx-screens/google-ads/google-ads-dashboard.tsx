@@ -260,7 +260,7 @@ export default function GoogleAdsDashboard() {
 
   const selectedCampaign = campaigns.find((c) => c.id === selectedCampaignId);
 
-  const workspaceUrl = "/dev?screen=" + encodeURIComponent("tsx:(live) Business/workspace/WorkspaceLayout");
+  const workspaceUrl = "/dev?screen=" + encodeURIComponent("tsx:Business/workspace/WorkspaceLayout");
 
   return (
     <div style={{ padding: 24, fontFamily: "system-ui", maxWidth: 1200, margin: "0 auto" }}>

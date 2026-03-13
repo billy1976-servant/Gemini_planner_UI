@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth";
-import { getRooms, saveRooms } from "@/01_App/(live) Gospel/Prayer/data/store";
+import { getRooms, saveRooms } from "@/01_App/Christian/Prayer/data/store";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

@@ -6,7 +6,7 @@ import {
   getGroups,
   addGroup,
   joinGroup,
-} from "@/01_App/(live) Gospel/Prayer/data/store";
+} from "@/01_App/Christian/Prayer/data/store";
 import {
   addOrganization,
   addOrgMembership,

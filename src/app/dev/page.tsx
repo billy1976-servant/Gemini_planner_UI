@@ -96,7 +96,7 @@ const tsxContext = (require as any).context(
 );
 
 const businessContext = (require as any).context(
-  "../../01_App/(live) Business",
+  "../../01_App/Business",
   true,
   /\.tsx$/
 );
@@ -137,7 +137,7 @@ tsxContext.keys().forEach((key) => {
 
 businessContext.keys().forEach((key) => {
   const normalized = normalizeContextKey(key);
-  AUTO_TSX_MAP[`(live) Business/${normalized}`] = () =>
+  AUTO_TSX_MAP[`Business/${normalized}`] = () =>
     Promise.resolve(businessContext(key)).then((m) => resolveTsxModule(m, normalized));
 });
 
@@ -154,15 +154,15 @@ organsContext.keys().forEach((key: string) => {
 
 
 /* ------------------------------------------------------------
-   🔑 RESOLVER — exact match + (live) Business fallback for short paths
+   🔑 RESOLVER — exact match + Business/Christian fallback for short paths
 ------------------------------------------------------------ */
 const EXPLICIT_TSX_MAP: Record<string, () => Promise<any>> = {
-  "(live) Business/Container_Creations/ContainerCreationsWebsite": () =>
-    import("@/01_App/(live) Business/Container_Creations/ContainerCreationsWebsite"),
-  "(live) Business/Container_Creations/ContainerCreationsLanding": () =>
-    import("@/01_App/(live) Business/Container_Creations/ContainerCreationsLanding"),
-  "(live) Gospel/Discipleship/GospelDiscipleship": () =>
-    import("@/01_App/(live) Gospel/Discipleship/GospelDiscipleship"),
+  "Business/Container_Creations/ContainerCreationsWebsite": () =>
+    import("@/01_App/Business/Container_Creations/ContainerCreationsWebsite"),
+  "Business/Container_Creations/ContainerCreationsLanding": () =>
+    import("@/01_App/Business/Container_Creations/ContainerCreationsLanding"),
+  "Christian/Discipleship/GospelDiscipleship": () =>
+    import("@/01_App/Christian/Discipleship/GospelDiscipleship"),
 };
 
 function resolveTsxScreen(path: string) {
@@ -179,7 +179,7 @@ function resolveTsxScreen(path: string) {
     return nextDynamic(AUTO_TSX_MAP[normalized], { ssr: false });
   }
 
-  const businessPath = `(live) Business/${normalized}`;
+  const businessPath = `Business/${normalized}`;
   if (AUTO_TSX_MAP[businessPath]) {
     return nextDynamic(AUTO_TSX_MAP[businessPath], { ssr: false });
   }
@@ -188,9 +188,9 @@ function resolveTsxScreen(path: string) {
     return nextDynamic(EXPLICIT_TSX_MAP[businessPath], { ssr: false });
   }
 
-  const gospelPath = `(live) Gospel/${normalized}`;
-  if (EXPLICIT_TSX_MAP[gospelPath]) {
-    return nextDynamic(EXPLICIT_TSX_MAP[gospelPath], { ssr: false });
+  const christianPath = `Christian/${normalized}`;
+  if (EXPLICIT_TSX_MAP[christianPath]) {
+    return nextDynamic(EXPLICIT_TSX_MAP[christianPath], { ssr: false });
   }
 
   return null;
@@ -529,7 +529,7 @@ export default function DevPage() {
     if (!screen) {
       const flowParam = searchParams.get("flow");
       if (flowParam) {
-        const engineViewerPath = "tsx:(live) Business/onboarding/FlowViewer";
+        const engineViewerPath = "tsx:Business/onboarding/FlowViewer";
         loadScreen(engineViewerPath)
           .then((data) => {
             if (data?.__type === "tsx-screen" && typeof data.path === "string") {
@@ -612,16 +612,16 @@ export default function DevPage() {
       // Container Creations: short path without tsx: prefix
       const ccPath = screenParamDecoded.replace(/\\/g, "/");
       if (ccPath === "Container_Creations/ContainerCreationsWebsite") {
-        return "tsx:(live) Business/Container_Creations/ContainerCreationsWebsite";
+        return "tsx:Business/Container_Creations/ContainerCreationsWebsite";
       }
       if (ccPath === "Container_Creations/ContainerCreationsLanding") {
-        return "tsx:(live) Business/Container_Creations/ContainerCreationsLanding";
+        return "tsx:Business/Container_Creations/ContainerCreationsLanding";
       }
       if (ccPath === "Gospel/Discipleship/GospelDiscipleship") {
-        return "tsx:(live) Gospel/Discipleship/GospelDiscipleship";
+        return "tsx:Christian/Discipleship/GospelDiscipleship";
       }
       if (ccPath === "Prayer_Stream/PrayerStreamOnboarding") {
-        return "tsx:(live) Business/Prayer_Stream/PrayerStreamOnboarding";
+        return "tsx:Business/Prayer_Stream/PrayerStreamOnboarding";
       }
       return screenParamDecoded;
     })();
@@ -679,7 +679,7 @@ export default function DevPage() {
         const isContainerCreations = (s: string | null) =>
           s != null && s.replace(/\\/g, "/") === "Container_Creations/ContainerCreationsWebsite";
         if (isContainerCreations(screenParamDecoded) && data?.title === "Screen unavailable") {
-          const forcedPath = "(live) Business/Container_Creations/ContainerCreationsWebsite";
+          const forcedPath = "Business/Container_Creations/ContainerCreationsWebsite";
           const C = resolveTsxScreen(forcedPath);
           if (C) {
             setTsxMeta({ path: forcedPath });

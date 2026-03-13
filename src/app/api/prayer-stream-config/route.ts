@@ -9,7 +9,7 @@ const CONFIG_PATH = path.join(
   process.cwd(),
   "src",
   "01_App",
-  "(live) Business",
+  "Business",
   "Prayer_Stream",
   "PrayerStreamOnboarding.json"
 );

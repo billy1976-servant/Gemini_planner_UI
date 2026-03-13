@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
-import { getRooms } from "@/01_App/(live) Gospel/Prayer/data/store";
+import { getRooms } from "@/01_App/Christian/Prayer/data/store";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -10,7 +10,7 @@ const PRAYER_ROOT = path.join(
   process.cwd(),
   "src",
   "01_App",
-  "(live) Gospel",
+  "Christian",
   "Prayer"
 );
 const SESSIONS_PATH = path.join(PRAYER_ROOT, "data", "live-sessions.json");

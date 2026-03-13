@@ -15,7 +15,7 @@ const tsxContext = (require as any).context(
   /\.tsx$/
 );
 const businessContext = (require as any).context(
-  "../01_App/(live) Business",
+  "../01_App/Business",
   true,
   /\.tsx$/
 );
@@ -41,17 +41,17 @@ tsxContext.keys().forEach((key: string) => {
 });
 businessContext.keys().forEach((key: string) => {
   const normalized = normalizeContextKey(key);
-  AUTO_TSX_MAP[`(live) Business/${normalized}`] = () =>
+  AUTO_TSX_MAP[`Business/${normalized}`] = () =>
     Promise.resolve(businessContext(key)).then((m: any) => resolveTsxModule(m, normalized));
 });
 
 const EXPLICIT_TSX_MAP: Record<string, () => Promise<any>> = {
-  "(live) Business/Container_Creations/ContainerCreationsWebsite": () =>
-    import("@/01_App/(live) Business/Container_Creations/ContainerCreationsWebsite"),
-  "(live) Business/Container_Creations/ContainerCreationsLanding": () =>
-    import("@/01_App/(live) Business/Container_Creations/ContainerCreationsLanding"),
-  "(live) Gospel/Discipleship/GospelDiscipleship": () =>
-    import("@/01_App/(live) Gospel/Discipleship/GospelDiscipleship"),
+  "Business/Container_Creations/ContainerCreationsWebsite": () =>
+    import("@/01_App/Business/Container_Creations/ContainerCreationsWebsite"),
+  "Business/Container_Creations/ContainerCreationsLanding": () =>
+    import("@/01_App/Business/Container_Creations/ContainerCreationsLanding"),
+  "Christian/Discipleship/GospelDiscipleship": () =>
+    import("@/01_App/Christian/Discipleship/GospelDiscipleship"),
 };
 
 export function resolveTsxScreen(path: string): React.ComponentType<any> | null {
@@ -66,16 +66,16 @@ export function resolveTsxScreen(path: string): React.ComponentType<any> | null 
   if (AUTO_TSX_MAP[normalized]) {
     return nextDynamic(AUTO_TSX_MAP[normalized], { ssr: false });
   }
-  const businessPath = `(live) Business/${normalized}`;
+  const businessPath = `Business/${normalized}`;
   if (AUTO_TSX_MAP[businessPath]) {
     return nextDynamic(AUTO_TSX_MAP[businessPath], { ssr: false });
   }
   if (EXPLICIT_TSX_MAP[businessPath]) {
     return nextDynamic(EXPLICIT_TSX_MAP[businessPath], { ssr: false });
   }
-  const gospelPath = `(live) Gospel/${normalized}`;
-  if (EXPLICIT_TSX_MAP[gospelPath]) {
-    return nextDynamic(EXPLICIT_TSX_MAP[gospelPath], { ssr: false });
+  const christianPath = `Christian/${normalized}`;
+  if (EXPLICIT_TSX_MAP[christianPath]) {
+    return nextDynamic(EXPLICIT_TSX_MAP[christianPath], { ssr: false });
   }
   return null;
 }

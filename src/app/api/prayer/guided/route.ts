@@ -5,7 +5,7 @@ import {
   getGuidedPrayers,
   addGuidedPrayer,
   type GuidedPrayerRecord,
-} from "@/01_App/(live) Gospel/Prayer/data/store";
+} from "@/01_App/Christian/Prayer/data/store";
 import { authOptions } from "@/app/lib/auth";
 
 export const dynamic = "force-dynamic";

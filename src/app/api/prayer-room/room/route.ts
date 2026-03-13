@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getRooms } from "@/01_App/(live) Gospel/Prayer/data/store";
+import { getRooms } from "@/01_App/Christian/Prayer/data/store";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

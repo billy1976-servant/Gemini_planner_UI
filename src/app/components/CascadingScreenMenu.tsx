@@ -15,7 +15,7 @@ export type ScreensIndex = {
 /** Known TSX paths (no tsx: prefix) so pill shows .tsx even if URL was restored without prefix */
 function isKnownTsxPath(normalized: string): boolean {
   const n = normalized.replace(/\\/g, "/").trim();
-  return /^\(live\)\s+Business\//i.test(n) || /^Container_Creations\/ContainerCreationsWebsite$/i.test(n);
+  return /^Business\//i.test(n) || /^Christian\//i.test(n) || /^Container_Creations\/ContainerCreationsWebsite$/i.test(n);
 }
 
 /** Full path for accessibility/title (e.g. "File: (dead) Tsx/Gibson Guitars/blueprint.tsx") */
@@ -41,10 +41,11 @@ function getScreenPillDisplayName(screen: string): string {
   return segments.length > 0 ? segments[segments.length - 1]! : path;
 }
 
-/** Root folder color: (dead) = red, (live) = green; only for 01_App roots with (dead)/(live) in name. */
+/** Root folder color: (dead) = red, (live) / domain = green; only for 01_App roots. */
 function rootFolderColor(rootName: string): string | undefined {
   if (rootName.includes("(dead)")) return "#b91c1c";
   if (rootName.includes("(live)")) return "#15803d";
+  if (["Business", "Christian", "Plan", "Protect", "Research", "Learn"].includes(rootName)) return "#15803d";
   return undefined;
 }
 
@@ -165,10 +166,12 @@ export default function CascadingScreenMenu({ index, currentScreen = "" }: Casca
     const useTsx =
       rootSection === "(dead) Tsx" ||
       rootSection.includes("(live)") ||
+      rootSection === "Business" ||
+      rootSection === "Christian" ||
       rootSection === "tsx-organisms" ||
       rootSection === "tsx-organs";
     const prefix = useTsx
-      ? rootSection.includes("(live)") || rootSection === "tsx-organisms" || rootSection === "tsx-organs"
+      ? rootSection.includes("(live)") || rootSection === "Business" || rootSection === "Christian" || rootSection === "tsx-organisms" || rootSection === "tsx-organs"
         ? `tsx:${rootSection}/`
         : "tsx:"
       : "";

@@ -22,7 +22,7 @@ import InlineEditableText from "@/app/ui/control-dock/editor/InlineEditableText"
 import { getOverride, subscribe } from "@/04_Presentation/components/organs/tsx/website/node-order-override-store";
 import { useWizardConfig } from "@/lib/tsx-structure/engines/wizard";
 import { renderContentBlocks, type LandingContentBlock } from "@/lib/landing-content-blocks";
-import gospelConfig from "../tracts/gospel.json";
+import gospelConfig from "../Tracts/gospel.json";
 import "@/app/landing/landing-theme.css";
 
 const COMPONENT_NAME = "GospelDiscipleship";

@@ -10,16 +10,16 @@ export const flowsIndex = {
   openFlow: "Open Flow",
   returnToMain: "← Return to main screen",
   selectFlowAria: "Select flow",
-  viewerScreenPath: "tsx:(live) Business/onboarding/FlowViewer",
+  viewerScreenPath: "tsx:Business/onboarding/FlowViewer",
   projectFilterKey: "Container_Creations",
   homePath: "/",
 } as const;
 
 export const flowViewer = {
   returnToMain: "← Return to main screen",
-  returnPath: "tsx:(live) Business/onboarding/flows-index",
+  returnPath: "tsx:Business/onboarding/flows-index",
   /** Screen path for this FlowViewer (used to build /dev?screen=...&flow=...&engine=...) */
-  screenPath: "tsx:(live) Business/onboarding/FlowViewer",
+  screenPath: "tsx:Business/onboarding/FlowViewer",
   loadingFlows: "Loading flows...",
   noFlowsFound: "No flows found. Add JSON flow files under Business_Files/.../Flows/",
   selectFlow: "Select Flow:",

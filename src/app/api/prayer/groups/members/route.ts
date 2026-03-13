@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { getGroupMembers } from "@/01_App/(live) Gospel/Prayer/data/store";
+import { getGroupMembers } from "@/01_App/Christian/Prayer/data/store";
 import { authOptions } from "@/app/lib/auth";
 
 export const dynamic = "force-dynamic";

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
-import { updateGroup } from "@/01_App/(live) Gospel/Prayer/data/store";
+import { updateGroup } from "@/01_App/Christian/Prayer/data/store";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -10,7 +10,7 @@ const PRAYER_ROOT = path.join(
   process.cwd(),
   "src",
   "01_App",
-  "(live) Gospel",
+  "Christian",
   "Prayer"
 );
 const UPLOADS_DIR = path.join(PRAYER_ROOT, "uploads");

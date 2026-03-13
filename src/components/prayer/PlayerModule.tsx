@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { PrayerPlayer } from "@/01_App/(live) Gospel/Prayer/PrayerPlayer";
-import { ReplayTimeline } from "@/01_App/(live) Gospel/Prayer/ReplayTimeline";
-import type { Prayer } from "@/01_App/(live) Gospel/Prayer/PrayerTypes";
+import { PrayerPlayer } from "@/01_App/Christian/Prayer/PrayerPlayer";
+import { ReplayTimeline } from "@/01_App/Christian/Prayer/ReplayTimeline";
+import type { Prayer } from "@/01_App/Christian/Prayer/PrayerTypes";
 
 /**
  * Dedicated player module: play/pause, waveform, remaining time, seek, speed only.

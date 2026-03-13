@@ -3,7 +3,7 @@
  * No hardcoded strings in the screen; all from here.
  */
 export const content = {
-  defaultScreenPath: "tsx:(live) Business/Container_Creations/ContainerCreationsWebsite",
+  defaultScreenPath: "tsx:Business/Container_Creations/ContainerCreationsWebsite",
   apiContractPath: "/api/sites/containercreations/contract",
   labels: {
     loading: "Loading…",

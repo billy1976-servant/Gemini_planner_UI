@@ -58,6 +58,8 @@ export function flattenIndexToPaths(
     const prefix =
       item.rootSection === "(dead) Tsx" ||
       item.rootSection.includes("(live)") ||
+      item.rootSection === "Business" ||
+      item.rootSection === "Christian" ||
       item.rootSection === "tsx-organisms" ||
       item.rootSection === "tsx-organs"
         ? `tsx:${item.rootSection}/`

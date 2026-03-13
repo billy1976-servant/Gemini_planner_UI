@@ -9,7 +9,7 @@ const UPLOADS_DIR = path.join(
   process.cwd(),
   "src",
   "01_App",
-  "(live) Gospel",
+  "Christian",
   "Prayer",
   "uploads"
 );

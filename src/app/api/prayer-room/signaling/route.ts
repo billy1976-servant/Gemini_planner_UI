@@ -10,7 +10,7 @@ const PRAYER_ROOT = path.join(
   process.cwd(),
   "src",
   "01_App",
-  "(live) Gospel",
+  "Christian",
   "Prayer"
 );
 const EVENTS_PATH = path.join(PRAYER_ROOT, "data", "room-events.json");

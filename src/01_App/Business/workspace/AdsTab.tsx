@@ -101,7 +101,7 @@ function StateTable({
   );
 }
 
-const FLOW_VIEWER_PATH = "tsx:(live) Business/onboarding/FlowViewer";
+const FLOW_VIEWER_PATH = "tsx:Business/onboarding/FlowViewer";
 
 export function AdsTab({
   businessId,

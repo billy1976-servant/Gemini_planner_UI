@@ -206,15 +206,15 @@ function getDefensiveFallbackList(): ScreensIndexItem[] {
       category: "Prayer_Stream",
       directFiles: ["PrayerStreamOnboarding"],
       folders: {},
-      rootSection: "(live) Business",
-      displayName: "(live) Business",
+      rootSection: "Business",
+      displayName: "Business",
     },
     {
       category: "Discipleship",
       directFiles: ["GospelDiscipleship"],
       folders: {},
-      rootSection: "(live) Gospel",
-      displayName: "(live) Gospel",
+      rootSection: "Christian",
+      displayName: "Christian",
     },
   ];
 }
@@ -280,24 +280,24 @@ export async function GET() {
     if (organsItem) result.push(organsItem);
 
     // Defensive fallbacks when fs missed a known screen (e.g. monorepo cwd, permissions)
-    const liveBusiness = "(live) Business";
-    const liveGospel = "(live) Gospel";
-    if (!result.some((x) => x.rootSection === liveBusiness && x.category === "Prayer_Stream")) {
+    const businessSection = "Business";
+    const christianSection = "Christian";
+    if (!result.some((x) => x.rootSection === businessSection && x.category === "Prayer_Stream")) {
       result.push({
         category: "Prayer_Stream",
         directFiles: ["PrayerStreamOnboarding"],
         folders: {},
-        rootSection: liveBusiness,
-        displayName: liveBusiness,
+        rootSection: businessSection,
+        displayName: businessSection,
       });
     }
-    if (!result.some((x) => x.rootSection === liveGospel && x.category === "Discipleship")) {
+    if (!result.some((x) => x.rootSection === christianSection && x.category === "Discipleship")) {
       result.push({
         category: "Discipleship",
         directFiles: ["GospelDiscipleship"],
         folders: {},
-        rootSection: liveGospel,
-        displayName: liveGospel,
+        rootSection: christianSection,
+        displayName: christianSection,
       });
     }
 

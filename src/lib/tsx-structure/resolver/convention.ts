@@ -20,14 +20,14 @@ export interface ConventionResult {
 /** Co-located map: screenPath → ConventionResult. Build-time populated or empty. Phase 2: app screens → structure types. */
 const CO_LOCATED_MAP: Record<string, ConventionResult> = {
   // Wizard (onboarding / step-based flows)
-  "(live) Business/Prayer_Stream/PrayerStreamOnboarding": { structureType: "wizard", templateId: "default", overrides: {} },
-  "(live) Business/Container_Creations/ContainerCreationsLanding": { structureType: "wizard", templateId: "default", overrides: {} },
-  "(live) Business/Container_Creations/ContainerCreationsLanding-2": { structureType: "wizard", templateId: "default", overrides: {} },
-  "(live) Gospel/Discipleship/GospelDiscipleship": { structureType: "wizard", templateId: "default", overrides: {} },
-  "(live) Business/onboarding/FlowViewer": { structureType: "wizard", templateId: "default", overrides: {} },
+  "Business/Prayer_Stream/PrayerStreamOnboarding": { structureType: "wizard", templateId: "default", overrides: {} },
+  "Business/Container_Creations/ContainerCreationsLanding": { structureType: "wizard", templateId: "default", overrides: {} },
+  "Business/Container_Creations/ContainerCreationsLanding-2": { structureType: "wizard", templateId: "default", overrides: {} },
+  "Christian/Discipleship/GospelDiscipleship": { structureType: "wizard", templateId: "default", overrides: {} },
+  "Business/onboarding/FlowViewer": { structureType: "wizard", templateId: "default", overrides: {} },
   "HiClarify/HiClarifyOnboarding": { structureType: "wizard", templateId: "minimal", overrides: {} },
   // Dashboard (tabbed workspace)
-  "(live) Business/workspace/WorkspaceLayout": { structureType: "dashboard", templateId: "default", overrides: {} },
+  "Business/workspace/WorkspaceLayout": { structureType: "dashboard", templateId: "default", overrides: {} },
 };
 
 /**

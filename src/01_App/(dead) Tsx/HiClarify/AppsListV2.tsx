@@ -61,7 +61,7 @@ export default function AppsListV2() {
 
   const openFlow = (flowId: string) => {
     const params = new URLSearchParams();
-    params.set("screen", "tsx:(live) Business/onboarding/FlowViewer");
+    params.set("screen", "tsx:Business/onboarding/FlowViewer");
     params.set("flow", flowId);
     params.set("view", "client");
     router.push(`/dev?${params.toString()}`);

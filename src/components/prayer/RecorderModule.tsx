@@ -2,8 +2,8 @@
 
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { uploadPrayer } from "@/01_App/(live) Gospel/Prayer/api/prayer-api";
-import type { Prayer } from "@/01_App/(live) Gospel/Prayer/PrayerTypes";
+import { uploadPrayer } from "@/01_App/Christian/Prayer/api/prayer-api";
+import type { Prayer } from "@/01_App/Christian/Prayer/PrayerTypes";
 
 /**
  * Dedicated recorder module: record indicator, timer, stop, cancel only.
