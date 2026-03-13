@@ -1,0 +1,157 @@
+{
+    "flowId": "container-creations-upgrade-system",
+    "version": "2-3",
+    "title": "Container Vent Upgrade Guide",
+    "description": "Explore ventilation upgrades for your shipping container.",
+    "navigationMode": "free",
+    "tracking": true,
+  
+  
+    "steps": [
+  
+  
+      {
+        "id": "intro",
+        "title": "Upgrade Your Container Ventilation",
+        "instruction": "Follow the steps to verify fit, airflow, and vent size before cutting your roof.",
+        "buttonText": "Start Vent Setup →",
+        "next": "vent-rule",
+        "expandable": {
+          "title": "Why ventilation matters",
+          "content": "Shipping containers trap heat and moisture. Proper ventilation prevents condensation, rust, and overheating."
+        }
+      },
+  
+  
+      {
+        "id": "vent-rule",
+        "title": "Ventilation Rule",
+        "instruction": "Recommended ventilation is 1 square foot per 150 square feet of space.",
+        "image": "vent-rule-diagram",
+        "recommendation": {
+          "20ft": "1 × 12 inch roof vent",
+          "40ft": "2 × 12 inch roof vents"
+        },
+        "input": {
+          "type": "radio",
+          "label": "Select your container length",
+          "options": [
+            { "value": "20", "label": "20 ft container" },
+            { "value": "40", "label": "40 ft container" }
+          ]
+        },
+        "next": "measure-rib",
+        "tracking": "container-length"
+      },
+  
+  
+      {
+        "id": "measure-rib",
+        "title": "Measure Roof Rib Height",
+        "instruction": "Measure the roof rib to confirm the vent adapter will seal correctly.",
+        "image": "roof-rib-diagram",
+        "expected": "3.58 inches",
+        "input": {
+          "type": "number",
+          "label": "Enter rib height (inches)",
+          "validation": {
+            "type": "tolerance",
+            "target": 3.58,
+            "range": 0.5
+          }
+        },
+        "feedback": {
+          "valid": "✔ Within tolerance",
+          "invalid": "⚠ Adapter may be required"
+        },
+        "next": "verify-fit"
+      },
+  
+  
+      {
+        "id": "verify-fit",
+        "title": "Verify Vent Fit",
+        "instruction": "Confirm the adapter plate matches your roof corrugation pattern.",
+        "image": "vent-fit-diagram",
+        "input": {
+          "type": "checkbox",
+          "label": "My roof ribs match the adapter pattern"
+        },
+        "expandable": {
+          "title": "Why this matters",
+          "content": "If the ribs do not match the adapter profile the vent may not seal properly, which could allow water intrusion."
+        },
+        "next": "airflow"
+      },
+  
+  
+      {
+        "id": "airflow",
+        "title": "Check Airflow",
+        "instruction": "Good ventilation requires intake and exhaust airflow.",
+        "image": "airflow-diagram",
+        "input": {
+          "type": "checkbox",
+          "label": "My container will have intake airflow (vents or gaps)"
+        },
+        "expandable": {
+          "title": "Airflow explanation",
+          "content": "Roof vents remove hot air, but fresh air must enter the container for circulation."
+        },
+        "next": "vent-size"
+      },
+  
+  
+      {
+        "id": "vent-size",
+        "title": "Choose Vent Size",
+        "instruction": "Most containers use a 12-inch turbine vent.",
+        "recommendation": {
+          "20ft": "1 × 12 inch turbine vent",
+          "40ft": "2 × 12 inch turbine vents"
+        },
+        "input": {
+          "type": "radio",
+          "label": "Select vent configuration",
+          "options": [
+            { "value": "1x12", "label": "One 12 inch vent" },
+            { "value": "2x12", "label": "Two 12 inch vents" }
+          ]
+        },
+        "next": "final-recommendation"
+      },
+  
+  
+      {
+        "id": "final-recommendation",
+        "title": "Your Ventilation Plan",
+        "instruction": "Based on your selections, here is the recommended setup.",
+        "dynamicSummary": true,
+        "outputs": [
+          "container-length",
+          "rib-height",
+          "vent-size"
+        ],
+        "buttonText": "View Installation Guide →"
+      }
+  
+  
+    ],
+  
+  
+    "navigation": {
+      "type": "step-bar",
+      "allowJumping": true,
+      "showCompleted": true
+    },
+  
+  
+    "analytics": {
+      "trackStepOrder": true,
+      "trackSelections": true,
+      "trackTime": true
+    }
+  }
+  
+  
+  
