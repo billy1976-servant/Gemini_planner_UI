@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { PrayerShare } from "./PrayerShare";
 import { PrayerLibrary } from "./PrayerLibrary";
@@ -60,6 +60,8 @@ function formatDuration(seconds: number): string {
 export interface PrayerAppProps {
   slug?: string[];
   baseUrl?: string;
+  /** Domain prefix for routes (e.g. "/christian" when under christian.hiclarify.com). Enables domain-aware links. */
+  basePath?: string;
   showAdmin?: boolean;
 }
 
@@ -71,8 +73,11 @@ function getAudioUrl(audioUrl: string): string {
 /**
  * Main experience: player-first. Latest prayer autoloads. Prayer Text expandable; Past Prayers secondary.
  */
-export function PrayerApp({ slug = [], baseUrl, showAdmin: showAdminProp }: PrayerAppProps) {
+export function PrayerApp({ slug = [], baseUrl, basePath: basePathProp = "", showAdmin: showAdminProp }: PrayerAppProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const prayerBase = basePathProp ? `${basePathProp}/prayer` : "/prayer";
+  const signInCallbackUrl = pathname ?? prayerBase;
   const { data: session } = useSession();
   const { palette, paletteId, setPaletteId } = useTheme();
   const [current, setCurrent] = useState<Prayer | null>(null);
@@ -90,7 +95,17 @@ export function PrayerApp({ slug = [], baseUrl, showAdmin: showAdminProp }: Pray
   const [seekToSec, setSeekToSec] = useState<number | null>(null);
   const [mode, setMode] = useState<PrayerMode>("player");
   const [contextToolsOpen, setContextToolsOpen] = useState(false);
+  const [shareUrl, setShareUrl] = useState("");
   const sessionIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    setShareUrl(
+      baseUrl ||
+        (typeof window !== "undefined"
+          ? `${window.location.origin}${prayerBase}${group ? `/${group.slug}` : ""}${current?.id ? `/${current.id}` : ""}`
+          : "")
+    );
+  }, [baseUrl, prayerBase, group?.slug, current?.id]);
 
   useEffect(() => {
     getGroups().then(setGroups);
@@ -122,11 +137,15 @@ export function PrayerApp({ slug = [], baseUrl, showAdmin: showAdminProp }: Pray
     idFromSlug = null;
   } else {
     platformSection = null;
+    // "prayer" is the app root path segment (e.g. /prayer or /christian/prayer), not a group slug
+    const reserved = ["admin", "room", "prayer", "today"];
     groupSlug =
-      slug?.[0] && slug[0] !== "admin" && slug[0] !== "room" ? slug[0] : null;
+      slug?.[0] && !reserved.includes(slug[0]) && !isPlatformSection(slug[0])
+        ? slug[0]
+        : null;
     prayerSlug = groupSlug && slug?.[1] ? slug[1] : null;
     idFromSlug =
-      !groupSlug && slug?.[0] && slug[0] !== "today" && slug[0] !== "admin" && slug[0] !== "room" && !isPlatformSection(slug[0])
+      !groupSlug && slug?.[0] && slug[0] !== "today" && slug[0] !== "admin" && slug[0] !== "room" && slug[0] !== "prayer" && !isPlatformSection(slug[0])
         ? slug[0]
         : null;
   }
@@ -139,10 +158,10 @@ export function PrayerApp({ slug = [], baseUrl, showAdmin: showAdminProp }: Pray
         setGroupLoading(false);
       });
     } else {
-      setGroup(null);
       setGroupLoading(false);
+      setGroup(groups.length > 0 ? groups[0] : null);
     }
-  }, [groupSlug]);
+  }, [groupSlug, groups]);
 
   const loadPrayers = useCallback(
     (isRetry?: boolean) => {
@@ -284,11 +303,20 @@ export function PrayerApp({ slug = [], baseUrl, showAdmin: showAdminProp }: Pray
     };
   }, []);
 
-  const shareUrl =
-    baseUrl ||
-    (typeof window !== "undefined"
-      ? `${window.location.origin}/prayer${group ? `/${group.slug}` : ""}${current?.id ? `/${current.id}` : ""}`
-      : "");
+  const handleGroupChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const value = e.target.value;
+      if (platformSection) {
+        const path = value ? `${prayerBase}/${value}/${platformSection}` : `${prayerBase}/${platformSection}`;
+        router.push(path);
+      } else {
+        const path = value ? `${prayerBase}/${value}` : prayerBase;
+        router.push(path);
+      }
+    },
+    [prayerBase, platformSection, router]
+  );
+
   const audioSrc = current?.audioUrl ? getAudioUrl(current.audioUrl) : null;
 
   const paletteStyle = {
@@ -316,18 +344,18 @@ export function PrayerApp({ slug = [], baseUrl, showAdmin: showAdminProp }: Pray
     : undefined;
 
   if (isRoom) {
-    return <PrayerRoom roomId={slug![1]} />;
+    return <PrayerRoom roomId={slug![1]} prayerBase={prayerBase} />;
   }
 
   if (isGroupAdmin) {
     return (
       <div className="prayer-platform" style={{ padding: "2rem 1rem 4rem" }}>
         <div style={{ maxWidth: 420, margin: "0 auto 1.5rem", textAlign: "center" }}>
-          <Link href="/prayer/admin" className="prayer-share-link" style={{ fontSize: "0.875rem" }}>
+          <Link href={`${prayerBase}/admin`} className="prayer-share-link" style={{ fontSize: "0.875rem" }}>
             ← Prayer admin
           </Link>
         </div>
-        <GroupAdmin />
+        <GroupAdmin prayerBase={prayerBase} />
       </div>
     );
   }
@@ -336,11 +364,11 @@ export function PrayerApp({ slug = [], baseUrl, showAdmin: showAdminProp }: Pray
     return (
       <div className="prayer-platform" style={{ padding: "2rem 1rem 4rem" }}>
         <div style={{ maxWidth: 420, margin: "0 auto 1.5rem", textAlign: "center" }}>
-          <Link href="/prayer" className="prayer-share-link" style={{ fontSize: "0.875rem" }}>
+          <Link href={prayerBase} className="prayer-share-link" style={{ fontSize: "0.875rem" }}>
             ← Back to prayer
           </Link>
           {" · "}
-          <Link href="/prayer/admin/groups" className="prayer-share-link" style={{ fontSize: "0.875rem" }}>
+          <Link href={`${prayerBase}/admin/groups`} className="prayer-share-link" style={{ fontSize: "0.875rem" }}>
             Groups
           </Link>
         </div>
@@ -363,35 +391,22 @@ export function PrayerApp({ slug = [], baseUrl, showAdmin: showAdminProp }: Pray
           <div className="prayer-brand">Prayer</div>
           <p className="prayer-subtitle">Group not found.</p>
           <div style={{ marginTop: "1rem" }}>
-            <Link href="/prayer" className="prayer-share-link">← Back to prayer</Link>
+            <Link href={prayerBase} className="prayer-share-link">← Back to prayer</Link>
           </div>
         </section>
       </div>
     );
   }
 
-  const basePath = group ? `/prayer/${group.slug}` : "/prayer";
-  const sectionPath = (section: PlatformSection) => (group ? `${basePath}/${section}` : `/prayer/${section}`);
-
-  const handleGroupChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const value = e.target.value;
-      if (platformSection) {
-        const path = value ? `/prayer/${value}/${platformSection}` : `/prayer/${platformSection}`;
-        router.push(path);
-      } else {
-        const path = value ? `/prayer/${value}` : "/prayer";
-        router.push(path);
-      }
-    },
-    [platformSection, router]
-  );
+  const basePath = group ? `${prayerBase}/${group.slug}` : prayerBase;
+  const sectionPath = (section: PlatformSection) => (group ? `${basePath}/${section}` : `${prayerBase}/${section}`);
 
   return (
     <div
       className={`prayer-platform ${isPlaying ? "is-playing" : ""}`}
       style={{ padding: "2rem 1rem 2rem", ...paletteStyle, ...platformStyle }}
     >
+      <div style={{ color: "red", fontSize: "40px" }}>PRAYER APP TEST</div>
       <section className="prayer-hero-card">
         {group && (
           <div className="prayer-group-brand">
@@ -427,10 +442,10 @@ export function PrayerApp({ slug = [], baseUrl, showAdmin: showAdminProp }: Pray
                     ? "Structured prayer with scripture and focus points."
                     : "Prayer chains and group prayer."}
             </p>
-            {platformSection === "live" && <LiveSection groupSlug={group?.slug ?? groupSlug} groupId={group?.id ?? null} isAdmin={isAdmin} />}
-            {platformSection === "moments" && <MomentsSection groupSlug={group?.slug ?? groupSlug} groupId={group?.id ?? null} />}
-            {platformSection === "guides" && <GuidedSection groupSlug={group?.slug ?? groupSlug} />}
-            {platformSection === "community" && <CommunitySection groupSlug={group?.slug ?? groupSlug} />}
+            {platformSection === "live" && <LiveSection prayerBase={prayerBase} groupSlug={group?.slug ?? groupSlug} groupId={group?.id ?? null} isAdmin={isAdmin} />}
+            {platformSection === "moments" && <MomentsSection prayerBase={prayerBase} groupSlug={group?.slug ?? groupSlug} groupId={group?.id ?? null} />}
+            {platformSection === "guides" && <GuidedSection prayerBase={prayerBase} groupSlug={group?.slug ?? groupSlug} />}
+            {platformSection === "community" && <CommunitySection prayerBase={prayerBase} groupSlug={group?.slug ?? groupSlug} />}
           </>
         ) : (
           <>
@@ -450,7 +465,7 @@ export function PrayerApp({ slug = [], baseUrl, showAdmin: showAdminProp }: Pray
               )}
               <div className="prayer-header-actions">
                 <Link
-                  href={group ? `/prayer/${group.slug}/live` : "/prayer/live"}
+                  href={group ? `${prayerBase}/${group.slug}/live` : `${prayerBase}/live`}
                   className="prayer-cta-btn prayer-cta-primary"
                 >
                   Join Live
@@ -467,7 +482,7 @@ export function PrayerApp({ slug = [], baseUrl, showAdmin: showAdminProp }: Pray
                 {session?.user ? (
                   <>Signed in as {session.user.name ?? session.user.email ?? "User"}</>
                 ) : (
-                  <Link href="/api/auth/signin" className="prayer-share-link">Sign in</Link>
+                  <Link href={`/api/auth/signin?callbackUrl=${encodeURIComponent(signInCallbackUrl)}`} className="prayer-share-link">Sign in</Link>
                 )}
               </p>
             </header>
@@ -542,11 +557,11 @@ export function PrayerApp({ slug = [], baseUrl, showAdmin: showAdminProp }: Pray
                     <Link href={sectionPath("moments")}>Moments</Link>
                     <Link href={sectionPath("guides")}>Guided</Link>
                     <Link href={sectionPath("community")}>Community</Link>
-                    <Link href="/prayer/admin">Admin</Link>
-                    <Link href="/prayer/admin/groups">Groups</Link>
+                    <Link href={`${prayerBase}/admin`}>Admin</Link>
+                    <Link href={`${prayerBase}/admin/groups`}>Groups</Link>
                   </div>
-                  <LivePrayerCta groupId={group?.id} isAdmin={isAdmin} />
-                  <PrayerTimerSelector onStartPrayer={() => setMode("record")} />
+                  <LivePrayerCta prayerBase={prayerBase} groupId={group?.id} isAdmin={isAdmin} />
+                  <PrayerTimerSelector prayerBase={prayerBase} onStartPrayer={() => setMode("record")} />
                   {current?.prayerText && (
                     <div className="prayer-text-section">
                       <button
@@ -644,11 +659,13 @@ export function PrayerApp({ slug = [], baseUrl, showAdmin: showAdminProp }: Pray
           </select>
         </div>
         <span>
-          <Link href="/prayer/admin" className="prayer-admin-link" aria-label="Admin">Admin</Link>
+          <Link href={`${prayerBase}/admin`} className="prayer-admin-link" aria-label="Admin">Admin</Link>
           {" · "}
-          <Link href="/prayer/admin/groups" className="prayer-admin-link" aria-label="Groups">Groups</Link>
+          <Link href={`${prayerBase}/admin/groups`} className="prayer-admin-link" aria-label="Groups">Groups</Link>
         </span>
       </div>
     </div>
   );
 }
+
+export default PrayerApp;

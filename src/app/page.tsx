@@ -160,6 +160,17 @@ export default function Page() {
   if (isTsxScreen) {
     const tsxScreenPath = effectivePath.startsWith("tsx:") ? effectivePath : `tsx:${effectivePath}`;
     const TsxComponent = resolveTsxScreen(tsxScreenPath);
+    if (!TsxComponent) {
+      return (
+        <div style={{ padding: 24, maxWidth: 480, margin: "0 auto" }}>
+          <h2 style={{ color: "#b91c1c", marginBottom: 8 }}>Screen not found</h2>
+          <p style={{ color: "#374151", marginBottom: 16 }}>
+            The screen &quot;{tsxScreenPath.replace(/^tsx:/, "")}&quot; could not be resolved. The navigator may not have loaded yet, or the path may have been moved.
+          </p>
+          <a href="/dev" style={{ color: "#2563eb", fontWeight: 500 }}>Open Navigator (/dev) to pick a screen</a>
+        </div>
+      );
+    }
     const resolvedPathForEnvelope = tsxScreenPath.replace(/^tsx:/, "").trim();
     const EnvelopeWrapped = () => (
       <TSXScreenWithEnvelope screenPath={resolvedPathForEnvelope} Component={TsxComponent} />

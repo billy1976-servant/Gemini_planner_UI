@@ -13,8 +13,21 @@ function findRepoRoot(start: string): string {
   return start;
 }
 
-const REPO_ROOT = findRepoRoot(process.cwd());
-const O1_APP_BASE = path.join(REPO_ROOT, "src", "01_App");
+/** Resolve 01_App: try cwd-based repo root, then from compiled route (e.g. .next/server/app/api/screens → 5 levels up = project root). */
+function getO1AppBase(): string {
+  const fromCwd = path.join(findRepoRoot(process.cwd()), "src", "01_App");
+  if (fs.existsSync(fromCwd)) return fromCwd;
+  try {
+    const fromCompiled = path.join(__dirname, "..", "..", "..", "..", "..", "src", "01_App");
+    if (fs.existsSync(fromCompiled)) return fromCompiled;
+  } catch {
+    /* __dirname not available */
+  }
+  return fromCwd;
+}
+
+const O1_APP_BASE = getO1AppBase();
+const REPO_ROOT = path.dirname(path.dirname(O1_APP_BASE));
 const TSX_ORGANISMS_ROOT = path.join(REPO_ROOT, "src", "04_Presentation", "components", "organisms", "tsx-organisms");
 const TSX_ORGANS_ROOT = path.join(REPO_ROOT, "src", "04_Presentation", "components", "organs", "tsx-organs");
 
@@ -202,20 +215,14 @@ function collectTsxDirectFiles(rootPath: string, rootName: string, categoryName:
 /** Minimal list when scan fails or 01_App missing so dropdown still shows known screens. */
 function getDefensiveFallbackList(): ScreensIndexItem[] {
   return [
-    {
-      category: "Prayer_Stream",
-      directFiles: ["PrayerStreamOnboarding"],
-      folders: {},
-      rootSection: "Business",
-      displayName: "Business",
-    },
-    {
-      category: "Discipleship",
-      directFiles: ["GospelDiscipleship"],
-      folders: {},
-      rootSection: "Christian",
-      displayName: "Christian",
-    },
+    { category: "Prayer_Stream", directFiles: ["PrayerStreamOnboarding"], folders: {}, rootSection: "Business", displayName: "Business" },
+    { category: "Discipleship", directFiles: ["GospelDiscipleship"], folders: {}, rootSection: "Christian", displayName: "Christian" },
+    { category: "Prayer", directFiles: ["PrayerApp"], folders: {}, rootSection: "Christian", displayName: "Christian" },
+    { category: "Learn", directFiles: ["LearnApp"], folders: {}, rootSection: "Learn", displayName: "Learn" },
+    { category: "Plan", directFiles: ["PlanApp"], folders: {}, rootSection: "Plan", displayName: "Plan" },
+    { category: "Protect", directFiles: ["ProtectApp"], folders: {}, rootSection: "Protect", displayName: "Protect" },
+    { category: "Research", directFiles: ["ResearchApp"], folders: {}, rootSection: "Research", displayName: "Research" },
+    { category: "HiClarify", directFiles: ["HiClarifyOnboarding"], folders: {}, rootSection: "(dead) Tsx", displayName: "(dead) Tsx" },
   ];
 }
 
@@ -278,6 +285,13 @@ export async function GET() {
     if (organismsItem) result.push(organismsItem);
     const organsItem = collectTsxDirectFiles(TSX_ORGANS_ROOT, "tsx-organs", "organs");
     if (organsItem) result.push(organsItem);
+
+    if (result.length === 0) {
+      console.warn("[api/screens] Scan returned no sections, using fallback list");
+      return NextResponse.json(getDefensiveFallbackList(), {
+        headers: { "Cache-Control": "no-cache, no-store, must-revalidate" },
+      });
+    }
 
     // Defensive fallbacks when fs missed a known screen (e.g. monorepo cwd, permissions)
     const businessSection = "Business";

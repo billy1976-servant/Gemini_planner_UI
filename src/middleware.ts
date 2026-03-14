@@ -10,7 +10,11 @@ export function middleware(request: NextRequest) {
   const host = request.headers.get("host") ?? request.nextUrl.hostname ?? "";
   const subdomain = getSubdomainFromHost(host);
   if (!subdomain) return NextResponse.next();
-  const rewritePath = pathname === "/" ? `/_domain/${subdomain}` : `/_domain/${subdomain}${pathname}`;
+  // Rewrite to /christian/prayer so (domain)/[domain]/[[...path]] matches (route group (domain) omits from URL).
+  const rewritePath = pathname === "/" ? `/${subdomain}` : `/${subdomain}${pathname}`;
+  if (process.env.NODE_ENV === "development") {
+    console.log("[middleware] host=", host, "subdomain=", subdomain, "pathname=", pathname, "rewritePath=", rewritePath);
+  }
   return NextResponse.rewrite(new URL(rewritePath, request.url));
 }
 

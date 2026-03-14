@@ -19,7 +19,8 @@ export const DOMAIN_BASE_HOST = "hiclarify.com";
 
 /** Check if host is a known subdomain and return the subdomain key, or null. */
 export function getSubdomainFromHost(host: string): string | null {
-  const normalized = host.replace(/^www\./, "").toLowerCase();
+  const hostname = host.includes(":") ? host.slice(0, host.indexOf(":")) : host;
+  const normalized = hostname.replace(/^www\./, "").toLowerCase();
   if (normalized.endsWith(`.${DOMAIN_BASE_HOST}`)) {
     const parts = normalized.slice(0, -DOMAIN_BASE_HOST.length - 1).split(".");
     const sub = parts[parts.length - 1];

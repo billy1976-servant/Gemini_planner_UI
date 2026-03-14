@@ -152,6 +152,20 @@ organsContext.keys().forEach((key: string) => {
     Promise.resolve(organsContext(key)).then((m) => resolveTsxModule(m, normalized));
 });
 
+/* 01_App *App.tsx — Christian/Prayer/PrayerApp, Learn/LearnApp, etc. */
+const appContext = (require as any).context(
+  "../../01_App",
+  true,
+  /.*\/[^/]+App\.tsx$/
+);
+appContext
+  .keys()
+  .filter((k: string) => !k.includes("/(dead)") && !k.startsWith("./_"))
+  .forEach((key: string) => {
+    const normalized = normalizeContextKey(key);
+    AUTO_TSX_MAP[normalized] = () =>
+      Promise.resolve(appContext(key)).then((m) => resolveTsxModule(m, normalized));
+  });
 
 /* ------------------------------------------------------------
    🔑 RESOLVER — exact match + Business/Christian fallback for short paths
@@ -163,6 +177,7 @@ const EXPLICIT_TSX_MAP: Record<string, () => Promise<any>> = {
     import("@/01_App/Business/Container_Creations/ContainerCreationsLanding"),
   "Christian/Discipleship/GospelDiscipleship": () =>
     import("@/01_App/Christian/Discipleship/GospelDiscipleship"),
+  "Christian/Prayer/PrayerApp": () => import("@/01_App/Christian/Prayer/PrayerApp"),
 };
 
 function resolveTsxScreen(path: string) {
@@ -189,10 +204,16 @@ function resolveTsxScreen(path: string) {
   }
 
   const christianPath = `Christian/${normalized}`;
+  if (AUTO_TSX_MAP[christianPath]) {
+    return nextDynamic(AUTO_TSX_MAP[christianPath], { ssr: false });
+  }
   if (EXPLICIT_TSX_MAP[christianPath]) {
     return nextDynamic(EXPLICIT_TSX_MAP[christianPath], { ssr: false });
   }
 
+  if (typeof console !== "undefined" && console.warn) {
+    console.warn("[dev resolveTsxScreen] TSX screen not found. Path:", normalized, "| Expected file: src/01_App/**/<App>App.tsx");
+  }
   return null;
 }
 

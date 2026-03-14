@@ -7,15 +7,12 @@ import { APP_MODULE_LOADERS } from "@/lib/app-loaders";
 
 /**
  * Discover *App.tsx from src/01_App at build time.
- * Keys: "./Christian/Prayer/PrayerApp.tsx", "./Learn/LearnApp.tsx", etc.
- * Excludes (dead) and _ roots.
- * Fallback: when require.context is unavailable (e.g. client bundle), use APP_MODULE_LOADERS.
+ * Fallback: when require.context is unavailable, use APP_MODULE_LOADERS.
  */
 const req = typeof require !== "undefined" ? (require as any) : null;
 const appContext =
   req?.context != null ? req.context("@/01_App", true, /.*\/[^/]+App\.tsx$/) : null;
 
-/** Log discovered context keys once for debugging (domain=christian, path=prayer). */
 if (typeof window !== "undefined" && appContext) {
   const keys = appContext.keys().filter(
     (k: string) => !k.includes("/(dead)") && !k.startsWith("./_")
@@ -33,7 +30,6 @@ function findContextKey(domainFolder: string, pathSegments: string[]): string | 
     (k: string) => !k.includes("/(dead)") && !k.startsWith("./_")
   );
   if (pathSegments.length === 0) {
-    // Domain root: 01_App/<Domain>/<Domain>App.tsx
     return keys.find((k: string) => {
       const parts = k.split("/");
       return (
@@ -43,7 +39,6 @@ function findContextKey(domainFolder: string, pathSegments: string[]): string | 
       );
     }) ?? null;
   }
-  // Domain + app: 01_App/<Domain>/<App>/<App>App.tsx
   const appSegment = normalizeSegment(pathSegments[0]);
   return keys.find((k: string) => {
     const parts = k.split("/");
@@ -65,11 +60,11 @@ function resolveDomainModuleFromFilesystem(
     return null;
   }
   if (!key) {
-    const expected =
-      pathSegments.length === 0
-        ? `01_App/${domainFolder}/${domainFolder}App.tsx`
-        : `01_App/${domainFolder}/${pathSegments[0]}/${pathSegments[0]}App.tsx`;
     if (typeof console !== "undefined" && console.warn) {
+      const expected =
+        pathSegments.length === 0
+          ? `01_App/${domainFolder}/${domainFolder}App.tsx`
+          : `01_App/${domainFolder}/${pathSegments[0]}/${pathSegments[0]}App.tsx`;
       console.warn("[domain-router] Module not found. Expected path:", expected);
     }
     return null;
@@ -93,7 +88,6 @@ function resolveDomainModuleFromFilesystem(
   }
 }
 
-/** Loader key for APP_MODULE_LOADERS: e.g. "Christian" or "Christian/prayer". */
 function getLoaderKey(domainFolder: string, pathSegments: string[]): string {
   if (pathSegments.length === 0) return domainFolder;
   return `${domainFolder}/${pathSegments[0].toLowerCase()}`;
@@ -109,7 +103,6 @@ export default function DomainPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const pathKey = pathSegments.join("/");
     const loaderKey = getLoaderKey(folder ?? "", pathSegments);
     const resolvedFilePath =
       pathSegments.length === 0
@@ -169,5 +162,6 @@ export default function DomainPage() {
       <div style={{ padding: "2rem", textAlign: "center" }}>Loading…</div>
     );
   }
-  return <Component slug={pathSegments} />;
+  const basePath = domain ? `/${domain}` : "";
+  return <Component slug={pathSegments} basePath={basePath} />;
 }
