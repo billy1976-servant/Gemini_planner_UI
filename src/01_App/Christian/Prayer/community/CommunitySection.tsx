@@ -7,6 +7,7 @@ import type { PrayerChain } from "../api/prayer-api";
 import type { Prayer } from "../PrayerTypes";
 
 export interface CommunitySectionProps {
+  prayerBase?: string;
   groupSlug?: string | null;
 }
 
@@ -15,7 +16,7 @@ function getAudioUrl(audioUrl: string): string {
   return `/api/prayer/audio?path=${encodeURIComponent(audioUrl)}`;
 }
 
-export function CommunitySection({ groupSlug }: CommunitySectionProps) {
+export function CommunitySection({ prayerBase = "/prayer", groupSlug }: CommunitySectionProps) {
   const [chains, setChains] = useState<PrayerChain[]>([]);
   const [loading, setLoading] = useState(true);
   const [playingChainId, setPlayingChainId] = useState<string | null>(null);
@@ -73,7 +74,7 @@ export function CommunitySection({ groupSlug }: CommunitySectionProps) {
     }
   }, []);
 
-  const base = groupSlug ? `/prayer/${groupSlug}` : "/prayer";
+  const base = groupSlug ? `${prayerBase}/${groupSlug}` : prayerBase;
 
   return (
     <div className="prayer-community-section" style={{ marginTop: "1rem" }}>

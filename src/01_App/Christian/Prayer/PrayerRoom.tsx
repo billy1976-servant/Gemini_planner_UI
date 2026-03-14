@@ -48,6 +48,8 @@ function ListenerAudio({ stream }: { stream: MediaStream | null }) {
 
 export interface PrayerRoomProps {
   roomId: string;
+  /** Base path for prayer app (e.g. "/prayer" or "/christian/prayer") for back links. */
+  prayerBase?: string;
 }
 
 function getStored(roomId: string): { participantId: string; role: RoomRole; hostId?: string } | null {
@@ -74,7 +76,7 @@ function getInitialStored(roomId: string) {
   return getStored(roomId);
 }
 
-export function PrayerRoom({ roomId }: PrayerRoomProps) {
+export function PrayerRoom({ roomId, prayerBase = "/prayer" }: PrayerRoomProps) {
   const { data: session } = useSession();
   const palette = usePalette();
   const [room, setRoom] = useState<PrayerRoomType | null>(null);
@@ -389,7 +391,7 @@ export function PrayerRoom({ roomId }: PrayerRoomProps) {
             </button>
           </div>
           <div style={{ marginTop: "1.5rem" }}>
-            <Link href="/prayer" className="prayer-share-link">
+            <Link href={prayerBase} className="prayer-share-link">
               ← Back to prayer
             </Link>
           </div>
@@ -473,7 +475,7 @@ export function PrayerRoom({ roomId }: PrayerRoomProps) {
         />
 
         <div style={{ marginTop: "1.5rem" }}>
-          <Link href="/prayer" className="prayer-share-link">
+          <Link href={prayerBase} className="prayer-share-link">
             ← Back to prayer
           </Link>
         </div>

@@ -7,6 +7,7 @@ import type { ActiveRoomSummary } from "../room/prayer-room-api";
 import { LivePrayerCta } from "../LivePrayerCta";
 
 export interface LiveSectionProps {
+  prayerBase?: string;
   groupSlug?: string | null;
   groupId?: string | null;
   isAdmin?: boolean;
@@ -14,7 +15,7 @@ export interface LiveSectionProps {
 
 const ACTIVE_POLL_MS = 10000;
 
-export function LiveSection({ groupSlug, groupId, isAdmin }: LiveSectionProps) {
+export function LiveSection({ prayerBase = "/prayer", groupSlug, groupId, isAdmin }: LiveSectionProps) {
   const [rooms, setRooms] = useState<ActiveRoomSummary[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,7 +33,7 @@ export function LiveSection({ groupSlug, groupId, isAdmin }: LiveSectionProps) {
     setLoading(false);
   }, []);
 
-  const base = groupSlug ? `/prayer/${groupSlug}` : "/prayer";
+  const base = groupSlug ? `${prayerBase}/${groupSlug}` : prayerBase;
 
   return (
     <div className="prayer-live-section" style={{ marginTop: "1rem" }}>
@@ -46,7 +47,7 @@ export function LiveSection({ groupSlug, groupId, isAdmin }: LiveSectionProps) {
       ) : rooms.length === 0 ? (
         <>
           <p className="prayer-section-muted" style={{ marginBottom: "1rem" }}>No live rooms right now. Start one below.</p>
-          <LivePrayerCta groupId={groupId ?? null} isAdmin={isAdmin} />
+          <LivePrayerCta prayerBase={prayerBase} groupId={groupId ?? null} isAdmin={isAdmin} />
         </>
       ) : (
         <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
@@ -95,7 +96,7 @@ export function LiveSection({ groupSlug, groupId, isAdmin }: LiveSectionProps) {
       )}
 
       <div style={{ marginTop: "1rem" }}>
-        <LivePrayerCta groupId={groupId ?? null} isAdmin={isAdmin} />
+        <LivePrayerCta prayerBase={prayerBase} groupId={groupId ?? null} isAdmin={isAdmin} />
       </div>
 
       <div style={{ marginTop: "1rem" }}>

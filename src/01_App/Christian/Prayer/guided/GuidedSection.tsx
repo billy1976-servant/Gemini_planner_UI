@@ -5,6 +5,7 @@ import Link from "next/link";
 import { getGuidedPrayers, type GuidedPrayer } from "../api/prayer-api";
 
 export interface GuidedSectionProps {
+  prayerBase?: string;
   groupSlug?: string | null;
 }
 
@@ -18,7 +19,7 @@ const CATEGORIES = [
   "General",
 ];
 
-export function GuidedSection({ groupSlug }: GuidedSectionProps) {
+export function GuidedSection({ prayerBase = "/prayer", groupSlug }: GuidedSectionProps) {
   const [guides, setGuides] = useState<GuidedPrayer[]>([]);
   const [category, setCategory] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -32,7 +33,7 @@ export function GuidedSection({ groupSlug }: GuidedSectionProps) {
       .finally(() => setLoading(false));
   }, [category]);
 
-  const base = groupSlug ? `/prayer/${groupSlug}` : "/prayer";
+  const base = groupSlug ? `${prayerBase}/${groupSlug}` : prayerBase;
 
   return (
     <div className="prayer-guided-section" style={{ marginTop: "1rem" }}>
@@ -130,7 +131,7 @@ export function GuidedSection({ groupSlug }: GuidedSectionProps) {
                     </div>
                   )}
                   <Link
-                    href="/prayer/admin"
+                    href={`${prayerBase}/admin`}
                     className="prayer-share-link"
                     style={{ fontSize: "0.875rem" }}
                   >

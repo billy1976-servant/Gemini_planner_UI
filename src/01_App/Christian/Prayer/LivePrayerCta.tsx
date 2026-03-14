@@ -19,11 +19,12 @@ function setStored(
 }
 
 export interface LivePrayerCtaProps {
+  prayerBase?: string;
   groupId?: string | null;
   isAdmin?: boolean;
 }
 
-export function LivePrayerCta({ groupId, isAdmin }: LivePrayerCtaProps) {
+export function LivePrayerCta({ prayerBase = "/prayer", groupId, isAdmin }: LivePrayerCtaProps) {
   const router = useRouter();
   const { data: session } = useSession();
   const [activeRooms, setActiveRooms] = useState<ActiveRoomSummary[]>([]);
@@ -89,7 +90,7 @@ export function LivePrayerCta({ groupId, isAdmin }: LivePrayerCtaProps) {
       <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
         {firstRoom && (
           <Link
-            href={`/prayer/room/${firstRoom.roomId}`}
+            href={`${prayerBase}/room/${firstRoom.roomId}`}
             className="prayer-room-join-link"
             style={{
               padding: "0.5rem 1rem",

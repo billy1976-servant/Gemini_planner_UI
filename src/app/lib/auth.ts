@@ -2,6 +2,11 @@ import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { getOrCreateUserByEmail } from "@/lib/universal-identity";
 
+/**
+ * For domain-router (e.g. christian.hiclarify.com): leave NEXTAUTH_URL unset in production
+ * so NextAuth uses the request host for redirects and callbacks. Sign-in links pass
+ * callbackUrl (e.g. /christian/prayer) so Google login returns to the correct domain path.
+ */
 export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({

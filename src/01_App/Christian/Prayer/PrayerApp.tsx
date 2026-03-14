@@ -643,7 +643,7 @@ export function PrayerApp({ slug = [], baseUrl, basePath: basePathProp = "", sho
       </nav>
 
       <div className="prayer-footer-links">
-        <PrayerAuthControls />
+        <PrayerAuthControls prayerBase={prayerBase} />
         <div className="prayer-palette-switcher">
           <label htmlFor="prayer-palette-select" className="prayer-metrics-label">Theme</label>
           <select

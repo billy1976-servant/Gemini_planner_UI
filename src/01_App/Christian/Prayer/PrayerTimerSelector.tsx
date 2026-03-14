@@ -6,11 +6,13 @@ import Link from "next/link";
 const DURATIONS = [1, 5, 10, 15] as const;
 
 export interface PrayerTimerSelectorProps {
+  /** Base path for prayer app (e.g. "/prayer" or "/christian/prayer") for admin link. */
+  prayerBase?: string;
   /** When provided, "Time's up" shows a button that switches to record mode on the main tab. */
   onStartPrayer?: () => void;
 }
 
-export function PrayerTimerSelector({ onStartPrayer }: PrayerTimerSelectorProps = {}) {
+export function PrayerTimerSelector({ prayerBase = "/prayer", onStartPrayer }: PrayerTimerSelectorProps = {}) {
   const [selectedMinutes, setSelectedMinutes] = useState<number | null>(null);
   const [remainingSeconds, setRemainingSeconds] = useState(0);
   const [ended, setEnded] = useState(false);
@@ -83,7 +85,7 @@ export function PrayerTimerSelector({ onStartPrayer }: PrayerTimerSelectorProps 
           </button>
         ) : (
           <Link
-            href="/prayer/admin"
+            href={`${prayerBase}/admin`}
             style={{
               display: "inline-block",
               padding: "0.5rem 1rem",

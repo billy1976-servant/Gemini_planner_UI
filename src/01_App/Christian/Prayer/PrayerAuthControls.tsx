@@ -3,7 +3,12 @@
 import React from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 
-export function PrayerAuthControls() {
+export interface PrayerAuthControlsProps {
+  /** Base path for prayer app (e.g. "/prayer" or "/christian/prayer") for sign-in callback. */
+  prayerBase?: string;
+}
+
+export function PrayerAuthControls({ prayerBase = "/prayer" }: PrayerAuthControlsProps = {}) {
   const { data: session, status } = useSession();
 
   if (status === "loading") {
@@ -44,7 +49,7 @@ export function PrayerAuthControls() {
   return (
     <button
       type="button"
-      onClick={() => signIn("google", { callbackUrl: "/prayer" })}
+      onClick={() => signIn("google", { callbackUrl: prayerBase })}
       style={{
         padding: "0.35rem 0.75rem",
         borderRadius: 8,

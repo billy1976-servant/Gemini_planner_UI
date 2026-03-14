@@ -6,6 +6,7 @@ import { getPrayers } from "../api/prayer-api";
 import type { Prayer } from "../PrayerTypes";
 
 export interface MomentsSectionProps {
+  prayerBase?: string;
   groupSlug?: string | null;
   groupId?: string | null;
 }
@@ -22,7 +23,7 @@ function formatDuration(seconds: number): string {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-export function MomentsSection({ groupSlug, groupId }: MomentsSectionProps) {
+export function MomentsSection({ prayerBase = "/prayer", groupSlug, groupId }: MomentsSectionProps) {
   const [prayers, setPrayers] = useState<Prayer[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "group">(groupId ? "group" : "all");
@@ -36,7 +37,7 @@ export function MomentsSection({ groupSlug, groupId }: MomentsSectionProps) {
       .finally(() => setLoading(false));
   }, [filter, groupId]);
 
-  const base = groupSlug ? `/prayer/${groupSlug}` : "/prayer";
+  const base = groupSlug ? `${prayerBase}/${groupSlug}` : prayerBase;
 
   return (
     <div className="prayer-moments-feed" style={{ marginTop: "1rem" }}>

@@ -16,7 +16,11 @@ import {
 import { PrayerUpload } from "./PrayerUpload";
 import type { Group } from "./PrayerTypes";
 
-export function GroupAdmin() {
+export interface GroupAdminProps {
+  prayerBase?: string;
+}
+
+export function GroupAdmin({ prayerBase = "/prayer" }: GroupAdminProps = {}) {
   const { data: session } = useSession();
   const [groups, setGroups] = useState<Group[]>([]);
   const [memberGroupIds, setMemberGroupIds] = useState<Set<string>>(new Set());
@@ -217,7 +221,7 @@ export function GroupAdmin() {
                   )
                 )}
                 <Link
-                  href={`/prayer/${g.slug}`}
+                  href={`${prayerBase}/${g.slug}`}
                   className="prayer-share-link"
                   style={{ fontSize: "0.8125rem" }}
                 >
