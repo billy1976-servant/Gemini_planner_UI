@@ -43,5 +43,37 @@
     "contentType": "prayer",
     "totalListeners": 2,
     "duration": 7
+  },
+  {
+    "id": "live-room-recording",
+    "title": "Live room recording",
+    "description": "",
+    "prayerText": "",
+    "audioUrl": "live-room-recording.webm",
+    "createdAt": "2026-03-14T12:46:55.899Z",
+    "published": true,
+    "contentType": "prayer",
+    "totalListeners": 1,
+    "source": "live_room",
+    "groupId": "54a451ea",
+    "roomId": "0d8dd3bf-ce5b-4987-b240-37233aadd32a",
+    "participants": [
+      "anon-1773490956476-5ri775bk8"
+    ],
+    "studyPages": [
+      {
+        "id": "5e321f06-1c80-44dc-b117-2fdb71ef90d6",
+        "title": "Study page",
+        "createdAt": "2026-03-14T12:46:31.841Z",
+        "timestampSec": 14
+      },
+      {
+        "id": "e26704c4-cc9e-470d-9c37-d74907654e7e",
+        "title": "Study page",
+        "createdAt": "2026-03-14T12:46:46.163Z",
+        "timestampSec": 28
+      }
+    ],
+    "duration": 34
   }
 ]

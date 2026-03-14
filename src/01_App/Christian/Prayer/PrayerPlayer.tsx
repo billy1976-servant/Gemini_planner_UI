@@ -24,6 +24,8 @@ export interface PrayerPlayerProps {
   seekToSeconds?: number | null;
   /** Called after seek was applied (parent can clear seekToSeconds). */
   onSeekDone?: () => void;
+  /** Use video element so replay can show screen recording (live_room with screen share). */
+  useVideo?: boolean;
 }
 
 /**
@@ -38,8 +40,9 @@ export function PrayerPlayer({
   onDurationChange,
   seekToSeconds,
   onSeekDone,
+  useVideo = false,
 }: PrayerPlayerProps) {
-  const audioRef = useRef<HTMLAudioElement>(null);
+  const mediaRef = useRef<HTMLMediaElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -54,19 +57,19 @@ export function PrayerPlayer({
   }, []);
 
   const play = useCallback(() => {
-    const el = audioRef.current;
+    const el = mediaRef.current;
     if (!el || !src) return;
     el.play().then(() => { setIsPlaying(true); onPlayingChange?.(true); }).catch(() => {});
   }, [src, onPlayingChange]);
 
   const pause = useCallback(() => {
-    audioRef.current?.pause();
+    mediaRef.current?.pause();
     setIsPlaying(false);
     onPlayingChange?.(false);
   }, [onPlayingChange]);
 
   useEffect(() => {
-    const el = audioRef.current;
+    const el = mediaRef.current;
     if (!el || !src) return;
     setCurrentTime(0);
     setDuration(0);
@@ -75,7 +78,7 @@ export function PrayerPlayer({
   }, [src]);
 
   useEffect(() => {
-    const el = audioRef.current;
+    const el = mediaRef.current;
     if (el && typeof seekToSeconds === "number" && Number.isFinite(seekToSeconds)) {
       el.currentTime = Math.max(0, seekToSeconds);
       setCurrentTime(el.currentTime);
@@ -84,13 +87,13 @@ export function PrayerPlayer({
   }, [seekToSeconds, onSeekDone]);
 
   useEffect(() => {
-    const el = audioRef.current;
+    const el = mediaRef.current;
     if (!el) return;
     el.playbackRate = playbackRate;
   }, [playbackRate]);
 
   useEffect(() => {
-    const el = audioRef.current;
+    const el = mediaRef.current;
     if (!el) return;
     const onTimeUpdate = () => setCurrentTime(el.currentTime);
     const onDurationChangeEv = () => {
@@ -114,7 +117,7 @@ export function PrayerPlayer({
   }, [onPlayingChange, onDurationChange]);
 
   const seek = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const el = audioRef.current;
+    const el = mediaRef.current;
     if (!el || !el.duration) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width;
@@ -123,14 +126,14 @@ export function PrayerPlayer({
   }, []);
 
   const skipBack = useCallback(() => {
-    const el = audioRef.current;
+    const el = mediaRef.current;
     if (!el) return;
     el.currentTime = Math.max(0, el.currentTime - SKIP_SECONDS);
     setCurrentTime(el.currentTime);
   }, []);
 
   const skipForward = useCallback(() => {
-    const el = audioRef.current;
+    const el = mediaRef.current;
     if (!el) return;
     el.currentTime = Math.min(el.duration || 0, el.currentTime + SKIP_SECONDS);
     setCurrentTime(el.currentTime);
@@ -140,7 +143,17 @@ export function PrayerPlayer({
 
   return (
     <div className="prayer-player-hero">
-      {src && <audio ref={audioRef} preload="metadata" />}
+      {src && useVideo ? (
+        <video
+          ref={mediaRef}
+          preload="metadata"
+          playsInline
+          muted={false}
+          style={{ width: "100%", maxHeight: 320, background: "var(--prayer-card-bg, #0f172a)", borderRadius: 8, marginBottom: "0.75rem" }}
+        />
+      ) : (
+        <audio ref={mediaRef} preload="metadata" />
+      )}
 
       {/* Main row: Play | Waveform | Time remaining */}
       <div className="prayer-player-row">
@@ -171,7 +184,7 @@ export function PrayerPlayer({
           aria-valuemax={duration}
         >
           <PrayerWaveform
-            audioRef={audioRef}
+            audioRef={mediaRef}
             isPlaying={isPlaying}
             progress={progress}
             height={56}

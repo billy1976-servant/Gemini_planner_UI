@@ -10,6 +10,7 @@ import { DataTab } from "./DataTab";
 import { ReportsTab } from "./ReportsTab";
 import { AdsTab } from "./AdsTab";
 import { DecisionConsoleTab } from "./DecisionConsoleTab";
+import { sendDebugIngest } from "@/lib/debug-ingest";
 import styles from "./WorkspaceLayout.module.css";
 
 export type ViewId = "command" | "compare" | "timeline" | "data" | "reports" | "ads" | "decision";
@@ -36,18 +37,14 @@ export default function WorkspaceLayout() {
 
   // #region agent log
   React.useEffect(() => {
-    fetch("http://127.0.0.1:7242/ingest/7e15e045-3112-419f-8116-3226c0884ac1", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "df01c7" },
-      body: JSON.stringify({
-        sessionId: "df01c7",
-        location: "WorkspaceLayout.tsx:headerBusinesses",
-        message: "Header business dropdown source (Data tab uses this)",
-        data: { businesses: businesses.map((b) => ({ id: b.id, name: b.name })), selectedBusinessId: businessId },
-        timestamp: Date.now(),
-        hypothesisId: "B",
-      }),
-    }).catch(() => {});
+    sendDebugIngest({
+      sessionId: "df01c7",
+      location: "WorkspaceLayout.tsx:headerBusinesses",
+      message: "Header business dropdown source (Data tab uses this)",
+      data: { businesses: businesses.map((b) => ({ id: b.id, name: b.name })), selectedBusinessId: businessId },
+      timestamp: Date.now(),
+      hypothesisId: "B",
+    });
   }, [businesses, businessId]);
   // #endregion
 

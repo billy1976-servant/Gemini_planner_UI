@@ -453,7 +453,7 @@ async function main() {
     // Proof checklist
     console.log("\n[ONBOARDING] Proof Checklist:");
     console.log(`  JSON path: ${outputPath}`);
-    console.log(`  Screen URL: http://localhost:3000/?screen=tsx:generated-websites/${siteKey}/OnboardingGeneratedScreen`);
+    console.log(`  Screen URL: <your-app-origin>/?screen=tsx:generated-websites/${siteKey}/OnboardingGeneratedScreen`);
     
     // Validate
     let pass = true;

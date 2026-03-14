@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { RoomSignalingEvent, SignalingMessage } from "../PrayerRoomTypes";
 
-const SIGNALING_POLL_MS = 1500;
+const SIGNALING_POLL_MS = 5000;
 
 function getSignalingBase(): string {
   if (typeof window !== "undefined") return `${window.location.origin}/api/prayer-room/signaling`;

@@ -31,6 +31,7 @@ import { getCanonicalNavScreenKey } from "@/07_Dev_Tools/nav/nav-screen-key";
 import { setNavDebug } from "@/07_Dev_Tools/nav/nav-debug-store";
 import { logNavClick, logNavRender, logNavExecution, installMutationObserverForNodeIds } from "@/07_Dev_Tools/nav/nav-instrumentation";
 import { getDevSidebarProps, setDevSidebarProps } from "@/app/ui/control-dock/dev-right-sidebar-store";
+import { sendDebugIngest } from "@/lib/debug-ingest";
 
 const DEBUG_NAV = typeof process !== "undefined" && process.env.NODE_ENV === "development" && !!(typeof window !== "undefined" && (window as any).__DEBUG_NAV__);
 
@@ -236,7 +237,7 @@ function TsxNavCapture({ screenKey, children }: { screenKey: string; children: R
       const nav = navTargetsMapAtClick?.[id];
       const resolvedNavTarget = nav ? { toScreenId: nav.toScreenId, toAnchor: nav.toAnchor } : undefined;
       // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/7e15e045-3112-419f-8116-3226c0884ac1',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'22d4f7'},body:JSON.stringify({sessionId:'22d4f7',hypothesisId:'H1,H2,H5',location:'dev/page.tsx:TsxNavCapture',message:'CLICK breakpoint line ~208',data:{stage:'CLICK_CAPTURE',screenKey,id,dataNodeId:id,navTargetsMapKeys:navTargetsMapAtClick?Object.keys(navTargetsMapAtClick):[],resolvedNavTarget},timestamp:Date.now()})}).catch(()=>{});
+      sendDebugIngest({ sessionId: "22d4f7", hypothesisId: "H1,H2,H5", location: "dev/page.tsx:TsxNavCapture", message: "CLICK breakpoint line ~208", data: { stage: "CLICK_CAPTURE", screenKey, id, dataNodeId: id, navTargetsMapKeys: navTargetsMapAtClick ? Object.keys(navTargetsMapAtClick) : [], resolvedNavTarget }, timestamp: Date.now() });
       // #endregion
       logNavClick({
         screenKey,
@@ -255,7 +256,7 @@ function TsxNavCapture({ screenKey, children }: { screenKey: string; children: R
       }
       const clickData = { id, screenKey, navFound: !!nav, toScreenId: nav?.toScreenId, toAnchor: nav?.toAnchor, allKeys: navTargetsMap ? Object.keys(navTargetsMap) : [] };
       setNavDebug({ type: "click", id, screenKey, navFound: !!nav, toScreenId: nav?.toScreenId, toAnchor: nav?.toAnchor, allKeys: navTargetsMap ? Object.keys(navTargetsMap) : [] });
-      fetch('http://127.0.0.1:7242/ingest/7e15e045-3112-419f-8116-3226c0884ac1',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'ea7e9f'},body:JSON.stringify({sessionId:'ea7e9f',hypothesisId:'H2,H5',location:'dev/page.tsx:TsxNavCapture',message:'click on data-node-id',data:clickData,timestamp:Date.now()})}).catch(()=>{});
+      sendDebugIngest({ sessionId: "ea7e9f", hypothesisId: "H2,H5", location: "dev/page.tsx:TsxNavCapture", message: "click on data-node-id", data: clickData, timestamp: Date.now() });
       if (typeof console !== "undefined" && console.log) console.log("[NavDebug] CLICK", clickData);
       if (!nav) return;
 

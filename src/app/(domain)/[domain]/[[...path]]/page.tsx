@@ -1,11 +1,16 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { getFolderForSubdomain } from "@/lib/domain-config";
 import { APP_MODULE_LOADERS } from "@/lib/app-loaders";
 
 /**
+ * Canonical domain route for /{domain}/* (e.g. /christian/prayer, /christian/prayer/live).
+ * Middleware rewrites /prayer to /christian/prayer, so this page serves all Prayer app URLs.
+ * Passes appSlug to apps with leading "prayer" stripped so PrayerApp receives e.g. ["live"] or ["room", id].
+ * Use this route for Prayer; _domain/[domain]/[[...path]] does not strip the leading segment.
+ *
  * Discover *App.tsx from src/01_App at build time.
  * Fallback: when require.context is unavailable, use APP_MODULE_LOADERS.
  */
@@ -95,9 +100,21 @@ function getLoaderKey(domainFolder: string, pathSegments: string[]): string {
 
 export default function DomainPage() {
   const params = useParams();
-  const domain = (params?.domain as string) ?? "";
-  const pathArray = params?.path as string[] | undefined;
-  const pathSegments = Array.isArray(pathArray) ? pathArray : pathArray ? [pathArray] : [];
+  const pathname = usePathname();
+  let domain = (params?.domain as string) ?? "";
+  const pathParam = params?.path;
+  const pathArray = Array.isArray(pathParam) ? pathParam : pathParam != null ? [String(pathParam)] : [];
+  let rawPath = pathArray;
+  // Path-based /prayer routes: when first segment is "prayer" (no rewrite), treat as christian + path ["prayer", ...] so Prayer app resolves.
+  if (domain.toLowerCase() === "prayer") {
+    domain = "christian";
+    rawPath = ["prayer", ...rawPath];
+  }
+  // Strip leading segment if it duplicates the domain (rewrite can produce /christian/christian/prayer or path param may include domain).
+  const pathSegments =
+    rawPath.length > 0 && rawPath[0].toLowerCase() === domain.toLowerCase()
+      ? rawPath.slice(1)
+      : rawPath;
   const folder = getFolderForSubdomain(domain);
   const [Component, setComponent] = useState<React.ComponentType<any> | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -162,6 +179,12 @@ export default function DomainPage() {
       <div style={{ padding: "2rem", textAlign: "center" }}>Loading…</div>
     );
   }
-  const basePath = domain ? `/${domain}` : "";
-  return <Component slug={pathSegments} basePath={basePath} />;
+  // Prayer app expects in-app path only; strip leading "prayer" segment when present
+  const appSlug =
+    pathSegments[0]?.toLowerCase() === "prayer" ? pathSegments.slice(1) : pathSegments;
+  // Stable base path for all app links (e.g. /christian/prayer). Prevents link breakage when pathname fluctuates.
+  const appBase =
+    pathSegments.length > 0 ? `/${domain}/${pathSegments[0]}` : `/${domain}`;
+  const routeKey = `${folder ?? ""}-${pathSegments.join("-")}`;
+  return <Component key={routeKey} slug={appSlug} basePath={appBase} />;
 }

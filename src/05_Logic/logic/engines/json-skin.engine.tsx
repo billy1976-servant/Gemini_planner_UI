@@ -10,6 +10,7 @@ import BeforeAfterSlider from "@/04_Presentation/components/molecules/BeforeAfte
 import { getPaletteForResolution } from "@/engine/core/palette-resolver";
 import { resolveToken } from "@/engine/core/palette-resolve-token";
 import { useTsxEmbed } from "@/lib/tsx-embed-context";
+import { sendDebugIngest } from "@/lib/debug-ingest";
 
 
 /* ======================================================
@@ -374,7 +375,7 @@ function JsonNode({ node, state, palette }: { node: any; state: any; palette?: R
       const alt = node.alt ?? "";
       const srcList = Array.isArray(src) ? src : src ? [src] : [];
       // #region agent log
-      fetch("http://127.0.0.1:7242/ingest/7e15e045-3112-419f-8116-3226c0884ac1", { method: "POST", headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "b00204" }, body: JSON.stringify({ sessionId: "b00204", location: "json-skin.engine.tsx:image", message: "image src from JSON", data: { rawSrc: src, layout, srcList, beforeSrc: node.params?.beforeSrc, afterSrc: node.params?.afterSrc }, timestamp: Date.now(), hypothesisId: "H1" }) }).catch(() => {});
+      sendDebugIngest({ sessionId: "b00204", location: "json-skin.engine.tsx:image", message: "image src from JSON", data: { rawSrc: src, layout, srcList, beforeSrc: node.params?.beforeSrc, afterSrc: node.params?.afterSrc }, timestamp: Date.now(), hypothesisId: "H1" });
       // #endregion
 
       if (layout === "slider") {

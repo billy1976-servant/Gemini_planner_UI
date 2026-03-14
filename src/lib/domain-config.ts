@@ -39,3 +39,11 @@ export function getSubdomainFromHost(host: string): string | null {
 export function getFolderForSubdomain(subdomain: string): string | null {
   return SUBDOMAIN_TO_FOLDER[subdomain.toLowerCase()] ?? null;
 }
+
+/**
+ * Prayer app base path (domain-agnostic). Use for all links and navigation.
+ * Domain is determined by the subdomain (e.g. christian.hiclarify.com); paths are always /prayer, /prayer/admin, etc.
+ */
+export function getPrayerBasePathForHost(_host?: string): string {
+  return "/prayer";
+}

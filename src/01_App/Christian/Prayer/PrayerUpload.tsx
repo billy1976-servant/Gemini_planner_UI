@@ -111,6 +111,11 @@ export function PrayerUpload({ onUploaded, groupId }: PrayerUploadProps) {
         if (session?.user?.email) formData.append("userId", session.user.email);
         if (session?.user?.name) formData.append("userName", session.user.name);
         const prayer = await uploadPrayer(formData, groupId ?? undefined);
+        if (!prayer) {
+          setError("Upload failed");
+          setLoading(false);
+          return;
+        }
         setSuccess(true);
         setTitle("");
         setDescription("");

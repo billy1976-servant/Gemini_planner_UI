@@ -13,7 +13,7 @@ import React, {
    MOBILE HARDWARE TEST PAGE
    Standalone device validation — real browser APIs only.
    No engine, layout, capability, or System7.
-   Use: http://YOUR-IP:3000/diagnostics/mobile-test on a phone.
+   Use: your app origin (e.g. https://hiclarify.com) + /diagnostics/mobile-test on a phone.
 ============================================================ */
 
 type TestAllResult = {

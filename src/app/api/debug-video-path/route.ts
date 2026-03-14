@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { sendDebugIngest } from "@/lib/debug-ingest";
 
-const DEBUG_INGEST = "http://127.0.0.1:7242/ingest/7e15e045-3112-419f-8116-3226c0884ac1";
 const SESSION_ID = "9065fb";
 
 export async function GET() {
@@ -42,18 +42,14 @@ export async function GET() {
   };
 
   // #region agent log
-  fetch(DEBUG_INGEST, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "X-Debug-Session-Id": SESSION_ID },
-    body: JSON.stringify({
-      sessionId: SESSION_ID,
-      hypothesisId: "H1-H4",
-      location: "api/debug-video-path/route.ts",
-      message: "Video path check",
-      data,
-      timestamp: Date.now(),
-    }),
-  }).catch(() => {});
+  sendDebugIngest({
+    sessionId: SESSION_ID,
+    hypothesisId: "H1-H4",
+    location: "api/debug-video-path/route.ts",
+    message: "Video path check",
+    data,
+    timestamp: Date.now(),
+  });
   // #endregion
 
   return NextResponse.json(data);

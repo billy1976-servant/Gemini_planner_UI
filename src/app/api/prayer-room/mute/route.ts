@@ -7,10 +7,17 @@ import { getRooms, saveRooms } from "@/01_App/Christian/Prayer/data/store";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+function getUserId(request: Request, session: { user?: { id?: string } } | null): string | null {
+  const fromSession = (session?.user as { id?: string } | undefined)?.id;
+  if (fromSession) return fromSession;
+  const anon = request.headers.get("x-prayer-anon-id")?.trim();
+  return anon || null;
+}
+
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-    const userId = (session?.user as { id?: string } | undefined)?.id;
+    const userId = getUserId(request, session);
     if (!userId) {
       return NextResponse.json({ message: "Sign in to moderate" }, { status: 401 });
     }
@@ -46,9 +53,9 @@ export async function POST(request: Request) {
     if (p) p.muted = muted;
     await saveRooms(rooms);
 
-    const liveKitUrl = process.env.LIVEKIT_URL;
-    const apiKey = process.env.LIVEKIT_API_KEY;
-    const apiSecret = process.env.LIVEKIT_API_SECRET;
+    const liveKitUrl = process.env.LIVEKIT_URL?.trim();
+    const apiKey = process.env.LIVEKIT_API_KEY?.trim();
+    const apiSecret = process.env.LIVEKIT_API_SECRET?.trim();
     if (liveKitUrl && apiKey && apiSecret) {
       try {
         const host = liveKitUrl.replace(/^wss:/i, "https:");

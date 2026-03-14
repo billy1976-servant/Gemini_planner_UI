@@ -34,6 +34,8 @@ export function PlayerModule({
   durationSec = 0,
   onReplaySeek,
 }: PlayerModuleProps) {
+  const useVideo = replayPrayer?.source === "live_room";
+
   return (
     <div className="prayer-player-module" data-module="player">
       <PrayerPlayer
@@ -43,6 +45,7 @@ export function PlayerModule({
         onDurationChange={onDurationChange}
         seekToSeconds={seekToSeconds}
         onSeekDone={onSeekDone}
+        useVideo={useVideo}
       />
       {replayPrayer?.source === "live_room" && replayPrayer.studyPages && replayPrayer.studyPages.length > 0 && (
         <ReplayTimeline

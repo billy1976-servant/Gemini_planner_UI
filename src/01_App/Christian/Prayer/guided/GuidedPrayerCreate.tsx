@@ -29,16 +29,20 @@ export function GuidedPrayerCreate() {
     setLoading(true);
     setSuccess(false);
     try {
-      await createGuidedPrayer({
+      const created = await createGuidedPrayer({
         title: title.trim(),
         scripture: scripture.trim() || undefined,
         focus: focus.trim() || undefined,
         category: category || "General",
       });
-      setSuccess(true);
-      setTitle("");
-      setScripture("");
-      setFocus("");
+      if (created) {
+        setSuccess(true);
+        setTitle("");
+        setScripture("");
+        setFocus("");
+      } else {
+        setError("Create failed");
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Create failed");
     } finally {

@@ -74,8 +74,11 @@ import OSBCaptureModal from "@/app/components/OSBCaptureModal";
 import { BottomNavOnly } from "@/04_Presentation/shells/GlobalAppSkin";
 import BottomNavBar_Text from "@/04_Presentation/shells/BottomNavBar_Text";
 import { NAV_STRIP_HEIGHT } from "@/app/shell-ui-constants";
-import MobileShell from "@/mobile/MobileShell";
+import dynamic from "next/dynamic";
 import MobileLayout from "@/mobile/MobileLayout";
+
+/** Load only on client to avoid pulling @capacitor into server bundle (vendor-chunks resolution fails in SSR). */
+const MobileShell = dynamic(() => import("@/mobile/MobileShell"), { ssr: false });
 import OsbMinimalTopBar from "@/04_Presentation/shells/OsbMinimalTopBar";
 import { useDevMobileMode } from "@/app/dev/useDevMobileMode";
 import DevHome from "@/app/dev/DevHome";

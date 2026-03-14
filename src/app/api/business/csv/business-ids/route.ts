@@ -3,6 +3,7 @@ export const runtime = "nodejs";
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { sendDebugIngest } from "@/lib/debug-ingest";
 
 const CSV_FILES_DIR = path.join(process.cwd(), ".tmp", "csv-files");
 
@@ -49,18 +50,14 @@ export async function GET() {
     }
 
     // #region agent log
-    fetch("http://127.0.0.1:7242/ingest/7e15e045-3112-419f-8116-3226c0884ac1", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "df01c7" },
-      body: JSON.stringify({
-        sessionId: "df01c7",
-        location: "business-ids/route.ts:GET",
-        message: "business-ids: manifests found and response",
-        data: { manifestNames: jsonFiles.map((x) => x.name), businesses },
-        timestamp: Date.now(),
-        hypothesisId: "A",
-      }),
-    }).catch(() => {});
+    sendDebugIngest({
+      sessionId: "df01c7",
+      location: "business-ids/route.ts:GET",
+      message: "business-ids: manifests found and response",
+      data: { manifestNames: jsonFiles.map((x) => x.name), businesses },
+      timestamp: Date.now(),
+      hypothesisId: "A",
+    });
     // #endregion
 
     return NextResponse.json({ ok: true, businesses });

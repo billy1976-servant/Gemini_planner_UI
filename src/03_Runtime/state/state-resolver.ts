@@ -178,11 +178,6 @@ export function deriveState(log: StateEvent[]): DerivedState {
             mergedNavTargets: cast.navTargets,
           });
         }
-        // #region agent log
-        if (typeof (globalThis as any).fetch === "function") {
-          (globalThis as any).fetch('http://127.0.0.1:7242/ingest/7e15e045-3112-419f-8116-3226c0884ac1',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'22d4f7'},body:JSON.stringify({sessionId:'22d4f7',hypothesisId:'H3',location:'state-resolver.ts:layout.setNavTargets',message:'STATE_MERGE breakpoint',data:{stage:'STATE_MERGE',screenKey,existingKeysBefore,incomingKeys:Object.keys(incomingNavTargets),mergedKeysAfter,navTargetsMapKeys:mergedKeysAfter},timestamp:Date.now()})}).catch(()=>{});
-        }
-        // #endregion
       }
       if (DEBUG_STATE_RESOLVER && typeof console !== "undefined" && console.log) {
         console.log("[NavDebug] resolver layout.setNavTargets", {

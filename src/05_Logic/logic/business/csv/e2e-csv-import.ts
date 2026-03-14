@@ -1,7 +1,7 @@
 /**
  * E2E: CSV pipeline + in-memory store (no HTTP).
  * Run: npm run test:csv-e2e
- * Optional: RUN_HTTP=1 npm run test:csv-e2e (requires dev server on localhost:3000)
+ * Optional: RUN_HTTP=1 npm run test:csv-e2e (requires dev server; set NEXT_PUBLIC_APP_URL or it defaults to http://localhost:3000)
  */
 
 const SAMPLE_CSV = `date,region,hour,campaign_id,impressions,clicks,cost,conversions,revenue
@@ -33,7 +33,7 @@ async function main(): Promise<void> {
   console.log(`   -> Stored ${stored.length} signals for ${businessId}`);
 
   if (process.env.RUN_HTTP === "1") {
-    const base = "http://localhost:3000";
+    const base = process.env.NEXT_PUBLIC_APP_URL?.trim() || "http://localhost:3000";
     const filename = "e2e-sample.csv";
 
     console.log("3. HTTP: POST ingest (with filename)...");

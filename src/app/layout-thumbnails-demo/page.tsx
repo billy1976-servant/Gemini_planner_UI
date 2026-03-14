@@ -2,7 +2,7 @@ import LayoutThumbnailShowcase from "../ui/control-dock/layout/LayoutThumbnailSh
 
 /**
  * Demo page for visual QA of layout thumbnails.
- * Access at: http://localhost:3000/layout-thumbnails-demo
+ * Access at: /layout-thumbnails-demo (or your app origin + /layout-thumbnails-demo)
  */
 export default function LayoutThumbnailsDemo() {
   return <LayoutThumbnailShowcase />;

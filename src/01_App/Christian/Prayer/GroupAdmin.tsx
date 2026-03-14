@@ -50,16 +50,20 @@ export function GroupAdmin({ prayerBase = "/prayer" }: GroupAdminProps = {}) {
     setError(null);
     setCreating(true);
     try {
-      await createGroup({
+      const created = await createGroup({
         name: createName.trim(),
         description: createDescription.trim() || undefined,
         accentColor: createAccent,
         createdBy: session?.user?.email ?? undefined,
       });
-      setCreateName("");
-      setCreateDescription("");
-      setCreateAccent("#7c3aed");
-      load();
+      if (created) {
+        setCreateName("");
+        setCreateDescription("");
+        setCreateAccent("#7c3aed");
+        load();
+      } else {
+        setError("Create failed");
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Create failed");
     } finally {
@@ -69,8 +73,9 @@ export function GroupAdmin({ prayerBase = "/prayer" }: GroupAdminProps = {}) {
 
   const handleLogoUpload = async (groupId: string, file: File) => {
     try {
-      await uploadGroupLogo(groupId, file);
-      load();
+      const result = await uploadGroupLogo(groupId, file);
+      if (result) load();
+      else setError("Logo upload failed");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Logo upload failed");
     }
@@ -199,26 +204,24 @@ export function GroupAdmin({ prayerBase = "/prayer" }: GroupAdminProps = {}) {
                 </div>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
-                {session && (
-                  memberGroupIds.has(g.id) ? (
-                    <button
-                      type="button"
-                      onClick={() => handleLeave(g.id)}
-                      disabled={joinLeaveLoading === g.id}
-                      style={{ padding: "0.35rem 0.6rem", borderRadius: 8, border: "1px solid var(--prayer-card-border)", background: "transparent", color: "var(--prayer-text)", cursor: "pointer", fontSize: "0.8125rem" }}
-                    >
-                      {joinLeaveLoading === g.id ? "…" : "Leave"}
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => handleJoin(g.id)}
-                      disabled={joinLeaveLoading === g.id}
-                      style={{ padding: "0.35rem 0.6rem", borderRadius: 8, border: "1px solid var(--prayer-play-bg)", background: "var(--prayer-play-bg)", color: "#fff", cursor: "pointer", fontSize: "0.8125rem" }}
-                    >
-                      {joinLeaveLoading === g.id ? "…" : "Join"}
-                    </button>
-                  )
+                {memberGroupIds.has(g.id) ? (
+                  <button
+                    type="button"
+                    onClick={() => handleLeave(g.id)}
+                    disabled={joinLeaveLoading === g.id}
+                    style={{ padding: "0.35rem 0.6rem", borderRadius: 8, border: "1px solid var(--prayer-card-border)", background: "transparent", color: "var(--prayer-text)", cursor: "pointer", fontSize: "0.8125rem" }}
+                  >
+                    {joinLeaveLoading === g.id ? "…" : "Leave"}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => handleJoin(g.id)}
+                    disabled={joinLeaveLoading === g.id}
+                    style={{ padding: "0.35rem 0.6rem", borderRadius: 8, border: "1px solid var(--prayer-play-bg)", background: "var(--prayer-play-bg)", color: "#fff", cursor: "pointer", fontSize: "0.8125rem" }}
+                  >
+                    {joinLeaveLoading === g.id ? "…" : "Join"}
+                  </button>
                 )}
                 <Link
                   href={`${prayerBase}/${g.slug}`}

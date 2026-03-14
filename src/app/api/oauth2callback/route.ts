@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const code = searchParams.get("code");
-
+  const origin = req.nextUrl.origin;
 
   if (!code) {
     return NextResponse.json(
@@ -12,7 +12,6 @@ export async function GET(req: NextRequest) {
       { status: 400 }
     );
   }
-
 
   const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
@@ -24,7 +23,7 @@ export async function GET(req: NextRequest) {
       client_secret: process.env.GOOGLE_ADS_CLIENT_SECRET!,
       code,
       grant_type: "authorization_code",
-      redirect_uri: "http://localhost:3000/api/oauth2callback",
+      redirect_uri: `${origin}/api/oauth2callback`,
     }),
   });
 

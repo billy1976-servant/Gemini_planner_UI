@@ -4,12 +4,14 @@ import React from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 export interface PrayerAuthControlsProps {
-  /** Base path for prayer app (e.g. "/prayer" or "/christian/prayer") for sign-in callback. */
+  /** Base path for prayer app (domain-agnostic: "/prayer") for sign-in callback fallback. */
   prayerBase?: string;
 }
 
 export function PrayerAuthControls({ prayerBase = "/prayer" }: PrayerAuthControlsProps = {}) {
   const { data: session, status } = useSession();
+  // Fixed callbackUrl to avoid redirect loops; always return to /prayer after sign-in.
+  const callbackUrl = "/prayer";
 
   if (status === "loading") {
     return (
@@ -47,20 +49,28 @@ export function PrayerAuthControls({ prayerBase = "/prayer" }: PrayerAuthControl
   }
 
   return (
-    <button
-      type="button"
-      onClick={() => signIn("google", { callbackUrl: prayerBase })}
-      style={{
-        padding: "0.35rem 0.75rem",
-        borderRadius: 8,
-        border: "1px solid var(--prayer-card-border, rgba(148,163,184,0.3))",
-        background: "var(--prayer-play-bg, #7c3aed)",
-        color: "#fff",
-        cursor: "pointer",
-        fontSize: "0.875rem",
-      }}
-    >
-      Sign in with Google
-    </button>
+    <span style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", fontSize: "0.875rem" }}>
+      <button
+        type="button"
+        disabled
+        aria-disabled="true"
+        title="Temporarily disabled for testing — all features are available without signing in"
+        style={{
+          padding: "0.35rem 0.75rem",
+          borderRadius: 8,
+          border: "1px solid var(--prayer-card-border, rgba(148,163,184,0.3))",
+          background: "var(--prayer-card-border, rgba(148,163,184,0.2))",
+          color: "var(--prayer-text-muted, #94a3b8)",
+          cursor: "not-allowed",
+          fontSize: "0.875rem",
+          opacity: 0.9,
+        }}
+      >
+        Sign in with Google
+      </button>
+      <span style={{ color: "var(--prayer-text-muted, #94a3b8)", fontSize: "0.75rem" }}>
+        (disabled for testing)
+      </span>
+    </span>
   );
 }

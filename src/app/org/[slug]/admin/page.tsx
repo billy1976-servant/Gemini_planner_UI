@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import type { OrganizationRecord } from "@/lib/universal-identity/types";
@@ -12,6 +12,7 @@ type GroupRow = Record<string, unknown>;
 export default function OrgAdminPage() {
   const params = useParams();
   const slug = params?.slug as string | undefined;
+  const prayerBase = "/prayer";
   const [org, setOrg] = useState<OrganizationRecord | null>(null);
   const [members, setMembers] = useState<MemberRow[]>([]);
   const [groups, setGroups] = useState<GroupRow[]>([]);
@@ -88,14 +89,14 @@ export default function OrgAdminPage() {
 
   return (
     <div style={{ padding: "2rem", maxWidth: 800, margin: "0 auto" }}>
-      <OrgOnboardingBanner variant="owner" orgSlug={org.slug} hasGroups={groups.length > 0} />
+      <OrgOnboardingBanner variant="owner" orgSlug={org.slug} hasGroups={groups.length > 0} prayerBase={prayerBase} />
       <h1 style={{ marginBottom: "0.5rem" }}>{org.name} — Admin</h1>
       <p style={{ fontSize: "0.875rem", color: "var(--org-accent, #666)", marginBottom: "1.5rem" }}>
         {org.slug}
       </p>
       <nav style={{ marginBottom: "1.5rem" }}>
         <Link href={`/org/${org.slug}`} style={{ marginRight: "1rem" }}>Org home</Link>
-        <Link href="/prayer" style={{ marginRight: "1rem" }}>Prayer</Link>
+        <Link href={prayerBase} style={{ marginRight: "1rem" }}>Prayer</Link>
       </nav>
 
       <section style={{ marginBottom: "2rem" }}>
@@ -121,7 +122,7 @@ export default function OrgAdminPage() {
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
             {groups.map((g) => (
               <li key={(g as { id?: string }).id ?? ""} style={{ padding: "0.5rem 0", borderBottom: "1px solid #eee" }}>
-                <Link href={`/prayer/${(g as { slug?: string }).slug ?? ""}`}>
+                <Link href={`${prayerBase}/${(g as { slug?: string }).slug ?? ""}`}>
                   {(g as { name?: string }).name ?? (g as { id?: string }).id}
                 </Link>
               </li>
@@ -133,7 +134,7 @@ export default function OrgAdminPage() {
       <section>
         <h2 style={{ fontSize: "1.125rem", marginBottom: "0.75rem" }}>Actions</h2>
         <Link
-          href="/prayer/live"
+          href={`${prayerBase}/live`}
           style={{
             display: "inline-block",
             padding: "0.5rem 1rem",

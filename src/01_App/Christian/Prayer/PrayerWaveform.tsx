@@ -3,7 +3,7 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
 
 export interface PrayerWaveformProps {
-  audioRef: React.RefObject<HTMLAudioElement | null>;
+  audioRef: React.RefObject<HTMLMediaElement | null>;
   isPlaying: boolean;
   /** 0–1, played portion of the audio (left to right) */
   progress: number;

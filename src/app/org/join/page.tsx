@@ -8,6 +8,7 @@ import { useSession } from "next-auth/react";
 export default function OrgJoinPage() {
   const searchParams = useSearchParams();
   const token = searchParams?.get("token");
+  const prayerBase = "/prayer";
   const { data: session, status } = useSession();
   const [joining, setJoining] = useState(false);
   const [done, setDone] = useState<{ slug: string } | null>(null);
@@ -54,7 +55,7 @@ export default function OrgJoinPage() {
     return (
       <div style={{ padding: "2rem", textAlign: "center" }}>
         <p>Please sign in to accept this invite.</p>
-        <Link href={`/prayer?callbackUrl=${encodeURIComponent(`/org/join?token=${token}`)}`}>
+        <Link href={`${prayerBase}?callbackUrl=${encodeURIComponent(`/org/join?token=${token}`)}`}>
           Sign in
         </Link>
       </div>

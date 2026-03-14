@@ -12,6 +12,8 @@ export interface OrgOnboardingBannerProps {
   orgSlug?: string;
   hasGroups?: boolean;
   className?: string;
+  /** Base path for prayer app (domain-agnostic: "/prayer"). */
+  prayerBase?: string;
 }
 
 export function OrgOnboardingBanner({
@@ -19,7 +21,9 @@ export function OrgOnboardingBanner({
   orgSlug,
   hasGroups = false,
   className = "",
+  prayerBase: prayerBaseProp,
 }: OrgOnboardingBannerProps) {
+  const prayerBase = prayerBaseProp ?? "/prayer";
   const [dismissed, setDismissed] = useState(() => {
     if (typeof window === "undefined") return false;
     return localStorage.getItem(STORAGE_KEY) === "1";
@@ -55,14 +59,14 @@ export function OrgOnboardingBanner({
         </span>
         <span style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
           <Link
-            href="/prayer/admin/groups"
+            href={`${prayerBase}/admin/groups`}
             style={{ color: "#fff", textDecoration: "underline", fontSize: "0.875rem" }}
           >
             Create group
           </Link>
           <span style={{ opacity: 0.8 }}>·</span>
           <Link
-            href="/prayer/live"
+            href={`${prayerBase}/live`}
             style={{ color: "#fff", textDecoration: "underline", fontSize: "0.875rem" }}
           >
             Start live session
@@ -108,7 +112,7 @@ export function OrgOnboardingBanner({
       </span>
       <span style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
         <Link
-          href={orgSlug ? `/prayer?groupId=${orgSlug}` : "/prayer"}
+          href={orgSlug ? `${prayerBase}?groupId=${orgSlug}` : prayerBase}
           style={{
             color: "var(--org-accent, #7c3aed)",
             textDecoration: "underline",

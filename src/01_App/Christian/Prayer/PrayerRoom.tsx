@@ -21,9 +21,10 @@ import { PrayerRoomParticipants } from "./PrayerRoomParticipants";
 import { PrayerRoomControls } from "./PrayerRoomControls";
 import { uploadPrayer } from "./api/prayer-api";
 import type { PrayerRoom as PrayerRoomType, RoomRole } from "./PrayerRoomTypes";
+import { getPrayerAnonId } from "./prayerAnonId";
 
 const ROOM_STORAGE_KEY = "prayer-room";
-const ROOM_POLL_MS = 3000;
+const ROOM_POLL_MS = 5000;
 
 function ListenerAudio({ stream }: { stream: MediaStream | null }) {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -48,7 +49,7 @@ function ListenerAudio({ stream }: { stream: MediaStream | null }) {
 
 export interface PrayerRoomProps {
   roomId: string;
-  /** Base path for prayer app (e.g. "/prayer" or "/christian/prayer") for back links. */
+  /** Base path for prayer app (domain-agnostic: "/prayer") for back links. */
   prayerBase?: string;
 }
 
@@ -137,12 +138,17 @@ export function PrayerRoom({ roomId, prayerBase = "/prayer" }: PrayerRoomProps) 
       return;
     }
     let cancelled = false;
-    const displayName = session?.user?.name ?? undefined;
-    getLiveKitToken(roomId, role, displayName)
-      .then(({ token, url }) => {
-        if (!cancelled) {
-          setLiveKitToken(token);
-          setLiveKitUrl(url);
+    const displayName = session?.user?.name ?? "Guest";
+    const anonOptions = session?.user ? undefined : { anonId: getPrayerAnonId() };
+    getLiveKitToken(roomId, role, displayName, anonOptions)
+      .then((result) => {
+        if (cancelled) return;
+        if (result) {
+          setLiveKitToken(result.token);
+          setLiveKitUrl(result.url);
+        } else {
+          setLiveKitToken(null);
+          setLiveKitUrl(null);
         }
       })
       .catch(() => {
@@ -158,20 +164,23 @@ export function PrayerRoom({ roomId, prayerBase = "/prayer" }: PrayerRoomProps) 
 
   const handleJoin = useCallback(
     async (asRole: RoomRole) => {
-      const uid = (session?.user as { id?: string } | undefined)?.id;
-      if (!uid) {
-        setError("Sign in to join this room");
-        return;
-      }
+      const uid = (session?.user as { id?: string } | undefined)?.id ?? getPrayerAnonId();
       setJoining(true);
       setError(null);
-      const displayName = session?.user?.name ?? undefined;
+      const displayName = session?.user?.name ?? "Guest";
       try {
-        const res = await joinRoom({
-          roomId,
-          role: asRole,
-          displayName,
-        });
+        const res = await joinRoom(
+          {
+            roomId,
+            role: asRole,
+            displayName,
+          },
+          session?.user ? undefined : { anonId: uid }
+        );
+        if (!res) {
+          setError("Join failed");
+          return;
+        }
         setRoom(res.room);
         setParticipantId(uid);
         setRole(res.role);
@@ -216,7 +225,8 @@ export function PrayerRoom({ roomId, prayerBase = "/prayer" }: PrayerRoomProps) 
   const handleEndRoom = useCallback(async () => {
     if (!hostId || !participantId || participantId !== hostId) return;
     try {
-      await endRoom(roomId);
+      const anonOptions = session?.user ? undefined : { anonId: getPrayerAnonId() };
+      await endRoom(roomId, anonOptions);
       if (typeof window !== "undefined") {
         sessionStorage.removeItem(`${ROOM_STORAGE_KEY}-${roomId}`);
       }
@@ -227,23 +237,27 @@ export function PrayerRoom({ roomId, prayerBase = "/prayer" }: PrayerRoomProps) 
     } catch (e) {
       setError(e instanceof Error ? e.message : "End room failed");
     }
-  }, [roomId, hostId, participantId]);
+  }, [roomId, hostId, participantId, session?.user]);
 
   const handleMuteParticipant = useCallback(
     async (pid: string, muted: boolean) => {
       if (!hostId) return;
       try {
-        await setParticipantMute(roomId, pid, muted);
+        const anonOptions = session?.user ? undefined : { anonId: getPrayerAnonId() };
+        await setParticipantMute(roomId, pid, muted, anonOptions);
         await fetchRoom();
       } catch {
         // ignore
       }
     },
-    [roomId, hostId, fetchRoom]
+    [roomId, hostId, fetchRoom, session?.user]
   );
 
   const isHost = participantId === hostId;
-  const recording = useRoomRecording(isHost ? webrtc.mixedStream : null);
+  const recording = useRoomRecording(
+    isHost ? webrtc.mixedStream : null,
+    isHost ? webrtc.screenShareStream : null
+  );
   useEffect(() => {
     recordingStopRef.current = recording.stop;
   }, [recording.stop]);
@@ -302,8 +316,12 @@ export function PrayerRoom({ roomId, prayerBase = "/prayer" }: PrayerRoomProps) 
         }
         if (session?.user?.email) formData.append("userId", session.user.email);
         if (session?.user?.name) formData.append("userName", session.user.name);
-        await uploadPrayer(formData, room?.groupId ?? undefined);
-        recording.clear();
+        const published = await uploadPrayer(formData, room?.groupId ?? undefined);
+        if (!published) {
+          setPublishError("Publish failed");
+        } else {
+          recording.clear();
+        }
       } catch (e) {
         setPublishError(e instanceof Error ? e.message : "Publish failed");
       } finally {
@@ -333,7 +351,7 @@ export function PrayerRoom({ roomId, prayerBase = "/prayer" }: PrayerRoomProps) 
           <div className="prayer-brand">Live Prayer Room</div>
           <p className="prayer-subtitle">Loading room…</p>
           <div style={{ marginTop: "1rem" }}>
-            <Link href="/prayer" className="prayer-share-link">
+            <Link href={prayerBase} className="prayer-share-link">
               ← Back to prayer
             </Link>
           </div>
@@ -425,6 +443,15 @@ export function PrayerRoom({ roomId, prayerBase = "/prayer" }: PrayerRoomProps) 
           onStopScreenShare={webrtc.stopScreenShare}
           studyPages={studyPages}
           onSaveStudyPage={handleSaveStudyPage}
+          recordingReady={!!webrtc.mixedStream}
+          screenShareReady={!webrtc.error}
+          connectionStatus={
+            webrtc.error
+              ? webrtc.error
+              : !webrtc.mixedStream
+                ? "Connecting to room… Use your mic to enable recording."
+                : null
+          }
         />
       )}
       <section className="prayer-hero-card">

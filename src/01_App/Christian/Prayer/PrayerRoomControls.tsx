@@ -36,24 +36,34 @@ export function PrayerRoomControls({
 
   return (
     <div className="prayer-room-controls" style={{ marginTop: "1rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-      {(role === "host" || role === "speaker") && (
-        <button
-          type="button"
-          className="prayer-room-mute-self"
-          onClick={() => onMuteSelf(!myMuted)}
-          style={{
-            padding: "0.5rem 1rem",
-            borderRadius: 12,
-            border: "1px solid var(--prayer-card-border)",
-            background: myMuted ? "var(--prayer-play-bg)" : "transparent",
-            color: "var(--prayer-text)",
-            cursor: "pointer",
-            fontSize: "0.875rem",
-          }}
-        >
-          {myMuted ? "Unmute microphone" : "Mute microphone"}
-        </button>
-      )}
+      {/* Audio: always show a clear section so mic/listen mode is visible */}
+      <div>
+        <div className="prayer-metrics-label" style={{ marginBottom: "0.35rem" }}>
+          Audio
+        </div>
+        {(role === "host" || role === "speaker") ? (
+          <button
+            type="button"
+            className="prayer-room-mute-self"
+            onClick={() => onMuteSelf(!myMuted)}
+            style={{
+              padding: "0.5rem 1rem",
+              borderRadius: 12,
+              border: "1px solid var(--prayer-card-border)",
+              background: myMuted ? "var(--prayer-play-bg)" : "transparent",
+              color: "var(--prayer-text)",
+              cursor: "pointer",
+              fontSize: "0.875rem",
+            }}
+          >
+            {myMuted ? "Unmute microphone" : "Mute microphone"}
+          </button>
+        ) : (
+          <p className="prayer-subtitle" style={{ fontSize: "0.875rem", color: "var(--prayer-text-muted)", margin: 0 }}>
+            Listen-only — you’ll hear speakers when they join.
+          </p>
+        )}
+      </div>
 
       {isHost && onOpenModeratorPanel && (
         <button

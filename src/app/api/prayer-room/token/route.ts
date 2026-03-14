@@ -11,11 +11,22 @@ type RoomRole = "host" | "speaker" | "listener";
 
 export async function POST(request: Request) {
   try {
-    const url = process.env.LIVEKIT_URL;
-    const apiKey = process.env.LIVEKIT_API_KEY;
-    const apiSecret = process.env.LIVEKIT_API_SECRET;
+    const url = process.env.LIVEKIT_URL?.trim();
+    const apiKey = process.env.LIVEKIT_API_KEY?.trim();
+    const apiSecret = process.env.LIVEKIT_API_SECRET?.trim();
 
     if (!url || !apiKey || !apiSecret) {
+      const missing = [
+        !url && "LIVEKIT_URL",
+        !apiKey && "LIVEKIT_API_KEY",
+        !apiSecret && "LIVEKIT_API_SECRET",
+      ].filter(Boolean);
+      console.warn(
+        "[LiveKit] Not configured: missing env",
+        missing.join(", "),
+        "— Add LIVEKIT_URL, LIVEKIT_API_KEY, LIVEKIT_API_SECRET to .env.local (dev) or Vercel (prod).",
+        "Audio, recording, and screen share in live rooms will be disabled until configured."
+      );
       return NextResponse.json(
         { message: "LiveKit is not configured" },
         { status: 500 }
@@ -23,7 +34,9 @@ export async function POST(request: Request) {
     }
 
     const session = await getServerSession(authOptions);
-    const userId = (session?.user as { id?: string } | undefined)?.id;
+    const fromSession = (session?.user as { id?: string } | undefined)?.id;
+    const anon = request.headers.get("x-prayer-anon-id")?.trim();
+    const userId = fromSession || anon || null;
     if (!userId) {
       return NextResponse.json(
         { message: "Sign in to get a room token" },

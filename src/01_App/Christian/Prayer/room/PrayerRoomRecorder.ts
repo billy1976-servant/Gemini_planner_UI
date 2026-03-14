@@ -10,19 +10,23 @@ export class PrayerRoomRecorder {
   private mediaRecorder: MediaRecorder | null = null;
   private chunks: Blob[] = [];
 
-  start(stream: MediaStream, mimeType = "audio/webm;codecs=opus"): void {
+  start(stream: MediaStream, mimeType?: string): void {
     if (this.mediaRecorder?.state === "recording") return;
     this.chunks = [];
-    // Prefer Opus in WebM, but fall back to Safari-safe containers when needed.
+    const hasVideo = stream.getVideoTracks().length > 0;
+    const defaultMime = hasVideo ? "video/webm;codecs=vp9,opus" : "audio/webm;codecs=opus";
+    const preferred = mimeType || defaultMime;
+    const fallbacks = hasVideo
+      ? [preferred, "video/webm", "video/webm;codecs=vp8", "video/mp4"]
+      : [preferred, "audio/webm", "audio/mp4"];
     let selectedMime: string | undefined;
-    const preferredTypes = [mimeType, "audio/webm", "audio/mp4"];
-    for (const t of preferredTypes) {
+    for (const t of fallbacks) {
       if (t && typeof MediaRecorder !== "undefined" && MediaRecorder.isTypeSupported(t)) {
         selectedMime = t;
         break;
       }
     }
-    const options = selectedMime ? { mimeType: selectedMime } : undefined;
+    const options = selectedMime ? { mimeType: selectedMime, videoBitsPerSecond: hasVideo ? 2_500_000 : undefined } : undefined;
     this.mediaRecorder = new MediaRecorder(stream, options);
     this.mediaRecorder.ondataavailable = (e) => {
       if (e.data.size > 0) this.chunks.push(e.data);
@@ -38,7 +42,8 @@ export class PrayerRoomRecorder {
 
   getBlob(): Blob | null {
     if (this.chunks.length === 0) return null;
-    return new Blob(this.chunks, { type: this.mediaRecorder?.mimeType ?? "audio/webm" });
+    const type = this.mediaRecorder?.mimeType ?? "audio/webm";
+    return new Blob(this.chunks, { type });
   }
 
   isRecording(): boolean {

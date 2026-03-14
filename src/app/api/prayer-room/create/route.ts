@@ -10,10 +10,17 @@ export const revalidate = 0;
 
 const MAX_SPEAKERS = 6;
 
+function getUserId(request: Request, session: { user?: { id?: string } } | null): string | null {
+  const fromSession = (session?.user as { id?: string } | undefined)?.id;
+  if (fromSession) return fromSession;
+  const anon = request.headers.get("x-prayer-anon-id")?.trim();
+  return anon || null;
+}
+
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-    const userId = (session?.user as { id?: string } | undefined)?.id;
+    const userId = getUserId(request, session);
     if (!userId) {
       return NextResponse.json({ message: "Sign in to create a room" }, { status: 401 });
     }

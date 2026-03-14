@@ -80,11 +80,11 @@ export function GuidedSection({ prayerBase = "/prayer", groupSlug }: GuidedSecti
 
       {loading ? (
         <p className="prayer-section-muted">Loading…</p>
-      ) : guides.length === 0 ? (
+      ) : !Array.isArray(guides) || guides.length === 0 ? (
         <p className="prayer-section-muted">No guided prayers yet. Admins can create them from the Admin page.</p>
       ) : (
         <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-          {guides.map((g) => (
+          {(guides ?? []).map((g) => (
             <li
               key={g.id}
               style={{

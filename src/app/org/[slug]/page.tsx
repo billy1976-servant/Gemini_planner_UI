@@ -7,6 +7,7 @@ import type { OrganizationRecord } from "@/lib/universal-identity/types";
 export default function OrgSlugPage() {
   const params = useParams();
   const slug = params?.slug as string | undefined;
+  const prayerBase = "/prayer";
   const [org, setOrg] = useState<OrganizationRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -66,11 +67,11 @@ export default function OrgSlugPage() {
         Organization: {org.slug}
       </p>
       <div style={{ display: "flex", gap: "0.75rem", marginTop: "1rem", flexWrap: "wrap" }}>
-        <a href="/prayer" style={{ textDecoration: "none", color: "var(--org-accent, #7c3aed)" }}>
+        <a href={prayerBase} style={{ textDecoration: "none", color: "var(--org-accent, #7c3aed)" }}>
           Go to Prayer
         </a>
         <a
-          href={`/prayer?organizationId=${encodeURIComponent(org.id)}`}
+          href={`${prayerBase}?organizationId=${encodeURIComponent(org.id)}`}
           style={{ textDecoration: "none", color: "var(--org-accent, #7c3aed)" }}
         >
           Prayer for this org

@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { createRoom, getActiveRooms } from "./room/prayer-room-api";
-import type { ActiveRoomSummary } from "./room/prayer-room-api";
+import { createRoom } from "./room/prayer-room-api";
+import { useActiveRooms } from "./room/ActiveRoomsContext";
+import { getPrayerAnonId } from "./prayerAnonId";
 
 const ROOM_STORAGE_KEY = "prayer-room";
-const ACTIVE_POLL_MS = 10000;
 
 function setStored(
   roomId: string,
@@ -27,35 +27,31 @@ export interface LivePrayerCtaProps {
 export function LivePrayerCta({ prayerBase = "/prayer", groupId, isAdmin }: LivePrayerCtaProps) {
   const router = useRouter();
   const { data: session } = useSession();
-  const [activeRooms, setActiveRooms] = useState<ActiveRoomSummary[]>([]);
+  const { rooms: activeRooms } = useActiveRooms();
   const [starting, setStarting] = useState(false);
 
-  useEffect(() => {
-    const load = () =>
-      getActiveRooms(groupId)
-        .then(setActiveRooms)
-        .catch(() => setActiveRooms([]));
-    load();
-    const id = setInterval(load, ACTIVE_POLL_MS);
-    return () => clearInterval(id);
-  }, [groupId]);
-
   const handleStartRoom = async () => {
-    const uid = (session?.user as { id?: string } | undefined)?.id;
-    if (!uid) return;
+    const uid = (session?.user as { id?: string } | undefined)?.id ?? getPrayerAnonId();
     setStarting(true);
     try {
-      const res = await createRoom({
-        title: "Prayer Room",
-        groupId: groupId ?? undefined,
-      });
+      const res = await createRoom(
+        {
+          title: "Prayer Room",
+          groupId: groupId ?? undefined,
+        },
+        session?.user ? undefined : { anonId: uid }
+      );
+      if (!res.ok) {
+        setStarting(false);
+        return;
+      }
       const hostId = res.room.hostId;
       setStored(res.roomId, {
         participantId: hostId,
         role: "host",
         hostId,
       });
-      router.push(`/prayer/room/${res.roomId}`);
+      router.push(`${prayerBase}/room/${res.roomId}`);
     } catch {
       setStarting(false);
     }
@@ -109,7 +105,7 @@ export function LivePrayerCta({ prayerBase = "/prayer", groupId, isAdmin }: Live
           <button
             type="button"
             onClick={handleStartRoom}
-            disabled={starting || !(session?.user as { id?: string })?.id}
+            disabled={starting}
             style={{
               padding: "0.5rem 1rem",
               borderRadius: 12,

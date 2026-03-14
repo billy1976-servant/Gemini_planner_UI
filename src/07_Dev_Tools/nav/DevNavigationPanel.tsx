@@ -14,6 +14,7 @@ import { getState, dispatchState, subscribeState } from "@/state/state-store";
 import LinkTargetPicker from "./LinkTargetPicker";
 import { setNavDebug, getNavDebug, subscribeNavDebug } from "./nav-debug-store";
 import { logNavSave, logNavStateTableAfterSave, logDomNodeIdScan, logNavRender, logPanelSelection } from "./nav-instrumentation";
+import { sendDebugIngest } from "@/lib/debug-ingest";
 
 const DEBUG_NAV = typeof (globalThis as any).window !== "undefined" && (globalThis as any).window.__DEBUG_NAV__ === true;
 
@@ -126,7 +127,7 @@ export default function DevNavigationPanel({ screenTree, screenKey }: DevNavigat
   useEffect(() => {
     const ids = navigableElements.map((e) => e.id);
     const dupe = ids.length !== new Set(ids).size;
-    if (navigableElements.length > 0) fetch('http://127.0.0.1:7242/ingest/7e15e045-3112-419f-8116-3226c0884ac1',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'ea7e9f'},body:JSON.stringify({sessionId:'ea7e9f',hypothesisId:'H4',location:'DevNavigationPanel.tsx:navigableElements',message:'dropdown element ids',data:{ids,hasDuplicateIds:dupe,count:ids.length},timestamp:Date.now()})}).catch(()=>{});
+    if (navigableElements.length > 0) sendDebugIngest({ sessionId: "ea7e9f", hypothesisId: "H4", location: "DevNavigationPanel.tsx:navigableElements", message: "dropdown element ids", data: { ids, hasDuplicateIds: dupe, count: ids.length }, timestamp: Date.now() });
   }, [navigableElements]);
   // #endregion
 
@@ -153,7 +154,7 @@ export default function DevNavigationPanel({ screenTree, screenKey }: DevNavigat
       navTargetsMap: state,
       resolvedNavTarget: Object.keys(current).length ? current : undefined,
     });
-    fetch('http://127.0.0.1:7242/ingest/7e15e045-3112-419f-8116-3226c0884ac1',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'ea7e9f'},body:JSON.stringify({sessionId:'ea7e9f',hypothesisId:'H3',location:'DevNavigationPanel.tsx:currentNavTarget',message:'panel selection changed',data:{selectedElementId,screenKey,currentToScreenId:current?.toScreenId,currentToAnchor:current?.toAnchor,allStoredKeys:Object.keys(state)},timestamp:Date.now()})}).catch(()=>{});
+    sendDebugIngest({ sessionId: "ea7e9f", hypothesisId: "H3", location: "DevNavigationPanel.tsx:currentNavTarget", message: "panel selection changed", data: { selectedElementId, screenKey, currentToScreenId: current?.toScreenId, currentToAnchor: current?.toAnchor, allStoredKeys: Object.keys(state) }, timestamp: Date.now() });
   }, [selectedElementId, screenKey]);
   // #endregion
 
@@ -163,7 +164,7 @@ export default function DevNavigationPanel({ screenTree, screenKey }: DevNavigat
     const navTargetsMap = getState()?.layoutByScreen?.[screenKey]?.navTargets;
     const resolvedNavTarget = { toScreenId: nav?.toScreenId, toAnchor: nav?.toAnchor };
     // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/7e15e045-3112-419f-8116-3226c0884ac1',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'22d4f7'},body:JSON.stringify({sessionId:'22d4f7',hypothesisId:'H2,H4',location:'DevNavigationPanel.tsx:handleNavTargetChange',message:'SAVE breakpoint',data:{stage:'STATE_WRITE',screenKey,selectedElementId,dataNodeId:selectedElementId,navTargetsMapKeys:navTargetsMap?Object.keys(navTargetsMap):[],resolvedNavTarget,singleEntryKey:selectedElementId},timestamp:Date.now()})}).catch(()=>{});
+    sendDebugIngest({ sessionId: "22d4f7", hypothesisId: "H2,H4", location: "DevNavigationPanel.tsx:handleNavTargetChange", message: "SAVE breakpoint", data: { stage: "STATE_WRITE", screenKey, selectedElementId, dataNodeId: selectedElementId, navTargetsMapKeys: navTargetsMap ? Object.keys(navTargetsMap) : [], resolvedNavTarget, singleEntryKey: selectedElementId }, timestamp: Date.now() });
     // #endregion
     logNavSave({
       screenKey,
@@ -177,7 +178,7 @@ export default function DevNavigationPanel({ screenTree, screenKey }: DevNavigat
     }
     const logData = { screenKey, selectedElementId, toScreenId: nav?.toScreenId, toAnchor: nav?.toAnchor };
     setNavDebug({ type: "save", screenKey, selectedElementId, toScreenId: nav?.toScreenId, toAnchor: nav?.toAnchor, updatedKeys: [selectedElementId] });
-    fetch('http://127.0.0.1:7242/ingest/7e15e045-3112-419f-8116-3226c0884ac1',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'ea7e9f'},body:JSON.stringify({sessionId:'ea7e9f',hypothesisId:'H1,H5',location:'DevNavigationPanel.tsx:handleNavTargetChange',message:'saving nav target',data:logData,timestamp:Date.now()})}).catch(()=>{});
+    sendDebugIngest({ sessionId: "ea7e9f", hypothesisId: "H1,H5", location: "DevNavigationPanel.tsx:handleNavTargetChange", message: "saving nav target", data: logData, timestamp: Date.now() });
     if (typeof console !== "undefined" && console.log) console.log("[NavDebug] SAVE", logData);
     dispatchState("layout.setNavTargets", { screenKey, navTargets: singleEntry });
     // After save: print full state table (next tick so state has been merged)

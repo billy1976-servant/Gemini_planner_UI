@@ -87,11 +87,11 @@ export function CommunitySection({ prayerBase = "/prayer", groupSlug }: Communit
 
       {loading ? (
         <p className="prayer-section-muted">Loading…</p>
-      ) : chains.length === 0 ? (
+      ) : !Array.isArray(chains) || chains.length === 0 ? (
         <p className="prayer-section-muted">No prayer chains yet.</p>
       ) : (
         <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-          {chains.map((chain) => (
+          {(chains ?? []).map((chain) => (
             <li
               key={chain.id}
               style={{

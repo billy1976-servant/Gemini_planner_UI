@@ -6,10 +6,13 @@ import { getFolderForSubdomain } from "@/lib/domain-config";
 import { APP_MODULE_LOADERS } from "@/lib/app-loaders";
 
 /**
+ * Alternate domain route (path segment _domain in URL). Not used for /prayer;
+ * middleware rewrites /prayer to /christian/prayer, which is served by (domain)/[domain]/[[...path]].
+ * This page passes slug without stripping leading "prayer", so PrayerApp would receive
+ * ["prayer", "room", id] here vs ["room", id] from the canonical (domain) page.
+ *
  * Discover *App.tsx from src/01_App at build time.
- * Keys: "./Christian/Prayer/PrayerApp.tsx", "./Learn/LearnApp.tsx", etc.
- * Excludes (dead) and _ roots.
- * Fallback: when require.context is unavailable (e.g. client bundle), use APP_MODULE_LOADERS.
+ * Excludes (dead) and _ roots. Fallback: APP_MODULE_LOADERS.
  */
 const req = typeof require !== "undefined" ? (require as any) : null;
 const appContext =

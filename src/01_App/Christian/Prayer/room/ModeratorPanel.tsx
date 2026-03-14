@@ -28,6 +28,12 @@ export interface ModeratorPanelProps {
   onStopScreenShare?: () => void;
   studyPages?: StudyPage[];
   onSaveStudyPage?: (title: string) => void;
+  /** When false, recording button is disabled and reason shown (e.g. waiting for connection). */
+  recordingReady?: boolean;
+  /** When false, screen share button is disabled and reason shown. */
+  screenShareReady?: boolean;
+  /** Shown when controls are disabled (e.g. "Connecting to room…"). */
+  connectionStatus?: string | null;
 }
 
 export function ModeratorPanel({
@@ -52,6 +58,9 @@ export function ModeratorPanel({
   onStopScreenShare,
   studyPages = [],
   onSaveStudyPage,
+  recordingReady = true,
+  screenShareReady = true,
+  connectionStatus = null,
 }: ModeratorPanelProps) {
   const [publishTitle, setPublishTitle] = useState(roomTitle ?? "Live room recording");
 
@@ -126,22 +135,37 @@ export function ModeratorPanel({
           <div className="prayer-metrics-label" style={{ marginBottom: "0.5rem" }}>
             Recording
           </div>
+          {connectionStatus && (
+            <p style={{ fontSize: "0.8125rem", color: "var(--prayer-text-muted)", margin: "0 0 0.5rem 0" }}>
+              {connectionStatus}
+            </p>
+          )}
           {recordingStatus === "idle" && (
-            <button
-              type="button"
-              onClick={onStartRecording}
-              style={{
-                padding: "0.5rem 1rem",
-                borderRadius: 12,
-                border: "1px solid var(--prayer-card-border)",
-                background: "var(--prayer-play-bg)",
-                color: "#fff",
-                cursor: "pointer",
-                fontSize: "0.875rem",
-              }}
-            >
-              Start recording
-            </button>
+            <>
+              <button
+                type="button"
+                onClick={onStartRecording}
+                disabled={!recordingReady}
+                title={!recordingReady ? "Connect your microphone first (join the room with audio)" : undefined}
+                style={{
+                  padding: "0.5rem 1rem",
+                  borderRadius: 12,
+                  border: "1px solid var(--prayer-card-border)",
+                  background: recordingReady ? "var(--prayer-play-bg)" : "var(--prayer-card-border)",
+                  color: "#fff",
+                  cursor: recordingReady ? "pointer" : "not-allowed",
+                  fontSize: "0.875rem",
+                  opacity: recordingReady ? 1 : 0.8,
+                }}
+              >
+                Start recording
+              </button>
+              {!recordingReady && (
+                <p style={{ fontSize: "0.75rem", color: "var(--prayer-text-muted)", margin: "0.35rem 0 0 0" }}>
+                  Use your mic in this room to enable recording.
+                </p>
+              )}
+            </>
           )}
           {recordingStatus === "recording" && (
             <>
@@ -214,21 +238,31 @@ export function ModeratorPanel({
               Screen share
             </div>
             {!isScreenSharing && onStartScreenShare && (
-              <button
-                type="button"
-                onClick={onStartScreenShare}
-                style={{
-                  padding: "0.5rem 1rem",
-                  borderRadius: 12,
-                  border: "1px solid var(--prayer-card-border)",
-                  background: "transparent",
-                  color: "var(--prayer-text)",
-                  cursor: "pointer",
-                  fontSize: "0.875rem",
-                }}
-              >
-                Start screen share
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={onStartScreenShare}
+                  disabled={!screenShareReady}
+                  title={!screenShareReady ? "Connect to the room first" : undefined}
+                  style={{
+                    padding: "0.5rem 1rem",
+                    borderRadius: 12,
+                    border: "1px solid var(--prayer-card-border)",
+                    background: "transparent",
+                    color: "var(--prayer-text)",
+                    cursor: screenShareReady ? "pointer" : "not-allowed",
+                    fontSize: "0.875rem",
+                    opacity: screenShareReady ? 1 : 0.7,
+                  }}
+                >
+                  Start screen share
+                </button>
+                {!screenShareReady && (
+                  <p style={{ fontSize: "0.75rem", color: "var(--prayer-text-muted)", margin: "0.35rem 0 0 0" }}>
+                    Connect to the room to share your screen.
+                  </p>
+                )}
+              </>
             )}
             {isScreenSharing && onStopScreenShare && (
               <button

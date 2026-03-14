@@ -5,6 +5,8 @@
  * Skips Google Ads metadata rows by detecting the first line that looks like a real header.
  */
 
+import { sendDebugIngest } from "@/lib/debug-ingest";
+
 const BOM = "\uFEFF";
 
 function isLikelyHeaderRow(line: string, delimiter: "," | ";"): boolean {
@@ -76,48 +78,40 @@ export function normalizeCsv(csvText: string): NormalizedCsv {
   const h0semi = isLikelyHeaderRow(line0, ";");
   const h1comma = isLikelyHeaderRow(line1, ",");
   const h1semi = isLikelyHeaderRow(line1, ";");
-  fetch("http://127.0.0.1:7242/ingest/7e15e045-3112-419f-8116-3226c0884ac1", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "df01c7" },
-    body: JSON.stringify({
-      sessionId: "df01c7",
-      location: "header-normalizer.ts:normalizeCsv",
-      message: "CSV lines 0-1 and header detection",
-      data: {
-        lineCount: lines.length,
-        line0Preview: line0.slice(0, 100),
-        line1Preview: line1.slice(0, 100),
-        comma0,
-        semi0,
-        tab0,
-        comma1,
-        semi1,
-        tab1,
-        h0comma,
-        h0semi,
-        h1comma,
-        h1semi,
-      },
-      timestamp: Date.now(),
-      hypothesisId: "A",
-    }),
-  }).catch(() => {});
+  sendDebugIngest({
+    sessionId: "df01c7",
+    location: "header-normalizer.ts:normalizeCsv",
+    message: "CSV lines 0-1 and header detection",
+    data: {
+      lineCount: lines.length,
+      line0Preview: line0.slice(0, 100),
+      line1Preview: line1.slice(0, 100),
+      comma0,
+      semi0,
+      tab0,
+      comma1,
+      semi1,
+      tab1,
+      h0comma,
+      h0semi,
+      h1comma,
+      h1semi,
+    },
+    timestamp: Date.now(),
+    hypothesisId: "A",
+  });
   // #endregion
   const { headerIndex, delimiter } = detectHeaderRowAndDelimiter(lines);
   const headerLine = lines[headerIndex];
   // #region agent log
-  fetch("http://127.0.0.1:7242/ingest/7e15e045-3112-419f-8116-3226c0884ac1", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "df01c7" },
-    body: JSON.stringify({
-      sessionId: "df01c7",
-      location: "header-normalizer.ts:after detect",
-      message: "Chosen header row and delimiter",
-      data: { headerIndex, delimiter, headerLinePreview: headerLine.slice(0, 120) },
-      timestamp: Date.now(),
-      hypothesisId: "B",
-    }),
-  }).catch(() => {});
+  sendDebugIngest({
+    sessionId: "df01c7",
+    location: "header-normalizer.ts:after detect",
+    message: "Chosen header row and delimiter",
+    data: { headerIndex, delimiter, headerLinePreview: headerLine.slice(0, 120) },
+    timestamp: Date.now(),
+    hypothesisId: "B",
+  });
   // #endregion
   const headers = headerLine.split(delimiter).map((h) => h.trim().toLowerCase().replace(/\s+/g, " "));
   const rows: string[][] = [];

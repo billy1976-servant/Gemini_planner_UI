@@ -6,7 +6,7 @@ import Link from "next/link";
 const DURATIONS = [1, 5, 10, 15] as const;
 
 export interface PrayerTimerSelectorProps {
-  /** Base path for prayer app (e.g. "/prayer" or "/christian/prayer") for admin link. */
+  /** Base path for prayer app (domain-agnostic: "/prayer") for admin link. */
   prayerBase?: string;
   /** When provided, "Time's up" shows a button that switches to record mode on the main tab. */
   onStartPrayer?: () => void;

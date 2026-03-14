@@ -14,7 +14,28 @@ export interface UseRoomRecordingResult {
   clear: () => void;
 }
 
-export function useRoomRecording(mixedStream: MediaStream | null): UseRoomRecordingResult {
+/**
+ * Builds the stream to record: audio from mixedStream, and video from screenShareStream when present.
+ * When screen share is active, recording includes both so playback can show video.
+ */
+function getStreamToRecord(
+  mixedStream: MediaStream | null,
+  screenShareStream: MediaStream | null
+): MediaStream | null {
+  if (!mixedStream) return null;
+  const videoTracks = screenShareStream?.getVideoTracks() ?? [];
+  if (videoTracks.length === 0) return mixedStream;
+  const combined = new MediaStream([
+    ...mixedStream.getAudioTracks(),
+    ...videoTracks,
+  ]);
+  return combined;
+}
+
+export function useRoomRecording(
+  mixedStream: MediaStream | null,
+  screenShareStream?: MediaStream | null
+): UseRoomRecordingResult {
   const [recordingStatus, setRecordingStatus] = useState<RecordingStatus>("idle");
   const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
   const [recordDurationSec, setRecordDurationSec] = useState(0);
@@ -33,9 +54,10 @@ export function useRoomRecording(mixedStream: MediaStream | null): UseRoomRecord
   }, []);
 
   const start = useCallback(() => {
-    if (!mixedStream || recordingStatus === "recording") return;
+    const streamToRecord = getStreamToRecord(mixedStream, screenShareStream ?? null);
+    if (!streamToRecord || recordingStatus === "recording") return;
     const recorder = recorderRef.current!;
-    recorder.start(mixedStream);
+    recorder.start(streamToRecord);
     setRecordingStatus("recording");
     setRecordedBlob(null);
     setRecordDurationSec(0);
@@ -43,7 +65,7 @@ export function useRoomRecording(mixedStream: MediaStream | null): UseRoomRecord
     intervalRef.current = setInterval(() => {
       setRecordDurationSec((s) => s + 1);
     }, 1000);
-  }, [mixedStream, recordingStatus]);
+  }, [mixedStream, screenShareStream, recordingStatus]);
 
   const stop = useCallback(() => {
     if (recordingStatus !== "recording") return;

@@ -83,11 +83,11 @@ export function MomentsSection({ prayerBase = "/prayer", groupSlug, groupId }: M
 
       {loading ? (
         <p className="prayer-section-muted">Loading…</p>
-      ) : prayers.length === 0 ? (
+      ) : !Array.isArray(prayers) || prayers.length === 0 ? (
         <p className="prayer-section-muted">No prayers yet. Record one to get started.</p>
       ) : (
         <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-          {prayers.map((p) => (
+          {(prayers ?? []).map((p) => (
             <li
               key={p.id}
               className="prayer-moment-card"

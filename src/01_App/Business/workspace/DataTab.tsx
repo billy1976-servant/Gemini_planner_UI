@@ -3,6 +3,7 @@
 import React, { useRef, useEffect, useCallback } from "react";
 import type { Business } from "@/logic/business/business-model";
 import { buildRawCsvPreview, type RawCsvPreview } from "@/logic/csv/rawCsvPreview";
+import { sendDebugIngest } from "@/lib/debug-ingest";
 import styles from "./WorkspaceLayout.module.css";
 
 const PREVIEW_ROW_LIMIT = 50;
@@ -48,18 +49,14 @@ export function DataTab({
       .then((r) => r.json())
       .then((d: { ok?: boolean; files?: { filename: string }[] }) => {
         // #region agent log
-        fetch("http://127.0.0.1:7242/ingest/7e15e045-3112-419f-8116-3226c0884ac1", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "df01c7" },
-          body: JSON.stringify({
-            sessionId: "df01c7",
-            location: "DataTab.tsx:fetchFilesList",
-            message: "Data tab: files API response for businessId",
-            data: { businessId, ok: d.ok, fileNames: Array.isArray(d.files) ? d.files.map((f) => f.filename) : [] },
-            timestamp: Date.now(),
-            hypothesisId: "E",
-          }),
-        }).catch(() => {});
+        sendDebugIngest({
+          sessionId: "df01c7",
+          location: "DataTab.tsx:fetchFilesList",
+          message: "Data tab: files API response for businessId",
+          data: { businessId, ok: d.ok, fileNames: Array.isArray(d.files) ? d.files.map((f) => f.filename) : [] },
+          timestamp: Date.now(),
+          hypothesisId: "E",
+        });
         // #endregion
         if (d.ok && Array.isArray(d.files)) {
           const names = d.files.map((f) => f.filename);
