@@ -1,0 +1,79 @@
+{
+    "$kind": "hicurv.ui.verb-map",
+    "$schemaVersion": "1.0.0",
+  
+    "verbs": {
+      "tap": {
+        "description": "Primary user activation on a component.",
+        "appliesTo": ["button", "chip", "list", "card", "toolbar", "footer", "section"],
+        "output": "action.primary"
+      },
+  
+      "toggle": {
+        "description": "Switch a boolean state inside the component.",
+        "appliesTo": ["button", "chip", "field", "toolbar", "list"],
+        "output": "state.toggle"
+      },
+  
+      "select": {
+        "description": "Choose one item from a set or group.",
+        "appliesTo": ["button", "list", "stepper", "chip"],
+        "output": "state.selected"
+      },
+  
+      "open": {
+        "description": "Reveal a hidden container or expanded region.",
+        "appliesTo": ["modal", "section", "toolbar"],
+        "output": "state.open"
+      },
+  
+      "close": {
+        "description": "Hide an opened container or region.",
+        "appliesTo": ["modal", "section"],
+        "output": "state.closed"
+      },
+  
+      "expand": {
+        "description": "Expand a component to reveal more structure.",
+        "appliesTo": ["section", "card", "list"],
+        "output": "state.expanded"
+      },
+  
+      "collapse": {
+        "description": "Collapse a component to hide extended content.",
+        "appliesTo": ["section", "card", "list"],
+        "output": "state.collapsed"
+      },
+  
+      "navigate": {
+        "description": "Navigate to a new screen or route.",
+        "appliesTo": ["button", "list", "card", "toolbar"],
+        "output": "nav.route"
+      },
+  
+      "submit": {
+        "description": "Commit or validate input inside a field or form.",
+        "appliesTo": ["field", "button"],
+        "output": "form.submit"
+      },
+  
+      "reveal": {
+        "description": "Reveal quick actions or contextual options.",
+        "appliesTo": ["button", "list", "card", "toolbar"],
+        "output": "ui.reveal"
+      },
+  
+      "menu": {
+        "description": "Open a contextual menu attached to a component.",
+        "appliesTo": ["button", "toolbar", "list"],
+        "output": "menu.open"
+      },
+  
+      "longpress": {
+        "description": "Activate an alternative or extended action.",
+        "appliesTo": ["button", "list", "card"],
+        "output": "action.alt"
+      }
+    }
+  }
+  

@@ -1,0 +1,2 @@
+1.0 | HeroBlock | organ:hero [hero.title, hero.subtitle, hero.cta]
+variant: centered

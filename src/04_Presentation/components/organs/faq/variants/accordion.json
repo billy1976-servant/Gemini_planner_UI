@@ -1,0 +1,17 @@
+{
+  "id": "organ:faq:accordion",
+  "type": "Section",
+  "role": "faq",
+  "layout": {
+    "type": "column",
+    "params": {
+      "gap": "1rem",
+      "align": "stretch"
+    }
+  },
+  "params": {},
+  "children": [
+    { "type": "slot", "slotKey": "faq.title" },
+    { "type": "slot", "slotKey": "faq.primary" }
+  ]
+}

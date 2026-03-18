@@ -1,0 +1,692 @@
+{
+  "__header": "MASTER UI CONFIGURATION",
+  "__description": "Single-source design system using 0→1 sliders for all visual decisions.",
+
+
+  "tableOfContents": [
+    "definitions",
+    "sliders",
+    "textStyles",
+    "styleProfiles",
+    "palettes",
+    "typography",
+    "radius",
+    "spacing",
+    "density",
+    "shadows",
+    "borders",
+    "components",
+    "cultures",
+    "intensity",
+    "motion"
+  ],
+
+
+  "definitions": {
+    "purpose": "Defines all global UI rules for every atom and component in the system.",
+    "engine": "Atoms convert 0→1 slider values into real output like px, spacing, radius, color.",
+    "styles": "Google, Business, Kids are nothing but slider presets + palette choices.",
+    "simplicity": "No schemas, no kinds, no hidden overrides — pure data only."
+  },
+
+
+  "__header_sliders": "SLIDER AXES (0→1)",
+  "__description_sliders": "Atoms read these normalized values and convert them into real rendering output.",
+  "sliders": {
+    "text": {
+      "size": 0,
+      "weight": 0,
+      "softness": 0,
+      "width": 0,
+      "serifness": 0,
+      "contrast": 0,
+      "slant": 0,
+      "monoFactor": 0,
+      "xHeight": 0
+    },
+    "radius": {
+      "roundness": 0
+    },
+    "density": {
+      "compactness": 0
+    },
+    "spacing": {
+      "scale": 0
+    },
+    "motion": {
+      "intensity": 0
+    }
+  },
+
+
+  "__header_textStyles": "TEXT ROLES → SLIDER MAPPINGS",
+  "__description_textStyles": "Semantic text roles converted into slider values for atoms.",
+  "textStyles": {
+    "display":  { "size": 1.0,  "weight": 1.0, "softness": 0.2 },
+    "headline": { "size": 0.85, "weight": 0.8, "softness": 0.2 },
+    "title":    { "size": 0.65, "weight": 0.6, "softness": 0.2 },
+    "body":     { "size": 0.40, "weight": 0.4, "softness": 0.2 },
+    "label":    { "size": 0.30, "weight": 0.5, "softness": 0.2 }
+  },
+
+
+  "__header_styleProfiles": "STYLE PROFILES (GOOGLE / BUSINESS / KIDS / ETC.)",
+  "__description_styleProfiles": "These do not define output — they only set slider positions + palette names.",
+  "styleProfiles": {
+    "google": {
+      "palette": "lightNeutral",
+      "textColor": "textPrimary"
+      "text":   { "size": 0.45, "weight": 0.45, "softness": 0.1 },
+      "radius": { "roundness": 0.4 },
+      "density":{ "compactness": 0.5 },
+      "spacing":{ "scale": 0.5 },
+      "motion": { "intensity": 0.6 }
+    },
+    "business": {
+      "palette": "business",
+      "textColor": "textPrimary"
+      "text":   { "size": 0.40, "weight": 0.55, "softness": 0.05 },
+      "radius": { "roundness": 0.2 },
+      "density":{ "compactness": 0.7 },
+      "spacing":{ "scale": 0.4 },
+      "motion": { "intensity": 0.4 }
+    },
+    "kids": {
+      "palette": "kids",
+      "textColor": "textPrimary"
+      "text":   { "size": 0.65, "weight": 0.55, "softness": 0.5 },
+      "radius": { "roundness": 0.8 },
+      "density":{ "compactness": 0.3 },
+      "spacing":{ "scale": 0.8 },
+      "motion": { "intensity": 0.9 }
+    },
+    "playful": {
+      "palette": "playful",
+      "textColor": "textPrimary"
+      "text":   { "size": 0.70, "weight": 0.50, "softness": 0.4 },
+      "radius": { "roundness": 0.9 },
+      "density":{ "compactness": 0.4 },
+      "spacing":{ "scale": 0.9 },
+      "motion": { "intensity": 0.9 }
+    },
+    "calm": {
+      "palette": "calm",
+      "textColor": "textPrimary"
+      "text":   { "size": 0.50, "weight": 0.45, "softness": 0.3 },
+      "radius": { "roundness": 0.6 },
+      "density":{ "compactness": 0.5 },
+      "spacing":{ "scale": 0.6 },
+      "motion": { "intensity": 0.3 }
+    },
+    "dark": {
+      "palette": "dark",
+      "textColor": "textPrimary"
+      "text":   { "size": 0.45, "weight": 0.6, "softness": 0.1 },
+      "radius": { "roundness": 0.4 },
+      "density":{ "compactness": 0.6 },
+      "spacing":{ "scale": 0.5 },
+      "motion": { "intensity": 0.5 }
+    },
+    "highContrast": {
+      "palette": "highContrast",
+      "textColor": "textPrimary"
+      "text":   { "size": 0.55, "weight": 1.0, "softness": 0.0 },
+      "radius": { "roundness": 0.1 },
+      "density":{ "compactness": 0.8 },
+      "spacing":{ "scale": 0.4 },
+      "motion": { "intensity": 0.1 }
+    }
+  },
+
+
+  "__header_typography": "TYPOGRAPHY SCALES",
+  "__description_typography": "Atoms map slider sizes to these scales.",
+  "typography": {
+    "sizeScale": {
+      "xs": 10,
+      "sm": 12,
+      "md": 14,
+      "lg": 18,
+      "xl": 24,
+      "2xl": 32,
+      "3xl": 40
+    },
+    "weightScale": {
+      "light": 300,
+      "normal": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700
+    },
+    "lineHeight": {
+      "tight": 1.1,
+      "normal": 1.4,
+      "relaxed": 1.6
+    }
+  },
+
+
+  "__header_palettes": "COLOR PALETTES",
+  "__description_palettes": "Color sets selected by each style profile.",
+  "palettes": {
+    "lightNeutral": {
+      "background": "#f5f5f5",
+      "surface": "#ffffff",
+      "surfaceAlt": "#f9fafb",
+      "primary": "#2563eb",
+      "primarySoft": "#dbeafe",
+      "primaryStrong": "#1d4ed8",
+      "accent": "#22c55e",
+      "accentSoft": "#dcfce7",
+      "accentStrong": "#16a34a",
+      "danger": "#ef4444",
+      "dangerSoft": "#fee2e2",
+      "dangerStrong": "#b91c1c",
+      "warning": "#f97316",
+      "warningSoft": "#ffedd5",
+      "warningStrong": "#c2410c",
+      "info": "#0ea5e9",
+      "infoSoft": "#e0f2fe",
+      "infoStrong": "#0284c7",
+      "borderSubtle": "#e5e7eb",
+      "borderStrong": "#9ca3af",
+      "textPrimary": "#111827",
+      "textSecondary": "#4b5563",
+      "textMuted": "#6b7280",
+      "textOnPrimary": "#ffffff",
+      "textOnAccent": "#ffffff",
+      "textOnDanger": "#ffffff"
+    },
+    "business": {
+      "background": "#f3f4f6",
+      "surface": "#ffffff",
+      "surfaceAlt": "#f9fafb",
+      "primary": "#1f2937",
+      "primarySoft": "#e5e7eb",
+      "primaryStrong": "#111827",
+      "accent": "#0f766e",
+      "accentSoft": "#ccfbf1",
+      "accentStrong": "#0f766e",
+      "danger": "#b91c1c",
+      "dangerSoft": "#fee2e2",
+      "dangerStrong": "#7f1d1d",
+      "warning": "#92400e",
+      "warningSoft": "#fef3c7",
+      "warningStrong": "#78350f",
+      "info": "#1d4ed8",
+      "infoSoft": "#dbeafe",
+      "infoStrong": "#1d4ed8",
+      "borderSubtle": "#e5e7eb",
+      "borderStrong": "#6b7280",
+      "textPrimary": "#111827",
+      "textSecondary": "#4b5563",
+      "textMuted": "#6b7280",
+      "textOnPrimary": "#f9fafb",
+      "textOnAccent": "#ecfeff",
+      "textOnDanger": "#fef2f2"
+    },
+    "slate": {
+      "background": "#020617",
+      "surface": "#020617",
+      "surfaceAlt": "#0f172a",
+      "primary": "#38bdf8",
+      "primarySoft": "#0f172a",
+      "primaryStrong": "#0ea5e9",
+      "accent": "#22c55e",
+      "accentSoft": "#022c22",
+      "accentStrong": "#22c55e",
+      "danger": "#f97316",
+      "dangerSoft": "#431407",
+      "dangerStrong": "#ea580c",
+      "warning": "#eab308",
+      "warningSoft": "#422006",
+      "warningStrong": "#eab308",
+      "info": "#0ea5e9",
+      "infoSoft": "#082f49",
+      "infoStrong": "#0ea5e9",
+      "borderSubtle": "#1e293b",
+      "borderStrong": "#475569",
+      "textPrimary": "#e5e7eb",
+      "textSecondary": "#9ca3af",
+      "textMuted": "#6b7280",
+      "textOnPrimary": "#0b1120",
+      "textOnAccent": "#022c22",
+      "textOnDanger": "#431407"
+    },
+    "kids": {
+      "background": "#fef9c3",
+      "surface": "#ffffff",
+      "surfaceAlt": "#fef3c7",
+      "primary": "#f97316",
+      "primarySoft": "#ffedd5",
+      "primaryStrong": "#ea580c",
+      "accent": "#22c55e",
+      "accentSoft": "#dcfce7",
+      "accentStrong": "#16a34a",
+      "danger": "#ef4444",
+      "dangerSoft": "#fee2e2",
+      "dangerStrong": "#b91c1c",
+      "warning": "#eab308",
+      "warningSoft": "#fef9c3",
+      "warningStrong": "#a16207",
+      "info": "#38bdf8",
+      "infoSoft": "#e0f2fe",
+      "infoStrong": "#0284c7",
+      "borderSubtle": "#fed7aa",
+      "borderStrong": "#f97316",
+      "textPrimary": "#1f2937",
+      "textSecondary": "#374151",
+      "textMuted": "#6b7280",
+      "textOnPrimary": "#ffffff",
+      "textOnAccent": "#022c22",
+      "textOnDanger": "#ffffff"
+    },
+    "playful": {
+      "background": "#faf5ff",
+      "surface": "#ffffff",
+      "surfaceAlt": "#f3e8ff",
+      "primary": "#a855f7",
+      "primarySoft": "#f3e8ff",
+      "primaryStrong": "#9333ea",
+      "accent": "#f97316",
+      "accentSoft": "#ffedd5",
+      "accentStrong": "#ea580c",
+      "danger": "#f43f5e",
+      "dangerSoft": "#ffe4e6",
+      "dangerStrong": "#be123c",
+      "warning": "#eab308",
+      "warningSoft": "#fef9c3",
+      "warningStrong": "#a16207",
+      "info": "#0ea5e9",
+      "infoSoft": "#e0f2fe",
+      "infoStrong": "#0284c7",
+      "borderSubtle": "#e9d5ff",
+      "borderStrong": "#c4b5fd",
+      "textPrimary": "#1f2937",
+      "textSecondary": "#4b5563",
+      "textMuted": "#6b7280",
+      "textOnPrimary": "#f9fafb",
+      "textOnAccent": "#0b1120",
+      "textOnDanger": "#fdf2f8"
+    },
+    "calm": {
+      "background": "#ecfeff",
+      "surface": "#ffffff",
+      "surfaceAlt": "#e0f2fe",
+      "primary": "#0ea5e9",
+      "primarySoft": "#e0f2fe",
+      "primaryStrong": "#0284c7",
+      "accent": "#22c55e",
+      "accentSoft": "#dcfce7",
+      "accentStrong": "#16a34a",
+      "danger": "#ef4444",
+      "dangerSoft": "#fee2e2",
+      "dangerStrong": "#b91c1c",
+      "warning": "#eab308",
+      "warningSoft": "#fef9c3",
+      "warningStrong": "#a16207",
+      "info": "#22d3ee",
+      "infoSoft": "#cffafe",
+      "infoStrong": "#0891b2",
+      "borderSubtle": "#bae6fd",
+      "borderStrong": "#38bdf8",
+      "textPrimary": "#0f172a",
+      "textSecondary": "#334155",
+      "textMuted": "#64748b",
+      "textOnPrimary": "#f9fafb",
+      "textOnAccent": "#022c22",
+      "textOnDanger": "#fef2f2"
+    },
+    "dark": {
+      "background": "#020617",
+      "surface": "#020617",
+      "surfaceAlt": "#111827",
+      "primary": "#22c55e",
+      "primarySoft": "#14532d",
+      "primaryStrong": "#16a34a",
+      "accent": "#0ea5e9",
+      "accentSoft": "#082f49",
+      "accentStrong": "#0ea5e9",
+      "danger": "#f97316",
+      "dangerSoft": "#431407",
+      "dangerStrong": "#ea580c",
+      "warning": "#eab308",
+      "warningSoft": "#422006",
+      "warningStrong": "#eab308",
+      "info": "#38bdf8",
+      "infoSoft": "#082f49",
+      "infoStrong": "#38bdf8",
+      "borderSubtle": "#1f2937",
+      "borderStrong": "#4b5563",
+      "textPrimary": "#e5e7eb",
+      "textSecondary": "#9ca3af",
+      "textMuted": "#6b7280",
+      "textOnPrimary": "#022c22",
+      "textOnAccent": "#082f49",
+      "textOnDanger": "#431407"
+    },
+    "highContrast": {
+      "background": "#000000",
+      "surface": "#000000",
+      "surfaceAlt": "#111827",
+      "primary": "#ffffff",
+      "primarySoft": "#e5e7eb",
+      "primaryStrong": "#ffffff",
+      "accent": "#facc15",
+      "accentSoft": "#fef9c3",
+      "accentStrong": "#facc15",
+      "danger": "#f97316",
+      "dangerSoft": "#ffedd5",
+      "dangerStrong": "#f97316",
+      "warning": "#eab308",
+      "warningSoft": "#fef9c3",
+      "warningStrong": "#eab308",
+      "info": "#38bdf8",
+      "infoSoft": "#e0f2fe",
+      "infoStrong": "#38bdf8",
+      "borderSubtle": "#4b5563",
+      "borderStrong": "#f9fafb",
+      "textPrimary": "#f9fafb",
+      "textSecondary": "#e5e7eb",
+      "textMuted": "#9ca3af",
+      "textOnPrimary": "#000000",
+      "textOnAccent": "#000000",
+      "textOnDanger": "#000000"
+    }
+  },
+
+
+  "__header_radius": "RADIUS TOKENS",
+  "__description_radius": "Used by atoms after slider → radius mapping.",
+  "radius": {
+    "none": 0,
+    "xs": 2,
+    "sm": 4,
+    "md": 8,
+    "lg": 12,
+    "xl": 20,
+    "full": 9999
+  },
+
+
+  "__header_spacing": "SPACING TOKENS",
+  "__description_spacing": "Used for padding, margin, layout.",
+  "spacing": {
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 24,
+    "2xl": 32
+  },
+
+
+  "__header_density": "DENSITY SCALE",
+  "__description_density": "Compact → Comfortable → Spacious.",
+  "density": {
+    "compact": 0.8,
+    "comfortable": 1.0,
+    "spacious": 1.2
+  },
+
+
+  "__header_shadows": "SHADOW LEVELS",
+  "__description_shadows": "Atoms map slider → elevation.",
+  "shadows": {
+    "none": 0,
+    "soft": 1,
+    "medium": 2,
+    "strong": 3
+  },
+
+
+  "__header_borders": "BORDER TOKENS",
+  "__description_borders": "Standard-width borders.",
+  "borders": {
+    "none": { "width": 0, "style": "solid" },
+    "subtle": { "width": 1, "style": "solid" },
+    "strong": { "width": 2, "style": "solid" }
+  },
+
+
+  "__header_components": "COMPONENT PRESETS",
+  "__description_components": "Default base rules for UI components.",
+  "components": {
+    "button": {
+      "variants": {
+        "primary": {
+          "bg": "primary",
+          "fg": "textOnPrimary",
+          "borderColor": "primaryStrong",
+          "shadow": "soft",
+          "radius": "md",
+          "weight": "medium"
+        },
+        "secondary": {
+          "bg": "surfaceAlt",
+          "fg": "textPrimary",
+          "borderColor": "borderSubtle",
+          "shadow": "none",
+          "radius": "md",
+          "weight": "medium"
+        },
+        "ghost": {
+          "bg": "transparent",
+          "fg": "primaryStrong",
+          "borderColor": "transparent",
+          "shadow": "none",
+          "radius": "md",
+          "weight": "medium"
+        },
+        "danger": {
+          "bg": "danger",
+          "fg": "textOnDanger",
+          "borderColor": "dangerStrong",
+          "shadow": "soft",
+          "radius": "md",
+          "weight": "medium"
+        }
+      },
+      "sizes": {
+        "sm": { "fontSize": "sm", "px": "sm", "py": "xs" },
+        "md": { "fontSize": "base", "px": "md", "py": "sm" },
+        "lg": { "fontSize": "lg", "px": "lg", "py": "md" }
+      }
+    },
+
+
+    "card": {
+      "variants": {
+        "plain": {
+          "bg": "surface",
+          "fg": "textPrimary",
+          "borderColor": "borderSubtle",
+          "shadow": "none",
+          "radius": "lg"
+        },
+        "elevated": {
+          "bg": "surface",
+          "fg": "textPrimary",
+          "borderColor": "borderSubtle",
+          "shadow": "soft",
+          "radius": "lg"
+        },
+        "accent": {
+          "bg": "primarySoft",
+          "fg": "textPrimary",
+          "borderColor": "primaryStrong",
+          "shadow": "soft",
+          "radius": "lg"
+        }
+      },
+      "padding": {
+        "sm": "sm",
+        "md": "md",
+        "lg": "lg"
+      }
+    },
+
+
+    "input": {
+      "variants": {
+        "default": {
+          "bg": "surface",
+          "fg": "textPrimary",
+          "borderColor": "borderSubtle",
+          "radius": "md",
+          "shadow": "none"
+        },
+        "subtle": {
+          "bg": "surfaceAlt",
+          "fg": "textPrimary",
+          "borderColor": "borderSubtle",
+          "radius": "md",
+          "shadow": "none"
+        },
+        "underline": {
+          "bg": "transparent",
+          "fg": "textPrimary",
+          "borderColor": "borderStrong",
+          "radius": "none",
+          "shadow": "none"
+        }
+      },
+      "sizes": {
+        "sm": { "fontSize": "sm", "py": "xs", "px": "sm" },
+        "md": { "fontSize": "base", "py": "sm", "px": "md" },
+        "lg": { "fontSize": "lg", "py": "md", "px": "lg" }
+      }
+    },
+
+
+    "surface": {
+      "levels": {
+        "base": { "bg": "background" },
+        "sunken": { "bg": "surfaceAlt" },
+        "raised": { "bg": "surface" }
+      }
+    },
+
+
+    "tag": {
+      "variants": {
+        "default": {
+          "bg": "surfaceAlt",
+          "fg": "textSecondary",
+          "borderColor": "borderSubtle",
+          "radius": "full"
+        },
+        "primary": {
+          "bg": "primarySoft",
+          "fg": "primaryStrong",
+          "borderColor": "primaryStrong",
+          "radius": "full"
+        },
+        "success": {
+          "bg": "accentSoft",
+          "fg": "accentStrong",
+          "borderColor": "accentStrong",
+          "radius": "full"
+        },
+        "danger": {
+          "bg": "dangerSoft",
+          "fg": "dangerStrong",
+          "borderColor": "dangerStrong",
+          "radius": "full"
+        }
+      },
+      "sizes": {
+        "sm": { "fontSize": "xs", "px": "sm", "py": "xs" },
+        "md": { "fontSize": "sm", "px": "md", "py": "xs" }
+      }
+    }
+  },
+
+
+  "__header_textVariants": "TEXT VARIANT PRESETS",
+  "__description_textVariants": "Friendly names referencing typography scale.",
+  "textVariants": {
+    "headline": { "scale": "5xl", "weight": 700 },
+    "title": { "scale": "3xl", "weight": 700 },
+    "subtitle": { "scale": "xl", "weight": 600 },
+    "body": { "scale": "base", "weight": 400 },
+    "caption": { "scale": "sm", "weight": 400 },
+    "label": { "scale": "xs", "weight": 500 }
+  },
+
+
+  "__header_cultures": "CULTURE-SPECIFIC PRESETS",
+  "__description_cultures": "Sliders and palette selections tailored for localization.",
+  "cultures": {
+    "default": {
+      "palette": "lightNeutral",
+      "intensity": 0.5,
+      "motion": 0.5,
+      "density": "comfortable",
+      "radiusPreference": "md"
+    },
+    "japanese": {
+      "palette": "calm",
+      "intensity": 0.3,
+      "motion": 0.2,
+      "density": "compact",
+      "radiusPreference": "sm"
+    },
+    "german": {
+      "palette": "business",
+      "intensity": 0.6,
+      "motion": 0.4,
+      "density": "comfortable",
+      "radiusPreference": "md"
+    },
+    "arabic": {
+      "palette": "playful",
+      "intensity": 0.7,
+      "motion": 0.6,
+      "density": "spacious",
+      "radiusPreference": "lg"
+    },
+    "hindi": {
+      "palette": "kids",
+      "intensity": 0.8,
+      "motion": 0.7,
+      "density": "comfortable",
+      "radiusPreference": "lg"
+    }
+  },
+
+
+  "__header_intensity": "GLOBAL INTENSITY SCALE",
+  "__description_intensity": "0 = soft, 1 = bold; used to modulate color, contrast, weight.",
+  "intensity": {
+    "soft": 0.3,
+    "normal": 0.5,
+    "bold": 0.8
+  },
+
+
+  "__header_motion": "MOTION SCALE",
+  "__description_motion": "0 = static, 1 = lively; atoms interpret this into animation speed or distance.",
+  "motion": {
+    "none": 0,
+    "reduced": 0.3,
+    "normal": 0.6,
+    "expressive": 1.0
+  },
+
+
+  "__header_globalDefaults": "GLOBAL DEFAULT SETTINGS",
+  "__description_globalDefaults": "Fallback selections the engine uses if no profile or culture is explicitly chosen.",
+  "defaults": {
+    "profile": "google",
+    "culture": "default",
+    "palette": "lightNeutral",
+    "density": "comfortable",
+    "radius": "md",
+    "motion": "normal",
+    "intensity": "normal",
+    "textStyle": "body"
+  }
+}
+
+

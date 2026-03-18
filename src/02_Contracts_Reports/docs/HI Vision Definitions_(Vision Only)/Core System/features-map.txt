@@ -1,0 +1,177 @@
+# HI CURV — FEATURES / APP MAP  (QuickBooks Analogy)
+
+
+## 1. What is a “Feature” or “App”?
+
+
+- A **Feature** (or app) is just a **named view** of the same underlying data.
+- Examples: **Kanban**, **Calendar**, **Journal**, **Website Builder**, **Recovery Coach**, **Home Buying Helper**.
+- Exactly like **QuickBooks reports** (P&L, Balance Sheet, Inventory):  
+  same transactions, different **projection**.
+
+
+A Feature **never owns the data**.  
+It only decides **which data to show** and **which organs to use to show it.**
+
+
+---
+
+
+## 2. Layer Map (Feature → Organ → Molecule → Atom)
+
+
+- **Feature** = “Which organs do we turn on, and how do we arrange them?”
+- **Organ** = A reusable “UI organ” built from molecules  
+  - Examples: `KanbanBoard`, `CalendarGrid`, `TaskList`, `NoteEditor`, `MediaStrip`
+- **Molecules** = UI compounds (button, card, list row, field row, etc.)
+- **Atoms** = 9 primitives (text, surface, media, field, trigger, condition, collection, sequence, shell)
+- **Content + Behaviors** =  
+  - Content = what fills atoms (text, images, tasks, scriptures, etc.)  
+  - Behaviors = how they respond (click, navigate, save, toast, run sequence…)
+
+
+So a Feature is literally:
+
+
+> **Feature = [Organs] + [Layout rules] + [Data filters]**
+
+
+---
+
+
+## 3. Example Feature: KANBAN
+
+
+**Name:** `Feature.Kanban`  
+**Goal:** Show tasks grouped by status (To Do / Doing / Done) from the shared data engine.
+
+
+- **Organs used**
+  - `KanbanBoard` (columns + cards)
+  - `TaskList` (for backlog or grouped lists)
+  - `ContextPanel` (shows details when a card is selected)
+
+
+- **Molecules used inside organs**
+  - `Card` (task card)
+  - `Button` (add, move, filter, view toggles)
+  - `Chip / Tag` (labels, priorities)
+  - `FieldRow` (quick inline edits)
+
+
+- **Atoms used inside molecules**
+  - `text` (title, description, labels)
+  - `surface` (card background, columns, panels)
+  - `media` (icons, avatars)
+  - `field` (inputs)
+  - `trigger` (buttons)
+  - `collection` (lists of cards)
+  - `sequence` (animations / transitions if needed)
+  - `shell` (overall layout)
+
+
+- **Content**
+  - Comes **from the shared data engine** (tasks, projects, tags, dates).
+  - Kanban **only filters & groups**: e.g., `status IN [Todo, Doing, Done]`.
+
+
+- **QuickBooks analogy**
+  - Like “P&L by Class”: same transactions, grouped differently.
+  - Changing status of a card is like changing a transaction’s account/class.
+
+
+---
+
+
+## 4. Example Feature: CALENDAR
+
+
+**Name:** `Feature.Calendar`  
+**Goal:** Show time-based items (tasks, events, reminders) on a timeline grid.
+
+
+- **Organs used**
+  - `CalendarGrid` (month/week/day layout)
+  - `TaskList` or `EventList` (compact list for navigation)
+  - `ContextPanel` (details or quick-edit)
+
+
+- **Projection only**
+  - Uses the **same task/event data** as Kanban.
+  - Only changes:
+    - **Grouping:** by date/time instead of status
+    - **Organs:** grid instead of columns
+    - **Molecules:** time slots instead of Kanban cards
+
+
+---
+
+
+## 5. Example Feature: WEBSITE BUILDER (Dumb / MVP)
+
+
+**Name:** `Feature.WebsiteBuilder`  
+**Goal:** Take content (e.g. from a church site), store it, and project it as a new site layout.
+
+
+- **Organs used**
+  - `SectionList` (hero, about, sermons, contact, etc.)
+  - `BlockEditor` (per-section editing)
+  - `PreviewPane` (live preview)
+
+
+- **Data flow**
+  - Content ingested → stored in the same **content engine** (texts, media, routes).
+  - Website Builder is just another **view + editor** on that content.
+  - Later, the same content can appear in:
+    - a Kanban (website tasks),
+    - Calendar (content schedule),
+    - Journal (planning notes).
+
+
+---
+
+
+## 6. The “Brain” / Data Engine (QuickBooks Core)
+
+
+- Think of the **Brain** as the “QuickBooks database”:
+  - It holds **all atomic facts**: tasks, notes, tags, people, events, web blocks, etc.
+  - It knows **relationships**: “this task belongs to this project”, “this project belongs to this life-area”.
+- Features **never store their own data**.  
+  They:
+  1. Ask the Brain: “give me all items of type X that match filters Y”
+  2. Hand that list down to Organs → Molecules → Atoms to render.
+
+
+So:
+
+
+> **Brain = shared content + relations**  
+> **Organs = reusable UI structures over that content**  
+> **Features = named presets of organs + filters (reports)**
+
+
+---
+
+
+## 7. Why this matters for HI CURV
+
+
+- You can build **many features** (Kanban, Calendar, Website Builder, Recovery Coach, etc.)
+  **without duplicating data or UI code**.
+- A new Feature is “just”:
+  - A **definition file** saying:
+    - which organs to mount
+    - which filters to apply
+    - which variants/themes to use
+  - A small JSON/TSX glue layer to hook it into the main screen.
+
+
+This file is the **map** that explains to any new dev/chat:
+
+
+> “We are NOT building 20 separate apps.  
+> We are building ONE shared brain with many report-style views.”
+
+

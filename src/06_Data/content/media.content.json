@@ -1,0 +1,79 @@
+{
+  "$kind": "hicurv.mediaContent",
+  "$version": "1.0",
+  "types": {
+    "image": {
+      "semantics": "Image",
+      "format": "raster",
+      "ext": ["jpg", "png", "webp"],
+      "fit": "cover",
+      "defaultValue": null
+    },
+    "icon": {
+      "semantics": "Icon",
+      "format": "vector",
+      "ext": ["svg", "png"],
+      "fit": "contain",
+      "defaultValue": null
+    },
+    "video": {
+      "semantics": "Video",
+      "format": "video",
+      "ext": ["mp4", "webm"],
+      "autoplay": false,
+      "controls": true,
+      "defaultValue": null
+    },
+    "audio": {
+      "semantics": "Audio",
+      "format": "audio",
+      "ext": ["mp3", "wav"],
+      "controls": true,
+      "defaultValue": null
+    },
+    "gif": {
+      "semantics": "Animation",
+      "format": "gif",
+      "ext": ["gif"],
+      "fit": "cover",
+      "defaultValue": null
+    },
+    "pdf": {
+      "semantics": "Document",
+      "format": "pdf",
+      "ext": ["pdf"],
+      "render": "thumbnail",
+      "defaultValue": null
+    },
+    "stream": {
+      "semantics": "LiveStream",
+      "format": "stream",
+      "source": "@device.camera.stream",
+      "defaultValue": null
+    },
+    "screen": {
+      "semantics": "ScreenCapture",
+      "format": "stream",
+      "source": "@device.screen.capture",
+      "defaultValue": null
+    },
+    "heroImage": {
+      "semantics": "Image",
+      "format": "raster",
+      "src": "https://static.wixstatic.com/media/11062b_18e403d31545438c81445d69e5829a5c~mv2.jpg"
+    },
+    "heroBadge": {
+      "semantics": "Image",
+      "format": "raster",
+      "src": "https://static.wixstatic.com/media/84770f_9b18b9c65de24e36b59f4d4c7eb7b5fe~mv2.png"
+    },
+    "logo": {
+      "semantics": "Image",
+      "format": "raster",
+      "src": "https://static.wixstatic.com/media/11062b_b106b06e45494a59a599a1f2d1d4e38e~mv2.png"
+    }
+  },
+  "accessibility": {
+    "alt": "string"
+  }
+}

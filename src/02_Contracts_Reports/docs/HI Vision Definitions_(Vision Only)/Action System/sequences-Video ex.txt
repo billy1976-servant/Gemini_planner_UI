@@ -1,0 +1,19 @@
+SEQUENCES (Media-Agnostic “Cut / Stamp / Move” Engine)
+What sequences are
+A Sequence is a reusable operation recipe that can run over any media type:
+video, audio, text, images, PDFs, tasks, Kanban cards, etc.
+Example: your 6×7 engine:
+operations like cut, copy, split, stamp, merge, overlay, export
+applied across different content types.
+Where sequences live
+Implementation-wise:
+Lives in a behavior + sequence engine (under behavior/).
+Receives instructions from JSON (“run cut→split→stamp over this set of items”).
+Organs (like video editor, Kanban, website builder) call sequences, they don’t re-implement them.
+QuickBooks analogy
+Sequences are like saved procedures or automations:
+“Every month, close books.”
+“Every week, generate invoice batch.”
+In HI-CURV:
+“Every time I capture a clip, cut to 15s, add intro, queue for export.”
+“Every time I start a project, create Kanban lanes, calendar milestones, and journal prompts.”

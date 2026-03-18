@@ -1,0 +1,6 @@
+{
+  "id": "footer",
+  "label": "Footer",
+  "slotSchema": ["footer.primary", "footer.columns", "footer.newsletter", "footer.copyright"],
+  "variantIds": ["multi-column", "minimal", "with-newsletter", "centered", "dense"]
+}

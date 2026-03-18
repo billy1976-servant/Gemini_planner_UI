@@ -1,0 +1,129 @@
+/**
+ * Path resolution validator — ensures tsconfig paths, require.context roots,
+ * and next.config webpack aliases align with physical folders.
+ * Run before builds to prevent path drift.
+ * Exit code: 0 = PASS, 1 = FAIL.
+ */
+
+const fs = require("fs");
+const path = require("path");
+
+const ROOT = process.cwd();
+let failed = 0;
+
+function resolveDir(...parts) {
+  return path.join(ROOT, ...parts);
+}
+
+function check(name, condition, message) {
+  if (condition) {
+    console.log(`PASS: ${name}`);
+    return true;
+  }
+  console.error(`FAIL: ${name} — ${message}`);
+  failed++;
+  return false;
+}
+
+// 1) TSConfig paths: apps-tsx and apps-json
+const tsconfigPath = path.join(ROOT, "tsconfig.json");
+if (!fs.existsSync(tsconfigPath)) {
+  console.error("FAIL: tsconfig.json not found");
+  process.exit(1);
+}
+
+const tsconfigRaw = fs.readFileSync(tsconfigPath, "utf8");
+// Extract paths and baseUrl without full parse (tsconfig may contain comments)
+const baseUrlMatch = tsconfigRaw.match(/"baseUrl"\s*:\s*"([^"]*)"/);
+const baseUrl = baseUrlMatch ? baseUrlMatch[1] : ".";
+const baseResolved = path.resolve(ROOT, baseUrl);
+
+const paths = {};
+const pathMatches = tsconfigRaw.matchAll(/"(@\/[^"]+)"\s*:\s*\["([^"]*)"/g);
+for (const m of pathMatches) paths[m[1]] = [m[2]];
+
+const appsTsx = (paths["@/apps-tsx"]?.[0] ?? paths["@/apps-tsx/*"]?.[0]?.replace(/\/\*$/, "")) || "";
+const appsJson = (paths["@/apps-json"]?.[0] ?? paths["@/apps-json/*"]?.[0]?.replace(/\/\*$/, "")) || "";
+
+check(
+  "tsconfig: @/apps-tsx entry",
+  paths["@/apps-tsx"] && paths["@/apps-tsx/*"],
+  "tsconfig must have both \"@/apps-tsx\" and \"@/apps-tsx/*\" in paths"
+);
+check(
+  "tsconfig: @/apps-json entry",
+  paths["@/apps-json"] && paths["@/apps-json/*"],
+  "tsconfig must have both \"@/apps-json\" and \"@/apps-json/*\" in paths"
+);
+
+if (appsTsx) {
+  const dir = path.resolve(baseResolved, appsTsx);
+  check("tsconfig: apps-tsx folder exists", fs.existsSync(dir) && fs.statSync(dir).isDirectory(), `directory does not exist: ${dir}`);
+}
+if (appsJson) {
+  const dir = path.resolve(baseResolved, appsJson);
+  check("tsconfig: apps-json folder exists", fs.existsSync(dir) && fs.statSync(dir).isDirectory(), `directory does not exist: ${dir}`);
+}
+
+// 2) require.context roots (after 01-08 reorganization: apps live under 01_App)
+// page.tsx: "../01_App/apps-tsx" from src/app/ → src/01_App/apps-tsx
+const pageTsxPath = path.join(ROOT, "src", "app", "page.tsx");
+const pageContent = fs.existsSync(pageTsxPath) ? fs.readFileSync(pageTsxPath, "utf8") : "";
+const pageUsesCorrectContext = /(?:require\s+as\s+any\s*)?\.context\s*\(\s*["']\.\.\/01_App\/apps-tsx["']/.test(pageContent);
+check(
+  "require.context: page.tsx uses ../01_App/apps-tsx",
+  pageUsesCorrectContext,
+  "src/app/page.tsx must use require.context(\"../01_App/apps-tsx\", ...)"
+);
+check(
+  "require.context: page.tsx target exists",
+  fs.existsSync(resolveDir("src", "01_App", "apps-tsx")),
+  "src/01_App/apps-tsx must exist"
+);
+
+// 2b) Runtime safe-json-loader: require.context points at apps-json/apps (physical: 01_App/(dead) Json/apps)
+const loaderPath = path.join(ROOT, "src", "03_Runtime", "runtime", "loaders", "safe-json-loader.ts");
+const loaderContent = fs.existsSync(loaderPath) ? fs.readFileSync(loaderPath, "utf8") : "";
+const loaderDir = path.join(ROOT, "src", "03_Runtime", "runtime", "loaders");
+const jsonAppsResolved = path.resolve(loaderDir, "../../../01_App/(dead) Json/apps");
+check(
+  "require.context: safe-json-loader uses context for JSON apps",
+  /require.*\.context\s*\(/.test(loaderContent) && /01_App\/\(dead\) Json\/apps/.test(loaderContent),
+  "src/03_Runtime/runtime/loaders/safe-json-loader.ts must use require.context pointing at 01_App/(dead) Json/apps"
+);
+check(
+  "require.context: apps-json/apps folder exists",
+  fs.existsSync(jsonAppsResolved) && fs.statSync(jsonAppsResolved).isDirectory(),
+  `JSON apps directory does not exist: ${jsonAppsResolved}`
+);
+
+// 3) next.config.js: no @/apps-tsx override to a non-existent path
+const nextConfigPath = path.join(ROOT, "next.config.js");
+const nextContent = fs.existsSync(nextConfigPath) ? fs.readFileSync(nextConfigPath, "utf8") : "";
+const hasAppsTsxAliasToScreens = /@\/apps-tsx["']\s*:\s*path\.resolve\s*\([^)]*["']src\/screens["']/.test(nextContent);
+const hasAppsTsxAliasOverride = /@\/apps-tsx["']\s*:/.test(nextContent);
+check(
+  "next.config: no @/apps-tsx override to src/screens",
+  !hasAppsTsxAliasToScreens,
+  "next.config.js must not alias @/apps-tsx to src/screens"
+);
+if (hasAppsTsxAliasOverride && !hasAppsTsxAliasToScreens) {
+  const aliasTarget = nextContent.match(/@\/apps-tsx["']\s*:\s*path\.resolve\s*\([^,]+,\s*["']([^"']+)["']/);
+  if (aliasTarget) {
+    const targetDir = path.resolve(ROOT, aliasTarget[1]);
+    check(
+      "next.config: @/apps-tsx alias target exists (if any)",
+      fs.existsSync(targetDir),
+      `alias target does not exist: ${targetDir}`
+    );
+  }
+}
+
+// Summary
+console.log("");
+if (failed > 0) {
+  console.error(`Result: FAIL (${failed} check(s) failed)`);
+  process.exit(1);
+}
+console.log("Result: PASS (all path checks passed)");
+process.exit(0);

@@ -1,0 +1,9 @@
+{
+  "type": "button",
+  "id": "test",
+  "content": {
+    "value": "Hello my friends"
+  }
+}
+
+

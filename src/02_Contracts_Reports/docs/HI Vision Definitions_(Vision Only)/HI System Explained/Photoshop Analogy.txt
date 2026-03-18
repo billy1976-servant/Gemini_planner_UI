@@ -1,0 +1,22 @@
+# HI OS — Photoshop Analogy (The One-Screen Paradigm)
+
+
+Photoshop has 200 tools, dozens of panels, and deep UI complexity.
+
+
+HI OS replaces all that with:
+ONE screen
++ parametric sliders
++ context-aware actions (0–1 + 6×7)
+
+
+User flow:
+- user selects media (image/video/text)
+- OS automatically offers top ~5 relevant actions
+- complex features stay hidden unless needed
+
+
+This allows:
+- beginners to do professional
+
+

@@ -1,0 +1,70 @@
+{
+  "image": {
+    "crop":    { "enabled": true,  "handler": "cropMedia",       "params": ["left", "right", "top", "bottom"] },
+    "filter":  { "enabled": true,  "handler": "applyFilter",     "params": ["brightness", "contrast", "saturation"] },
+    "frame":   { "enabled": true,  "handler": "applyFrame",      "params": ["style", "size"] },
+    "layout":  { "enabled": true,  "handler": "applyLayout",     "params": ["fit", "orientation"] },
+    "motion":  { "enabled": false },
+    "overlay": { "enabled": true,  "handler": "addOverlay",      "params": ["text", "image"] }
+  },
+
+
+  "video": {
+    "crop":    { "enabled": false },
+    "filter":  { "enabled": true,  "handler": "applyFilter",     "params": ["brightness", "contrast", "saturation"] },
+    "frame":   { "enabled": false },
+    "layout":  { "enabled": true,  "handler": "applyLayout",     "params": ["fit", "orientation"] },
+    "motion":  { "enabled": true,  "handler": "adjustSpeed",     "params": ["speed", "direction"] },
+    "overlay": { "enabled": true,  "handler": "addOverlay",      "params": ["text", "image"] }
+  },
+
+
+  "audio": {
+    "crop":    { "enabled": false },
+    "filter":  { "enabled": false },
+    "frame":   { "enabled": false },
+    "layout":  { "enabled": false },
+    "motion":  { "enabled": true,  "handler": "adjustAudioSpeed", "params": ["speed"] },
+    "overlay": { "enabled": true,  "handler": "addAudioOverlay", "params": ["text"] }
+  },
+
+
+  "document": {
+    "crop":    { "enabled": false },
+    "filter":  { "enabled": false },
+    "frame":   { "enabled": true,  "handler": "applyFrame",      "params": ["style"] },
+    "layout":  { "enabled": true,  "handler": "applyLayout",     "params": ["fit"] },
+    "motion":  { "enabled": false },
+    "overlay": { "enabled": true,  "handler": "addOverlay",      "params": ["text"] }
+  },
+
+
+  "canvas": {
+    "crop":    { "enabled": true,  "handler": "cropCanvas",      "params": ["x", "y", "width", "height"] },
+    "filter":  { "enabled": false },
+    "frame":   { "enabled": true,  "handler": "applyFrame",      "params": ["style"] },
+    "layout":  { "enabled": true,  "handler": "applyLayout",     "params": ["fit"] },
+    "motion":  { "enabled": false },
+    "overlay": { "enabled": true,  "handler": "addOverlay",      "params": ["text", "shape"] }
+  },
+
+
+  "map": {
+    "crop":    { "enabled": false },
+    "filter":  { "enabled": false },
+    "frame":   { "enabled": false },
+    "layout":  { "enabled": true,  "handler": "applyLayout",     "params": ["zoom", "center"] },
+    "motion":  { "enabled": true,  "handler": "adjustMapMotion", "params": ["speed"] },
+    "overlay": { "enabled": false }
+  },
+
+
+  "camera": {
+    "crop":    { "enabled": true,  "handler": "cropLive",        "params": ["x", "y", "width", "height"] },
+    "filter":  { "enabled": true,  "handler": "applyLiveFilter", "params": ["brightness", "contrast"] },
+    "frame":   { "enabled": false },
+    "layout":  { "enabled": true,  "handler": "applyLayout",     "params": ["fit"] },
+    "motion":  { "enabled": true,  "handler": "adjustMotion",    "params": ["speed"] },
+    "overlay": { "enabled": false }
+  }
+}

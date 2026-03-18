@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 90" width="120" height="90">
+  <rect width="120" height="90" fill="#f8fafc" rx="6"/>
+  <!-- Three stacked content bands -->
+  <rect x="0" y="10" width="120" height="18" rx="3" fill="#e2e8f0"/>
+  <rect x="14" y="14" width="92" height="6" rx="1" fill="#94a3b8" opacity="0.8"/>
+  <rect x="14" y="22" width="92" height="4" rx="1" fill="#94a3b8" opacity="0.8"/>
+  
+  <rect x="0" y="32" width="120" height="18" rx="3" fill="#e2e8f0"/>
+  <rect x="14" y="36" width="92" height="6" rx="1" fill="#94a3b8" opacity="0.8"/>
+  <rect x="14" y="44" width="92" height="4" rx="1" fill="#94a3b8" opacity="0.8"/>
+  
+  <rect x="0" y="54" width="120" height="18" rx="3" fill="#e2e8f0"/>
+  <rect x="14" y="58" width="92" height="6" rx="1" fill="#94a3b8" opacity="0.8"/>
+  <rect x="14" y="66" width="92" height="4" rx="1" fill="#94a3b8" opacity="0.8"/>
+</svg>

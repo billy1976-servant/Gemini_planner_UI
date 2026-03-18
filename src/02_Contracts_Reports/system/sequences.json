@@ -1,0 +1,77 @@
+{
+    "$kind": "hicurv.sequences",
+    "$schemaVersion": "1.0.0",
+  
+    "flows": {
+  
+      "onboarding": {
+        "start": "welcome",
+        "steps": [
+          "welcome",
+          "permissions",
+          "profile-setup",
+          "ui-selection",
+          "complete"
+        ],
+        "handlers": {
+          "welcome": "showSurface",
+          "permissions": "requestAccess",
+          "profile-setup": "editContent",
+          "ui-selection": "applyUIPack",
+          "complete": "endFlow"
+        }
+      },
+  
+      "capture": {
+        "start": "prime",
+        "steps": [
+          "prime",
+          "record",
+          "enhance",
+          "review",
+          "save"
+        ],
+        "handlers": {
+          "prime": "prepMedia",
+          "record": "captureMolecule",
+          "enhance": "applyDepth",
+          "review": "visualReview",
+          "save": "persist"
+        }
+      },
+  
+      "library": {
+        "start": "list",
+        "steps": ["list", "detail", "edit", "share"],
+        "handlers": {
+          "list": "renderCollection",
+          "detail": "renderSurface",
+          "edit": "editContent",
+          "share": "exportMedia"
+        }
+      },
+  
+      "review": {
+        "start": "open",
+        "steps": ["open", "analyze", "annotate", "export"],
+        "handlers": {
+          "open": "loadMolecule",
+          "analyze": "applyDepth",
+          "annotate": "editContent",
+          "export": "exportMedia"
+        }
+      },
+  
+      "chat": {
+        "start": "thread",
+        "steps": ["thread", "compose", "send", "render"],
+        "handlers": {
+          "thread": "renderCollection",
+          "compose": "editContent",
+          "send": "publish",
+          "render": "renderSurface"
+        }
+      }
+    }
+  }
+  

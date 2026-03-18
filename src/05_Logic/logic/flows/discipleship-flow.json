@@ -1,0 +1,57 @@
+{
+  "id": "discipleship-flow",
+  "title": "Disciple Journey",
+  "stepTracker": {
+    "title": "Steps",
+    "description": "Follow the disciple flow."
+  },
+  "screens": [
+    {
+      "id": "intro",
+      "stepLabel": "Intro",
+      "layout": "hero",
+      "title": "Disciple Journey",
+      "subtitle": "Grow in faith step by step.",
+      "content": [
+        { "type": "badge", "text": "Guided • Scripture • Community" },
+        {
+          "type": "paragraph",
+          "text": "This flow uses the same FlowConfig schema as prayer-onboarding. It can be rendered by FlowScreenWrapper with flowId=discipleship-flow and no Prayer-specific actions."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        { "type": "goto", "label": "Next", "target": "steps" }
+      ],
+      "nextScreenId": "steps"
+    },
+    {
+      "id": "steps",
+      "stepLabel": "Steps",
+      "layout": "twoCol",
+      "title": "Your next steps",
+      "content": [
+        { "type": "paragraph", "text": "Content is rendered only through renderContentBlocks. No direct JSX for block types." },
+        { "type": "heading", "level": 3, "text": "Checklist" },
+        { "type": "checklist", "heading": "Today", "items": ["Read scripture", "Pray", "Connect with one person"] }
+      ],
+      "media": [],
+      "buttons": [
+        { "type": "back", "label": "Back" },
+        { "type": "next", "label": "Finish" }
+      ],
+      "nextScreenId": "outro"
+    },
+    {
+      "id": "outro",
+      "stepLabel": "Outro",
+      "layout": "textOnly",
+      "title": "You're all set",
+      "content": [
+        { "type": "paragraph", "text": "This flow is generic. Use FlowScreenWrapper with flowId=discipleship-flow to render it under any envelope." }
+      ],
+      "media": [],
+      "buttons": []
+    }
+  ]
+}

@@ -1,0 +1,133 @@
+/**
+ * Navigator density — spacing/sizing only. No logic, JSON, or dropdown behavior.
+ * Desktop (>1024px): .nav-compact-desktop = high density (28–32px rows).
+ * Tablet (768–1024px): medium density (36px rows).
+ * Mobile (<768px): dev-mobile.css keeps 44px tap targets; this file does not override.
+ */
+
+/* ----------------------------------------------------------------------------
+   TABLET: medium density (768px – 1024px). Do not apply when body.dev-mobile-mode.
+   ---------------------------------------------------------------------------- */
+@media (min-width: 768px) and (max-width: 1024px) {
+  body:not(.dev-mobile-mode) .cascading-screen-menu-breadcrumb {
+    padding: 8px 12px !important;
+    font-size: 11px;
+  }
+
+  body:not(.dev-mobile-mode) .cascading-screen-menu-panel > div > div:first-child {
+    padding: 5px 12px !important;
+    margin-top: 4px !important;
+    margin-bottom: 2px !important;
+    font-size: 10px !important;
+  }
+
+  body:not(.dev-mobile-mode) .cascading-screen-menu-item {
+    min-height: 36px !important;
+    padding: 10px 12px !important;
+    font-size: 13px !important;
+    border-bottom-width: 1px !important;
+  }
+
+  body:not(.dev-mobile-mode) .cascading-screen-menu-panel .cascading-screen-menu-item {
+    padding-left: 20px !important;
+    padding-right: 12px !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+
+  body:not(.dev-mobile-mode) .cascading-screen-menu-panels {
+    max-height: 70vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  body:not(.dev-mobile-mode) .cascading-screen-menu-panels-inner {
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body:not(.dev-mobile-mode) .cascading-screen-menu-panel {
+    min-width: 160px;
+  }
+}
+
+/* ----------------------------------------------------------------------------
+   DESKTOP: compact density when .nav-compact-desktop (viewport > 1024px).
+   ---------------------------------------------------------------------------- */
+.nav-compact-desktop .cascading-screen-menu-breadcrumb {
+  padding: 5px 10px !important;
+  font-size: 11px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.nav-compact-desktop .cascading-screen-menu-breadcrumb > div {
+  font-size: 11px !important;
+}
+
+/* Section headers (PROJECT / TSX / System) — first panel only */
+.nav-compact-desktop .cascading-screen-menu-panel > div > div:first-child {
+  padding: 4px 10px !important;
+  margin-top: 4px !important;
+  margin-bottom: 2px !important;
+  font-size: 10px !important;
+  letter-spacing: 0.06em;
+}
+
+/* Category rows (level 1) and all menu items */
+.nav-compact-desktop .cascading-screen-menu-item {
+  min-height: 30px !important;
+  padding: 6px 10px !important;
+  font-size: 13px !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+.nav-compact-desktop .cascading-screen-menu-panel .cascading-screen-menu-item {
+  padding-left: 18px !important;
+  padding-right: 10px !important;
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+  font-size: 12px !important;
+}
+
+.nav-compact-desktop .cascading-screen-menu-item[style*="fontWeight: 600"] {
+  font-size: 13px !important;
+}
+
+/* Dropdown panel: scrollable, fill height, no giant gaps */
+.nav-compact-desktop .cascading-screen-menu-panels {
+  max-height: 75vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+}
+
+.nav-compact-desktop .cascading-screen-menu-panels-inner {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.nav-compact-desktop .cascading-screen-menu-panel {
+  min-width: 160px;
+}
+
+/* Chrome bar: slightly tighter on desktop (optional) */
+.nav-compact-desktop .app-chrome {
+  padding-left: 12px;
+  padding-right: 12px;
+  gap: 8px;
+}
+
+.nav-compact-desktop .app-chrome .cascading-screen-menu-trigger {
+  min-height: 28px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  font-size: 12px;
+}

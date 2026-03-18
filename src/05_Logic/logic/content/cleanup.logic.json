@@ -1,0 +1,55 @@
+{
+    "$kind": "hiclarify-content",
+    "$version": "1.0",
+    "experience": "25x-onboarding",
+    "vertical": "construction-cleanup",
+  
+  
+    "state": {
+      "crewSize": null,
+      "minutesPerDay": null,
+      "wage": null,
+      "answers": {}
+    },
+  
+  
+    "blocks": [
+      {
+        "id": "q_cleanup_time",
+        "type": "question",
+        "question": "Do crews spend time cleaning daily?",
+        "supportingText": "Most crews lose 30–60 minutes per tech per day.",
+        "responses": ["yes", "no"],
+        "stateKey": "answers.cleanup_time"
+      },
+      {
+        "id": "q_messy_sites",
+        "type": "question",
+        "question": "Have messy sites ever hurt client confidence?",
+        "supportingText": "Roughly 18% of remodels are lost due to visual confusion.",
+        "responses": ["yes", "no"],
+        "stateKey": "answers.messy_sites"
+      },
+      {
+        "id": "calc_core",
+        "type": "calculator",
+        "engine": "25x",
+        "inputs": ["crewSize", "minutesPerDay", "wage"],
+        "output": "monthlyLoss"
+      },
+      {
+        "id": "summary",
+        "type": "summary",
+        "engine": "decision",
+        "input": "monthlyLoss",
+        "output": "directive"
+      },
+      {
+        "id": "cta_primary",
+        "type": "cta",
+        "primary": "Try 2 Pros Once",
+        "secondary": "Send Me My Numbers"
+      }
+    ]
+  }
+  

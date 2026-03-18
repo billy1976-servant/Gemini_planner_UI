@@ -1,0 +1,171 @@
+{
+  "$kind": "hicurv.components",
+  "$version": "1.0.0",
+
+  "globals": {
+    "ui": ["size", "spacing", "density", "intensity", "motion", "radius", "layer"],
+    "ux": ["pacing", "friction", "affordance", "focus", "comfort"],
+    "modes": ["light", "dark", "high-contrast"],
+    "cultures": ["us", "eu", "jp"]
+  },
+
+  "commands": [
+    "read",
+    "write",
+    "cut",
+    "merge",
+    "spawn",
+    "sort",
+    "navigate"
+  ],
+
+  "media": [
+    "text",
+    "image",
+    "audio",
+    "video",
+    "data",
+    "action",
+    "layout"
+  ],
+
+  "primitives": {
+    "text": {
+      "ui": {
+        "size":      { "min": 10, "max": 32 },
+        "spacing":   { "min": 0.9, "max": 1.6 },
+        "density":   { "min": 0.2, "max": 1.0 },
+        "intensity": { "min": 0.3, "max": 1.0 },
+        "motion":    { "min": 0.0, "max": 0.8 },
+        "radius":    { "min": 0,   "max": 8 },
+        "layer":     { "min": 1,   "max": 3 }
+      },
+      "ux": {
+        "pacing":     { "min": 0.2, "max": 0.8 },
+        "friction":   { "min": 0.0, "max": 0.4 },
+        "affordance": { "min": 0.3, "max": 1.0 }
+      },
+      "mediaMap": {
+        "text":  { "read": 1.0, "write": 0.9, "cut": 0.7, "merge": 0.5, "spawn": 0.6, "sort": 0.4, "navigate": 0.5 },
+        "image": { "read": 0.2, "write": 0.0, "cut": 0.3, "merge": 0.3, "spawn": 0.1, "sort": 0.2, "navigate": 0.1 },
+        "audio": { "read": 0.1, "write": 0.0, "cut": 0.1, "merge": 0.0, "spawn": 0.0, "sort": 0.0, "navigate": 0.0 },
+        "video": { "read": 0.0, "write": 0.0, "cut": 0.0, "merge": 0.0, "spawn": 0.0, "sort": 0.0, "navigate": 0.0 },
+        "data":  { "read": 0.8, "write": 0.7, "cut": 0.6, "merge": 0.4, "spawn": 0.4, "sort": 0.7, "navigate": 0.3 },
+        "action": { "read": 0.3, "write": 0.2, "cut": 0.1, "merge": 0.1, "spawn": 0.3, "sort": 0.3, "navigate": 0.4 },
+        "layout": { "read": 0.4, "write": 0.2, "cut": 0.2, "merge": 0.2, "spawn": 0.4, "sort": 0.3, "navigate": 0.6 }
+      }
+    },
+
+    "surface": {
+      "ui": {
+        "size":      { "min": 20, "max": 800 },
+        "spacing":   { "min": 4,  "max": 40 },
+        "density":   { "min": 0.2, "max": 1.0 },
+        "intensity": { "min": 0.1, "max": 0.8 },
+        "motion":    { "min": 0.0, "max": 1.0 },
+        "radius":    { "min": 0,  "max": 32 },
+        "layer":     { "min": 1,  "max": 6 }
+      },
+      "ux": {
+        "pacing":     { "min": 0.2, "max": 1.0 },
+        "friction":   { "min": 0.1, "max": 0.9 },
+        "affordance": { "min": 0.4, "max": 1.0 }
+      },
+      "mediaMap": {
+        "text":   { "read": 0.4, "write": 0.4, "cut": 0.3, "merge": 0.4, "spawn": 0.5, "sort": 0.4, "navigate": 0.5 },
+        "image":  { "read": 0.8, "write": 0.2, "cut": 0.7, "merge": 0.5, "spawn": 0.7, "sort": 0.4, "navigate": 0.3 },
+        "video":  { "read": 0.2, "write": 0.0, "cut": 0.3, "merge": 0.2, "spawn": 0.2, "sort": 0.2, "navigate": 0.1 },
+        "data":   { "read": 0.6, "write": 0.4, "cut": 0.4, "merge": 0.3, "spawn": 0.5, "sort": 0.7, "navigate": 0.6 },
+        "layout": { "read": 0.9, "write": 0.9, "cut": 0.8, "merge": 0.8, "spawn": 1.0, "sort": 0.9, "navigate": 1.0 }
+      }
+    },
+
+    "collection": {
+      "ui": {
+        "size":      { "min": 100, "max": 2000 },
+        "spacing":   { "min": 8,   "max": 48 },
+        "density":   { "min": 0.2, "max": 1.0 },
+        "intensity": { "min": 0.1, "max": 0.8 },
+        "motion":    { "min": 0.0, "max": 1.0 },
+        "radius":    { "min": 0,   "max": 24 },
+        "layer":     { "min": 1,   "max": 8 }
+      },
+      "ux": {
+        "pacing":     { "min": 0.3, "max": 1.0 },
+        "affordance": { "min": 0.4, "max": 1.0 },
+        "friction":   { "min": 0.1, "max": 0.9 }
+      },
+      "mediaMap": {
+        "layout": { "read": 1.0, "write": 0.8, "cut": 0.7, "merge": 0.7, "spawn": 1.0, "sort": 1.0, "navigate": 1.0 },
+        "data":   { "read": 0.9, "write": 0.8, "cut": 0.8, "merge": 0.7, "spawn": 0.9, "sort": 1.0, "navigate": 0.7 },
+        "text":   { "read": 0.5, "write": 0.4, "cut": 0.3, "merge": 0.3, "spawn": 0.4, "sort": 0.4, "navigate": 0.4 }
+      }
+    },
+
+    "sequence": {
+      "ui": {
+        "size":      { "min": 10, "max": 200 },
+        "spacing":   { "min": 4,  "max": 40 },
+        "density":   { "min": 0.2, "max": 1.0 },
+        "intensity": { "min": 0.2, "max": 1.0 },
+        "motion":    { "min": 0.0, "max": 1.0 },
+        "radius":    { "min": 0,  "max": 16 },
+        "layer":     { "min": 1,  "max": 6 }
+      },
+      "mediaMap": {
+        "layout": { "read": 0.8, "write": 0.6, "cut": 0.5, "merge": 0.6, "spawn": 0.7, "sort": 0.9, "navigate": 0.8 }
+      }
+    },
+
+    "field": {
+      "ui": {
+        "size":      { "min": 20, "max": 80 },
+        "spacing":   { "min": 2,  "max": 24 },
+        "density":   { "min": 0.4, "max": 1.0 },
+        "intensity": { "min": 0.3, "max": 1.0 },
+        "motion":    { "min": 0.0, "max": 0.4 },
+        "radius":    { "min": 2,  "max": 12 }
+      },
+      "mediaMap": {
+        "text": { "read": 0.4, "write": 1.0, "cut": 0.6, "merge": 0.5, "spawn": 0.7, "sort": 0.4, "navigate": 0.4 }
+      }
+    },
+
+    "media": {
+      "ui": {
+        "size":      { "min": 20, "max": 1200 },
+        "intensity": { "min": 0.1, "max": 1.0 },
+        "motion":    { "min": 0.0, "max": 1.0 },
+        "radius":    { "min": 0, "max": 32 }
+      }
+    },
+
+    "shell": {
+      "ui": {
+        "size":      { "min": 200, "max": 5000 },
+        "spacing":   { "min": 8,    "max": 80 },
+        "density":   { "min": 0.2,  "max": 1.0 },
+        "intensity": { "min": 0.1,  "max": 0.9 },
+        "motion":    { "min": 0.0,  "max": 1.0 }
+      },
+      "mediaMap": {
+        "layout": { "read": 1.0, "write": 1.0, "cut": 1.0, "merge": 1.0, "spawn": 1.0, "sort": 1.0, "navigate": 1.0 }
+      }
+    },
+
+    "condition": {
+      "ui": {
+        "motion":    { "min": 0.0, "max": 1.0 },
+        "intensity": { "min": 0.1, "max": 1.0 }
+      }
+    },
+
+    "trigger": {
+      "ui": {
+        "size":      { "min": 20, "max": 200 },
+        "intensity": { "min": 0.2, "max": 1.0 },
+        "motion":    { "min": 0.0, "max": 1.0 }
+      }
+    }
+  }
+}

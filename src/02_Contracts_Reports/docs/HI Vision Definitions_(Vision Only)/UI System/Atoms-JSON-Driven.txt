@@ -1,0 +1,67 @@
+1️⃣ ATOMS — MINIMAL TSX + JSON-DRIVEN PARAMETERS
+File suggestion: src/system/definitions/atoms.md
+ATOMS = the smallest visual building blocks
+The 9 atoms are the only visual primitives in the system:
+collection
+condition
+field
+media
+sequence
+shell
+surface
+text
+trigger
+They are the “physics” layer: what can be shown and what knobs exist.
+ They do not know about Kanban, calendar, website, app type, etc.
+
+Minimal TSX, maximum JSON
+Each atom’s TSX file is intentionally tiny:
+It accepts a standard shape of props:
+style — visual overrides (inline or token-driven)
+params — semantic/config params (used by sequences, behaviors, etc.)
+children — nested nodes from JSON
+plus a small set of atom-specific props (e.g. value for field, src for media)
+It renders one simple React structure (e.g. a div, span, img, input, etc.)
+It does not hardcode variants (no “primary button”, “ghost card”, etc. inside TSX)
+It reads its behavior hooks (e.g. onClick, onChange) that the JSON renderer wires in
+The atoms themselves are dumb and stable: all the flexing happens through props that are fed in from JSON + global UI/UX definitions.
+
+Atom JSON definitions (where the knobs really live)
+Every atom has a matching JSON definition file in the same 9-atoms universe, e.g.:
+text.atom.json
+surface.atom.json
+media.atom.json
+…
+Those JSON files describe, for that atom:
+Which 0–1 sliders or enums it supports (e.g. size, weight, contrast, cornerRadius, elevation)
+How each slider maps to real values (e.g. size: 0.1 → 12px, 0.5 → 18px, 0.9 → 32px)
+Which props are allowed for that atom (for schema validation)
+Any defaults (e.g. default text size, default surface elevation)
+The TSX code never knows about 0–1 directly. It only:
+Receives props (like style, params, size, etc.)
+Applies them to a basic React element
+Lets upstream JSON + mapping logic decide what those props should be
+
+What each atom conceptually does
+Short mental model for each:
+shell – Page/container frame (padding, max-width, global layout wrapper).
+surface – Panels and cards (background, radius, shadow, elevation).
+text – All typography (font, size, weight, color, alignment).
+media – Images, icons, video, audio, thumbnails.
+field – Inputs (text fields, textareas, toggles, simple selectors).
+trigger – Interactive controls (buttons, tappable areas) that fire behaviors.
+collection – Lists/loops over data (lists, grids, simple repeaters).
+condition – If/else rendering (show/hide parts of the tree based on state/params).
+sequence – Ordered steps (for simple scripted flows, timed waits, chained actions).
+All complex UI is just combinations of these 9.
+
+Contract for future JSON work
+When we later build the atom JSON configs and 0–1 mappings, the rule is:
+We update only the JSON, not the TSX
+The TSX stays minimal and stable across the entire OS
+Any new “look” or “feel” (Google style, Business style, Kids style) is done by:
+Updating global UI JSON (palette, typography, motion, density, etc.)
+Updating per-atom JSON slider mappings
+That way:
+Atoms = one-time engineering cost
+JSON = infinite styling + variant space

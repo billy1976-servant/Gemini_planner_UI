@@ -1,0 +1,14 @@
+{
+  "Section": ["title"],
+  "Button": ["label"],
+  "Field": ["label", "placeholder"],
+  "Card": ["title", "body"],
+  "Modal": ["title", "body"],
+  "List": ["items"],
+  "Stepper": ["steps"],
+  "Toolbar": ["label", "icon"],
+  "Footer": ["left", "right"],
+  "Chip": ["title", "icon"],
+  "Avatar": ["src", "label"],
+  "Toast": ["message"]
+}

@@ -1,0 +1,70 @@
+{
+    "$schema": "style-profile.v1",
+    "profileName": "google",
+    "__description": "0→1 slider values for all 9 primitives, matching slider-definitions exactly.",
+  
+  
+    "text": {
+      "fontSize":       0.45,
+      "fontWeight":     0.40,
+      "lineHeight":     0.50,
+      "letterSpacing":  0.40,
+      "wordSpacing":    0.30
+    },
+  
+  
+    "surface": {
+      "radius":         0.40,
+      "shadow":         0.20,
+      "borderWidth":    0.10,
+      "opacity":        0.90
+    },
+  
+  
+    "media": {
+      "size":           0.35,
+      "roundness":      0.30,
+      "brightness":     0.55
+    },
+  
+  
+    "collection": {
+      "gap":            0.30,
+      "padding":        0.25,
+      "columns":        0.50
+    },
+  
+  
+    "sequence": {
+      "gap":            0.25,
+      "padding":        0.20,
+      "direction":      0.00
+    },
+  
+  
+    "shell": {
+      "padding":        0.35,
+      "maxWidth":       0.60
+    },
+  
+  
+    "field": {
+      "fontSize":       0.40,
+      "borderWidth":    0.10,
+      "padding":        0.40
+    },
+  
+  
+    "trigger": {
+      "scale":          0.50,
+      "opacity":        0.80
+    },
+  
+  
+    "condition": {
+      "delay":          0.20
+    }
+  }
+  
+  
+  

@@ -1,0 +1,99 @@
+APP: DoctorPracticeSite
+
+1.0 Home (Section)
+- title: "Welcome to Riverside Family Medical"
+
+1.1 SiteHeader (organ:header)
+- header.logo: "https://example.com/assets/clinic-logo.png"
+- header.cta: "Book Appointment"
+
+1.2 HeroBlock (organ:hero)
+- hero.title: "Compassionate Care for the Whole Family"
+- hero.subtitle: "Trusted primary care, preventive medicine, and wellness services."
+- hero.cta: "Schedule Visit"
+
+1.3 IntroContent (Card)
+- title: "Your Health. Our Priority."
+- body: "Riverside Family Medical provides comprehensive, patient-centered healthcare for individuals and families. Our team focuses on prevention, early detection, and personalized treatment."
+- media: "https://example.com/assets/doctor-team.jpg"
+
+1.4 PrimaryCTA (Button)
+- label: "New Patient Registration"
+
+2.0 Services (Section)
+- title: "Our Medical Services"
+
+2.1 ServicesIntro (Card)
+- title: "Comprehensive Healthcare"
+- body: "We offer a full range of medical services to help you and your family stay healthy at every stage of life."
+- media: ""
+
+2.2 ServicesGrid (organ:features-grid)
+- features.title: "Care We Provide"
+- features.items: [
+  { "title": "Primary Care", "body": "Routine checkups, diagnosis, and long-term care.", "media": "https://example.com/assets/service-primary.jpg" },
+  { "title": "Pediatrics", "body": "Gentle, attentive care for children and teens.", "media": "https://example.com/assets/service-pediatric.jpg" },
+  { "title": "Preventive Medicine", "body": "Screenings and wellness planning for better health.", "media": "https://example.com/assets/service-preventive.jpg" },
+  { "title": "Chronic Disease Management", "body": "Support for diabetes, hypertension, and more.", "media": "https://example.com/assets/service-chronic.jpg" }
+]
+
+3.0 About (Section)
+- title: "About Our Practice"
+
+3.1 AboutStory (Card)
+- title: "Dedicated to Patient-Centered Care"
+- body: "For over 15 years, Riverside Family Medical has served the community with compassion, integrity, and clinical excellence."
+- media: "https://example.com/assets/clinic-building.jpg"
+
+3.2 DoctorProfile (Avatar)
+- media: "https://example.com/assets/dr-smith.jpg"
+- text: "Dr. Emily Smith, MD — Board Certified Family Physician"
+
+4.0 Testimonials (Section)
+- title: "What Patients Are Saying"
+
+4.1 TestimonialsBlock (organ:testimonials)
+- testimonials.items: [
+  { "quote": "The staff truly cares and takes time to listen.", "author": "Sarah M." },
+  { "quote": "Professional, kind, and thorough medical care.", "author": "James T." },
+  { "quote": "Best family doctor we've ever had.", "author": "Angela R." }
+]
+
+5.0 Gallery (Section)
+- title: "Our Clinic"
+
+5.1 GalleryBlock (organ:gallery)
+- gallery.items: [
+  "https://example.com/assets/clinic1.jpg",
+  "https://example.com/assets/clinic2.jpg",
+  "https://example.com/assets/clinic3.jpg"
+]
+
+6.0 FAQ (Section)
+- title: "Frequently Asked Questions"
+
+6.1 FAQBlock (organ:faq)
+- faq.items: [
+  { "question": "Do you accept new patients?", "answer": "Yes, we welcome new patients of all ages." },
+  { "question": "What insurance do you accept?", "answer": "We accept most major insurance plans. Contact us to confirm coverage." },
+  { "question": "Do you offer same-day appointments?", "answer": "Yes, same-day appointments are available when scheduling permits." }
+]
+
+7.0 Contact (Section)
+- title: "Contact Us"
+
+7.1 ContactInfo (Card)
+- title: "Visit Our Office"
+- body: "123 Health Avenue, Suite 200\nSpringfield, ST 00000\nPhone: (555) 123-4567"
+- media: "https://example.com/assets/map-location.jpg"
+
+7.2 AppointmentCTA (Button)
+- label: "Book an Appointment"
+
+8.0 FooterBlock (organ:footer)
+- footer.columns: [
+  { "label": "Phone: (555) 123-4567" },
+  { "label": "Email: contact@riversidemedical.com" },
+  { "label": "Hours: Mon–Fri 8AM–5PM" }
+]
+- footer.copyright: "© 2026 Riverside Family Medical. All rights reserved."

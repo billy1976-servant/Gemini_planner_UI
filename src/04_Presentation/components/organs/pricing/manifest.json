@@ -1,0 +1,6 @@
+{
+  "id": "pricing",
+  "label": "Pricing",
+  "slotSchema": ["pricing.primary", "pricing.title", "pricing.tiers"],
+  "variantIds": ["2-tier", "3-tier", "4-tier", "highlighted", "minimal"]
+}

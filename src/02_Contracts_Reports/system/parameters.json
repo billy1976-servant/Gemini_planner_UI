@@ -1,0 +1,263 @@
+/**
+ * UNIVERSAL PARAMETER DICTIONARY
+ * ===============================
+ * These are ALL parameters used by ALL 42 real handlers.
+ * Nothing missing. Nothing extra.
+ *
+ * 6 primitives: cut/copy/move/merge/transform/render
+ * 7 media types: text/audio/video/image/data/file/system
+ *
+ * Total unique parameters: ~22
+ */
+
+
+ export const PARAMETERS = {
+
+    /* ============================================================
+     * CUT (remove or isolate part of something)
+     * ============================================================ */
+    cut: {
+      text: {
+        text: "string",
+        start: "number",
+        end: "number"
+      },
+  
+      audio: {
+        file: "string",
+        start: "number",      // seconds
+        end: "number",        // seconds
+        out: "string"
+      },
+  
+      video: {
+        file: "string",
+        start: "number",
+        end: "number",
+        out: "string"
+      },
+  
+      image: {
+        file: "string",
+        x: "number",
+        y: "number",
+        width: "number",
+        height: "number",
+        out: "string"
+      },
+  
+      data: {
+        rows: "array",
+        start: "number",
+        end: "number"
+      },
+  
+      file: {
+        filePath: "string",
+        start: "number",      // byte position
+        end: "number"         // byte position
+      },
+  
+      system: { /* no universal cut */ }
+    },
+  
+  
+  
+    /* ============================================================
+     * COPY (duplicate something)
+     * ============================================================ */
+    copy: {
+      text: {
+        text: "string"
+      },
+  
+      audio: {
+        file: "string",
+        out: "string"
+      },
+  
+      video: {
+        file: "string",
+        out: "string"
+      },
+  
+      image: {
+        file: "string",
+        out: "string"
+      },
+  
+      data: {
+        rows: "array"
+      },
+  
+      file: {
+        filePath: "string",
+        out: "string"
+      },
+  
+      system: {
+        state: "any"
+      }
+    },
+  
+  
+  
+    /* ============================================================
+     * MOVE (reposition something)
+     * ============================================================ */
+    move: {
+      text: {
+        text: "string"     // no universal position system for text
+      },
+  
+      audio: {
+        file: "string",
+        out: "string"
+      },
+  
+      video: {
+        file: "string",
+        out: "string"
+      },
+  
+      image: {
+        file: "string",
+        out: "string"
+      },
+  
+      data: {
+        rows: "array",
+        from: "number",
+        to: "number"
+      },
+  
+      file: {
+        filePath: "string",
+        out: "string"
+      },
+  
+      system: {
+        state: "any"
+      }
+    },
+  
+  
+  
+    /* ============================================================
+     * MERGE (combine 2+ things together)
+     * ============================================================ */
+    merge: {
+      text: {
+        a: "string",
+        b: "string"
+      },
+  
+      audio: {
+        files: "string[]",
+        out: "string"
+      },
+  
+      video: {
+        files: "string[]",
+        out: "string"
+      },
+  
+      image: {
+        files: "string[]",
+        out: "string"
+      },
+  
+      data: {
+        sets: "array[]"
+      },
+  
+      file: {
+        parts: "string[]",
+        out: "string"
+      },
+  
+      system: {
+        configs: "object[]"
+      }
+    },
+  
+  
+  
+    /* ============================================================
+     * TRANSFORM (modify something)
+     * ============================================================ */
+    transform: {
+      text: {
+        text: "string",
+        fn: "function"
+      },
+  
+      audio: {
+        file: "string",
+        out: "string",
+        speed: "number?"
+      },
+  
+      video: {
+        file: "string",
+        out: "string",
+        rotate: "number?"
+      },
+  
+      image: {
+        file: "string",
+        out: "string",
+        rotate: "number?",
+        scale: "number?"
+      },
+  
+      data: {
+        rows: "array",
+        fn: "function"
+      },
+  
+      file: { /* no universal transform */ },
+  
+      system: {
+        state: "any",
+        fn: "function"
+      }
+    },
+  
+  
+  
+    /* ============================================================
+     * RENDER (return final output)
+     * ============================================================ */
+    render: {
+      text: {
+        text: "string"
+      },
+  
+      audio: {
+        file: "string"
+      },
+  
+      video: {
+        file: "string"
+      },
+  
+      image: {
+        file: "string"
+      },
+  
+      data: {
+        rows: "array"
+      },
+  
+      file: {
+        filePath: "string"
+      },
+  
+      system: {
+        state: "any"
+      }
+    }
+  
+  };
+  

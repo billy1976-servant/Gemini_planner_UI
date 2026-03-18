@@ -1,0 +1,17 @@
+{
+  "id": "organ:content-section:text-only",
+  "type": "Section",
+  "role": "content",
+  "layout": {
+    "type": "column",
+    "params": {
+      "gap": "1rem",
+      "align": "stretch"
+    }
+  },
+  "params": {},
+  "children": [
+    { "type": "slot", "slotKey": "content.title" },
+    { "type": "slot", "slotKey": "content.body" }
+  ]
+}

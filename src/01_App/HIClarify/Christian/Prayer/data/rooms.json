@@ -1,0 +1,227 @@
+{
+  "rooms": [
+    {
+      "roomId": "a6b249a9-4ec4-4700-aba6-b8a0509a1270",
+      "hostId": "anon-1773490956476-5ri775bk8",
+      "hostUserId": "anon-1773490956476-5ri775bk8",
+      "title": "Live Room",
+      "groupId": "54a451ea",
+      "sessionType": "prayer",
+      "features": [
+        "audio",
+        "recording",
+        "screenShare",
+        "annotations"
+      ],
+      "createdAt": "2026-03-14T12:24:41.194Z",
+      "status": "active",
+      "participants": [
+        {
+          "participantId": "anon-1773490956476-5ri775bk8",
+          "participantUserId": "anon-1773490956476-5ri775bk8",
+          "role": "host",
+          "joinedAt": "2026-03-14T12:24:41.194Z"
+        },
+        {
+          "participantId": "anon-1773578867077-xyre6gd2k",
+          "participantUserId": "anon-1773578867077-xyre6gd2k",
+          "role": "speaker",
+          "displayName": "Guest",
+          "muted": false,
+          "joinedAt": "2026-03-15T12:48:06.347Z"
+        },
+        {
+          "participantId": "anon-1773668535177-mqupklf0p",
+          "participantUserId": "anon-1773668535177-mqupklf0p",
+          "role": "listener",
+          "displayName": "Guest",
+          "muted": false,
+          "joinedAt": "2026-03-16T13:43:58.938Z"
+        }
+      ],
+      "maxSpeakers": 6
+    },
+    {
+      "roomId": "0d8dd3bf-ce5b-4987-b240-37233aadd32a",
+      "hostId": "anon-1773490956476-5ri775bk8",
+      "hostUserId": "anon-1773490956476-5ri775bk8",
+      "title": "1-on-1 Prayer",
+      "groupId": "54a451ea",
+      "sessionType": "prayer",
+      "features": [
+        "audio",
+        "recording",
+        "screenShare",
+        "annotations"
+      ],
+      "createdAt": "2026-03-14T12:25:01.969Z",
+      "status": "active",
+      "participants": [
+        {
+          "participantId": "anon-1773490956476-5ri775bk8",
+          "participantUserId": "anon-1773490956476-5ri775bk8",
+          "role": "host",
+          "joinedAt": "2026-03-14T12:25:01.969Z"
+        },
+        {
+          "participantId": "anon-1773578867077-xyre6gd2k",
+          "participantUserId": "anon-1773578867077-xyre6gd2k",
+          "role": "speaker",
+          "displayName": "Guest",
+          "muted": false,
+          "joinedAt": "2026-03-15T12:48:45.266Z"
+        }
+      ],
+      "maxSpeakers": 6
+    },
+    {
+      "roomId": "a37dedf8-4b2a-44e3-b22a-a031a243fe2b",
+      "hostId": "anon-1773578867077-xyre6gd2k",
+      "hostUserId": "anon-1773578867077-xyre6gd2k",
+      "title": "Live Room",
+      "sessionType": "prayer",
+      "features": [
+        "audio",
+        "recording",
+        "screenShare",
+        "annotations"
+      ],
+      "createdAt": "2026-03-15T12:47:54.428Z",
+      "status": "active",
+      "participants": [
+        {
+          "participantId": "anon-1773578867077-xyre6gd2k",
+          "participantUserId": "anon-1773578867077-xyre6gd2k",
+          "role": "host",
+          "joinedAt": "2026-03-15T12:47:54.428Z"
+        }
+      ],
+      "maxSpeakers": 6
+    },
+    {
+      "roomId": "6e8caee3-0521-4bc4-9e7d-eea2b7b783ec",
+      "hostId": "anon-1773578867077-xyre6gd2k",
+      "hostUserId": "anon-1773578867077-xyre6gd2k",
+      "title": "Live Room",
+      "groupId": "54a451ea",
+      "sessionType": "prayer",
+      "features": [
+        "audio",
+        "recording",
+        "screenShare",
+        "annotations"
+      ],
+      "createdAt": "2026-03-15T13:01:39.377Z",
+      "status": "active",
+      "participants": [
+        {
+          "participantId": "anon-1773578867077-xyre6gd2k",
+          "participantUserId": "anon-1773578867077-xyre6gd2k",
+          "role": "host",
+          "joinedAt": "2026-03-15T13:01:39.377Z"
+        }
+      ],
+      "maxSpeakers": 6
+    },
+    {
+      "roomId": "e1730ef5-87d7-4bbb-bcaf-ee65947a8548",
+      "hostId": "anon-1773578867077-xyre6gd2k",
+      "hostUserId": "anon-1773578867077-xyre6gd2k",
+      "title": "Live Room",
+      "groupId": "54a451ea",
+      "sessionType": "prayer",
+      "features": [
+        "audio",
+        "recording",
+        "screenShare",
+        "annotations"
+      ],
+      "createdAt": "2026-03-15T13:40:43.826Z",
+      "status": "active",
+      "participants": [
+        {
+          "participantId": "anon-1773578867077-xyre6gd2k",
+          "participantUserId": "anon-1773578867077-xyre6gd2k",
+          "role": "host",
+          "joinedAt": "2026-03-15T13:40:43.826Z"
+        }
+      ],
+      "maxSpeakers": 6
+    },
+    {
+      "roomId": "6926ba5b-2758-49e5-895d-6fce5f0b3d7c",
+      "hostId": "anon-1773578867077-xyre6gd2k",
+      "hostUserId": "anon-1773578867077-xyre6gd2k",
+      "title": "Live Room",
+      "groupId": "54a451ea",
+      "sessionType": "prayer",
+      "features": [
+        "audio",
+        "recording",
+        "screenShare",
+        "annotations"
+      ],
+      "createdAt": "2026-03-15T14:19:02.756Z",
+      "status": "active",
+      "participants": [
+        {
+          "participantId": "anon-1773578867077-xyre6gd2k",
+          "participantUserId": "anon-1773578867077-xyre6gd2k",
+          "role": "host",
+          "joinedAt": "2026-03-15T14:19:02.756Z"
+        }
+      ],
+      "maxSpeakers": 6
+    },
+    {
+      "roomId": "9fcff7ad-94a5-4207-a6b6-06bb338243bd",
+      "hostId": "anon-1773578867077-xyre6gd2k",
+      "hostUserId": "anon-1773578867077-xyre6gd2k",
+      "title": "Live Room",
+      "groupId": "54a451ea",
+      "sessionType": "prayer",
+      "features": [
+        "audio",
+        "recording",
+        "screenShare",
+        "annotations"
+      ],
+      "createdAt": "2026-03-15T22:43:15.594Z",
+      "status": "active",
+      "participants": [
+        {
+          "participantId": "anon-1773578867077-xyre6gd2k",
+          "participantUserId": "anon-1773578867077-xyre6gd2k",
+          "role": "host",
+          "joinedAt": "2026-03-15T22:43:15.594Z"
+        }
+      ],
+      "maxSpeakers": 6
+    },
+    {
+      "roomId": "77556ded-3644-4109-b1be-7a4008a0970f",
+      "hostId": "anon-1773668535177-mqupklf0p",
+      "hostUserId": "anon-1773668535177-mqupklf0p",
+      "title": "Live Room",
+      "groupId": "54a451ea",
+      "sessionType": "prayer",
+      "features": [
+        "audio",
+        "recording",
+        "screenShare",
+        "annotations"
+      ],
+      "createdAt": "2026-03-16T13:49:43.730Z",
+      "status": "active",
+      "participants": [
+        {
+          "participantId": "anon-1773668535177-mqupklf0p",
+          "participantUserId": "anon-1773668535177-mqupklf0p",
+          "role": "host",
+          "joinedAt": "2026-03-16T13:49:43.730Z"
+        }
+      ],
+      "maxSpeakers": 6
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+S1.0 | TrackLesson | Section [title]
+
+
+  1.1 | TrackNav | Stepper [steps]
+       steps: Think → Repent → Ask → Conform → Keep
+
+
+  1.2 | ThinkSection | Section [title]
+    1.2.1 | ThinkPrompt | Card [body]
+    1.2.2 | ThinkInput | Field [label]
+             [state.bind: journal.think]
+    1.2.3 | ThinkSave | Button [label]
+             (logic.action: state:journal.add)
+    1.2.4 | ThinkViewer | UserInputViewer [none]
+
+
+  1.3 | RepentSection | Section [title]
+    1.3.1 | RepentPrompt | Card [body]
+    1.3.2 | RepentInput | Field [label]
+             [state.bind: journal.repent]
+    1.3.3 | RepentSave | Button [label]
+             (logic.action: state:journal.add)
+    1.3.4 | RepentViewer | UserInputViewer [none]
+
+
+  1.4 | AskSection | Section [title]
+    1.4.1 | AskPrompt | Card [body]
+    1.4.2 | AskInput | Field [label]
+             [state.bind: journal.ask]
+    1.4.3 | AskSave | Button [label]
+             (logic.action: state:journal.add)
+    1.4.4 | AskViewer | UserInputViewer [none]
+
+
+  1.5 | ConformSection | Section [title]
+    1.5.1 | ConformPrompt | Card [body]
+    1.5.2 | ConformInput | Field [label]
+             [state.bind: journal.conform]
+    1.5.3 | ConformSave | Button [label]
+             (logic.action: state:journal.add)
+    1.5.4 | ConformViewer | UserInputViewer [none]
+
+
+  1.6 | KeepSection | Section [title]
+    1.6.1 | KeepPrompt | Card [body]
+    1.6.2 | KeepInput | Field [label]
+             [state.bind: journal.keep]
+    1.6.3 | KeepSave | Button [label]
+             (logic.action: state:journal.add)
+    1.6.4 | KeepViewer | UserInputViewer [none]
+

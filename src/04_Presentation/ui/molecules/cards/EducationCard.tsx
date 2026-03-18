@@ -1,0 +1,1540 @@
+"use client";
+import React, { useEffect, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { loadFlow, getAvailableFlows, type EducationFlow } from "@/logic/flows/flow-loader";
+import { readEngineState, writeEngineState, subscribeEngineState } from "@/logic/runtime/engine-bridge";
+import { dispatchState } from "@/state/state-store";
+import { aggregateDecisionState } from "@/logic/engines/decision-engine";
+import { resolveNextStep } from "@/logic/engines/flow-router";
+import { explainNextStep } from "@/logic/engine-system/engine-explain";
+import type { PresentationModel } from "@/logic/engines/presentation-types";
+import { ENGINE_STATE_KEY, type EngineState, deriveEngineState } from "@/logic/runtime/engine-state";
+import { runHIEngines, type HIEngineId } from "@/logic/engines/post-processing/hi-engine-runner";
+
+type CardResult = {
+  cardId: string;
+  completed: boolean;
+  output?: Record<string, any>;
+};
+
+type CardState = {
+  step: number;
+  completed: boolean;
+  data?: Record<string, any>;
+};
+
+type CardProps = {
+  onAdvance: (step: number) => void;
+  onComplete: (result: CardResult) => void;
+  restoreState: CardState | null;
+  onExplain?: (explain: any) => void; // Optional explain callback
+  presentation?: PresentationModel | null; // Optional presentation model for ordering/grouping
+  hiEngineId?: HIEngineId; // HI engine to run on completion
+  /** Client onboarding view: hide flow dropdown, engine chrome; show only question + 1/7 header + image */
+  clientView?: boolean;
+};
+
+// Engine state keys
+const ENGINE_KEY = "education";
+const STEP_KEY = `${ENGINE_KEY}.stepIndex`;
+const OUTCOMES_KEY = `${ENGINE_KEY}.outcomes`;
+const RESULTS_KEY = `${ENGINE_KEY}.results`;
+
+export function EducationCard({ onAdvance, onComplete, restoreState, onExplain, presentation, hiEngineId, clientView }: CardProps) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
+  const flowId = searchParams.get("flow") ?? "";
+  const [availableFlows, setAvailableFlows] = useState<string[]>([]);
+
+  useEffect(() => {
+    getAvailableFlows().then(setAvailableFlows).catch(() => {});
+  }, []);
+
+  const [flow, setFlow] = useState<EducationFlow | null>(null);
+  const [flowLoading, setFlowLoading] = useState(!!flowId);
+  const [flowError, setFlowError] = useState<string | null>(null);
+  const [lastFlowId, setLastFlowId] = useState<string | null>(null);
+  const screenParam = searchParams.get("screen") ?? undefined;
+
+  useEffect(() => {
+    if (!flowId) {
+      setFlow(null);
+      setFlowLoading(false);
+      setFlowError(null);
+      return;
+    }
+    setFlowLoading(true);
+    setFlowError(null);
+
+    loadFlow(flowId, undefined, screenParam)
+      .then((loadedFlow) => {
+        setFlow(loadedFlow);
+        setFlowLoading(false);
+        const current = readEngineState();
+        const currentFlowId = current.currentFlowId;
+        if (currentFlowId !== flowId || lastFlowId !== flowId) {
+          writeEngineState({
+            [STEP_KEY]: 0,
+            [OUTCOMES_KEY]: [],
+            [RESULTS_KEY]: {},
+            currentFlowId: flowId,
+          });
+          setLocalStep(0);
+          setLastFlowId(flowId);
+        }
+      })
+      .catch((err) => {
+        setFlowError(err?.message ?? "Failed to load flow");
+        setFlowLoading(false);
+      });
+  }, [flowId, lastFlowId, screenParam]);
+  
+  // Local UI state only (for restoreState compatibility)
+  const [localStep, setLocalStep] = useState(restoreState?.step ?? 0);
+  
+  // Engine state (source of truth)
+  const [engineState, setEngineState] = useState(() => readEngineState());
+  
+  // Store explain/reasoning data for UI rendering
+  const [explainData, setExplainData] = useState<any>(null);
+  // Simple display: numeric input value for current step
+  const [numericInputValue, setNumericInputValue] = useState<string>("");
+  
+  // Subscribe to engine state changes
+  useEffect(() => {
+    const unsubscribe = subscribeEngineState(() => {
+      setEngineState(readEngineState());
+    });
+    return unsubscribe;
+  }, []);
+
+  // Initialize engine state from restoreState or existing engine state
+  // Only if current flow matches (don't restore state from different flow)
+  useEffect(() => {
+    const current = readEngineState();
+    const currentFlowId = current.currentFlowId;
+    
+    // If flow changed, don't restore old state
+    if (currentFlowId && currentFlowId !== flowId) {
+      return;
+    }
+    
+    const stepIndex = current[STEP_KEY] ?? restoreState?.step ?? localStep ?? 0;
+    const outcomes = current[OUTCOMES_KEY] ?? restoreState?.data?.outcomes ?? [];
+    const results = current[RESULTS_KEY] ?? restoreState?.data?.results ?? {};
+    
+    // Only initialize if not already set
+    if (current[STEP_KEY] === undefined && restoreState) {
+      writeEngineState({
+        [STEP_KEY]: stepIndex,
+        [OUTCOMES_KEY]: outcomes,
+        [RESULTS_KEY]: results,
+        currentFlowId: flowId,
+      });
+    }
+    
+    setLocalStep(stepIndex);
+  }, [restoreState, localStep, flowId]);
+
+  // Handle flow selection change
+  function handleFlowChange(newFlowId: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("flow", newFlowId);
+    router.push(`?${params.toString()}`);
+  }
+  
+  // Show loading or error state
+  if (flowLoading) {
+    return (
+      <div style={cardContainer}>
+        <div style={{ padding: 24, textAlign: "center", color: "#94a3b8" }}>
+          Loading flow...
+        </div>
+      </div>
+    );
+  }
+  
+  if (flowError || !flow) {
+    return (
+      <div style={cardContainer}>
+        <div style={{ padding: 24, textAlign: "center", color: "#ef4444" }}>
+          Error loading flow: {flowError || "Unknown error"}
+        </div>
+      </div>
+    );
+  }
+
+  if (!flowId) {
+    return (
+      <div style={cardContainer}>
+        <div style={{ padding: 24, textAlign: "center", color: "#94a3b8", fontSize: 14 }}>
+          Select a flow from the dropdown above.
+        </div>
+      </div>
+    );
+  }
+  if (!flow && flowLoading) {
+    return (
+      <div style={cardContainer}>
+        <div style={{ padding: 24, textAlign: "center", color: "#94a3b8" }}>Loading flow…</div>
+      </div>
+    );
+  }
+  if (!flow) {
+    return (
+      <div style={cardContainer}>
+        <div style={{ padding: 24, textAlign: "center", color: "#94a3b8" }}>No flow loaded.</div>
+      </div>
+    );
+  }
+
+  // INVARIANT: EngineState is authoritative - all step order, progress, and completion state comes from EngineState
+  const engineStateData = engineState[ENGINE_STATE_KEY] as EngineState | undefined;
+
+  // Get step order, progress, and completion from EngineState (single source of truth)
+  const orderedStepIds = engineStateData?.orderedStepIds ?? presentation?.stepOrder ?? flow.steps.map((s) => s.id);
+  const currentStepIndex = engineStateData?.currentStepIndex ?? engineState[STEP_KEY] ?? localStep ?? 0;
+  const totalSteps = engineStateData?.totalSteps ?? orderedStepIds.length;
+  const completedStepIds = engineStateData?.completedStepIds ?? [];
+  
+  // Get current step using ordered step IDs from EngineState
+  const currentStepId = orderedStepIds[currentStepIndex];
+  let currentStep = flow.steps.find((s) => s.id === currentStepId);
+  // Fallback: if step id not found (e.g. flow changed or engine reordered), use step by index
+  // so we never show a blank card when progress says "3/3"
+  if (!currentStep && currentStepIndex >= 0 && currentStepIndex < flow.steps.length) {
+    currentStep = flow.steps[currentStepIndex];
+  }
+
+  // Completion logic from EngineState
+  const isComplete = currentStepIndex >= totalSteps;
+  const displayStep = Math.min(currentStepIndex + 1, totalSteps);
+
+  // Derive completed steps from EngineState (using completedStepIds and exportSlices)
+  const outcomes = engineState[OUTCOMES_KEY] ?? [];
+  const completedSteps = completedStepIds.map((stepId: string) => {
+    const step = flow.steps.find((s) => s.id === stepId);
+    if (!step) return null;
+    
+    // Find outcome for this step
+    const outcome = outcomes.find((o: any) => o.stepId === stepId);
+    if (!outcome) return null;
+    
+    // Find the choice that was made
+    const choice = step.choices?.find((c) => c.id === outcome.choiceId);
+    const outcomeData = choice?.outcome ?? outcome.outcome;
+    
+    // Derive progress indicator from outcome signals (pure data)
+    const signals = outcomeData?.signals ?? [];
+    const blockers = outcomeData?.blockers ?? [];
+    const hasSignals = signals.length > 0;
+    const hasBlockers = blockers.length > 0;
+    
+    const progressIndicator = hasSignals && !hasBlockers ? "✓" : hasBlockers ? "✕" : "○";
+    const isWin = hasSignals && !hasBlockers;
+    
+    return {
+      step,
+      choice,
+      outcome: outcomeData,
+      progressIndicator,
+      isWin,
+      signals,
+      blockers,
+      opportunities: outcomeData?.opportunities ?? [],
+    };
+  }).filter(Boolean);
+
+  // Pure event emitter - maps choice → engine state → onAdvance/onComplete
+  function handleChoice(choiceId: string) {
+    if (!currentStep) return;
+    
+    const choice = currentStep.choices.find((c) => c.id === choiceId);
+    if (!choice) return;
+
+    // Emit structured outcome (from content) to engine state
+    const outcome = {
+      stepId: currentStep.id,
+      choiceId: choice.id,
+      choiceLabel: choice.label,
+      choiceKind: choice.kind,
+      outcome: choice.outcome, // Pure data from content
+      timestamp: Date.now(),
+    };
+
+    const current = readEngineState();
+    
+    // Get previous accumulated state (before this choice)
+    const previousOutcomes = current[OUTCOMES_KEY] ?? [];
+    const previousSignals = previousOutcomes.flatMap((o: any) => o.outcome?.signals ?? []);
+    const previousBlockers = previousOutcomes.flatMap((o: any) => o.outcome?.blockers ?? []);
+    const previousOpportunities = previousOutcomes.flatMap((o: any) => o.outcome?.opportunities ?? []);
+    
+    // Generate explain event if callback provided (before updating state)
+    if (onExplain && flow) {
+      const explainEvent = explainNextStep(
+        flow,
+        currentStepIndex,
+        currentStep.id,
+        choice.id,
+        choice.outcome,
+        previousSignals,
+        previousBlockers,
+        previousOpportunities
+      );
+      onExplain(explainEvent);
+      // Also store locally for UI rendering
+      setExplainData(explainEvent);
+    } else if (flow) {
+      // Generate explain event even if no callback, for UI display
+      const explainEvent = explainNextStep(
+        flow,
+        currentStepIndex,
+        currentStep.id,
+        choice.id,
+        choice.outcome,
+        previousSignals,
+        previousBlockers,
+        previousOpportunities
+      );
+      setExplainData(explainEvent);
+    }
+    
+    const updatedOutcomes = [...previousOutcomes, outcome];
+    const updatedResults = {
+      ...(current[RESULTS_KEY] ?? {}),
+      [currentStep.id]: {
+        stepId: currentStep.id,
+        stepTitle: currentStep.title, // From content
+        stepBody: currentStep.body, // From content
+        choice: choice.id,
+        choiceLabel: choice.label, // From content
+        choiceKind: choice.kind, // From content
+        outcome: choice.outcome, // From content
+      },
+    };
+
+    // Step progression: use routing engine if available, otherwise linear
+    const accumulatedSignals = updatedOutcomes.flatMap((o: any) => o.outcome?.signals ?? []);
+    const accumulatedBlockers = updatedOutcomes.flatMap((o: any) => o.outcome?.blockers ?? []);
+    const accumulatedOpportunities = updatedOutcomes.flatMap((o: any) => o.outcome?.opportunities ?? []);
+    
+    // Engine selection comes from parent screen via flow-loader context
+    // The flow is already engine-transformed by the parent, so we use the engine ID from EngineState
+    const engineIdFromState = engineStateData?.engineId || "learning";
+    
+    // INVARIANT: resolveNextStep is called exactly once per choice and returns authoritative EngineState
+    const { nextStepIndex, engineState: derivedEngineState } = resolveNextStep(
+      flow,
+      currentStepIndex,
+      accumulatedSignals,
+      accumulatedBlockers,
+      accumulatedOpportunities,
+      updatedOutcomes.map((o: any) => ({
+        stepId: o.stepId,
+        choiceId: o.choiceId,
+        outcome: o.outcome,
+      })),
+      presentation,
+      current.calculatorResult || {},
+      engineIdFromState
+    );
+    
+    const nextStep = nextStepIndex !== null ? nextStepIndex : totalSteps;
+    
+    // Store EngineState as sole source of truth
+    writeEngineState({
+      [STEP_KEY]: nextStep,
+      [OUTCOMES_KEY]: updatedOutcomes,
+      [RESULTS_KEY]: updatedResults,
+      [ENGINE_STATE_KEY]: derivedEngineState,
+    });
+
+    // Update global state for downstream use (skip when simple display - no click tracking)
+    if (!flow.displayMode || flow.displayMode !== "simple") {
+      dispatchState("state.update", {
+        key: "educationResults",
+        value: {
+          outcomes: updatedOutcomes,
+          results: updatedResults,
+          completed: nextStep >= totalSteps,
+        },
+      });
+    }
+
+    setLocalStep(nextStep);
+    onAdvance(nextStep);
+
+    // Completion check driven by EngineState
+    // AFTERMATH PROCESSORS: Only run decision/summary engines AFTER completion, not during step routing
+    if (nextStep >= totalSteps) {
+      // Run aftermath processors (decision + summary) ONLY after execution completion
+      const calculatorResults = current.calculatorResult || null;
+      const context = current.context || {};
+      const decisionState = aggregateDecisionState(updatedOutcomes, calculatorResults, context);
+      
+      // Run HI engine post-processing if hiEngineId is provided
+      if (hiEngineId && derivedEngineState) {
+        const updatedEngineState = runHIEngines(derivedEngineState, hiEngineId);
+        // Write updated EngineState with HI results
+        writeEngineState({
+          [ENGINE_STATE_KEY]: updatedEngineState,
+        });
+      }
+      
+      // TODO: Run summary engine here if needed
+      // const summaryState = processSummaryState(derivedEngineState);
+      
+      onComplete({
+        cardId: "education",
+        completed: true,
+        output: {
+          outcomes: updatedOutcomes,
+          results: updatedResults,
+          decisionState, // Canonical decision state (from aftermath processor)
+          educationResults: {
+            outcomes: updatedOutcomes,
+            results: updatedResults,
+            decisionState,
+            completed: true,
+            completedAt: Date.now(),
+          },
+        },
+      });
+    }
+  }
+
+  // Simple display: submit numeric input and advance
+  function handleNumericSubmit() {
+    if (!currentStep || currentStep.inputType !== "number" || !currentStep.inputKey) return;
+    const value = parseInt(numericInputValue, 10);
+    if (isNaN(value) || value < 0) return;
+
+    const outcome = {
+      stepId: currentStep.id,
+      choiceId: "_numeric",
+      choiceLabel: String(value),
+      choiceKind: "understand" as const,
+      outcome: {
+        numericValue: value,
+        inputKey: currentStep.inputKey,
+        signals: [],
+      },
+      timestamp: Date.now(),
+    };
+
+    const current = readEngineState();
+    const previousOutcomes = current[OUTCOMES_KEY] ?? [];
+    const updatedOutcomes = [...previousOutcomes, outcome];
+    const updatedResults = {
+      ...(current[RESULTS_KEY] ?? {}),
+      [currentStep.id]: {
+        stepId: currentStep.id,
+        stepTitle: currentStep.title,
+        stepBody: currentStep.body,
+        choice: "_numeric",
+        choiceLabel: String(value),
+        outcome: outcome.outcome,
+      },
+    };
+
+    const nextStep = currentStepIndex + 1;
+    const engineIdFromState = engineStateData?.engineId || "learning";
+    const derivedEngineState = deriveEngineState(
+      flow,
+      presentation ?? null,
+      nextStep,
+      updatedOutcomes.map((o: any) => ({ stepId: o.stepId, choiceId: o.choiceId, outcome: o.outcome })),
+      {},
+      engineIdFromState
+    );
+
+    writeEngineState({
+      [STEP_KEY]: nextStep,
+      [OUTCOMES_KEY]: updatedOutcomes,
+      [RESULTS_KEY]: updatedResults,
+      [ENGINE_STATE_KEY]: derivedEngineState,
+    });
+
+    setNumericInputValue("");
+    setLocalStep(nextStep);
+    onAdvance(nextStep);
+
+    if (nextStep >= totalSteps) {
+      onComplete({
+        cardId: "education",
+        completed: true,
+        output: {
+          outcomes: updatedOutcomes,
+          results: updatedResults,
+          educationResults: {
+            outcomes: updatedOutcomes,
+            results: updatedResults,
+            completed: true,
+            completedAt: Date.now(),
+          },
+        },
+      });
+    }
+  }
+
+  // STEP 4: Prove Presentation Is Engine-Driven, Not Hardcoded
+  console.log("[PRESENTATION MODEL RECEIVED FROM ENGINE]", presentation);
+
+  const showClientLayout = clientView || flow.displayMode === "simple";
+
+  return (
+    <div style={cardContainer}>
+      {/* Flow Selector - hidden in client view */}
+      {!showClientLayout && (
+      <div style={flowSelectorContainer}>
+        <label style={flowSelectorLabel}>Flow:</label>
+        <select
+          value={flowId}
+          onChange={(e) => handleFlowChange(e.target.value)}
+          style={flowSelector}
+        >
+          {availableFlows.map((id) => (
+            <option key={id} value={id}>
+              {id}
+            </option>
+          ))}
+        </select>
+      </div>
+      )}
+      
+      {/* Header: client = simple "1/7" + question; dev = full title + step counter + engine */}
+      <div style={cardHeader}>
+        <div style={cardTitleRow}>
+          {showClientLayout ? (
+            <div style={stepCounter}>
+              {isComplete ? "Complete" : `${displayStep} / ${totalSteps}`}
+            </div>
+          ) : (
+            <>
+              <h3 style={cardTitle}>{flow.title}</h3>
+              {presentation?.badges && currentStepId && presentation.badges[currentStepId] && (
+                <div style={badgeContainer}>
+                  {presentation.badges[currentStepId].map((badge, i) => (
+                    <span key={i} style={badgeStyle}>
+                      {badge}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+        {!showClientLayout && (
+        <div style={stepCounter}>
+          {isComplete ? "Complete" : `Step ${displayStep} / ${totalSteps}`}
+          {presentation && (
+            <span style={stepOrderIndicator} title={`Step order from ${presentation.engineId} engine`}>
+              {" "}• {presentation.engineId}
+            </span>
+          )}
+        </div>
+        )}
+      </div>
+      
+      {/* Presentation Groups (if any) - hidden in client view */}
+      {!showClientLayout && presentation?.groups && presentation.groups.length > 0 && (
+        <div style={groupsPanel}>
+          {presentation.groups.map((group) => {
+            const isCurrentGroup = group.stepIds.includes(currentStepId || "");
+            if (!isCurrentGroup) return null;
+            return (
+              <div key={group.id} style={groupLabel}>
+                {group.title}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Presentation Engine Notes - hidden in client view */}
+      {!showClientLayout && presentation && presentation.notes && presentation.notes.length > 0 && (
+        <div style={notesPanel}>
+          <div style={notesHeader}>Engine: {presentation.engineId}</div>
+          {presentation.notes.map((note, i) => (
+            <div key={i} style={noteItem}>
+              {note}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* WHY / REASONING PANEL - hidden in client view */}
+      {!showClientLayout && explainData && (
+        <div style={reasoningPanel}>
+          <div style={reasoningHeader}>Why This Step</div>
+          <div style={reasoningContent}>
+            {explainData.emitted && (
+              <div style={reasoningSection}>
+                <div style={reasoningSectionTitle}>Signals Emitted:</div>
+                <div style={reasoningSectionList}>
+                  {explainData.emitted.signals && explainData.emitted.signals.length > 0 ? (
+                    explainData.emitted.signals.map((signal: string, i: number) => (
+                      <span key={i} style={reasoningBadge}>
+                        {signal}
+                      </span>
+                    ))
+                  ) : (
+                    <span style={reasoningEmpty}>None</span>
+                  )}
+                </div>
+                {explainData.emitted.blockers && explainData.emitted.blockers.length > 0 && (
+                  <>
+                    <div style={reasoningSectionTitle}>Blockers:</div>
+                    <div style={reasoningSectionList}>
+                      {explainData.emitted.blockers.map((blocker: string, i: number) => (
+                        <span key={i} style={reasoningBadgeBlocked}>
+                          {blocker}
+                        </span>
+                      ))}
+                    </div>
+                  </>
+                )}
+                {explainData.emitted.opportunities && explainData.emitted.opportunities.length > 0 && (
+                  <>
+                    <div style={reasoningSectionTitle}>Opportunities:</div>
+                    <div style={reasoningSectionList}>
+                      {explainData.emitted.opportunities.map((opp: string, i: number) => (
+                        <span key={i} style={reasoningBadgeOpportunity}>
+                          {opp}
+                        </span>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+            {explainData.routing && (
+              <div style={reasoningSection}>
+                <div style={reasoningSectionTitle}>Routing Decision:</div>
+                <div style={reasoningRouting}>
+                  {explainData.routing.mode === "rule-matched" ? (
+                    <>
+                      <span style={reasoningRoutingMode}>Rule Matched</span>
+                      {explainData.routing.matchedRuleId && (
+                        <span style={reasoningRoutingRule}>({explainData.routing.matchedRuleId})</span>
+                      )}
+                    </>
+                  ) : (
+                    <span style={reasoningRoutingMode}>Linear Progression</span>
+                  )}
+                </div>
+              </div>
+            )}
+            {explainData.nextStepId && (
+              <div style={reasoningSection}>
+                <div style={reasoningSectionTitle}>Next Step:</div>
+                <div style={reasoningNextStep}>
+                  {flow.steps.find((s) => s.id === explainData.nextStepId)?.title || explainData.nextStepId}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* DECISION LOGIC PANEL - dev only; hidden in client view */}
+      {!showClientLayout && engineStateData?.exportSlices && engineStateData.exportSlices.length > 0 && (
+        <div style={decisionLogicPanel}>
+          <div style={decisionLogicHeader}>Decision Logic</div>
+          <div style={decisionLogicContent}>
+            {engineStateData.exportSlices.map((slice, i) => (
+              <div key={i} style={decisionLogicItem}>
+                <div style={decisionLogicStepTitle}>{slice.stepTitle}</div>
+                <div style={decisionLogicDetails}>
+                  {slice.signals && slice.signals.length > 0 && (
+                    <div style={decisionLogicRow}>
+                      <span style={decisionLogicLabel}>Signals:</span>
+                      <span style={decisionLogicValue}>{slice.signals.join(", ")}</span>
+                    </div>
+                  )}
+                  {slice.blockers && slice.blockers.length > 0 && (
+                    <div style={decisionLogicRow}>
+                      <span style={decisionLogicLabel}>Blockers:</span>
+                      <span style={decisionLogicValueBlocked}>{slice.blockers.join(", ")}</span>
+                    </div>
+                  )}
+                  {slice.opportunities && slice.opportunities.length > 0 && (
+                    <div style={decisionLogicRow}>
+                      <span style={decisionLogicLabel}>Opportunities:</span>
+                      <span style={decisionLogicValueOpportunity}>{slice.opportunities.join(", ")}</span>
+                    </div>
+                  )}
+                  {slice.severity && (
+                    <div style={decisionLogicRow}>
+                      <span style={decisionLogicLabel}>Severity:</span>
+                      <span style={decisionLogicSeverity(slice.severity)}>{slice.severity}</span>
+                    </div>
+                  )}
+                  {slice.stepWeight !== undefined && (
+                    <div style={decisionLogicRow}>
+                      <span style={decisionLogicLabel}>Weight:</span>
+                      <span style={decisionLogicValue}>{slice.stepWeight}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Current Step Panel - Hero Image + Content */}
+      {!isComplete && currentStep && (
+        <div style={currentStepPanel}>
+          {/* Progress Stack - Completed Steps (dev only; hidden in client/onboarding view) */}
+          {!showClientLayout && completedSteps.length > 0 && (
+            <div style={progressStack}>
+              <div style={progressStackHeader}>Completed Steps</div>
+              {completedSteps.map((item, i) => {
+                if (!item) return null;
+                const { step, signals, blockers, opportunities, progressIndicator, isWin } = item;
+                
+                return (
+                  <div key={i} style={progressItem}>
+                    <div style={progressIcon(isWin)}>
+                      {progressIndicator}
+                    </div>
+                    <div style={progressText}>
+                      <div style={progressStepTitle}>{step.title}</div>
+                      <div style={progressStepBody}>{step.body}</div>
+                      {signals.length > 0 && (
+                        <div style={progressStepReason}>
+                          Signals: {signals.join(", ")}
+                        </div>
+                      )}
+                      {blockers.length > 0 && (
+                        <div style={progressStepFlags}>
+                          Blockers: {blockers.join(", ")}
+                        </div>
+                      )}
+                      {opportunities && opportunities.length > 0 && (
+                        <div style={progressStepOpportunities}>
+                          Opportunities: {opportunities.join(", ")}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Hero Image Area */}
+          <div style={heroImageContainer}>
+            <div style={gradientFallback} />
+            {currentStep.image && (
+              <img
+                src={currentStep.image}
+                alt={currentStep.imageAlt || currentStep.title}
+                style={heroImage}
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                }}
+              />
+            )}
+          </div>
+
+          {/* Step Content - All from content (fallbacks when step has no title/body) */}
+          <div style={stepContent}>
+            <h4 style={stepTitle}>{currentStep.title || `Step ${displayStep}`}</h4>
+            <p style={stepBody}>{currentStep.body || (currentStep.title ? "" : "No description for this step.")}</p>
+          </div>
+
+          {/* Numeric input (simple display) or choice buttons */}
+          {currentStep.inputType === "number" ? (
+            <div style={buttonGroup}>
+              <input
+                type="number"
+                min={0}
+                step={100}
+                placeholder={currentStep.inputLabel || "Amount ($)"}
+                value={numericInputValue}
+                onChange={(e) => setNumericInputValue(e.target.value)}
+                style={numericInputStyle}
+              />
+              <button
+                type="button"
+                onClick={handleNumericSubmit}
+                style={choiceButton}
+              >
+                Next
+              </button>
+            </div>
+          ) : (currentStep.choices?.length > 0 ? (
+            <div style={buttonGroup}>
+              {currentStep.choices.map((choice) => (
+                <button
+                  key={choice.id}
+                  onClick={() => handleChoice(choice.id)}
+                  style={choiceButton}
+                  onMouseEnter={(e) => {
+                    const hoverColor = 
+                      choice.kind === "understand" || choice.kind === "yes" ? "#10b981" :
+                      choice.kind === "unsure" || choice.kind === "no" ? "#ef4444" :
+                      "#3b82f6";
+                    e.currentTarget.style.background = hoverColor;
+                    e.currentTarget.style.color = "#ffffff";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "#1e293b";
+                    e.currentTarget.style.color = "#e5e7eb";
+                  }}
+                >
+                  {choice.label}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div style={buttonGroup}>
+              <button
+                type="button"
+                onClick={() => {
+                  const nextStep = currentStepIndex + 1;
+                  if (nextStep >= totalSteps) {
+                    onComplete({ cardId: "education", completed: true, output: {} });
+                  } else {
+                    writeEngineState({ [STEP_KEY]: nextStep });
+                    setLocalStep(nextStep);
+                    onAdvance(nextStep);
+                  }
+                }}
+                style={choiceButton}
+              >
+                {currentStepIndex + 1 >= totalSteps - 1 ? "Finish" : "Next"}
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Completion State or Simple Report - summary + calculation + verdict, then answers with calculators and check/X */}
+      {isComplete && flow.displayMode === "simple" && (() => {
+        const numericStep = flow.steps.find((s) => s.inputType === "number" && s.inputKey && s.resultBands);
+        const numericOutcome = numericStep ? outcomes.find((o: any) => o.stepId === numericStep.id) : null;
+        const numVal = (numericOutcome?.outcome as { numericValue?: number } | undefined)?.numericValue ?? 0;
+        const format = (v: number) => `$${v.toLocaleString()}`;
+        const band3 = numericStep?.resultBands?.find((b: { label: string }) => b.label.includes("3:1"));
+        const salesAt3 = band3 && typeof band3.ratio === "number" ? numVal * band3.ratio : numVal * 3;
+        const summary = (flow as { reportSummary?: string }).reportSummary || "The average business gains 3:1 sales according to industry benchmarks.";
+        return (
+          <div style={reportContainer}>
+            <div style={reportTitleStyle}>{flow.reportTitle || "Your results"}</div>
+            <div style={reportSummaryLine}>{summary}</div>
+            {numericStep && (
+              <>
+                <div style={reportCalculation}>
+                  You said {format(numVal)}/month → at 3:1 that's {format(salesAt3)} in sales.
+                </div>
+                {numericStep.verdict && <div style={reportVerdict}>{numericStep.verdict}</div>}
+              </>
+            )}
+            {/* Per-step answers: calculator bands and check/X (no repeated questions) */}
+            <div style={reportAnswersSection}>
+              {flow.steps.map((step) => {
+                const outcome = outcomes.find((o: any) => o.stepId === step.id);
+                if (step.inputType === "number" && step.inputKey && step.resultBands) {
+                  const value = (outcome?.outcome as { numericValue?: number } | undefined)?.numericValue ?? 0;
+                  const pass = value > 0;
+                  return (
+                    <div key={step.id} style={reportItem}>
+                      <div style={reportItemHeader}>
+                        <span style={reportStepTitle}>{step.title}</span>
+                        <span style={reportCheck(pass)}>{pass ? "✓" : "✕"}</span>
+                      </div>
+                      <div style={reportStepBody}>Answer: {format(value)}</div>
+                      <div style={reportBands}>
+                        {step.resultBands.map((band: { label: string; ratio: number; description: string }) => (
+                          <div key={band.label} style={reportBandRow}>
+                            {band.label}: {format(value * band.ratio)} sales
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                }
+                const choice = outcome ? step.choices?.find((c) => c.id === outcome.choiceId) : null;
+                const reportStatus = (outcome?.outcome as { reportStatus?: "pass" | "fail" })?.reportStatus;
+                const pass = reportStatus === "pass";
+                return (
+                  <div key={step.id} style={reportItem}>
+                    <div style={reportItemHeader}>
+                      <span style={reportStepTitle}>{step.title}</span>
+                      <span style={reportCheck(pass)}>{pass ? "✓" : "✕"}</span>
+                    </div>
+                    <div style={reportStepBody}>
+                      {choice ? choice.label : (outcome as any)?.choiceLabel ?? "—"}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
+      {isComplete && flow.displayMode !== "simple" && (
+        <div style={completionState}>
+          <div style={completionIcon}>✓</div>
+          <div style={completionText}>Education Complete</div>
+          {/* Diagnostic list (Signals/Blockers/Opportunities) - dev only; hidden in client onboarding */}
+          {!showClientLayout && completedSteps.length > 0 && (
+            <div style={progressStack}>
+              {completedSteps.map((item, i) => {
+                if (!item) return null;
+                const { step, signals, blockers, opportunities, progressIndicator, isWin } = item;
+                
+                return (
+                  <div key={i} style={progressItem}>
+                    <div style={progressIcon(isWin)}>
+                      {progressIndicator}
+                    </div>
+                    <div style={progressText}>
+                      <div style={progressStepTitle}>{step.title}</div>
+                      <div style={progressStepBody}>{step.body}</div>
+                      {signals.length > 0 && (
+                        <div style={progressStepReason}>
+                          Signals: {signals.join(", ")}
+                        </div>
+                      )}
+                      {blockers.length > 0 && (
+                        <div style={progressStepFlags}>
+                          Blockers: {blockers.join(", ")}
+                        </div>
+                      )}
+                      {opportunities && opportunities.length > 0 && (
+                        <div style={progressStepOpportunities}>
+                          Opportunities: {opportunities.join(", ")}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          {showClientLayout && (
+            <div style={reportSummaryLine}>Thanks. We've saved your answers.</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ======================================================
+   STYLES - Premium Dark Theme (UI Only)
+====================================================== */
+const cardContainer: React.CSSProperties = {
+  padding: 24,
+  marginBottom: 20,
+  border: "1px solid #334155",
+  borderRadius: 16,
+  background: "#0f172a",
+  fontFamily: "system-ui, -apple-system, sans-serif",
+  boxShadow: "0 4px 16px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05)",
+};
+
+const cardHeader: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: 12,
+  marginBottom: 20,
+  paddingBottom: 16,
+  borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+};
+
+const cardTitleRow: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 12,
+  flexWrap: "wrap",
+};
+
+const cardTitle: React.CSSProperties = {
+  margin: 0,
+  fontSize: 22,
+  fontWeight: 700,
+  color: "#f1f5f9",
+  letterSpacing: "-0.02em",
+};
+
+const badgeContainer: React.CSSProperties = {
+  display: "flex",
+  gap: 6,
+  flexWrap: "wrap",
+};
+
+const badgeStyle: React.CSSProperties = {
+  padding: "4px 8px",
+  borderRadius: 4,
+  fontSize: 11,
+  fontWeight: 600,
+  textTransform: "uppercase",
+  letterSpacing: 0.5,
+  background: "#3b82f6",
+  color: "#ffffff",
+};
+
+const groupsPanel: React.CSSProperties = {
+  marginBottom: 12,
+  padding: 8,
+  background: "#1e293b",
+  borderRadius: 6,
+  border: "1px solid #334155",
+};
+
+const groupLabel: React.CSSProperties = {
+  fontSize: 12,
+  fontWeight: 600,
+  color: "#60a5fa",
+  textTransform: "uppercase",
+  letterSpacing: 0.5,
+};
+
+const stepCounter: React.CSSProperties = {
+  fontSize: 12,
+  fontWeight: 600,
+  color: "#94a3b8",
+  padding: "6px 12px",
+  background: "rgba(255, 255, 255, 0.05)",
+  borderRadius: 8,
+  border: "1px solid rgba(255, 255, 255, 0.1)",
+  letterSpacing: "0.02em",
+};
+
+const currentStepPanel: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: 16,
+};
+
+const heroImageContainer: React.CSSProperties = {
+  width: "100%",
+  height: 180,
+  overflow: "hidden",
+  borderRadius: 12,
+  position: "relative",
+  marginBottom: 16,
+  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
+  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+};
+
+const gradientFallback: React.CSSProperties = {
+  position: "absolute",
+  top: 0,
+  left: 0,
+  width: "100%",
+  height: "100%",
+  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+  zIndex: 1,
+};
+
+const heroImage: React.CSSProperties = {
+  position: "absolute",
+  top: 0,
+  left: 0,
+  width: "100%",
+  height: "100%",
+  objectFit: "cover",
+  zIndex: 2,
+};
+
+const stepContent: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: 10,
+  marginBottom: 4,
+};
+
+const stepTitle: React.CSSProperties = {
+  margin: 0,
+  fontSize: 18,
+  fontWeight: 600,
+  color: "#f1f5f9",
+  letterSpacing: "-0.01em",
+};
+
+const stepBody: React.CSSProperties = {
+  margin: 0,
+  fontSize: 15,
+  color: "#cbd5e1",
+  lineHeight: 1.6,
+  letterSpacing: "0.01em",
+};
+
+const progressStack: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: 12,
+  marginTop: 0,
+  marginBottom: 16,
+  padding: "16px",
+  background: "rgba(255, 255, 255, 0.05)",
+  borderRadius: 10,
+  border: "1px solid rgba(255, 255, 255, 0.1)",
+};
+
+const progressStackHeader: React.CSSProperties = {
+  fontSize: 12,
+  fontWeight: 700,
+  color: "#94a3b8",
+  textTransform: "uppercase",
+  letterSpacing: "0.05em",
+  marginBottom: 4,
+};
+
+const progressItem: React.CSSProperties = {
+  display: "flex",
+  alignItems: "flex-start",
+  gap: 12,
+  padding: "4px 0",
+};
+
+const progressIcon = (isWin: boolean): React.CSSProperties => {
+  const color = isWin ? "#10b981" : "#ef4444";
+  const bgColor = isWin ? "rgba(16, 185, 129, 0.1)" : "rgba(239, 68, 68, 0.1)";
+  return {
+    width: 22,
+    height: 22,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: 13,
+    fontWeight: 700,
+    color,
+    flexShrink: 0,
+    background: bgColor,
+    borderRadius: "50%",
+  };
+};
+
+const progressText: React.CSSProperties = {
+  flex: 1,
+  display: "flex",
+  flexDirection: "column",
+  gap: 4,
+};
+
+const progressStepTitle: React.CSSProperties = {
+  fontSize: 14,
+  fontWeight: 600,
+  color: "#f1f5f9",
+  lineHeight: 1.4,
+};
+
+const progressStepBody: React.CSSProperties = {
+  fontSize: 13,
+  color: "#94a3b8",
+  lineHeight: 1.4,
+};
+
+const progressStepReason: React.CSSProperties = {
+  fontSize: 12,
+  color: "#64748b",
+  lineHeight: 1.4,
+  fontStyle: "italic",
+};
+
+const progressStepFlags: React.CSSProperties = {
+  fontSize: 11,
+  color: "#ef4444",
+  lineHeight: 1.4,
+  opacity: 0.8,
+};
+
+const progressStepOpportunities: React.CSSProperties = {
+  fontSize: 11,
+  color: "#10b981",
+  lineHeight: 1.4,
+  opacity: 0.8,
+};
+
+const buttonGroup: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: 10,
+  marginTop: 4,
+};
+
+const choiceButton: React.CSSProperties = {
+  width: "100%",
+  padding: "14px 20px",
+  borderRadius: 10,
+  border: "1px solid rgba(255, 255, 255, 0.1)",
+  background: "#1e293b",
+  color: "#e5e7eb",
+  cursor: "pointer",
+  fontSize: 15,
+  fontWeight: 600,
+  transition: "all 0.2s ease",
+  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2)",
+};
+
+const completionState: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: 12,
+  padding: "24px 0",
+  color: "#10b981",
+};
+
+const completionIcon: React.CSSProperties = {
+  fontSize: 40,
+  fontWeight: 700,
+  filter: "drop-shadow(0 2px 4px rgba(16, 185, 129, 0.3))",
+};
+
+const completionText: React.CSSProperties = {
+  fontSize: 18,
+  fontWeight: 600,
+  letterSpacing: "0.02em",
+};
+
+const flowSelectorContainer: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 8,
+  marginBottom: 16,
+  padding: "12px",
+  background: "rgba(255, 255, 255, 0.03)",
+  borderRadius: 8,
+  border: "1px solid rgba(255, 255, 255, 0.1)",
+};
+
+const flowSelectorLabel: React.CSSProperties = {
+  fontSize: 13,
+  fontWeight: 600,
+  color: "#94a3b8",
+};
+
+const flowSelector: React.CSSProperties = {
+  flex: 1,
+  padding: "6px 12px",
+  borderRadius: 6,
+  border: "1px solid rgba(255, 255, 255, 0.1)",
+  background: "#1e293b",
+  color: "#e5e7eb",
+  fontSize: 13,
+  cursor: "pointer",
+};
+
+const notesPanel: React.CSSProperties = {
+  marginBottom: 16,
+  padding: 12,
+  background: "#1e293b",
+  borderRadius: 8,
+  border: "1px solid #334155",
+  fontSize: 13,
+  color: "#cbd5e1",
+  fontStyle: "italic",
+};
+
+const notesHeader: React.CSSProperties = {
+  fontSize: 11,
+  fontWeight: 600,
+  color: "#60a5fa",
+  textTransform: "uppercase",
+  letterSpacing: 0.5,
+  marginBottom: 8,
+  fontStyle: "normal",
+};
+
+const noteItem: React.CSSProperties = {
+  lineHeight: 1.5,
+  marginBottom: 4,
+};
+
+const stepOrderIndicator: React.CSSProperties = {
+  fontSize: 10,
+  opacity: 0.6,
+  fontWeight: 400,
+  fontStyle: "italic",
+};
+
+const reasoningPanel: React.CSSProperties = {
+  marginBottom: 16,
+  padding: 16,
+  background: "#1e293b",
+  borderRadius: 10,
+  border: "1px solid #334155",
+};
+
+const reasoningHeader: React.CSSProperties = {
+  fontSize: 14,
+  fontWeight: 700,
+  color: "#60a5fa",
+  marginBottom: 12,
+  textTransform: "uppercase",
+  letterSpacing: 0.5,
+};
+
+const reasoningContent: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: 12,
+};
+
+const reasoningSection: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: 6,
+};
+
+const reasoningSectionTitle: React.CSSProperties = {
+  fontSize: 12,
+  fontWeight: 600,
+  color: "#94a3b8",
+  textTransform: "uppercase",
+  letterSpacing: 0.3,
+};
+
+const reasoningSectionList: React.CSSProperties = {
+  display: "flex",
+  flexWrap: "wrap",
+  gap: 6,
+};
+
+const reasoningBadge: React.CSSProperties = {
+  padding: "4px 8px",
+  borderRadius: 4,
+  fontSize: 11,
+  fontWeight: 600,
+  background: "rgba(59, 130, 246, 0.2)",
+  color: "#60a5fa",
+  border: "1px solid rgba(59, 130, 246, 0.3)",
+};
+
+const reasoningBadgeBlocked: React.CSSProperties = {
+  padding: "4px 8px",
+  borderRadius: 4,
+  fontSize: 11,
+  fontWeight: 600,
+  background: "rgba(239, 68, 68, 0.2)",
+  color: "#f87171",
+  border: "1px solid rgba(239, 68, 68, 0.3)",
+};
+
+const reasoningBadgeOpportunity: React.CSSProperties = {
+  padding: "4px 8px",
+  borderRadius: 4,
+  fontSize: 11,
+  fontWeight: 600,
+  background: "rgba(16, 185, 129, 0.2)",
+  color: "#34d399",
+  border: "1px solid rgba(16, 185, 129, 0.3)",
+};
+
+const reasoningEmpty: React.CSSProperties = {
+  fontSize: 11,
+  color: "#64748b",
+  fontStyle: "italic",
+};
+
+const reasoningRouting: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 8,
+  fontSize: 13,
+  color: "#cbd5e1",
+};
+
+const reasoningRoutingMode: React.CSSProperties = {
+  fontWeight: 600,
+  color: "#60a5fa",
+};
+
+const reasoningRoutingRule: React.CSSProperties = {
+  fontSize: 11,
+  color: "#94a3b8",
+  fontStyle: "italic",
+};
+
+const reasoningNextStep: React.CSSProperties = {
+  fontSize: 13,
+  fontWeight: 600,
+  color: "#f1f5f9",
+};
+
+const decisionLogicPanel: React.CSSProperties = {
+  marginBottom: 16,
+  padding: 16,
+  background: "#1e293b",
+  borderRadius: 10,
+  border: "1px solid #334155",
+};
+
+const decisionLogicHeader: React.CSSProperties = {
+  fontSize: 14,
+  fontWeight: 700,
+  color: "#60a5fa",
+  marginBottom: 12,
+  textTransform: "uppercase",
+  letterSpacing: 0.5,
+};
+
+const decisionLogicContent: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: 12,
+};
+
+const decisionLogicItem: React.CSSProperties = {
+  padding: 12,
+  background: "rgba(255, 255, 255, 0.03)",
+  borderRadius: 8,
+  border: "1px solid rgba(255, 255, 255, 0.05)",
+};
+
+const decisionLogicStepTitle: React.CSSProperties = {
+  fontSize: 13,
+  fontWeight: 600,
+  color: "#f1f5f9",
+  marginBottom: 8,
+};
+
+const decisionLogicDetails: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: 4,
+};
+
+const decisionLogicRow: React.CSSProperties = {
+  display: "flex",
+  alignItems: "flex-start",
+  gap: 8,
+  fontSize: 12,
+};
+
+const decisionLogicLabel: React.CSSProperties = {
+  fontWeight: 600,
+  color: "#94a3b8",
+  minWidth: 80,
+};
+
+const decisionLogicValue: React.CSSProperties = {
+  color: "#cbd5e1",
+  flex: 1,
+};
+
+const decisionLogicValueBlocked: React.CSSProperties = {
+  color: "#f87171",
+  flex: 1,
+};
+
+const decisionLogicValueOpportunity: React.CSSProperties = {
+  color: "#34d399",
+  flex: 1,
+};
+
+const decisionLogicSeverity = (severity: "low" | "medium" | "high"): React.CSSProperties => {
+  const colors = {
+    low: "#94a3b8",
+    medium: "#fbbf24",
+    high: "#f87171",
+  };
+  return {
+    color: colors[severity],
+    fontWeight: 600,
+  };
+};
+
+const numericInputStyle: React.CSSProperties = {
+  width: "100%",
+  padding: "14px 20px",
+  borderRadius: 10,
+  border: "1px solid rgba(255, 255, 255, 0.1)",
+  background: "#1e293b",
+  color: "#e5e7eb",
+  fontSize: 15,
+  marginBottom: 10,
+};
+
+const reportContainer: React.CSSProperties = {
+  marginTop: 24,
+  padding: 20,
+  background: "rgba(255, 255, 255, 0.05)",
+  borderRadius: 12,
+  border: "1px solid rgba(255, 255, 255, 0.1)",
+};
+
+const reportTitleStyle: React.CSSProperties = {
+  fontSize: 18,
+  fontWeight: 700,
+  color: "#f1f5f9",
+  marginBottom: 16,
+};
+
+const reportAnswersSection: React.CSSProperties = {
+  marginTop: 20,
+  paddingTop: 16,
+  borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+};
+
+const reportSummaryLine: React.CSSProperties = {
+  fontSize: 15,
+  color: "#e2e8f0",
+  marginBottom: 16,
+  lineHeight: 1.4,
+};
+
+const reportCalculation: React.CSSProperties = {
+  fontSize: 15,
+  fontWeight: 600,
+  color: "#f1f5f9",
+  marginBottom: 8,
+};
+
+const reportItem: React.CSSProperties = {
+  padding: "12px 0",
+  borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+};
+
+const reportItemHeader: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: 12,
+  marginBottom: 6,
+};
+
+const reportStepTitle: React.CSSProperties = {
+  fontSize: 14,
+  fontWeight: 600,
+  color: "#f1f5f9",
+};
+
+const reportCheck = (pass: boolean): React.CSSProperties => ({
+  fontSize: 18,
+  fontWeight: 700,
+  color: pass ? "#10b981" : "#ef4444",
+});
+
+const reportStepBody: React.CSSProperties = {
+  fontSize: 13,
+  color: "#94a3b8",
+  marginBottom: 4,
+};
+
+const reportBands: React.CSSProperties = {
+  fontSize: 12,
+  color: "#64748b",
+  marginTop: 6,
+};
+
+const reportBandRow: React.CSSProperties = {
+  marginBottom: 2,
+};
+
+const reportVerdict: React.CSSProperties = {
+  fontSize: 12,
+  fontStyle: "italic",
+  color: "#60a5fa",
+  marginTop: 8,
+};

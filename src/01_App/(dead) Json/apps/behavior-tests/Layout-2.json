@@ -1,0 +1,47 @@
+{
+    "id": "features_section",
+    "type": "Section",
+    "role": "features",
+    "layout": "features-grid-3",
+    "content": {
+      "title": "Why this works"
+    },
+    "children": [
+      {
+        "type": "Card",
+        "content": {
+          "media": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=400",
+          "title": "Clean layout",
+          "body": "Sections and cards driven by one screen. No extra primitives—just JSON and organs."
+        },
+        "params": {
+          "mediaPosition": "left"
+        }
+      },
+      {
+        "type": "Card",
+        "content": {
+          "media": "https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=400",
+          "title": "Real images",
+          "body": "Use image URLs in Card media. Hero and gallery use the same pattern for a consistent look."
+        },
+        "params": {
+          "mediaPosition": "left"
+        }
+      },
+      {
+        "type": "Card",
+        "content": {
+          "media": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400",
+          "title": "Palette & presets",
+          "body": "Switch palette and template in the bar. Section preset layout and card presets apply from this file."
+        },
+        "params": {
+          "mediaPosition": "left"
+        }
+      }
+    ]
+  }
+  
+  
+  

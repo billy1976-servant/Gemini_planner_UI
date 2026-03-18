@@ -1,0 +1,112 @@
+{
+  "section": {
+    "hero-centered": "Centered Hero",
+    "hero-split": "Hero Split",
+    "hero-split-image-right": "Hero Split Image Right",
+    "hero-split-image-left": "Hero Split Image Left",
+    "hero-full-bleed-image": "Full Bleed Hero",
+    "content-narrow": "Narrow Content Band",
+    "content-stack": "Stacked Content",
+    "image-left-text-right": "Split Image Left",
+    "features-grid-3": "Three Column Feature Grid",
+    "testimonial-band": "Testimonial Band",
+    "cta-centered": "Centered CTA",
+    "test-extensible": "Extensible Test Layout"
+  },
+  "card": {
+    "image-top": "Image Top",
+    "image-left": "Image Left",
+    "image-right": "Image Right",
+    "image-bottom": "Image Bottom",
+    "centered-card": "Centered Card",
+    "centered-image-left": "Centered Image Left",
+    "centered-image-right": "Centered Image Right",
+    "media-dominant-top": "Media Dominant Top",
+    "media-dominant-left": "Media Dominant Left",
+    "text-dominant-top": "Text Dominant Top",
+    "text-dominant-left": "Text Dominant Left",
+    "minimal": "Minimal"
+  },
+  "organ": {
+    "hero": {
+      "centered": "Centered",
+      "image-bg": "Image Background",
+      "split-left": "Split Left",
+      "split-right": "Split Right",
+      "full-screen": "Full Screen",
+      "short": "Short",
+      "with-cta": "With CTA",
+      "video-ready": "Video Ready",
+      "right-aligned": "Right Aligned"
+    },
+    "content-section": {
+      "text-only": "Text Only",
+      "media-left": "Media Left",
+      "media-right": "Media Right",
+      "zigzag": "Zigzag"
+    },
+    "features-grid": {
+      "2-col": "Two Column",
+      "3-col": "Three Column",
+      "4-col": "Four Column",
+      "repeater": "Repeater"
+    },
+    "gallery": {
+      "grid-2": "Two Column Grid",
+      "grid-3": "Three Column Grid",
+      "grid-4": "Four Column Grid",
+      "carousel-ready": "Carousel Ready"
+    },
+    "testimonials": {
+      "grid-2": "Two Column Grid",
+      "grid-3": "Three Column Grid",
+      "single-featured": "Single Featured",
+      "carousel-ready": "Carousel Ready"
+    },
+    "pricing": {
+      "2-tier": "Two Tier",
+      "3-tier": "Three Tier",
+      "4-tier": "Four Tier",
+      "highlighted": "Highlighted",
+      "minimal": "Minimal"
+    },
+    "faq": {
+      "accordion": "Accordion",
+      "list": "List",
+      "two-column": "Two Column"
+    },
+    "cta": {
+      "banner": "Banner",
+      "strip": "Strip",
+      "split": "Split",
+      "full-width": "Full Width"
+    },
+    "header": {
+      "default": "Default",
+      "sticky-split": "Sticky Split",
+      "transparent": "Transparent",
+      "minimal": "Minimal",
+      "centered": "Centered",
+      "full-width": "Full Width",
+      "mega-ready": "Mega Ready",
+      "shrink-on-scroll": "Shrink on Scroll",
+      "with-announcement": "With Announcement",
+      "compact": "Compact",
+      "logo-center": "Logo Center",
+      "nav-left": "Nav Left"
+    },
+    "nav": {
+      "default": "Default",
+      "dropdown": "Dropdown",
+      "mobile-collapse": "Mobile Collapse",
+      "centered-links": "Centered Links"
+    },
+    "footer": {
+      "multi-column": "Multi Column",
+      "minimal": "Minimal",
+      "with-newsletter": "With Newsletter",
+      "centered": "Centered",
+      "dense": "Dense"
+    }
+  }
+}

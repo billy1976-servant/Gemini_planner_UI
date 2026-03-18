@@ -1,0 +1,165 @@
+{
+  "products": [
+    {
+      "id": "prod_vjbzty",
+      "brand": "bendsoap",
+      "name": "Goat Milk Soap and All Natural Skincare",
+      "category": "website",
+      "url": "https://bendsoap.com",
+      "price": {
+        "amount": 0,
+        "currency": "USD",
+        "source": {
+          "label": "Price not found",
+          "url": "https://bendsoap.com",
+          "snippet": "Price information not available",
+          "kind": "price"
+        }
+      },
+      "images": [
+        {
+          "url": "https://www.bendsoap.com/cdn/shop/files/hero-banner_2x_f3e02c50-05d1-4435-8b49-32a141d10868.jpg?v=1614299656&amp;width=3840",
+          "alt": "Mother washing child&#39;s hands with goat milk soap",
+          "sourceUrl": "https://bendsoap.com"
+        },
+        {
+          "url": "https://www.bendsoap.com/cdn/shop/files/Moisturizing_52a7a217-7d45-49b6-84aa-fa58a7ed5855.png?v=1741713393&amp;width=3200",
+          "alt": "A simple blue outline of a water droplet with a small curved line inside, representing a reflection, on a white background.",
+          "sourceUrl": "https://bendsoap.com"
+        },
+        {
+          "url": "https://www.bendsoap.com/cdn/shop/files/Exfoliation.png?v=1741713430&amp;width=3200",
+          "alt": "A blue line with waves and two arrows pointing upward, representing reflection or a barrier effect, on a white background.",
+          "sourceUrl": "https://bendsoap.com"
+        },
+        {
+          "url": "https://www.bendsoap.com/cdn/shop/files/Harsh_Chemicals.png?v=1741713443&amp;width=3200",
+          "alt": "A simple blue line drawing of a laboratory flask with a plant sprout, featuring two leaves, growing out of the top, symbolizing science and nature or biotechnology.",
+          "sourceUrl": "https://bendsoap.com"
+        },
+        {
+          "url": "https://www.bendsoap.com/cdn/shop/files/Nutrients.png?v=1741713457&amp;width=3200",
+          "alt": "A simple, blue line drawing of two overlapping leaves with visible veins, set against a white background.",
+          "sourceUrl": "https://bendsoap.com"
+        },
+        {
+          "url": "https://www.bendsoap.com/cdn/shop/files/All-Natural-Skin-Care-Products-Bend-Soap_2x_1aede853-5761-4d7b-95f1-50285e19fd31.png?v=1614300266&width=240",
+          "alt": "Product image",
+          "sourceUrl": "https://bendsoap.com"
+        },
+        {
+          "url": "https://www.bendsoap.com/cdn/shop/files/LaurenShannonphotographer-176.jpg?v=1748549993&width=533",
+          "alt": "bend soap gentle care eczema relief bundle",
+          "sourceUrl": "https://bendsoap.com"
+        },
+        {
+          "url": "https://www.bendsoap.com/cdn/shop/files/nourish_and_restore.jpg?v=1749060800&width=533",
+          "alt": "bend soap nourish and restore bundle",
+          "sourceUrl": "https://bendsoap.com"
+        },
+        {
+          "url": "https://www.bendsoap.com/cdn/shop/files/IMG_9922.jpg?v=1716318947&width=533",
+          "alt": "bend soap oatmeal and honey bar soap",
+          "sourceUrl": "https://bendsoap.com"
+        },
+        {
+          "url": "https://www.bendsoap.com/cdn/shop/files/IMG_9887.jpg?v=1716319182&width=533",
+          "alt": "Unscented goat milk soap",
+          "sourceUrl": "https://bendsoap.com"
+        },
+        {
+          "url": "https://www.bendsoap.com/cdn/shop/files/IMG_9998.jpg?v=1716402358&width=533",
+          "alt": "Unscented Goat Milk Lotion",
+          "sourceUrl": "https://bendsoap.com"
+        },
+        {
+          "url": "https://www.bendsoap.com/cdn/shop/files/IMG_9845.jpg?v=1719265035&width=533",
+          "alt": "all shield goat milk bar soap",
+          "sourceUrl": "https://bendsoap.com"
+        },
+        {
+          "url": "https://www.bendsoap.com/cdn/shop/files/lipbutter_2x_428ee8ad-48db-4d7c-b06b-9a73113f9107.jpg?v=1614329540&width=1500",
+          "alt": "Product image",
+          "sourceUrl": "https://bendsoap.com"
+        },
+        {
+          "url": "https://www.bendsoap.com/cdn/shop/files/IMG_2519_copy.jpg?v=1716483550&width=1500",
+          "alt": "Product image",
+          "sourceUrl": "https://bendsoap.com"
+        },
+        {
+          "url": "https://www.bendsoap.com/cdn/shop/files/salves_2x_74dd5c63-1afb-49ef-8085-4d76437c43d3.jpg?v=1614329540&width=1500",
+          "alt": "Product image",
+          "sourceUrl": "https://bendsoap.com"
+        },
+        {
+          "url": "https://www.bendsoap.com/cdn/shop/files/IMG_2672.jpg?v=1768584742&width=1500",
+          "alt": "Product image",
+          "sourceUrl": "https://bendsoap.com"
+        },
+        {
+          "url": "https://www.bendsoap.com/cdn/shop/files/IMG_2445.jpg?v=1741709411&width=1500",
+          "alt": "Product image",
+          "sourceUrl": "https://bendsoap.com"
+        },
+        {
+          "url": "https://www.bendsoap.com/cdn/shop/files/F5A1954_copy.jpg?v=1737142675&width=1500",
+          "alt": "Product image",
+          "sourceUrl": "https://bendsoap.com"
+        },
+        {
+          "url": "https://www.bendsoap.com/cdn/shop/files/img-before_3x_de46cfb8-f2ee-483a-a5ca-46c19e7c262d.jpg?crop=center&height=360&v=1614310140&width=360",
+          "alt": "Product image",
+          "sourceUrl": "https://bendsoap.com"
+        },
+        {
+          "url": "https://www.bendsoap.com/cdn/shop/files/img-after_3x_25dd6257-cb4a-4cc2-bac8-d2756fbe6d58.jpg?crop=center&height=360&v=1614310139&width=360",
+          "alt": "Product image",
+          "sourceUrl": "https://bendsoap.com"
+        },
+        {
+          "url": "https://www.bendsoap.com/cdn/shop/files/bend-soap-johnson_family.jpg?v=1620332291&amp;width=3840",
+          "alt": "Load video: ",
+          "sourceUrl": "https://bendsoap.com"
+        },
+        {
+          "url": "https://www.bendsoap.com/cdn/shop/files/bend-soap-johnson_family.jpg?v=1620332291&amp;width=3840",
+          "alt": "Load video: ",
+          "sourceUrl": "https://bendsoap.com"
+        },
+        {
+          "url": "https://www.bendsoap.com/cdn/shop/files/A39A4775-Enhanced-NR_84b3e29a-4043-4ab5-8f46-14a8c128a232.jpg?v=1741712214&amp;width=1500",
+          "alt": "A smiling woman in a gray gingham dress stands in a bright kitchen, holding a white box labeled &quot;Bend Soap.&quot; Behind her, a counter is decorated with colorful flowers in vases.",
+          "sourceUrl": "https://bendsoap.com"
+        }
+      ],
+      "attributes": {},
+      "descriptionBlocks": [
+        {
+          "heading": "Cleanse, exfoliate, and moisturize your skin from head to toe with these 5-star favorites.",
+          "text": "",
+          "sourceUrl": "https://bendsoap.com"
+        }
+      ],
+      "specs": [],
+      "sources": [
+        {
+          "label": "Description: Cleanse, exfoliate, and moisturize your skin from head to toe with these 5-star favorites.",
+          "url": "https://bendsoap.com",
+          "snippet": "",
+          "kind": "description"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    "website"
+  ],
+  "brands": [
+    "bendsoap"
+  ],
+  "extractedAt": "2026-01-25T16:49:32.164Z",
+  "sourceUrls": [
+    "https://bendsoap.com"
+  ]
+}

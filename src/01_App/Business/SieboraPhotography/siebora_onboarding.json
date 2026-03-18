@@ -1,0 +1,183 @@
+{
+  "id": "siebora-onboarding",
+    "stepTracker": {
+      "title": "Content & Photography Experience",
+      "description": "Walk through how professional imagery transforms your brand, event, or listing."
+    },
+    "header": {
+      "logoSrc": "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg",
+      "logoAlt": "Lifestyle Photography",
+      "shopNowLabel": "Book Now"
+    },
+    "screens": [
+      {
+        "id": "intro",
+        "stepLabel": "Intro",
+        "layout": "hero",
+        "title": "Anyone Can Take a Picture.",
+        "subtitle": "Very Few Can Tell the Story.",
+        "content": [
+          { "type": "badge", "text": "Weddings • Real Estate • Social Content • Brand Storytelling" }
+        ],
+        "media": [
+          {
+            "type": "video",
+            "src": "https://videos.pexels.com/video-files/3184425/3184425-hd_1920_1080_25fps.mp4"
+          }
+        ],
+        "buttons": [
+          { "type": "link", "label": "Book a Session", "href": "/contact" },
+          { "type": "goto", "label": "See the Difference", "target": "problem" }
+        ],
+        "nextScreenId": "problem",
+        "lightTheme": true
+      },
+      {
+        "id": "problem",
+        "stepLabel": "The Problem",
+        "layout": "twoCol",
+        "title": "Bad Content Costs You Attention.",
+        "content": [
+          { "type": "paragraph", "text": "Blurry photos. Poor lighting. No emotion." },
+          { "type": "paragraph", "text": "That’s what most people settle for." },
+          { "type": "paragraph", "text": "And it’s why listings don’t stand out, brands don’t grow, and moments get forgotten." }
+        ],
+        "media": [
+          {
+            "type": "image",
+            "src": "https://images.pexels.com/photos/274973/pexels-photo-274973.jpeg",
+            "alt": "Low quality photo example"
+          }
+        ],
+        "buttons": [
+          { "type": "back", "label": "Back" },
+          { "type": "next", "label": "Why It Matters" }
+        ],
+        "nextScreenId": "story"
+      },
+      {
+        "id": "story",
+        "stepLabel": "Why It Matters",
+        "layout": "twoCol",
+        "title": "Photos Don’t Just Capture — They Communicate.",
+        "content": [
+          { "type": "paragraph", "text": "Every image is telling people something about you." },
+          { "type": "paragraph", "text": "Professional imagery creates trust, emotion, and connection instantly." },
+          {
+            "type": "checklist",
+            "heading": "What Great Content Does",
+            "items": [
+              { "title": "Grabs Attention", "sub": "Stops scrolling instantly." },
+              { "title": "Builds Trust", "sub": "Looks professional and credible." },
+              { "title": "Tells a Story", "sub": "Shows the moment, not just the subject." },
+              { "title": "Drives Action", "sub": "Gets people to click, call, or book." }
+            ]
+          }
+        ],
+        "media": [
+          {
+            "type": "video",
+            "src": "https://videos.pexels.com/video-files/3184339/3184339-hd_1920_1080_25fps.mp4"
+          }
+        ],
+        "buttons": [
+          { "type": "back", "label": "Back" },
+          { "type": "next", "label": "See the Transformation" }
+        ],
+        "nextScreenId": "before-after"
+      },
+      {
+        "id": "before-after",
+        "stepLabel": "Transformation",
+        "layout": "twoCol",
+        "title": "The Difference Is Obvious.",
+        "content": [
+          { "type": "paragraph", "text": "Same subject. Completely different impact." },
+          { "type": "paragraph", "text": "This is what professional photography and video actually does." }
+        ],
+        "media": [
+          {
+            "type": "beforeAfter",
+            "before": "https://images.pexels.com/photos/265087/pexels-photo-265087.jpeg",
+            "after": "https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg",
+            "altBefore": "Before professional photography",
+            "altAfter": "After professional photography"
+          }
+        ],
+        "buttons": [
+          { "type": "back", "label": "Back" },
+          { "type": "next", "label": "What We Offer" }
+        ],
+        "nextScreenId": "services"
+      },
+      {
+        "id": "services",
+        "stepLabel": "Services",
+        "layout": "twoColImageLeft",
+        "title": "More Than Photos — Full Content Creation.",
+        "content": [
+          { "type": "paragraph", "text": "We don’t just take pictures — we create content that performs." },
+          {
+            "type": "checklist",
+            "heading": "Services",
+            "items": [
+              { "title": "Wedding Photography", "sub": "Capture real emotion and moments." },
+              { "title": "Real Estate Media", "sub": "Sell the space before they walk in." },
+              { "title": "Social Media Content", "sub": "Consistent, engaging visuals." },
+              { "title": "Brand Storytelling", "sub": "Show who you are, not just what you do." }
+            ]
+          }
+        ],
+        "media": [
+          {
+            "type": "image",
+            "src": "https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg",
+            "alt": "Photography services"
+          }
+        ],
+        "buttons": [
+          { "type": "back", "label": "Back" },
+          { "type": "next", "label": "See Results" }
+        ],
+        "nextScreenId": "proof"
+      },
+      {
+        "id": "proof",
+        "stepLabel": "Proof",
+        "layout": "twoCol",
+        "title": "Clients See the Difference Immediately.",
+        "content": [
+          { "type": "paragraph", "text": "★★★★★", "className": "stars" },
+          { "type": "paragraph", "text": "Our listings started getting more attention instantly.", "className": "testimonial" },
+          { "type": "paragraph", "text": "– Sarah M, Realtor", "className": "testimonial-attribution" }
+        ],
+        "media": [
+          {
+            "type": "image",
+            "src": "https://images.pexels.com/photos/3182763/pexels-photo-3182763.jpeg",
+            "alt": "Client result"
+          }
+        ],
+        "buttons": [
+          { "type": "back", "label": "Back" },
+          { "type": "next", "label": "Get Started" }
+        ],
+        "nextScreenId": "cta"
+      },
+      {
+        "id": "cta",
+        "stepLabel": "Next Step",
+        "layout": "textOnly",
+        "title": "Let’s Create Something That Stands Out.",
+        "content": [
+          { "type": "paragraph", "text": "Stop blending in. Start telling your story the right way." }
+        ],
+        "media": [],
+        "buttons": [
+          { "type": "link", "label": "Book a Session", "href": "/contact" }
+        ]
+      }
+    ]
+  }
+  
+  

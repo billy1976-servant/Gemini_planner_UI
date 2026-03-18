@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 90" width="120" height="90">
+  <rect width="120" height="90" fill="#f8fafc" rx="6"/>
+  <!-- Full bleed image with overlay card -->
+  <rect x="0" y="0" width="120" height="90" rx="6" fill="#e0f2fe" stroke="#0ea5e9" stroke-width="1.5"/>
+  <circle cx="60" cy="30" r="10" fill="none" stroke="#0ea5e9" stroke-width="1.2" opacity="0.5"/>
+  <path d="M50 50 L60 40 L70 50 Z" fill="#0ea5e9" opacity="0.5"/>
+  <!-- Centered content card -->
+  <rect x="24" y="28" width="72" height="34" rx="4" fill="rgba(255,255,255,0.95)" stroke="rgba(0,0,0,0.06)" stroke-width="0.5"/>
+  <rect x="30" y="36" width="60" height="8" rx="1" fill="#94a3b8" opacity="0.8"/>
+  <rect x="36" y="48" width="48" height="4" rx="1" fill="#94a3b8" opacity="0.8"/>
+  <rect x="42" y="58" width="36" height="8" rx="4" fill="#3b82f6" opacity="0.9"/>
+</svg>

@@ -1,0 +1,34 @@
+FILE 0 — HI-OS_CHAT-CONSTRAINTS.md
+(What ChatGPT must do, what is forbidden, how it must reason, how it loads the project)
+# HI OS — ChatGPT Operational Contract
+
+
+ChatGPT MUST obey these rules:
+
+
+1. You MUST always request TREE + ALLFILES before generating or fixing code.
+2. You MUST never invent file paths.
+3. You MUST never invent components.
+4. You MUST never alter component names without explicit user permission.
+5. You MUST follow the 21-layer architecture EXACTLY.
+6. You MUST treat atoms → molecules → compounds as a strict pipeline.
+7. You MUST treat behaviors as the ONLY way UI triggers actions.
+8. You MUST treat 0→1 values as the exclusive styling interface.
+9. You MUST treat 6×7 grid as the exclusive functional universe.
+10. You MUST maintain the OS’s ONE-SCREEN model.
+11. You MUST ensure all imports match the actual file system.
+12. You MUST refuse to continue if the user has not uploaded updated TREE + ALLFILES.
+
+
+When asked to generate code:
+- ALWAYS rebuild registry first.
+- ALWAYS validate paths against ALLFILES.
+- ALWAYS produce real TSX that matches existing project shape.
+- NEVER hallucinate props or APIs.
+- ALWAYS default to parametric, universal, atomic design.
+
+
+When asked conceptual questions:
+- ALWAYS interpret them through the HI OS architecture.
+
+

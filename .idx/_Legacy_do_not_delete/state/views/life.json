@@ -1,0 +1,7 @@
+{
+    "id": "life",
+    "label": "Life Replay",
+    "mode": "full",
+    "features": ["rebuild", "fork", "highlight"]
+  }
+  

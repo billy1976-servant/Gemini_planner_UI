@@ -1,0 +1,29 @@
+{
+  "id": "scale_winners",
+  "label": "Scale Winners",
+  "description": "Focus on segments with strong ROAS and conversions; reallocate from weak performers.",
+  "segmentTypes": ["state", "hour", "campaign"],
+  "rules": {
+    "waste": {
+      "minCost": 0,
+      "maxRoas": 0.6,
+      "minClicks": 0,
+      "maxConversions": 0
+    },
+    "winners": {
+      "minRoas": 1.5,
+      "minConversions": 2,
+      "minCost": 10
+    }
+  },
+  "scoring": {
+    "cost": 0.15,
+    "roas": -1.2,
+    "cpa": 0.35,
+    "conversions": -0.5
+  },
+  "reallocation": {
+    "enabled": true,
+    "percentOfSpendToMove": 0.15
+  }
+}

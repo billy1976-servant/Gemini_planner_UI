@@ -1,0 +1,797 @@
+{
+  "version": "2.0",
+  "generatedBy": "npm run apps",
+  "buildingBlocks": {
+    "molecules": [
+      {
+        "id": "avatar",
+        "allowedContentKeys": [
+          "media",
+          "text"
+        ],
+        "expectedParams": [
+          "surface",
+          "media",
+          "text"
+        ]
+      },
+      {
+        "id": "button",
+        "allowedContentKeys": [
+          "label"
+        ],
+        "expectedParams": [
+          "surface",
+          "label",
+          "trigger"
+        ]
+      },
+      {
+        "id": "card",
+        "allowedContentKeys": [
+          "title",
+          "body",
+          "media",
+          "actions"
+        ],
+        "expectedParams": [
+          "surface",
+          "title",
+          "body",
+          "media"
+        ]
+      },
+      {
+        "id": "chip",
+        "allowedContentKeys": [
+          "title",
+          "body",
+          "media"
+        ],
+        "expectedParams": [
+          "surface",
+          "text",
+          "body",
+          "media"
+        ]
+      },
+      {
+        "id": "field",
+        "allowedContentKeys": [
+          "label",
+          "input",
+          "error"
+        ],
+        "expectedParams": [
+          "surface",
+          "label",
+          "field",
+          "error"
+        ]
+      },
+      {
+        "id": "footer",
+        "allowedContentKeys": [
+          "left",
+          "right"
+        ],
+        "expectedParams": [
+          "surface",
+          "item"
+        ]
+      },
+      {
+        "id": "list",
+        "allowedContentKeys": [
+          "items"
+        ],
+        "expectedParams": [
+          "surface",
+          "item"
+        ]
+      },
+      {
+        "id": "modal",
+        "allowedContentKeys": [
+          "title",
+          "body",
+          "actions"
+        ],
+        "expectedParams": [
+          "surface",
+          "title",
+          "body"
+        ]
+      },
+      {
+        "id": "section",
+        "allowedContentKeys": [
+          "title"
+        ],
+        "expectedParams": [
+          "surface",
+          "title"
+        ]
+      },
+      {
+        "id": "stepper",
+        "allowedContentKeys": [
+          "steps"
+        ]
+      },
+      {
+        "id": "toast",
+        "allowedContentKeys": [
+          "message"
+        ],
+        "expectedParams": [
+          "surface",
+          "text"
+        ]
+      },
+      {
+        "id": "toolbar",
+        "allowedContentKeys": [
+          "actions"
+        ],
+        "expectedParams": [
+          "surface",
+          "item"
+        ]
+      }
+    ],
+    "organs": {
+      "hero": {
+        "variants": [
+          "centered",
+          "image-bg",
+          "split-left",
+          "split-right",
+          "full-screen",
+          "short",
+          "with-cta",
+          "video-ready",
+          "right-aligned"
+        ],
+        "slots": [
+          "hero.title",
+          "hero.subtitle",
+          "hero.media",
+          "hero.cta"
+        ]
+      },
+      "header": {
+        "variants": [
+          "default",
+          "sticky-split",
+          "transparent",
+          "minimal",
+          "centered",
+          "full-width",
+          "mega-ready",
+          "shrink-on-scroll",
+          "with-announcement",
+          "compact",
+          "logo-center",
+          "nav-left"
+        ],
+        "slots": [
+          "header.logo",
+          "header.cta"
+        ]
+      },
+      "nav": {
+        "variants": [
+          "default",
+          "dropdown",
+          "mobile-collapse",
+          "centered-links"
+        ],
+        "slots": [
+          "nav.primary",
+          "nav.logo",
+          "nav.links",
+          "nav.cta"
+        ]
+      },
+      "footer": {
+        "variants": [
+          "multi-column",
+          "minimal",
+          "with-newsletter",
+          "centered",
+          "dense"
+        ],
+        "slots": [
+          "footer.primary",
+          "footer.columns",
+          "footer.newsletter",
+          "footer.copyright"
+        ]
+      },
+      "content-section": {
+        "variants": [
+          "text-only",
+          "media-left",
+          "media-right",
+          "zigzag"
+        ],
+        "slots": [
+          "content.title",
+          "content.body",
+          "content.media",
+          "content.block1",
+          "content.block2"
+        ]
+      },
+      "features-grid": {
+        "variants": [
+          "2-col",
+          "3-col",
+          "4-col",
+          "repeater"
+        ],
+        "slots": [
+          "features.items",
+          "features.title",
+          "features.cards"
+        ]
+      },
+      "gallery": {
+        "variants": [
+          "grid-2",
+          "grid-3",
+          "grid-4",
+          "carousel-ready"
+        ],
+        "slots": [
+          "gallery.items",
+          "gallery.title",
+          "gallery.images"
+        ]
+      },
+      "testimonials": {
+        "variants": [
+          "grid-3",
+          "grid-2",
+          "single-featured",
+          "carousel-ready"
+        ],
+        "slots": [
+          "testimonials.items",
+          "testimonials.title",
+          "testimonials.featured"
+        ]
+      },
+      "pricing": {
+        "variants": [
+          "2-tier",
+          "3-tier",
+          "4-tier",
+          "highlighted",
+          "minimal"
+        ],
+        "slots": [
+          "pricing.primary",
+          "pricing.title",
+          "pricing.tiers"
+        ]
+      },
+      "faq": {
+        "variants": [
+          "accordion",
+          "list",
+          "two-column"
+        ],
+        "slots": [
+          "faq.primary",
+          "faq.title",
+          "faq.items"
+        ]
+      },
+      "cta": {
+        "variants": [
+          "banner",
+          "strip",
+          "split",
+          "full-width"
+        ],
+        "slots": [
+          "cta.primary",
+          "cta.title",
+          "cta.body",
+          "cta.button"
+        ]
+      }
+    },
+    "structureTypes": [
+      "list",
+      "board",
+      "dashboard",
+      "editor",
+      "timeline",
+      "detail",
+      "wizard",
+      "gallery"
+    ],
+    "blueprintNodeTypes": [
+      "Choice",
+      "Flow",
+      "Section",
+      "Step",
+      "System",
+      "avatar",
+      "button",
+      "card",
+      "chip",
+      "content-section",
+      "cta",
+      "faq",
+      "features-grid",
+      "field",
+      "footer",
+      "gallery",
+      "header",
+      "hero",
+      "list",
+      "modal",
+      "nav",
+      "organ",
+      "pricing",
+      "screen",
+      "section",
+      "stepper",
+      "testimonials",
+      "toast",
+      "toolbar"
+    ],
+    "allowedContentKeys": {
+      "button": [
+        "label"
+      ],
+      "avatar": [
+        "media",
+        "text"
+      ],
+      "chip": [
+        "title",
+        "body",
+        "media"
+      ],
+      "field": [
+        "label",
+        "input",
+        "error"
+      ],
+      "list": [
+        "items"
+      ],
+      "stepper": [
+        "steps"
+      ],
+      "toast": [
+        "message"
+      ],
+      "toolbar": [
+        "actions"
+      ],
+      "modal": [
+        "title",
+        "body",
+        "actions"
+      ],
+      "section": [
+        "title"
+      ],
+      "footer": [
+        "left",
+        "right"
+      ],
+      "card": [
+        "title",
+        "body",
+        "media",
+        "actions"
+      ]
+    },
+    "expectedParams": {
+      "button": [
+        "surface",
+        "label",
+        "trigger"
+      ],
+      "section": [
+        "surface",
+        "title"
+      ],
+      "card": [
+        "surface",
+        "title",
+        "body",
+        "media"
+      ],
+      "toolbar": [
+        "surface",
+        "item"
+      ],
+      "list": [
+        "surface",
+        "item"
+      ],
+      "footer": [
+        "surface",
+        "item"
+      ],
+      "chip": [
+        "surface",
+        "text",
+        "body",
+        "media"
+      ],
+      "avatar": [
+        "surface",
+        "media",
+        "text"
+      ],
+      "field": [
+        "surface",
+        "label",
+        "field",
+        "error"
+      ],
+      "toast": [
+        "surface",
+        "text"
+      ],
+      "modal": [
+        "surface",
+        "title",
+        "body"
+      ]
+    },
+    "primitiveRegistryKeys": [
+      "visibility",
+      "disabled",
+      "variant",
+      "layoutDensity",
+      "buttonMode",
+      "sliderEnable",
+      "numericInputMode",
+      "modalEnable",
+      "tooltipEnable",
+      "stepSequenceMode",
+      "collectionMode",
+      "cardMode",
+      "presentationMode",
+      "dragEnable",
+      "inlineEditEnable",
+      "readOnlyMode",
+      "compactMode",
+      "advancedToggle",
+      "roleBasedAccess",
+      "animationLevel",
+      "feedbackLevel",
+      "paletteOverride",
+      "typographyOverride",
+      "interactionStrictness",
+      "loggingVerbosity"
+    ]
+  },
+  "systemDrivenReference": {
+    "palettes": [
+      "apple",
+      "crazy",
+      "dark",
+      "default",
+      "elderly",
+      "french",
+      "hiclarify",
+      "kids",
+      "playful",
+      "premium",
+      "spanish",
+      "ui-atom-token"
+    ],
+    "layoutIds": {
+      "pageLayouts": [
+        "hero-centered",
+        "hero-split",
+        "hero-split-image-right",
+        "hero-split-image-left",
+        "hero-full-bleed-image",
+        "content-narrow",
+        "content-stack",
+        "image-left-text-right",
+        "features-grid-3",
+        "testimonial-band",
+        "cta-centered",
+        "test-extensible",
+        "none",
+        "organ-toolbar",
+        "organ-sidebar",
+        "organ-filterbar",
+        "organ-paginationbar",
+        "organ-selectionbar",
+        "organ-modal",
+        "organ-splitpane",
+        "organ-listcontent",
+        "organ-columnstrip",
+        "organ-boardcolumn",
+        "organ-gridlayout",
+        "organ-widgetcell",
+        "organ-editorcontent",
+        "organ-timelineruler",
+        "organ-timelinelanestrip",
+        "organ-timelinelane",
+        "organ-detailcontent",
+        "organ-wizardstepstrip",
+        "organ-wizardstepcontent",
+        "organ-gallerygrid",
+        "organ-lightbox",
+        "organism-root",
+        "organism-modal-overlay",
+        "organ-panel"
+      ],
+      "componentLayouts": [
+        "hero-centered",
+        "hero-split",
+        "hero-split-image-right",
+        "hero-split-image-left",
+        "hero-full-bleed-image",
+        "content-narrow",
+        "content-stack",
+        "image-left-text-right",
+        "features-grid-3",
+        "testimonial-band",
+        "cta-centered",
+        "none",
+        "organ-toolbar",
+        "organ-sidebar",
+        "organ-filterbar",
+        "organ-paginationbar",
+        "organ-selectionbar",
+        "organ-modal",
+        "organ-splitpane",
+        "organ-listcontent",
+        "organ-columnstrip",
+        "organ-boardcolumn",
+        "organ-gridlayout",
+        "organ-widgetcell",
+        "organ-editorcontent",
+        "organ-timelineruler",
+        "organ-timelinelanestrip",
+        "organ-timelinelane",
+        "organ-detailcontent",
+        "organ-wizardstepstrip",
+        "organ-wizardstepcontent",
+        "organ-gallerygrid",
+        "organ-lightbox",
+        "organism-root",
+        "organism-modal-overlay",
+        "organ-panel"
+      ],
+      "templates": {
+        "startup-template": {
+          "hero": "hero-split",
+          "features": "features-grid-3",
+          "content": "content-stack"
+        }
+      }
+    },
+    "actions": [
+      "logic:runCalculator",
+      "logic:run25x",
+      "logic:resolveOnboarding",
+      "diagnostics:capabilityDomain",
+      "diagnostics:sensorRead",
+      "diagnostics:system7Route",
+      "diagnostics:actionGating",
+      "diagnostics:resolveProfile",
+      "diagnostics:mediaPayloadHook",
+      "diagnostics:exportPdf",
+      "diagnostics:exportSummary",
+      "diagnostics:setCapabilityLevel",
+      "diagnostics:inputLogSnapshot",
+      "diagnostics:systemSnapshot",
+      "diagnostics:systemSignalsReadAll",
+      "diagnostics:plannerParserPipeline",
+      "diagnostics:plannerFullParseTrace",
+      "structure:addItem",
+      "structure:addItems",
+      "structure:updateItem",
+      "structure:deleteItem",
+      "structure:setBlocksForDate",
+      "structure:setActivePlanner",
+      "structure:cancelDay",
+      "structure:addFromText",
+      "structure:addJourney",
+      "structure:setParserStaging",
+      "structure:updateStagingRow",
+      "structure:confirmStaging",
+      "structure:setTaskFolderTemplate",
+      "structure:setTaskTemplateRows",
+      "structure:setParserConfig",
+      "structure:loadRuleset",
+      "structure:ensureTaskTemplateRows",
+      "structure:setScheduledSection",
+      "structure:parseToStaging",
+      "structure:reorderItems",
+      "structure:moveItem",
+      "structure:addTreeNode",
+      "structure:removeTreeNode",
+      "structure:reorderTreeChildren",
+      "dashboard:setLayout",
+      "dashboard:addWidget",
+      "dashboard:removeWidget",
+      "wizard:next",
+      "wizard:prev",
+      "wizard:goTo",
+      "calendar.today",
+      "calendar.week",
+      "calendar.month",
+      "calendar:setDay",
+      "calendar:setWeek",
+      "calendar:setMonth",
+      "calendar:setDate"
+    ],
+    "behaviorVerbs": [
+      "crop",
+      "filter",
+      "frame",
+      "layout",
+      "motion",
+      "overlay",
+      "tap",
+      "double",
+      "long",
+      "drag",
+      "scroll",
+      "swipe",
+      "go",
+      "back",
+      "open",
+      "close",
+      "route"
+    ],
+    "engines": [
+      {
+        "name": "25x",
+        "integratesWith": [
+          "calculatorInput",
+          "calculatorResult"
+        ],
+        "description": "25X loss/intent scoring action handler"
+      },
+      {
+        "name": "abc",
+        "description": "Checkbox/cascading and branching step ordering for flows"
+      },
+      {
+        "name": "calculator",
+        "integratesWith": [
+          "calculatorInput",
+          "calcOutputs"
+        ],
+        "description": "Flow step ordering and calculator execution for flows"
+      },
+      {
+        "name": "value-comparison",
+        "description": "Product comparison by value dimensions"
+      },
+      {
+        "name": "value-translation",
+        "description": "Facts to human-meaningful value impact blocks by dimension"
+      },
+      {
+        "name": "decision",
+        "description": "Aftermath processor: EngineState to decision recommendations"
+      },
+      {
+        "name": "flow-router",
+        "description": "Signal-based next-step routing for flows"
+      },
+      {
+        "name": "json-skin",
+        "integratesWith": [
+          "currentView",
+          "currentFlow"
+        ],
+        "description": "Authoritative screen gate rendering from JSON structure"
+      },
+      {
+        "name": "learning",
+        "description": "Comprehension/readiness step ordering for education flows"
+      },
+      {
+        "name": "next-step-reason",
+        "description": "Next-step reason and explanation for flow progression"
+      },
+      {
+        "name": "onboarding-flow-router",
+        "integratesWith": [
+          "calculatorResult",
+          "scoring"
+        ],
+        "description": "Deterministic onboarding/marketing flow selection from context"
+      },
+      {
+        "name": "hi-engine-runner",
+        "description": "Post-processing runner for calculator/comparison/decision/shared"
+      },
+      {
+        "name": "aggregation",
+        "integratesWith": [
+          "structure"
+        ],
+        "description": "Aggregate signals/blockers/opportunities from structure items"
+      },
+      {
+        "name": "parser-v4",
+        "integratesWith": [
+          "structure",
+          "taskTemplateRows"
+        ],
+        "description": "Phrase tokenize, date parse, and template row match pipeline"
+      },
+      {
+        "name": "prioritization",
+        "integratesWith": [
+          "structure"
+        ],
+        "description": "Priority and cancel-day rules for structure items"
+      },
+      {
+        "name": "progression",
+        "integratesWith": [
+          "structure"
+        ],
+        "description": "Habit ramp and streak value for dates"
+      },
+      {
+        "name": "recurrence",
+        "integratesWith": [
+          "structure"
+        ],
+        "description": "Recurrence and due-date logic for structure items"
+      },
+      {
+        "name": "rule-evaluator",
+        "integratesWith": [
+          "structure"
+        ],
+        "description": "When/then rule evaluation and derived values"
+      },
+      {
+        "name": "scheduling",
+        "integratesWith": [
+          "structure"
+        ],
+        "description": "Task-to-date and block/slot scheduling"
+      },
+      {
+        "name": "structure-mapper",
+        "integratesWith": [
+          "structure"
+        ],
+        "description": "Parse result to candidate structure items with rules"
+      },
+      {
+        "name": "summary",
+        "description": "Aftermath processor: EngineState to summary output"
+      }
+    ]
+  },
+  "sources": {
+    "palettes": "src/04_Presentation/palettes/*.json",
+    "layoutDefinitions": "src/04_Presentation/layout/data/layout-definitions.json",
+    "molecules": "src/04_Presentation/components/molecules/",
+    "organs": "src/04_Presentation/components/organs/",
+    "organIndex": "src/07_Dev_Tools/scripts/organ-index.json",
+    "expectedParams": "src/02_Contracts_Reports/contracts/expected-params.ts",
+    "blueprint": "src/07_Dev_Tools/scripts/blueprint.ts",
+    "actionRegistry": "src/05_Logic/logic/runtime/action-registry.ts",
+    "contractVerbs": "src/02_Contracts_Reports/contracts/contract-verbs.ts",
+    "primitiveRegistry": "src/lib/director/primitive-registry.ts",
+    "engineRegistry": "src/system/registry/engineRegistry.ts"
+  }
+}

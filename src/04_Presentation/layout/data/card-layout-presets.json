@@ -1,0 +1,62 @@
+{
+  "image-top": {
+    "mediaPosition": "top",
+    "contentAlign": "start",
+    "mediaDominance": "balanced"
+  },
+  "image-left": {
+    "mediaPosition": "left",
+    "contentAlign": "start",
+    "mediaDominance": "balanced"
+  },
+  "image-right": {
+    "mediaPosition": "right",
+    "contentAlign": "start",
+    "mediaDominance": "balanced"
+  },
+  "image-bottom": {
+    "mediaPosition": "bottom",
+    "contentAlign": "start",
+    "mediaDominance": "balanced"
+  },
+  "centered-card": {
+    "mediaPosition": "top",
+    "contentAlign": "center",
+    "mediaDominance": "balanced"
+  },
+  "centered-image-left": {
+    "mediaPosition": "left",
+    "contentAlign": "center",
+    "mediaDominance": "balanced"
+  },
+  "centered-image-right": {
+    "mediaPosition": "right",
+    "contentAlign": "center",
+    "mediaDominance": "balanced"
+  },
+  "media-dominant-top": {
+    "mediaPosition": "top",
+    "contentAlign": "start",
+    "mediaDominance": "dominant"
+  },
+  "media-dominant-left": {
+    "mediaPosition": "left",
+    "contentAlign": "start",
+    "mediaDominance": "dominant"
+  },
+  "text-dominant-top": {
+    "mediaPosition": "top",
+    "contentAlign": "start",
+    "mediaDominance": "text-dominant"
+  },
+  "text-dominant-left": {
+    "mediaPosition": "left",
+    "contentAlign": "start",
+    "mediaDominance": "text-dominant"
+  },
+  "minimal": {
+    "mediaPosition": "top",
+    "contentAlign": "center",
+    "mediaDominance": "minimal"
+  }
+}

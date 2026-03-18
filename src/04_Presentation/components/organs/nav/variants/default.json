@@ -1,0 +1,18 @@
+{
+  "id": "organ:nav:default",
+  "type": "Section",
+  "role": "nav",
+  "layout": {
+    "type": "row",
+    "params": {
+      "gap": "1rem",
+      "justify": "space-between",
+      "align": "center",
+      "wrap": "wrap"
+    }
+  },
+  "params": {},
+  "children": [
+    { "type": "slot", "slotKey": "nav.primary" }
+  ]
+}

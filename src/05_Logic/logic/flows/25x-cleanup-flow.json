@@ -1,0 +1,29 @@
+{
+    "steps": [
+      {
+        "type": "calculator",
+        "id": "cleanup_cost",
+        "title": "Cleanup is costing you money every month",
+        "calculators": [
+          {
+            "id": "cleanup_labor_monthly",
+            "inputs": [
+              "crewSize",
+              "cleanupMinutesPerDay",
+              "hourlyWage"
+            ],
+            "formula": "(crewSize * (cleanupMinutesPerDay / 60) * hourlyWage) * 22",
+            "output": "cleanupLaborMonthly"
+          }
+        ]
+      },
+      {
+        "type": "result",
+        "id": "cleanup_result",
+        "title": "Your Monthly Cleanup Cost"
+      }
+    ]
+  }
+  
+  
+  

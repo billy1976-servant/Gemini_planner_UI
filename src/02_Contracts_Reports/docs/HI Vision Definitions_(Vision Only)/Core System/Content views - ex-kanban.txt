@@ -1,0 +1,15 @@
+CONTENT VIEWS (Kanban / Calendar / Journal as Pure Projections)
+Core idea
+Content is stored once, in normalized form, in the Brain’s ledger.
+Kanban, Calendar, Journal, Website, Drift maps, etc. are pure views:
+Kanban = grouped by status / lane
+Calendar = grouped by time
+Journal = grouped by sequence / narrative
+Website = grouped by audience / structure
+Why morphology is possible
+Because all views:
+pull from the same underlying objects (tasks, notes, media),
+simply ask for different slices and groupings.
+Morphing from “calendar” to “Kanban” is just:
+telling the Brain: “same objects, different projection,”
+swapping which organ is active on screen.

@@ -1,0 +1,132 @@
+{
+  "description": "Organ layout profiles: capabilities and valid internal layout IDs per organ type. Internal only; does not control section placement.",
+  "organs": [
+    {
+      "organId": "hero",
+      "capabilities": {
+        "hasMedia": true,
+        "hasCta": true,
+        "mediaPosition": ["none", "left", "right", "background"]
+      },
+      "internalLayoutIds": ["centered", "image-bg", "split-left", "split-right", "full-screen", "short", "with-cta", "video-ready", "right-aligned"],
+      "defaultInternalLayoutId": "centered"
+    },
+    {
+      "organId": "header",
+      "capabilities": {
+        "slots": ["logo", "cta"],
+        "arrangement": "row"
+      },
+      "internalLayoutIds": ["default", "sticky-split", "transparent", "minimal", "centered", "full-width", "mega-ready", "shrink-on-scroll", "with-announcement", "compact", "logo-center", "nav-left"],
+      "defaultInternalLayoutId": "default"
+    },
+    {
+      "organId": "nav",
+      "capabilities": {
+        "slots": ["primary"],
+        "arrangement": "row"
+      },
+      "internalLayoutIds": ["default", "dropdown", "mobile-collapse", "centered-links"],
+      "defaultInternalLayoutId": "default"
+    },
+    {
+      "organId": "footer",
+      "capabilities": {
+        "slots": ["primary"],
+        "arrangement": ["grid", "column"]
+      },
+      "internalLayoutIds": ["multi-column", "minimal", "with-newsletter", "centered", "dense"],
+      "defaultInternalLayoutId": "multi-column"
+    },
+    {
+      "organId": "content-section",
+      "capabilities": {
+        "hasMedia": true,
+        "mediaPosition": ["none", "left", "right"],
+        "blocks": ["title+body", "block1+block2"]
+      },
+      "internalLayoutIds": ["text-only", "media-left", "media-right", "zigzag"],
+      "defaultInternalLayoutId": "text-only"
+    },
+    {
+      "organId": "features-grid",
+      "capabilities": {
+        "slots": ["title", "items"],
+        "gridColumns": [2, 3, 4],
+        "repeater": true
+      },
+      "internalLayoutIds": ["2-col", "3-col", "4-col", "repeater"],
+      "defaultInternalLayoutId": "3-col"
+    },
+    {
+      "organId": "gallery",
+      "capabilities": {
+        "slots": ["title", "items"],
+        "gridColumns": [2, 3, 4],
+        "carousel": true
+      },
+      "internalLayoutIds": ["grid-2", "grid-3", "grid-4", "carousel-ready"],
+      "defaultInternalLayoutId": "grid-3"
+    },
+    {
+      "organId": "testimonials",
+      "capabilities": {
+        "slots": ["title", "items"],
+        "gridColumns": [2, 3],
+        "singleFeatured": true,
+        "carousel": true
+      },
+      "internalLayoutIds": ["grid-2", "grid-3", "single-featured", "carousel-ready"],
+      "defaultInternalLayoutId": "grid-3"
+    },
+    {
+      "organId": "pricing",
+      "capabilities": {
+        "slots": ["title", "primary"],
+        "tiers": [2, 3, 4],
+        "variants": ["minimal", "highlighted"]
+      },
+      "internalLayoutIds": ["2-tier", "3-tier", "4-tier", "highlighted", "minimal"],
+      "defaultInternalLayoutId": "3-tier"
+    },
+    {
+      "organId": "faq",
+      "capabilities": {
+        "slots": ["title", "primary"],
+        "arrangement": ["accordion", "list", "two-column"]
+      },
+      "internalLayoutIds": ["accordion", "list", "two-column"],
+      "defaultInternalLayoutId": "accordion"
+    },
+    {
+      "organId": "cta",
+      "capabilities": {
+        "slots": ["primary"],
+        "arrangement": ["banner", "strip", "split", "full-width"]
+      },
+      "internalLayoutIds": ["banner", "strip", "split", "full-width"],
+      "defaultInternalLayoutId": "banner"
+    },
+    { "organId": "toolbar", "internalLayoutIds": ["organ-toolbar"], "defaultInternalLayoutId": "organ-toolbar" },
+    { "organId": "sidebar", "internalLayoutIds": ["organ-sidebar"], "defaultInternalLayoutId": "organ-sidebar" },
+    { "organId": "filterBar", "internalLayoutIds": ["organ-filterbar"], "defaultInternalLayoutId": "organ-filterbar" },
+    { "organId": "paginationBar", "internalLayoutIds": ["organ-paginationbar"], "defaultInternalLayoutId": "organ-paginationbar" },
+    { "organId": "selectionBar", "internalLayoutIds": ["organ-selectionbar"], "defaultInternalLayoutId": "organ-selectionbar" },
+    { "organId": "modal", "internalLayoutIds": ["organ-modal"], "defaultInternalLayoutId": "organ-modal" },
+    { "organId": "splitPane", "internalLayoutIds": ["organ-splitpane"], "defaultInternalLayoutId": "organ-splitpane" },
+    { "organId": "listContent", "internalLayoutIds": ["organ-listcontent"], "defaultInternalLayoutId": "organ-listcontent" },
+    { "organId": "columnStrip", "internalLayoutIds": ["organ-columnstrip"], "defaultInternalLayoutId": "organ-columnstrip" },
+    { "organId": "boardColumn", "internalLayoutIds": ["organ-boardcolumn"], "defaultInternalLayoutId": "organ-boardcolumn" },
+    { "organId": "gridLayout", "internalLayoutIds": ["organ-gridlayout"], "defaultInternalLayoutId": "organ-gridlayout" },
+    { "organId": "widgetCell", "internalLayoutIds": ["organ-widgetcell"], "defaultInternalLayoutId": "organ-widgetcell" },
+    { "organId": "editorContent", "internalLayoutIds": ["organ-editorcontent"], "defaultInternalLayoutId": "organ-editorcontent" },
+    { "organId": "timelineRuler", "internalLayoutIds": ["organ-timelineruler"], "defaultInternalLayoutId": "organ-timelineruler" },
+    { "organId": "timelineLaneStrip", "internalLayoutIds": ["organ-timelinelanestrip"], "defaultInternalLayoutId": "organ-timelinelanestrip" },
+    { "organId": "timelineLane", "internalLayoutIds": ["organ-timelinelane"], "defaultInternalLayoutId": "organ-timelinelane" },
+    { "organId": "detailContent", "internalLayoutIds": ["organ-detailcontent"], "defaultInternalLayoutId": "organ-detailcontent" },
+    { "organId": "wizardStepStrip", "internalLayoutIds": ["organ-wizardstepstrip"], "defaultInternalLayoutId": "organ-wizardstepstrip" },
+    { "organId": "wizardStepContent", "internalLayoutIds": ["organ-wizardstepcontent"], "defaultInternalLayoutId": "organ-wizardstepcontent" },
+    { "organId": "galleryGrid", "internalLayoutIds": ["organ-gallerygrid"], "defaultInternalLayoutId": "organ-gallerygrid" },
+    { "organId": "lightbox", "internalLayoutIds": ["organ-lightbox"], "defaultInternalLayoutId": "organ-lightbox" }
+  ]
+}

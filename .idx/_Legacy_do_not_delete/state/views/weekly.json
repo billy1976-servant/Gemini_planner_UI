@@ -1,0 +1,7 @@
+{
+    "id": "weekly",
+    "label": "Weekly Summary",
+    "mode": "aggregate",
+    "range": "7d"
+  }
+  

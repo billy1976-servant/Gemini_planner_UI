@@ -1,0 +1,6 @@
+{
+  "layout": "masonry",
+  "grid": { "columns": 4, "gap": 12, "aspectRatio": "auto" },
+  "lightbox": { "enabled": true, "swipe": true },
+  "density": "compact"
+}

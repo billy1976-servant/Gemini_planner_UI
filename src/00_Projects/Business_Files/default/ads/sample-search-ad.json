@@ -1,0 +1,18 @@
+{
+  "id": "sample-search-ad-1",
+  "campaignId": "100001",
+  "variantId": "variant-brand-us",
+  "headlines": [
+    "Brand Search - US",
+    "Get Started Today"
+  ],
+  "descriptions": [
+    "Connect with your audience. See results that matter.",
+    "Drive growth with targeted campaigns."
+  ],
+  "finalUrl": "https://example.com/landing",
+  "displayUrl": "example.com",
+  "callToAction": "Sign up",
+  "status": "active",
+  "onboardingFlowId": "container-direct-buy"
+}

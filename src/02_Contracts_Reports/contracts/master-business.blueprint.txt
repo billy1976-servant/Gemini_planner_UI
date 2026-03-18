@@ -1,0 +1,131 @@
+APP: MasterBusinessWebsite
+
+0.0 | Root | Section [none]
+
+1.0 | SiteHeader | organ:header [header.logo, header.cta]
+    variant: default
+
+2.0 | Home | Section [title]
+
+  2.1 | Hero | organ:hero [hero.title, hero.subtitle, hero.cta]
+      variant: centered
+
+  2.2 | Intro | Section [title]
+
+  2.3 | Features | organ:features-grid [features.title, features.items]
+      variant: repeater
+
+  2.4 | PrimaryCTA | organ:cta [cta.title, cta.button]
+      variant: banner
+
+  2.5 | LearnMore | Button [label] (tap) -> 3.0 About
+
+  2.6 | ViewServices | Button [label] (tap) -> 4.0 Services
+
+  2.7 | ViewProducts | Button [label] (tap) -> 5.0 Products
+
+  2.8 | ContactEntry | Button [label] (tap) -> 9.0 Contact
+
+3.0 | About | Section [title]
+
+  3.1 | AboutIntro | Section [title]
+
+  3.2 | Story | organ:content-section [content.title, content.body]
+      variant: text-only
+
+  3.3 | Team | organ:gallery [gallery.items]
+      variant: grid-3
+
+  3.4 | Testimonials | organ:testimonials [testimonials.items]
+      variant: grid-2
+
+  3.5 | BackHome | Button [label] (back) -> 2.0 Home
+
+4.0 | Services | Section [title]
+
+  4.1 | ServicesHero | organ:hero [hero.title, hero.subtitle, hero.cta]
+      variant: short
+
+  4.2 | ServiceList | organ:features-grid [features.title, features.items]
+      variant: repeater
+
+  4.3 | ServiceDetails | Section [title]
+
+  4.4 | ServiceItem | Card [title, body]
+
+  4.5 | RequestService | Button [label] (tap) -> 9.0 Contact
+
+  4.6 | BackHome | Button [label] (back) -> 2.0 Home
+
+5.0 | Products | Section [title]
+
+  5.1 | ProductHero | organ:hero [hero.title, hero.subtitle, hero.cta]
+      variant: short
+
+  5.2 | ProductGrid | organ:gallery [gallery.items]
+      variant: grid-4
+
+  5.3 | ProductCard | Card [media, title, body]
+
+  5.4 | ViewProduct | Button [label] (tap) -> 6.0 ProductDetail
+
+  5.5 | BackHome | Button [label] (back) -> 2.0 Home
+
+6.0 | ProductDetail | Section [title]
+
+  6.1 | ProductMedia | Card [media]
+
+  6.2 | ProductInfo | Card [title, body]
+
+  6.3 | BuyNow | Button [label] (tap) -> 7.0 Checkout
+
+  6.4 | BackProducts | Button [label] (back) -> 5.0 Products
+
+7.0 | Checkout | Section [title]
+
+  7.1 | BuyerInfo | Section [title]
+
+    7.1.1 | Name | Field [label]
+    7.1.2 | Email | Field [label]
+    7.1.3 | Address | Field [label]
+
+  7.2 | ConfirmOrder | Button [label] (tap) -> 8.0 Success
+
+  7.3 | CancelOrder | Button [label] (back) -> 5.0 Products
+
+8.0 | Success | Section [title]
+
+  8.1 | ConfirmationCard | Card [title, body]
+
+  8.2 | ContinueShopping | Button [label] (tap) -> 5.0 Products
+
+  8.3 | ReturnHome | Button [label] (tap) -> 2.0 Home
+
+9.0 | Contact | Section [title]
+
+  9.1 | ContactIntro | Section [title]
+
+  9.2 | ContactForm | Section [title]
+
+    9.2.1 | ContactName | Field [label]
+    9.2.2 | ContactEmail | Field [label]
+    9.2.3 | Message | Field [label]
+
+  9.3 | SubmitContact | Button [label] (tap) -> 8.0 Success
+
+  9.4 | BackHome | Button [label] (back) -> 2.0 Home
+
+10.0 | FAQ | organ:faq [faq.items]
+    variant: accordion
+
+  10.1 | BackHome | Button [label] (back) -> 2.0 Home
+
+11.0 | Pricing | organ:pricing [pricing.tiers]
+    variant: 3-tier
+
+  11.1 | StartPlan | Button [label] (tap) -> 9.0 Contact
+
+  11.2 | BackHome | Button [label] (back) -> 2.0 Home
+
+12.0 | SiteFooter | organ:footer [footer.columns, footer.copyright]
+    variant: multi-column

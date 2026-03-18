@@ -1,0 +1,106 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "strict": false,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "preserve",
+    "lib": ["dom", "dom.iterable", "esnext"],
+
+
+    /* ============================
+       PATH FIX — REQUIRED FOR @/*
+       ============================ */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@/app/*": ["src/app/*"],
+      "@/engine/*": ["src/03_Runtime/engine/*"],
+      "@/engine/debug/*": ["src/07_Dev_Tools/engine-debug/*"],
+      "@/03_Runtime/debug/*": ["src/03_Runtime/debug/*"],
+      "@/engine/devtools/*": ["src/07_Dev_Tools/engine-devtools/*"],
+      "@/engine/core/diagnostics/*": ["src/07_Dev_Tools/engine-diagnostics/*"],
+      "@/components/*": ["src/04_Presentation/components/*"],
+      "@/compounds/*": ["src/04_Presentation/ui/compounds/*"],
+      "@/config/*": ["src/07_Dev_Tools/config/*"],
+      "@/content/*": ["src/06_Data/content/*"],
+      "@/apps-tsx": ["src/01_App/(dead) Tsx"],
+      "@/apps-tsx/*": ["src/01_App/(dead) Tsx/*"],
+      "@/business": ["src/01_App/Business"],
+      "@/business/*": ["src/01_App/Business/*"],
+      "@/apps-tsx/core/*": ["src/01_App/(dead) screens/core/*"],
+      "@/apps-tsx/config": ["src/01_App/(dead) Tsx/config"],
+      "@/apps-tsx/config/*": ["src/01_App/(dead) Tsx/config/*"],
+      "@/apps-json": ["src/01_App/(dead) Json"],
+      "@/apps-json/*": ["src/01_App/(dead) Json/*"],
+      "@/layout": ["src/04_Presentation/layout"],
+      "@/layout/*": ["src/04_Presentation/layout/*"],
+      "@/styles/*": ["src/07_Dev_Tools/styles/*"],
+      "@/system-control/*": ["src/07_Dev_Tools/system-control/*"],
+      "@/layout-organ": ["src/04_Presentation/layout-organ"],
+      "@/layout-organ/*": ["src/04_Presentation/layout-organ/*"],
+      "@/palettes": ["src/04_Presentation/palettes"],
+      "@/palettes/*": ["src/04_Presentation/palettes/*"],
+      "@/compiler/*": ["src/06_Data/compiler/*"],
+      "@/screens/*": ["src/01_App/(dead) screens/*"],
+      "@/ui/*": ["src/04_Presentation/ui/*"],
+      "@/ux/*": ["src/04_Presentation/ux/*"],
+      "@/registry/*": ["src/04_Presentation/registry/*"],
+      "@/scans/*": ["src/07_Dev_Tools/scans/*"],
+      "@/state/*": ["src/03_Runtime/state/*"],
+      "@/behavior/*": ["src/03_Runtime/behavior/*"],
+      "@/logic/*": ["src/05_Logic/logic/*"],
+      "@/runtime": ["src/03_Runtime/runtime"],
+      "@/runtime/*": ["src/03_Runtime/runtime/*"],
+      "@/contracts/*": ["src/02_Contracts_Reports/contracts/*"],
+      "@/lib/layout/*": ["src/04_Presentation/lib-layout/*"],
+      "@/lib/media/*": ["src/04_Presentation/lib-media/*"],
+      "@/lib/site-compiler/*": ["src/06_Data/site-compiler/*"],
+      "@/lib/siteCompiler": ["src/06_Data/siteCompiler"],
+      "@/lib/siteCompiler/*": ["src/06_Data/siteCompiler/*"],
+      "@/runtime/diagnostics/*": ["src/07_Dev_Tools/runtime-diagnostics/*"],
+      "@/lib/site-normalizer/*": ["src/06_Data/site-normalizer/*"],
+      "@/lib/site-engines/*": ["src/06_Data/site-engines/*"],
+      "@/lib/site-skin/*": ["src/06_Data/site-skin/*"],
+      "@/lib/site-renderer/*": ["src/06_Data/site-renderer/*"],
+      "@/lib/site-schema/*": ["src/06_Data/site-schema/*"],
+      "@/lib/product-screen-adapter/*": ["src/06_Data/product-screen-adapter/*"],
+      "@/lib/screens/*": ["src/06_Data/screens/*"],
+      "@/types/*": ["src/07_Dev_Tools/types/*"],
+      "@/devtools/*": ["src/07_Dev_Tools/devtools/*"],
+      "@/diagnostics/*": ["src/07_Dev_Tools/diagnostics/*"],
+      "@/debug/*": ["src/07_Dev_Tools/debug/*"],
+      "@/dev/*": ["src/07_Dev_Tools/dev/*"]
+    },
+
+
+    "incremental": true,
+    "plugins": [{ "name": "next" }]
+  },
+
+
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "src/03_Runtime/engine/core/styler.tsx"
+  ],
+
+
+  "exclude": [
+    "node_modules",
+    "src/01_App/(dead) Tsx/tsx-screens/generated/**/*",
+    "src/999_Cleanup/**/*",
+    "src/05_Logic/logic/business/csv/e2e-csv-import.ts"
+  ]
+}
+
+

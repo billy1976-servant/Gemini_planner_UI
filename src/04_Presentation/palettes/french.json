@@ -1,0 +1,215 @@
+{
+    "page": { "background": "#F8F8F6", "foreground": "#0D0D0D" },
+    "color": {
+      "surface": "#FFFFFF",
+      "surfaceVariant": "#ECEBE8",
+      "primary": "#1A252F",
+      "primaryVariant": "#0F161D",
+      "onPrimary": "#FFFFFF",
+      "onSurface": "#0D0D0D",
+      "outline": "#A8A6A0",
+      "outlineVariant": "#C4C2BE",
+      "outlineStrong": "#5C5145",
+      "secondary": "#5C5145",
+      "error": "#8B0000",
+      "errorContainer": "#F3D6DB",
+      "onErrorContainer": "#3B0008"
+    },
+    "text": { "primary": "#0D0D0D", "muted": "#5C5145", "strong": "#0D0D0D" },
+    "accent": { "primary": "#1A252F", "soft": "#ECEBE8" },
+    "border": { "soft": "#A8A6A0", "strong": "#5C5145" },
+    "radius": {
+      "none": 0,
+      "sm": 3,
+      "md": 6,
+      "lg": 10,
+      "xl": 16
+    },
+  
+  
+    "padding": {
+      "none": 0,
+      "xs": 6,
+      "sm": 12,
+      "md": 20,
+      "lg": 32,
+      "xl": 48,
+      "2xl": 72,
+      "3xl": 112
+    },
+
+
+    "gap": {
+      "xs": 6,
+      "sm": 12,
+      "md": 20,
+      "lg": 32,
+      "xl": 48,
+      "2xl": 72,
+      "3xl": 112
+    },
+
+  "spacing": {
+    "sectionPadding": "padding.lg",
+    "cardPadding": "padding.md",
+    "inlinePadding": "padding.sm",
+    "stackGap": "gap.md",
+    "inlineGap": "gap.sm",
+    "compactGap": "gap.xs"
+  },
+
+
+    "textSize": {
+      "xs": 12,
+      "sm": 14,
+      "md": 16,
+      "lg": 18,
+      "xl": 20,
+      "display": 64,
+      "headline": 44,
+      "title": 30,
+      "bodyLg": 18,
+      "body": 16,
+      "caption": 14
+    },
+
+
+    "textWeight": {
+      "regular": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700
+    },
+
+
+    "lineHeight": {
+      "display": 1.05,
+      "headline": 1.15,
+      "title": 1.25,
+      "tight": 1.2,
+      "normal": 1.55,
+      "relaxed": 1.75
+    },
+
+
+    "letterSpacing": {
+      "tight": -0.2,
+      "normal": 0.05,
+      "loose": 0.4
+    },
+  
+  
+    "shadow": {
+      "none": "none",
+      "sm": "0 1px 3px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.08)",
+      "md": "0 4px 12px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.1)",
+      "lg": "0 12px 24px rgba(0,0,0,0.15), 0 4px 8px rgba(0,0,0,0.1)"
+    },
+  
+  
+    "opacity": {
+      "full": 1.0,
+      "dim": 0.95,
+      "low": 0.85
+    },
+  
+  
+    "borderWidth": {
+      "none": 0,
+      "sm": 1,
+      "md": 2
+    },
+  
+  
+    "size": {
+      "xs": 20,
+      "sm": 32,
+      "md": 48,
+      "lg": 64
+    },
+
+    "textRole": {
+      "display": { "size": "textSize.display", "weight": "textWeight.bold", "lineHeight": "lineHeight.display", "letterSpacing": "letterSpacing.tight" },
+      "headline": { "size": "textSize.headline", "weight": "textWeight.bold", "lineHeight": "lineHeight.headline", "letterSpacing": "letterSpacing.tight" },
+      "title": { "size": "textSize.title", "weight": "textWeight.semibold", "lineHeight": "lineHeight.title" },
+      "subtitle": { "size": "textSize.lg", "weight": "textWeight.medium", "lineHeight": "lineHeight.normal", "color": "color.secondary" },
+      "bodyLg": { "size": "textSize.bodyLg", "weight": "textWeight.regular", "lineHeight": "lineHeight.relaxed" },
+      "body": { "size": "textSize.body", "weight": "textWeight.regular", "lineHeight": "lineHeight.relaxed" },
+      "label": { "size": "textSize.sm", "weight": "textWeight.semibold", "lineHeight": "lineHeight.normal", "letterSpacing": "letterSpacing.loose" },
+      "caption": { "size": "textSize.caption", "weight": "textWeight.regular", "lineHeight": "lineHeight.normal", "color": "color.secondary" }
+    },
+
+  "surface": {
+    "app": "#F8F8F6",
+    "section": "#FAFAF8",
+    "card": "#FFFFFF",
+    "elevated": "#FFFFFF",
+    "base": "#FFFFFF",
+    "variant": "#ECEBE8",
+    "hero": "#F2F1EE",
+    "primary": "#FFFFFF",
+    "secondary": "#FAFAF8",
+    "raised": "#FFFFFF"
+  },
+
+    "surfaceTier": {
+      "base": { "background": "color.surface", "shadow": "shadow.none" },
+      "raised": { "background": "color.surface", "shadow": "shadow.sm" },
+      "overlay": { "background": "color.surface", "shadow": "shadow.md" },
+      "floating": { "background": "color.surface", "shadow": "shadow.lg" }
+    },
+
+    "elevation": {
+      "0": "none",
+      "1": "0 1px 3px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.08)",
+      "2": "0 4px 12px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.1)",
+      "3": "0 12px 24px rgba(0,0,0,0.15), 0 4px 8px rgba(0,0,0,0.1)",
+      "4": "0 20px 40px rgba(0,0,0,0.18), 0 8px 16px rgba(0,0,0,0.12)",
+      "none": "none",
+      "low": "0 1px 3px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.08)",
+      "mid": "0 4px 12px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.1)",
+      "strong": "0 12px 24px rgba(0,0,0,0.15), 0 4px 8px rgba(0,0,0,0.1)",
+      "float": "0 20px 40px rgba(0,0,0,0.18), 0 8px 16px rgba(0,0,0,0.12)",
+      "shadowSoft": "0 1px 3px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.08)",
+      "shadowStrong": "0 12px 24px rgba(0,0,0,0.15), 0 4px 8px rgba(0,0,0,0.1)"
+    },
+
+    "prominence": {
+      "primary": { "background": "color.primary", "color": "color.onPrimary" },
+      "secondary": { "background": "color.surfaceVariant", "color": "color.onSurface" },
+      "tertiary": { "background": "color.surface", "color": "color.onSurface" }
+    },
+
+    "fontFamily": {
+      "base": "'Source Sans 3', 'Helvetica Neue', system-ui, sans-serif",
+      "sans": "'Source Sans 3', 'Helvetica Neue', system-ui, sans-serif",
+      "heading": "'Playfair Display', Georgia, 'Times New Roman', serif",
+      "mono": "'IBM Plex Mono', ui-monospace, monospace"
+    },
+
+    "transition": {
+      "fast": "150ms ease",
+      "base": "200ms ease",
+      "slow": "300ms ease",
+      "none": "none"
+    },
+
+    "transform": {
+      "hoverLift": "translateY(-1px)"
+    },
+
+  "interaction": {
+    "hover": { "opacity": 0.92, "scale": 1.01, "lift": "translateY(-2px)" },
+    "press": { "opacity": 0.85, "scale": 0.99 },
+    "disabled": { "opacity": 0.38 }
+  },
+
+  "focusRing": {
+    "color": "color.primary",
+    "width": "2px",
+    "offset": "2px"
+  }
+  }
+  
+  
+  

@@ -1,0 +1,2 @@
+Palette folder should contain all the palettes for all functions. Right now it only applies to the UI (color, radius, etc). I would like this to be the foundation for the BLUEPRINT contract. It would be amazing for clarity and stabilty for the sytem.
+Need to reorganize things a bit. I'm not sure if it is worth it, or simply to move palettes to UI???

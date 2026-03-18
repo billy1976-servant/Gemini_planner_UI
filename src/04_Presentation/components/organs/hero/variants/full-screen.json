@@ -1,0 +1,22 @@
+{
+  "id": "organ:hero:full-screen",
+  "type": "Section",
+  "role": "hero",
+  "layout": {
+    "type": "column",
+    "params": {
+      "gap": "2rem",
+      "align": "center",
+      "justify": "center"
+    }
+  },
+  "params": {
+    "textAlign": "center",
+    "height": "full-screen"
+  },
+  "children": [
+    { "type": "slot", "slotKey": "hero.title" },
+    { "type": "slot", "slotKey": "hero.subtitle" },
+    { "type": "slot", "slotKey": "hero.cta" }
+  ]
+}

@@ -1,0 +1,37 @@
+// src/state/state-resolver.ts
+import { StateEvent, DerivedState } from "./state";
+
+
+export function deriveState(
+  log: StateEvent[],
+  experience?: string
+): DerivedState {
+  const derived: DerivedState = {
+    journal: [],
+    tasks: [],
+    rawCount: log.length,
+  };
+
+
+
+  for (const evt of log) {
+    switch (evt.intent) {
+      case "journal.add":
+        if (evt.payload?.text) {
+          // 🔒 SAFE: supports string OR object without changing existing behavior
+          derived.journal.push(evt.payload.text);
+        }
+        break;
+
+
+      case "task.add":
+        derived.tasks.push({
+          id: evt.id,
+          title: evt.payload?.title ?? "Untitled",
+        });
+        break;
+    }
+  }
+
+  return derived;
+}

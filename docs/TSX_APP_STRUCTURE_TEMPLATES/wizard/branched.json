@@ -1,0 +1,6 @@
+{
+  "steps": { "source": "data", "showProgress": true, "progressStyle": "bar" },
+  "navigation": { "back": true, "next": true, "skip": true, "placement": "bottom" },
+  "branching": { "enabled": true, "decisionKey": "branch" },
+  "linear": false
+}

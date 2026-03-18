@@ -1,0 +1,9 @@
+{
+    "id": "form",
+    "fields": [
+      { "key": "name", "persist": true },
+      { "key": "email", "persist": true },
+      { "key": "message" }
+    ]
+  }
+  

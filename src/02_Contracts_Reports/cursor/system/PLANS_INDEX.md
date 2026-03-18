@@ -1,0 +1,39 @@
+# System Plans Index
+
+**Purpose:** Index of master system refactor plans. Plans live in `planned/` until verified, then move to `complete/`.
+
+**Source:** Full system architecture scan; see [SYSTEM_INTELLIGENCE_AUTOGEN/START_HERE.generated.md](../../docs/SYSTEM_INTELLIGENCE_AUTOGEN/START_HERE.generated.md).
+
+---
+
+## Planned (pre-verification)
+
+| # | Plan | Purpose |
+|---|------|--------|
+| 0 | [0_MASTER_SYSTEM_REFACTOR_ROADMAP.md](planned/0_MASTER_SYSTEM_REFACTOR_ROADMAP.md) | 8–12 tracks; global acceptance criteria |
+
+---
+
+## Complete (verified)
+
+| # | Plan | Status |
+|---|------|--------|
+| 1 | [1_BLUEPRINT_COMPILER_CONTRACT_AND_GAPS_PLAN.md](complete/1_BLUEPRINT_COMPILER_CONTRACT_AND_GAPS_PLAN.md) | ✅ PASS |
+| 2 | [2_SCREEN_LOADING_AND_API_CONTRACT_PLAN.md](complete/2_SCREEN_LOADING_AND_API_CONTRACT_PLAN.md) | ✅ PASS |
+| 3 | [3_REGISTRY_AND_COMPONENT_RESOLUTION_PLAN.md](complete/3_REGISTRY_AND_COMPONENT_RESOLUTION_PLAN.md) | ✅ PASS |
+| 4 | [4_LAYOUT_SYSTEM_REFACTOR_MASTER_PLAN.md](complete/4_LAYOUT_SYSTEM_REFACTOR_MASTER_PLAN.md) | ✅ PASS |
+| 5 | [5_LOGIC_ENGINE_DISCOVERY_AND_WIRING_PLAN.md](complete/5_LOGIC_ENGINE_DISCOVERY_AND_WIRING_PLAN.md) | ✅ PASS |
+| 6 | [6_STATE_AUTHORITY_AND_INTENT_GOVERNANCE_PLAN.md](complete/6_STATE_AUTHORITY_AND_INTENT_GOVERNANCE_PLAN.md) | ✅ PASS |
+| 7 | [7_BEHAVIOR_VERB_SURFACE_AND_ROUTING_PLAN.md](complete/7_BEHAVIOR_VERB_SURFACE_AND_ROUTING_PLAN.md) | ✅ PASS |
+| 8 | [8_ORGAN_EXPANSION_AND_VARIANT_GOVERNANCE_PLAN.md](complete/8_ORGAN_EXPANSION_AND_VARIANT_GOVERNANCE_PLAN.md) | ✅ PASS |
+| 9 | [9_SKIN_BINDINGS_AND_DATA_FLOW_PLAN.md](complete/9_SKIN_BINDINGS_AND_DATA_FLOW_PLAN.md) | ✅ PASS |
+| 10 | [10_RUNTIME_TRACEABILITY_AND_DECISION_TRACE_PLAN.md](complete/10_RUNTIME_TRACEABILITY_AND_DECISION_TRACE_PLAN.md) | ✅ PASS |
+| 11 | [11_JSON_REGISTRY_COVERAGE_AND_VALIDATION_PLAN.md](complete/11_JSON_REGISTRY_COVERAGE_AND_VALIDATION_PLAN.md) | ✅ PASS |
+| 12 | [12_DEAD_CODE_AND_DUPLICATION_REMOVAL_PLAN.md](complete/12_DEAD_CODE_AND_DUPLICATION_REMOVAL_PLAN.md) | ✅ PASS |
+
+---
+
+## Verification
+
+- Each plan has a **Verification Report** section at the bottom.
+- Rollup: [MASTER_VERIFICATION_SUMMARY.generated.md](../../docs/SYSTEM_INTELLIGENCE_AUTOGEN/MASTER_VERIFICATION_SUMMARY.generated.md).

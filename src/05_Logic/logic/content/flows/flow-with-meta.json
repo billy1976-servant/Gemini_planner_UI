@@ -1,0 +1,175 @@
+{
+  "id": "flow-with-meta",
+  "title": "Why This Matters (with Metadata)",
+  "steps": [
+    {
+      "id": "profit-drain",
+      "title": "Profit Drain",
+      "body": "Cleanup time quietly drains profit daily.",
+      "image": "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&h=400&fit=crop",
+      "imageAlt": "Profit loss visualization",
+      "meta": {
+        "purpose": "explain",
+        "weight": 3,
+        "tags": ["profit", "cost"],
+        "exportRole": "primary"
+      },
+      "choices": [
+        {
+          "id": "next",
+          "label": "Next",
+          "kind": "understand",
+          "meta": {
+            "weight": 1
+          },
+          "outcome": {
+            "signals": [
+              "profit_drain"
+            ],
+            "opportunities": [
+              "profit_drain_understood"
+            ],
+            "severity": "high",
+            "affects": [
+              "timeline",
+              "bid_quality",
+              "profitability"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "safety-trust",
+      "title": "Safety & Trust",
+      "body": "Clean sites reduce safety risk and improve trust.",
+      "image": "https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&h=400&fit=crop",
+      "imageAlt": "Clean and safe construction site",
+      "meta": {
+        "purpose": "decide",
+        "weight": 5,
+        "tags": ["safety", "trust"],
+        "exportRole": "primary"
+      },
+      "choices": [
+        {
+          "id": "i-understand",
+          "label": "I understand",
+          "kind": "understand",
+          "outcome": {
+            "signals": [
+              "safety_concern"
+            ],
+            "opportunities": [
+              "safety_trust_understood"
+            ],
+            "severity": "high",
+            "affects": [
+              "client_confidence",
+              "referrals",
+              "liability"
+            ]
+          }
+        },
+        {
+          "id": "need-more-info",
+          "label": "Need more info",
+          "kind": "more",
+          "outcome": {
+            "signals": [
+              "safety_concern"
+            ],
+            "blockers": [
+              "safety_trust_needs_help"
+            ],
+            "severity": "medium",
+            "affects": [
+              "client_confidence"
+            ]
+          }
+        },
+        {
+          "id": "not-a-priority",
+          "label": "Not a priority",
+          "kind": "unsure",
+          "outcome": {
+            "signals": [
+              "safety_concern"
+            ],
+            "blockers": [
+              "safety_trust_blocked"
+            ],
+            "severity": "high",
+            "affects": [
+              "client_confidence",
+              "liability"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "appearance-impact",
+      "title": "Appearance Impact",
+      "body": "Appearance influences bids, referrals, and closeouts.",
+      "image": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=400&fit=crop",
+      "imageAlt": "Professional site appearance",
+      "choices": [
+        {
+          "id": "next",
+          "label": "Next",
+          "kind": "understand",
+          "outcome": {
+            "signals": [
+              "appearance_impact"
+            ],
+            "opportunities": [
+              "appearance_impact_understood"
+            ],
+            "severity": "medium",
+            "affects": [
+              "bids",
+              "referrals",
+              "closeouts"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "routing": {
+    "defaultNext": "linear",
+    "rules": [
+      {
+        "when": {
+          "signals": [
+            "profit_drain"
+          ]
+        },
+        "then": "goto",
+        "gotoStep": "safety-trust"
+      },
+      {
+        "when": {
+          "signals": [
+            "skip_selected"
+          ]
+        },
+        "then": "goto",
+        "gotoStep": "appearance-impact"
+      },
+      {
+        "when": {
+          "signals": [
+            "safety_concern"
+          ],
+          "blockers": [
+            "safety_trust_blocked"
+          ]
+        },
+        "then": "goto",
+        "gotoStep": "appearance-impact"
+      }
+    ]
+  }
+}

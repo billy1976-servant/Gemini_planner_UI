@@ -1,0 +1,22 @@
+{
+  "default": {
+    "section": { "surface": { }, "layout": { "gap": "var(--spacing-md)" } },
+    "card": { "surface": { } }
+  },
+  "luxury": {
+    "section": { "surface": { }, "layout": { "gap": "var(--spacing-xl)" } },
+    "card": { "surface": { } }
+  },
+  "saas": {
+    "section": { "surface": { }, "layout": { "gap": "var(--spacing-md)" } },
+    "card": { "surface": { } }
+  },
+  "magazine": {
+    "section": { "surface": { }, "layout": { "gap": "var(--spacing-lg)" } },
+    "card": { "surface": { } }
+  },
+  "course": {
+    "section": { "surface": { }, "layout": { "gap": "var(--spacing-md)" } },
+    "card": { "surface": { } }
+  }
+}

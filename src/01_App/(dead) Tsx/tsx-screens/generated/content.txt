@@ -1,0 +1,79 @@
+0.0 Test Flow (Flow)
+- title: "Why This Matters"
+
+1.0 Profit Drain (Step)
+- title: "Profit Drain"
+- body: "Cleanup time quietly drains profit daily."
+- image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&h=400&fit=crop"
+- imageAlt: "Profit loss visualization"
+
+[meta:1.0]
+purpose=explain
+weight=3
+tags=profit,cost
+exportRole=primary
+
+1.1 Next (Choice)
+- label: "Next"
+- kind: "understand"
+- signals: ["profit_drain"]
+- opportunities: ["profit_drain_understood"]
+- severity: "high"
+- affects: ["timeline", "bid_quality", "profitability"]
+
+[meta:1.1]
+weight=1
+
+1.2 Skip (Choice)
+- label: "Skip"
+- kind: "unsure"
+
+2.0 Safety Trust (Step)
+- title: "Safety & Trust"
+- body: "Clean sites reduce safety risk and improve trust."
+- image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&h=400&fit=crop"
+- imageAlt: "Clean and safe construction site"
+
+[meta:2.0]
+purpose=decide
+weight=5
+tags=safety,trust
+exportRole=primary
+
+2.1 I understand (Choice)
+- label: "I understand"
+- kind: "understand"
+- signals: ["safety_concern"]
+- opportunities: ["safety_trust_understood"]
+- severity: "high"
+- affects: ["client_confidence", "referrals", "liability"]
+
+2.2 Need more info (Choice)
+- label: "Need more info"
+- kind: "more"
+- signals: ["safety_concern"]
+- blockers: ["safety_trust_needs_help"]
+- severity: "medium"
+- affects: ["client_confidence"]
+
+2.3 Not a priority (Choice)
+- label: "Not a priority"
+- kind: "unsure"
+- signals: ["safety_concern"]
+- blockers: ["safety_trust_blocked"]
+- severity: "high"
+- affects: ["client_confidence", "liability"]
+
+3.0 Appearance Impact (Step)
+- title: "Appearance Impact"
+- body: "Appearance influences bids, referrals, and closeouts."
+- image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=400&fit=crop"
+- imageAlt: "Professional site appearance"
+
+3.1 Next (Choice)
+- label: "Next"
+- kind: "understand"
+- signals: ["appearance_impact"]
+- opportunities: ["appearance_impact_understood"]
+- severity: "medium"
+- affects: ["bids", "referrals", "closeouts"]

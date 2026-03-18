@@ -1,0 +1,69 @@
+1.0 RootSection (Section)
+- title: "[Company Name] - Root Section"
+
+1.0.1 NavStepper (Stepper)
+- steps: "Step 1 → Step 2 → Step 3"
+
+1.0.2 HeroSection (Section)
+- title: "[Company Name] - Hero Section"
+
+1.0.2.1 HeroCard (Card)
+- body: "Quality work and reliable service. Customize this hero message for your company."
+- media: ""
+
+1.0.2.2 HeroCta (Button)
+- label: "View Our Services"
+
+1.0.3 AboutSection (Section)
+- title: "About Our Company"
+
+1.0.3.1 AboutCard (Card)
+- body: "We are a trusted local business with years of experience. Our team is dedicated to delivering excellent results for every client."
+
+1.0.4 ServicesSection (Section)
+- title: "Our Services"
+
+1.0.4.1 ServicesCard (Card)
+- body: "We offer a full range of services to meet your needs. Contact us for a free estimate."
+
+1.0.4.2 ServicesList (Card)
+- body: "Service one • Service two • Service three. Update this list in your content."
+
+1.0.5 ContactSection (Section)
+- title: "Contact Us"
+
+1.0.5.1 ContactName (Field)
+- label: "Your Name"
+- input: ""
+
+1.0.5.2 ContactEmail (Field)
+- label: "Email"
+- input: ""
+
+1.0.5.3 ContactMessage (Field)
+- label: "Message"
+- input: ""
+
+1.0.5.4 ContactSubmit (Button)
+- label: "Send Message"
+
+1.0.6 BookingSection (Section)
+- title: "Request a Quote or Appointment"
+
+1.0.6.1 BookingPrompt (Card)
+- body: "Tell us about your project and preferred date. We'll get back to you shortly."
+
+1.0.6.2 BookingDate (Field)
+- label: "Preferred Date"
+- input: ""
+
+1.0.6.3 BookingNotes (Field)
+- label: "Project Details"
+- input: ""
+
+1.0.6.4 BookingSubmit (Button)
+- label: "Submit Request"
+
+1.0.7 FooterBlock (Footer)
+- left: "[Company Name]"
+- right: "© [Company Name]"

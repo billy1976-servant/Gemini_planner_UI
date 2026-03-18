@@ -1,0 +1,17 @@
+{
+  "id": "organ:testimonials:single-featured",
+  "type": "Section",
+  "role": "testimonials",
+  "layout": {
+    "type": "column",
+    "params": {
+      "gap": "1rem",
+      "align": "center"
+    }
+  },
+  "params": {},
+  "children": [
+    { "type": "slot", "slotKey": "testimonials.title" },
+    { "type": "slot", "slotKey": "testimonials.featured" }
+  ]
+}

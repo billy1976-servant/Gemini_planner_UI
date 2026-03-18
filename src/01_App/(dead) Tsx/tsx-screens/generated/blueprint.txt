@@ -1,0 +1,16 @@
+0.0 | Test Flow | Flow
+
+1.0 | Profit Drain | Step
+  1.1 | Next | Choice
+      -> 2.0 Safety Trust
+1.2 | Skip | Choice
+      -> 3.0 Appearance Impact
+
+2.0 | Safety Trust | Step
+  2.1 | I understand | Choice
+  2.2 | Need more info | Choice
+  2.3 | Not a priority | Choice
+      -> 3.0 Appearance Impact
+
+3.0 | Appearance Impact | Step
+  3.1 | Next | Choice

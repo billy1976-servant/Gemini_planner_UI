@@ -1,0 +1,24 @@
+{
+  "criticalRoles": ["writing", "focus"],
+  "optionalRoles": ["reflect", "action", "track", "prompt", "input", "viewer"],
+  "roleDescriptions": {
+    "writing": "Primary journaling content area - where users write their entries",
+    "focus": "Focused input and interaction area - for prompts and forms",
+    "reflect": "Reflection and review area - for viewing past entries",
+    "action": "Action buttons and controls - save, submit, navigation",
+    "track": "Progress tracking and navigation - stepper, tabs",
+    "prompt": "Guiding prompts and questions",
+    "input": "Text input fields for journal entries",
+    "viewer": "Read-only view of saved entries"
+  },
+  "roleCompatibility": {
+    "writing": ["content-narrow", "content-stack", "reflection-spacious", "focus-narrow"],
+    "focus": ["content-stack", "content-narrow", "focus-narrow"],
+    "reflect": ["content-stack", "content-narrow", "reflection-spacious"],
+    "action": ["content-stack", "action-row"],
+    "track": ["navigation-row", "content-stack"],
+    "prompt": ["content-stack", "content-narrow"],
+    "input": ["content-stack", "content-narrow"],
+    "viewer": ["content-stack", "content-narrow", "reflection-spacious"]
+  }
+}

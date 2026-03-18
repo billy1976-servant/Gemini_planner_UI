@@ -1,0 +1,21 @@
+{
+  "id": "organ:hero:right-aligned",
+  "type": "Section",
+  "role": "hero",
+  "layout": {
+    "type": "column",
+    "params": {
+      "gap": "1.5rem",
+      "align": "flex-end",
+      "justify": "center"
+    }
+  },
+  "params": {
+    "textAlign": "right"
+  },
+  "children": [
+    { "type": "slot", "slotKey": "hero.title" },
+    { "type": "slot", "slotKey": "hero.subtitle" },
+    { "type": "slot", "slotKey": "hero.cta" }
+  ]
+}

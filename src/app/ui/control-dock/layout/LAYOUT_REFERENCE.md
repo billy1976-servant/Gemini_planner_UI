@@ -1,0 +1,239 @@
+# Layout Thumbnail Quick Reference
+
+Visual guide to all layout thumbnails in the system.
+
+## Hero Layouts
+
+### `hero-centered`
+```
+┌─────────────────────────┐
+│                         │
+│      [TITLE LINE]       │
+│     ───────────────     │
+│     ───────────────     │
+│      ( CTA PILL )       │
+│                         │
+└─────────────────────────┘
+```
+**Use**: Centered hero section with call-to-action
+
+---
+
+### `hero-split`
+```
+┌─────────────────────────┐
+│ ┌────────┐  ┌─────────┐ │
+│ │ TITLE  │  │ [IMAGE] │ │
+│ │ ──────│  │    📷   │ │
+│ │ ──────│  │         │ │
+│ │(CTA)  │  └─────────┘ │
+│ └────────┘              │
+└─────────────────────────┘
+```
+**Use**: Split hero with content left, image right
+
+---
+
+### `hero-split-image-left`
+```
+┌─────────────────────────┐
+│ ┌─────────┐  ┌────────┐ │
+│ │ [IMAGE] │  │ TITLE  │ │
+│ │    📷   │  │ ────── │ │
+│ │         │  │ ────── │ │
+│ └─────────┘  │ (CTA)  │ │
+│              └────────┘ │
+└─────────────────────────┘
+```
+**Use**: Split hero with image left, content right
+
+---
+
+### `hero-full-bleed-image`
+```
+┌─────────────────────────┐
+│ ╔═══════════════════╗   │
+│ ║  [FULL IMAGE] 📷  ║   │
+│ ║  ┌─────────────┐  ║   │
+│ ║  │   TITLE     │  ║   │
+│ ║  │  ─────────  │  ║   │
+│ ║  │  ( CTA )    │  ║   │
+│ ║  └─────────────┘  ║   │
+│ ╚═══════════════════╝   │
+└─────────────────────────┘
+```
+**Use**: Full-bleed image with centered overlay card
+
+---
+
+## Content Layouts
+
+### `content-narrow`
+```
+┌─────────────────────────┐
+│     ┌───────────┐       │
+│     │  HEADING  │       │
+│     │ ───────── │       │
+│     │ ───────── │       │
+│     │ ───────── │       │
+│     │ ───────── │       │
+│     │ ───────── │       │
+│     └───────────┘       │
+└─────────────────────────┘
+```
+**Use**: Narrow, centered content column
+
+---
+
+### `content-stack`
+```
+┌─────────────────────────┐
+│ ╔═══════════════════╗   │
+│ ║ SECTION 1         ║   │
+│ ║ ───────────────── ║   │
+│ ╚═══════════════════╝   │
+│ ╔═══════════════════╗   │
+│ ║ SECTION 2         ║   │
+│ ║ ───────────────── ║   │
+│ ╚═══════════════════╝   │
+│ ╔═══════════════════╗   │
+│ ║ SECTION 3         ║   │
+│ ║ ───────────────── ║   │
+│ ╚═══════════════════╝   │
+└─────────────────────────┘
+```
+**Use**: Vertically stacked content sections
+
+---
+
+### `image-left-text-right`
+```
+┌─────────────────────────┐
+│ ┌────────┐  ┌─────────┐ │
+│ │[IMAGE] │  │ HEADING │ │
+│ │   📷   │  │ ─────── │ │
+│ │        │  │ ─────── │ │
+│ │        │  │ ─────── │ │
+│ └────────┘  └─────────┘ │
+└─────────────────────────┘
+```
+**Use**: Image on left, text content on right
+
+---
+
+## Feature Layouts
+
+### `features-grid-3`
+```
+┌─────────────────────────┐
+│ ┌────┐ ┌────┐ ┌────┐   │
+│ │ ● │ │ ● │ │ ● │   │
+│ │TEXT│ │TEXT│ │TEXT│   │
+│ │──│ │──│ │──│   │
+│ └────┘ └────┘ └────┘   │
+│ ┌────┐ ┌────┐ ┌────┐   │
+│ │ ● │ │ ● │ │ ● │   │
+│ │TEXT│ │TEXT│ │TEXT│   │
+│ └────┘ └────┘ └────┘   │
+└─────────────────────────┘
+```
+**Use**: 3×2 grid of feature cards with icons
+
+---
+
+## Testimonial & CTA Layouts
+
+### `testimonial-band`
+```
+┌─────────────────────────┐
+│ ┌────┐  ┌────┐  ┌────┐ │
+│ │ "  │  │ "  │  │ "  │ │
+│ │TEXT│  │TEXT│  │TEXT│ │
+│ │────│  │────│  │────│ │
+│ │ ● │  │ ● │  │ ● │ │
+│ └────┘  └────┘  └────┘ │
+└─────────────────────────┘
+```
+**Use**: Three testimonial cards with quotes
+
+---
+
+### `cta-centered`
+```
+┌─────────────────────────┐
+│   ┌─────────────────┐   │
+│   │                 │   │
+│   │   HEADING       │   │
+│   │   ─────────     │   │
+│   │   ( CTA PILL )  │   │
+│   │                 │   │
+│   └─────────────────┘   │
+└─────────────────────────┘
+```
+**Use**: Centered call-to-action card
+
+---
+
+## Default Layout
+
+### `default`
+```
+┌─────────────────────────┐
+│ ╔═══════════════════╗   │
+│ ║ HEADER BAND       ║   │
+│ ╚═══════════════════╝   │
+│ ─────────────────────   │
+│ ─────────────────────   │
+│ ─────────────────────   │
+└─────────────────────────┘
+```
+**Use**: Generic layout with header and text
+
+---
+
+## Legend
+
+```
+╔══╗  Band (full-width strip)
+║  ║
+╚══╝
+
+┌──┐  Column/Card (rounded rectangle)
+│  │
+└──┘
+
+───   Text line
+
+( )   CTA pill button
+
+📷    Image block
+
+●     Icon dot
+
+"     Quote mark
+```
+
+## Color Meanings
+
+- **Dark blocks** (`╔══╗`): Headers, titles
+- **Light blocks** (`┌──┐`): Content areas, cards
+- **Blue tint**: Image blocks
+- **Accent color**: CTA buttons, icons
+- **Gray lines**: Body text
+
+## Quick Selection Guide
+
+| Need | Use Layout |
+|------|-----------|
+| **Hero with image** | `hero-split` or `hero-full-bleed-image` |
+| **Centered content** | `hero-centered` or `content-narrow` |
+| **Multiple sections** | `content-stack` |
+| **Feature showcase** | `features-grid-3` |
+| **Social proof** | `testimonial-band` |
+| **Call to action** | `cta-centered` |
+| **Generic** | `default` |
+
+---
+
+**For detailed documentation**: See `LAYOUT_THUMBNAILS.md`  
+**For visual QA**: Visit `/layout-thumbnails-demo`

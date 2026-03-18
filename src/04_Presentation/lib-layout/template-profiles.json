@@ -1,0 +1,3400 @@
+[
+  {
+    "id": "modern-hero-centered",
+    "label": "Modern Hero Centered",
+    "experience": "website",
+    "defaultSectionLayoutId": "content-narrow",
+    "visualPreset": "default",
+    "containerWidth": "narrow",
+    "widthByRole": {
+      "hero": "narrow",
+      "content": "narrow"
+    },
+    "spacingScale": "default",
+    "cardPreset": "soft",
+    "heroMode": "centered",
+    "capabilities": {
+      "export": "advanced",
+      "sharing": "on"
+    },
+    "sections": {
+      "nav": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center",
+          "wrap": "wrap"
+        }
+      },
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1.25rem",
+          "justify": "space-between",
+          "align": "center",
+          "wrap": "wrap"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2.5rem",
+          "padding": "3rem 0"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1.5rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "2rem"
+        }
+      }
+    },
+    "layoutVariants": {
+      "nav": {
+        "layoutId": "content-stack"
+      },
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered",
+        "containerWidth": "narrow"
+      },
+      "content": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
+    }
+  },
+  {
+    "id": "startup-split-hero",
+    "label": "Startup Split Hero",
+    "experience": "website",
+    "defaultSectionLayoutId": "content-stack",
+    "visualPreset": "prominent",
+    "containerWidth": "contained",
+    "widthByRole": {
+      "hero": "wide",
+      "content": "contained"
+    },
+    "spacingScale": "saas",
+    "cardPreset": "elevated",
+    "heroMode": "split",
+    "sectionBackgroundPattern": "alternate",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1.25rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "row",
+        "params": {
+          "justify": "space-between",
+          "gap": "3rem",
+          "align": "center"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2.5rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-split",
+        "containerWidth": "wide"
+      },
+      "content": {
+        "layoutId": "content-stack",
+        "containerWidth": "contained"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
+    }
+  },
+  {
+    "id": "editorial-story",
+    "label": "Editorial Story",
+    "experience": "website",
+    "visualPreset": "editorial",
+    "containerWidth": "narrow",
+    "widthByRole": {
+      "hero": "narrow",
+      "content": "narrow"
+    },
+    "spacingScale": "magazine",
+    "cardPreset": "borderless",
+    "heroMode": "centered",
+    "sections": {
+      "header": {
+        "type": "column",
+        "params": {
+          "gap": "0.5rem",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "3rem"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "2.5rem"
+        }
+      },
+      "features": {
+        "type": "column",
+        "params": {
+          "gap": "2.5rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "testimonials": {
+        "type": "column",
+        "params": {
+          "gap": "2.5rem"
+        }
+      },
+      "pricing": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      },
+      "products": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "footer": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
+    }
+  },
+  {
+    "id": "course-landing",
+    "label": "Course Landing",
+    "experience": "learning",
+    "visualPreset": "editorial",
+    "containerWidth": "narrow",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "row",
+        "params": {
+          "justify": "space-between",
+          "gap": "2.5rem",
+          "align": "center"
+        }
+      },
+      "content": {
+        "type": "stack",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "features": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "testimonials": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "1.5rem"
+        }
+      },
+      "footer": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
+    }
+  },
+  {
+    "id": "product-grid",
+    "label": "Product Grid",
+    "experience": "website",
+    "visualPreset": "compact",
+    "containerWidth": "contained",
+    "spacingScale": "saas",
+    "cardPreset": "elevated",
+    "heroMode": "strip",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "0.75rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "gap": "1rem",
+          "align": "center"
+        }
+      },
+      "content": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "0.75rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "0.75rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1rem"
+        }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
+    }
+  },
+  {
+    "id": "saas-dark",
+    "label": "SaaS Dark",
+    "experience": "website",
+    "visualPreset": "default",
+    "containerWidth": "contained",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2.5rem"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1.5rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "2rem"
+        }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
+    }
+  },
+  {
+    "id": "agency-bold",
+    "label": "Agency Bold",
+    "experience": "website",
+    "visualPreset": "prominent",
+    "containerWidth": "wide",
+    "widthByRole": {
+      "hero": "edge-to-edge",
+      "content": "wide"
+    },
+    "spacingScale": "default",
+    "cardPreset": "elevated",
+    "heroMode": "overlay",
+    "sectionBackgroundPattern": "dark-bands",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1.5rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "row",
+        "params": {
+          "justify": "space-between",
+          "gap": "3rem",
+          "align": "center"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2.5rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2.5rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-split",
+        "containerWidth": "edge-to-edge"
+      },
+      "content": {
+        "layoutId": "content-wide",
+        "containerWidth": "wide"
+      },
+      "features": {
+        "layoutId": "content-wide"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
+    }
+  },
+  {
+    "id": "minimalist",
+    "label": "Minimalist",
+    "experience": "website",
+    "visualPreset": "compact",
+    "containerWidth": "narrow",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "0.5rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1.5rem"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "1rem"
+        }
+      },
+      "features": {
+        "type": "column",
+        "params": {
+          "gap": "1rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "0.75rem"
+        }
+      },
+      "testimonials": {
+        "type": "column",
+        "params": {
+          "gap": "1rem"
+        }
+      },
+      "pricing": {
+        "type": "column",
+        "params": {
+          "gap": "1rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1rem"
+        }
+      },
+      "products": {
+        "type": "column",
+        "params": {
+          "gap": "1rem"
+        }
+      },
+      "footer": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1rem"
+        }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
+    }
+  },
+  {
+    "id": "playful-cards",
+    "label": "Playful Cards",
+    "experience": "website",
+    "visualPreset": "prominent",
+    "containerWidth": "contained",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      },
+      "content": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "1.5rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1.5rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1.5rem"
+        }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
+    }
+  },
+  {
+    "id": "luxury-spacious",
+    "label": "Luxury Spacious",
+    "experience": "website",
+    "visualPreset": "spacious",
+    "containerWidth": "contained",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "2rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "3rem"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "3rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "3rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "3rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "3rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "2.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2.5rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "3rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "3rem"
+        }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
+    }
+  },
+  {
+    "id": "portfolio-showcase",
+    "label": "Portfolio Showcase",
+    "experience": "website",
+    "visualPreset": "editorial",
+    "containerWidth": "contained",
+    "defaultSectionLayoutId": "content-stack",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2.5rem"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "testimonials": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
+    }
+  },
+  {
+    "id": "restaurant-menu",
+    "label": "Restaurant Menu",
+    "visualPreset": "compact",
+    "containerWidth": "edge-to-edge",
+    "spacingScale": "saas",
+    "cardPreset": "dividers",
+    "heroMode": "centered",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1.5rem",
+          "padding": "2rem 0"
+        }
+      },
+      "content": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "1rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "1rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "0.75rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "1rem"
+        }
+      },
+      "pricing": {
+        "type": "column",
+        "params": {
+          "gap": "1rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "0.75rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "1rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "1rem"
+        }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
+    }
+  },
+  {
+    "id": "blog-magazine",
+    "label": "Blog Magazine",
+    "experience": "website",
+    "visualPreset": "editorial",
+    "containerWidth": "contained",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "left",
+          "gap": "2rem"
+        }
+      },
+      "content": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "testimonials": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1.5rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "2rem"
+        }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
+    }
+  },
+  {
+    "id": "fitness-gym",
+    "label": "Fitness Gym",
+    "visualPreset": "prominent",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2.5rem"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1.5rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1.5rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "2rem"
+        }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
+    }
+  },
+  {
+    "id": "consulting-professional",
+    "label": "Consulting Professional",
+    "experience": "website",
+    "visualPreset": "default",
+    "containerWidth": "contained",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "row",
+        "params": {
+          "justify": "space-between",
+          "gap": "2.5rem",
+          "align": "center"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1.5rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "2rem"
+        }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
+    }
+  },
+  {
+    "id": "info-page-simple",
+    "label": "Info Page Simple",
+    "visualPreset": "compact",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "left",
+          "gap": "1.5rem"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "1.5rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1rem"
+        }
+      },
+      "testimonials": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "1.5rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "1.5rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
+    }
+  },
+  {
+    "id": "tech-startup",
+    "label": "Tech Startup",
+    "visualPreset": "prominent",
+    "containerWidth": "contained",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2.5rem"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1.5rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "2rem"
+        }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-split"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
+    }
+  },
+  {
+    "id": "e-commerce-store",
+    "label": "E-Commerce Store",
+    "visualPreset": "compact",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      },
+      "content": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1.5rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1.5rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 5,
+          "gap": "1rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1.5rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1.5rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1.5rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1.5rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 5,
+          "gap": "1.5rem"
+        }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
+    }
+  },
+  {
+    "id": "real-estate-luxury",
+    "label": "Real Estate Luxury",
+    "visualPreset": "spacious",
+    "containerWidth": "contained",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "2rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "3.5rem"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "3rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "3rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "testimonials": {
+        "type": "column",
+        "params": {
+          "gap": "3rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "3rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "2.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "3rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "3rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "3rem"
+        }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
+    }
+  },
+  {
+    "id": "nonprofit-community",
+    "label": "Nonprofit Community",
+    "visualPreset": "default",
+    "containerWidth": "contained",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1.5rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "2rem"
+        }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
+    }
+  },
+  {
+    "id": "medical-clinic",
+    "label": "Medical Clinic",
+    "visualPreset": "compact",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1.5rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "1.5rem"
+        }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
+    }
+  },
+  {
+    "id": "law-firm-corporate",
+    "label": "Law Firm Corporate",
+    "visualPreset": "default",
+    "containerWidth": "contained",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1.5rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "row",
+        "params": {
+          "justify": "space-between",
+          "gap": "2.5rem",
+          "align": "center"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "1.5rem"
+        }
+      },
+      "testimonials": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "1.5rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 4,
+          "gap": "2rem"
+        }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
+    }
+  },
+  {
+    "id": "wedding-events",
+    "label": "Wedding & Events",
+    "visualPreset": "spacious",
+    "containerWidth": "contained",
+    "sections": {
+      "header": {
+        "type": "row",
+        "params": {
+          "gap": "1.5rem",
+          "justify": "space-between",
+          "align": "center"
+        }
+      },
+      "hero": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "3rem"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "2.5rem"
+        }
+      },
+      "features": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2.5rem"
+        }
+      },
+      "gallery": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2rem"
+        }
+      },
+      "testimonials": {
+        "type": "column",
+        "params": {
+          "gap": "2.5rem"
+        }
+      },
+      "pricing": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2.5rem"
+        }
+      },
+      "faq": {
+        "type": "column",
+        "params": {
+          "gap": "2rem"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2.5rem"
+        }
+      },
+      "products": {
+        "type": "grid",
+        "params": {
+          "columns": 2,
+          "gap": "2.5rem"
+        }
+      },
+      "footer": {
+        "type": "grid",
+        "params": {
+          "columns": 3,
+          "gap": "2.5rem"
+        }
+      }
+    },
+    "layoutVariants": {
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "hero": {
+        "layoutId": "hero-centered"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "gallery": {
+        "layoutId": "content-stack"
+      },
+      "testimonials": {
+        "layoutId": "content-stack"
+      },
+      "pricing": {
+        "layoutId": "content-stack"
+      },
+      "faq": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      },
+      "products": {
+        "layoutId": "content-stack"
+      },
+      "footer": {
+        "layoutId": "content-stack"
+      }
+    }
+  },
+  {
+    "id": "hiclarify-media-player",
+    "label": "HIClarify Media Player",
+    "visualPreset": "media-player",
+    "containerWidth": "contained",
+    "defaultSectionLayoutId": "content-stack",
+    "spacingScale": "default",
+    "cardPreset": "soft",
+    "sections": {
+      "nav": {
+        "type": "row",
+        "params": {
+          "gap": "0.5rem",
+          "justify": "space-around",
+          "align": "center",
+          "padding": "0.75rem 0"
+        }
+      },
+      "header": {
+        "type": "column",
+        "params": {
+          "gap": "1rem",
+          "align": "center"
+        }
+      },
+      "content": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "features": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem"
+        }
+      },
+      "actions": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "center",
+          "align": "center"
+        }
+      },
+      "cta": {
+        "type": "column",
+        "params": {
+          "align": "center",
+          "gap": "2rem"
+        }
+      }
+    },
+    "layoutVariants": {
+      "nav": {
+        "layoutId": "content-stack"
+      },
+      "header": {
+        "layoutId": "content-stack"
+      },
+      "content": {
+        "layoutId": "content-narrow"
+      },
+      "features": {
+        "layoutId": "content-stack"
+      },
+      "actions": {
+        "layoutId": "content-stack"
+      },
+      "cta": {
+        "layoutId": "content-stack"
+      }
+    }
+  },
+  {
+    "id": "focus-writing",
+    "label": "Focus Writing",
+    "experience": "journal",
+    "visualPreset": "compact",
+    "spacingScale": "default",
+    "cardPreset": "borderless",
+    "containerWidth": "narrow",
+    "sectionBackgroundPattern": "alternate",
+    "capabilities": {
+      "timeline": "on",
+      "export": "advanced"
+    },
+    "layoutVariants": {
+      "writing": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "1rem",
+          "padding": "3rem 0",
+          "maxWidth": "65ch"
+        }
+      },
+      "focus": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "1.25rem",
+          "padding": "2.5rem 0"
+        }
+      },
+      "track": {
+        "layoutId": "content-narrow",
+        "containerWidth": "contained",
+        "params": {
+          "gap": "0.75rem"
+        }
+      }
+    },
+    "sections": {
+      "writing": {
+        "type": "column",
+        "params": {
+          "gap": "1rem",
+          "align": "stretch"
+        }
+      },
+      "focus": {
+        "type": "column",
+        "params": {
+          "gap": "1.25rem",
+          "align": "stretch"
+        }
+      },
+      "track": {
+        "type": "row",
+        "params": {
+          "gap": "0.75rem",
+          "justify": "center"
+        }
+      }
+    }
+  },
+  {
+    "id": "focus-writing-apple",
+    "label": "Focus Writing (Apple)",
+    "experience": "journal",
+    "visualPreset": "apple-floating-journal",
+    "spacingScale": "default",
+    "cardPreset": "borderless",
+    "containerWidth": "narrow",
+    "sectionBackgroundPattern": "alternate",
+    "layoutVariants": {
+      "writing": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "1rem",
+          "padding": "3rem 0",
+          "maxWidth": "65ch"
+        }
+      },
+      "focus": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "1.25rem",
+          "padding": "2.5rem 0"
+        }
+      },
+      "track": {
+        "layoutId": "content-narrow",
+        "containerWidth": "contained",
+        "params": {
+          "gap": "0.75rem"
+        }
+      }
+    },
+    "sections": {
+      "writing": {
+        "type": "column",
+        "params": {
+          "gap": "1rem",
+          "align": "stretch"
+        }
+      },
+      "focus": {
+        "type": "column",
+        "params": {
+          "gap": "1.25rem",
+          "align": "stretch"
+        }
+      },
+      "track": {
+        "type": "row",
+        "params": {
+          "gap": "0.75rem",
+          "justify": "center"
+        }
+      }
+    }
+  },
+  {
+    "id": "guided-reflection",
+    "label": "Guided Reflection",
+    "experience": "journal",
+    "visualPreset": "default",
+    "spacingScale": "default",
+    "cardPreset": "soft",
+    "containerWidth": "contained",
+    "layoutVariants": {
+      "writing": {
+        "layoutId": "content-narrow",
+        "containerWidth": "contained",
+        "params": {
+          "gap": "1.5rem",
+          "padding": "2rem 0"
+        }
+      },
+      "focus": {
+        "layoutId": "content-narrow",
+        "containerWidth": "contained",
+        "params": {
+          "gap": "1.25rem"
+        }
+      },
+      "track": {
+        "layoutId": "content-narrow",
+        "containerWidth": "contained",
+        "params": {
+          "gap": "1rem"
+        }
+      }
+    },
+    "sections": {
+      "writing": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem",
+          "align": "stretch"
+        }
+      },
+      "focus": {
+        "type": "column",
+        "params": {
+          "gap": "1.25rem",
+          "align": "stretch"
+        }
+      },
+      "track": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "center",
+          "wrap": "wrap"
+        }
+      }
+    }
+  },
+  {
+    "id": "contemplative-space",
+    "label": "Contemplative Space",
+    "experience": "journal",
+    "visualPreset": "spacious",
+    "spacingScale": "luxury",
+    "cardPreset": "elevated",
+    "containerWidth": "narrow",
+    "layoutVariants": {
+      "writing": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "3rem",
+          "padding": "4rem 0"
+        }
+      },
+      "focus": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "2.5rem",
+          "padding": "3rem 0"
+        }
+      },
+      "track": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "2rem"
+        }
+      }
+    },
+    "sections": {
+      "writing": {
+        "type": "column",
+        "params": {
+          "gap": "3rem",
+          "align": "stretch"
+        }
+      },
+      "focus": {
+        "type": "column",
+        "params": {
+          "gap": "2.5rem",
+          "align": "stretch"
+        }
+      },
+      "track": {
+        "type": "row",
+        "params": {
+          "gap": "2rem",
+          "justify": "center"
+        }
+      }
+    }
+  },
+  {
+    "id": "structured-journal",
+    "label": "Structured Journal",
+    "experience": "journal",
+    "visualPreset": "compact",
+    "spacingScale": "saas",
+    "cardPreset": "bordered",
+    "containerWidth": "contained",
+    "layoutVariants": {
+      "writing": {
+        "layoutId": "content-narrow",
+        "containerWidth": "contained",
+        "params": {
+          "gap": "1rem"
+        }
+      },
+      "focus": {
+        "layoutId": "content-narrow",
+        "containerWidth": "contained",
+        "params": {
+          "gap": "0.75rem"
+        }
+      },
+      "track": {
+        "layoutId": "content-narrow",
+        "containerWidth": "contained",
+        "params": {
+          "gap": "0.5rem"
+        }
+      }
+    },
+    "sections": {
+      "writing": {
+        "type": "column",
+        "params": {
+          "gap": "1rem",
+          "align": "stretch"
+        }
+      },
+      "focus": {
+        "type": "column",
+        "params": {
+          "gap": "0.75rem",
+          "align": "stretch"
+        }
+      },
+      "track": {
+        "type": "row",
+        "params": {
+          "gap": "0.5rem",
+          "justify": "flex-start"
+        }
+      }
+    }
+  },
+  {
+    "id": "minimal-distraction",
+    "label": "Minimal Distraction",
+    "experience": "journal",
+    "visualPreset": "compact",
+    "spacingScale": "default",
+    "cardPreset": "borderless",
+    "containerWidth": "narrow",
+    "layoutVariants": {
+      "writing": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "0.25rem",
+          "padding": "1rem 0",
+          "maxWidth": "60ch"
+        }
+      },
+      "focus": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "0.5rem",
+          "padding": "0.75rem 0"
+        }
+      },
+      "track": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "0.25rem"
+        }
+      }
+    },
+    "sections": {
+      "writing": {
+        "type": "column",
+        "params": {
+          "gap": "0.25rem",
+          "align": "stretch"
+        }
+      },
+      "focus": {
+        "type": "column",
+        "params": {
+          "gap": "0.5rem",
+          "align": "stretch"
+        }
+      },
+      "track": {
+        "type": "row",
+        "params": {
+          "gap": "0.25rem",
+          "justify": "center"
+        }
+      }
+    }
+  },
+  {
+    "id": "evening-journal",
+    "label": "Evening Journal",
+    "experience": "journal",
+    "visualPreset": "editorial",
+    "spacingScale": "magazine",
+    "cardPreset": "soft",
+    "containerWidth": "narrow",
+    "layoutVariants": {
+      "writing": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "2rem",
+          "padding": "3rem 0"
+        }
+      },
+      "focus": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "1.5rem",
+          "padding": "2rem 0"
+        }
+      },
+      "track": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "1rem"
+        }
+      }
+    },
+    "sections": {
+      "writing": {
+        "type": "column",
+        "params": {
+          "gap": "2rem",
+          "align": "stretch"
+        }
+      },
+      "focus": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem",
+          "align": "stretch"
+        }
+      },
+      "track": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "center"
+        }
+      }
+    }
+  },
+  {
+    "id": "morning-pages",
+    "label": "Morning Pages",
+    "experience": "journal",
+    "visualPreset": "spacious",
+    "spacingScale": "default",
+    "cardPreset": "soft",
+    "containerWidth": "contained",
+    "layoutVariants": {
+      "writing": {
+        "layoutId": "content-narrow",
+        "containerWidth": "contained",
+        "params": {
+          "gap": "2.5rem",
+          "padding": "3rem 0"
+        }
+      },
+      "focus": {
+        "layoutId": "content-narrow",
+        "containerWidth": "contained",
+        "params": {
+          "gap": "2rem",
+          "padding": "2rem 0"
+        }
+      },
+      "track": {
+        "layoutId": "content-narrow",
+        "containerWidth": "contained",
+        "params": {
+          "gap": "1.5rem"
+        }
+      }
+    },
+    "sections": {
+      "writing": {
+        "type": "column",
+        "params": {
+          "gap": "2.5rem",
+          "align": "stretch"
+        }
+      },
+      "focus": {
+        "type": "column",
+        "params": {
+          "gap": "2rem",
+          "align": "stretch"
+        }
+      },
+      "track": {
+        "type": "row",
+        "params": {
+          "gap": "1.5rem",
+          "justify": "center",
+          "wrap": "wrap"
+        }
+      }
+    }
+  },
+  {
+    "id": "course-reflection",
+    "label": "Course Reflection",
+    "experience": "journal",
+    "visualPreset": "editorial",
+    "spacingScale": "course",
+    "cardPreset": "elevated",
+    "containerWidth": "narrow",
+    "layoutVariants": {
+      "writing": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "2rem",
+          "padding": "3rem 0"
+        }
+      },
+      "focus": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "1.5rem",
+          "padding": "2rem 0"
+        }
+      },
+      "track": {
+        "layoutId": "content-narrow",
+        "containerWidth": "narrow",
+        "params": {
+          "gap": "1rem"
+        }
+      }
+    },
+    "sections": {
+      "writing": {
+        "type": "column",
+        "params": {
+          "gap": "2rem",
+          "align": "stretch"
+        }
+      },
+      "focus": {
+        "type": "column",
+        "params": {
+          "gap": "1.5rem",
+          "align": "stretch"
+        }
+      },
+      "track": {
+        "type": "row",
+        "params": {
+          "gap": "1rem",
+          "justify": "center"
+        }
+      }
+    }
+  }
+]

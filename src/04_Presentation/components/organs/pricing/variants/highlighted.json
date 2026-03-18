@@ -1,0 +1,19 @@
+{
+  "id": "organ:pricing:highlighted",
+  "type": "Section",
+  "role": "pricing",
+  "layout": {
+    "type": "row",
+    "params": {
+      "gap": "2rem",
+      "justify": "center",
+      "align": "stretch",
+      "wrap": "wrap"
+    }
+  },
+  "params": {},
+  "children": [
+    { "type": "slot", "slotKey": "pricing.title" },
+    { "type": "slot", "slotKey": "pricing.primary" }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "id": "container-creations",
+  "name": "Container Creations",
+  "tokens": {
+    "background": "#111",
+    "surface": "#1a1d23",
+    "cardBackground": "#111",
+    "primary": "#1a1d23",
+    "primaryHover": "#1a1d23",
+    "accent": "#1a1d23",
+    "textPrimary": "#ffffff",
+    "textSecondary": "#ffffff",
+    "border": "#1a1d23",
+    "buttonPrimary": "#1a1d23",
+    "buttonPrimaryText": "#ffffff",
+    "shadow": ""
+  }
+}

@@ -1,0 +1,11 @@
+// src/state/view-resolver.ts
+
+
+import views from "@/state/views";
+
+
+export function resolveView(id: string) {
+  return views[id] ?? null;
+}
+
+

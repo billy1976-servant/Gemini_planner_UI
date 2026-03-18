@@ -1,0 +1,26 @@
+{
+  "type": "surfacePrimitive",
+  "props": {
+    "style": {
+      "border": "2px solid black",
+      "backgroundColor": "black"
+    }
+  },
+  "children": [
+    {
+      "type": "contentPrimitive",
+      "props": {
+        "text": "HIClarify — Engine Online",
+        "style": { "fontSize": "24px", "color": "white" }
+      }
+    },
+    {
+      "type": "contentPrimitive",
+      "props": {
+        "text": "This is the DEMO JSON",
+        "style": { "fontSize": "16px", "color": "white" }
+      }
+    }
+  ]
+}
+

@@ -1,0 +1,9 @@
+{
+  "split": {
+    "orientation": "vertical",
+    "masterRatio": 0.4,
+    "resizable": true
+  },
+  "master": { "position": "top", "listDensity": "default" },
+  "detail": { "emptyState": "Select an item", "persistSelection": true }
+}

@@ -1,0 +1,73 @@
+{
+  "$kind": "hicurv.ux-driver",
+  "$schemaVersion": "1.0.0",
+  "defaultMode": "normal",
+  "modes": ["normal", "focus", "immersive", "kid"],
+  "bindings": {
+    "normal": {
+      "ui": {
+        "intensityProfile": "medium",
+        "motionProfile": "standard",
+        "cultureProfile": "default"
+      },
+      "system": {
+        "sequenceSet": "default",
+        "autoSave": true
+      }
+    },
+    "focus": {
+      "ui": {
+        "intensityProfile": "soft",
+        "motionProfile": "minimal",
+        "cultureProfile": "default"
+      },
+      "system": {
+        "sequenceSet": "focus",
+        "autoSave": true
+      }
+    },
+    "immersive": {
+      "ui": {
+        "intensityProfile": "hard",
+        "motionProfile": "smooth",
+        "cultureProfile": "default"
+      },
+      "system": {
+        "sequenceSet": "immersive",
+        "autoSave": false
+      }
+    },
+    "kid": {
+      "ui": {
+        "intensityProfile": "medium",
+        "motionProfile": "playful",
+        "cultureProfile": "kid"
+      },
+      "system": {
+        "sequenceSet": "kid",
+        "autoSave": true
+      }
+    }
+  },
+  "transitions": {
+    "normal->focus": "fade",
+    "focus->normal": "fade",
+    "focus->immersive": "slide",
+    "immersive->normal": "fade",
+    "normal->kid": "bounce",
+    "kid->normal": "fade"
+  },
+  "sources": {
+    "ui": {
+      "cultures": "src/ui/cultures.json",
+      "intensity": "src/ui/intensity.json",
+      "motion": "src/ui/motion.json",
+      "tokens": "src/ui/ui.json"
+    },
+    "system": {
+      "definitions": "src/system/0-1-definitions.json",
+      "parameters": "src/system/parameters.json",
+      "sequences": "src/system/sequences.json"
+    }
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "$kind": "hicurv.dataContent",
+  "$version": "1.0",
+
+
+  "types": {
+    "json": {
+      "semantics": "JsonBlob",
+      "format": "json",
+      "schema": "any",
+      "defaultValue": {}
+    },
+    "table": {
+      "semantics": "Table",
+      "format": "tabular",
+      "schema": "rows+columns",
+      "defaultValue": []
+    },
+    "profile": {
+      "semantics": "UserProfile",
+      "format": "object",
+      "schema": "user-profile",
+      "defaultValue": {}
+    },
+    "settings": {
+      "semantics": "Settings",
+      "format": "object",
+      "schema": "settings",
+      "defaultValue": {}
+    },
+    "coords": {
+      "semantics": "Location",
+      "format": "geo",
+      "schema": "lat-long",
+      "defaultValue": null
+    },
+    "pointcloud": {
+      "semantics": "3DPointCloud",
+      "format": "3d",
+      "schema": "xyz-points",
+      "defaultValue": []
+    },
+    "mesh": {
+      "semantics": "Mesh",
+      "format": "3d",
+      "schema": "triangles",
+      "defaultValue": {}
+    },
+    "timeline": {
+      "semantics": "Timeline",
+      "format": "events",
+      "schema": "events",
+      "defaultValue": []
+    },
+    "feed": {
+      "semantics": "Feed",
+      "format": "items",
+      "schema": "items",
+      "defaultValue": []
+    },
+    "checklist": {
+      "semantics": "Checklist",
+      "format": "items+states",
+      "schema": "items+states",
+      "defaultValue": []
+    },
+    "conversation": {
+      "semantics": "Conversation",
+      "format": "messages",
+      "schema": "messages",
+      "defaultValue": []
+    }
+  }
+}

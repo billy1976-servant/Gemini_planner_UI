@@ -1,0 +1,74 @@
+{
+  "warnings": [
+    {
+      "code": "UNUSED_CONTENT",
+      "message": "Content block \"1.0\" has no matching blueprint node",
+      "rawId": "1.0",
+      "suggestion": "Remove from content.txt or add node to blueprint"
+    },
+    {
+      "code": "UNUSED_CONTENT",
+      "message": "Content block \"1.7\" has no matching blueprint node",
+      "rawId": "1.7",
+      "suggestion": "Remove from content.txt or add node to blueprint"
+    },
+    {
+      "code": "UNUSED_CONTENT",
+      "message": "Content block \"1.8\" has no matching blueprint node",
+      "rawId": "1.8",
+      "suggestion": "Remove from content.txt or add node to blueprint"
+    },
+    {
+      "code": "MISSING_CONTENT",
+      "message": "No content block for rawId \"1.2.3\" (ThinkSave)",
+      "rawId": "1.2.3"
+    },
+    {
+      "code": "MISSING_CONTENT",
+      "message": "No content block for rawId \"1.2.4\" (ThinkViewer)",
+      "rawId": "1.2.4"
+    },
+    {
+      "code": "MISSING_CONTENT",
+      "message": "No content block for rawId \"1.3.3\" (RepentSave)",
+      "rawId": "1.3.3"
+    },
+    {
+      "code": "MISSING_CONTENT",
+      "message": "No content block for rawId \"1.3.4\" (RepentViewer)",
+      "rawId": "1.3.4"
+    },
+    {
+      "code": "MISSING_CONTENT",
+      "message": "No content block for rawId \"1.4.3\" (AskSave)",
+      "rawId": "1.4.3"
+    },
+    {
+      "code": "MISSING_CONTENT",
+      "message": "No content block for rawId \"1.4.4\" (AskViewer)",
+      "rawId": "1.4.4"
+    },
+    {
+      "code": "MISSING_CONTENT",
+      "message": "No content block for rawId \"1.5.3\" (ConformSave)",
+      "rawId": "1.5.3"
+    },
+    {
+      "code": "MISSING_CONTENT",
+      "message": "No content block for rawId \"1.5.4\" (ConformViewer)",
+      "rawId": "1.5.4"
+    },
+    {
+      "code": "MISSING_CONTENT",
+      "message": "No content block for rawId \"1.6.3\" (KeepSave)",
+      "rawId": "1.6.3"
+    },
+    {
+      "code": "MISSING_CONTENT",
+      "message": "No content block for rawId \"1.6.4\" (KeepViewer)",
+      "rawId": "1.6.4"
+    }
+  ],
+  "errors": [],
+  "safeToContinue": true
+}

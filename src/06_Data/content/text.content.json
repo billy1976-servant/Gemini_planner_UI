@@ -1,0 +1,95 @@
+{
+  "$kind": "hicurv.textContent",
+  "$version": "1.0",
+  "types": {
+    "label": {
+      "semantics": "Label",
+      "format": "plain",
+      "defaultValue": "Label"
+    },
+    "title": {
+      "semantics": "Title",
+      "format": "plain",
+      "defaultValue": "Default Title"
+    },
+    "subtitle": {
+      "semantics": "Subtitle",
+      "format": "plain",
+      "defaultValue": "Default Subtitle"
+    },
+    "heading": {
+      "semantics": "Heading",
+      "format": "plain",
+      "defaultValue": "Default Heading"
+    },
+    "body": {
+      "semantics": "Body",
+      "format": "plain",
+      "defaultValue": "Default body text."
+    },
+    "caption": {
+      "semantics": "Caption",
+      "format": "plain",
+      "defaultValue": "Caption text"
+    },
+    "success": {
+      "semantics": "Success",
+      "format": "plain",
+      "defaultValue": "Success!"
+    },
+    "error": {
+      "semantics": "Error",
+      "format": "plain",
+      "defaultValue": "Error occurred."
+    },
+    "hint": {
+      "semantics": "Hint",
+      "format": "plain",
+      "defaultValue": "Hint text"
+    },
+    "button": {
+      "semantics": "buttonLabel",
+      "format": "plain",
+      "defaultValue": "Press Me"
+    },
+    "markdown": {
+      "semantics": "body",
+      "format": "markdown",
+      "defaultValue": "**Markdown** text sample"
+    },
+    "scripture": {
+      "semantics": "scripture",
+      "format": "plain",
+      "defaultValue": "In the beginning..."
+    },
+    "journal": {
+      "semantics": "journal",
+      "format": "plain",
+      "defaultValue": "Journal entry"
+    },
+
+
+    "heroTitle": {
+      "semantics": "Heading",
+      "format": "plain",
+      "defaultValue": "SCOUTS FOR CHRIST"
+    },
+    "heroSubtitle": {
+      "semantics": "Subtitle",
+      "format": "plain",
+      "defaultValue": "Re-think Christianity."
+    },
+    "heroButton": {
+      "semantics": "buttonLabel",
+      "format": "plain",
+      "defaultValue": "Join Now"
+    }
+  },
+  "gestures": {
+    "tapToCopy": "@ux.gestures.tap",
+    "selectable": "enable-selection",
+    "none": null
+  }
+}
+
+

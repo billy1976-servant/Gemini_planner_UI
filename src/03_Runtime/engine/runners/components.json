@@ -1,0 +1,25 @@
+{
+  "$kind": "hicurv.components",
+  "$version": "1.0.0",
+
+  "primitives": {
+    "ux.surface": "surfaceprimitive",
+    "ux.media": "mediaprimitive",
+    "ux.content": "contentprimitive"
+  },
+
+  "compounds": {
+    "ui.button": "buttoncompound",
+    "ui.card": "cardcompound",
+    "ui.chip": "chipcompound",
+    "ui.field": "fieldcompound",
+    "ui.avatar": "avatarcompound",
+    "ui.footer": "footercompound",
+    "ui.list": "listcompound",
+    "ui.modal": "modalcompound",
+    "ui.section": "sectioncompound",
+    "ui.stepper": "steppercompound",
+    "ui.toast": "toastcompound",
+    "ui.toolbar": "toolbarcompound"
+  }
+}

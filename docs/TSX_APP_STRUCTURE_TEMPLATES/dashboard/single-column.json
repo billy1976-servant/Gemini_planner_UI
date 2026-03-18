@@ -1,0 +1,5 @@
+{
+  "grid": { "columns": 1, "gap": 16, "rowHeight": 100 },
+  "widgets": { "resizable": false, "draggable": true, "minW": 1, "minH": 1 },
+  "preset": "single-column"
+}

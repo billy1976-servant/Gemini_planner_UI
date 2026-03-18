@@ -1,0 +1,259 @@
+# UX MEDIA PRIMITIVES — SURFACE / MEDIA / CONTENT (EXHAUSTIVE DEFINITION)
+
+
+## 0. PURPOSE
+
+
+The three UX primitives are the **bridge** between:
+
+
+- the **abstract System-7 model** (MEDIA, CONTENT, ENVIRONMENT, etc.), and
+- the **concrete atoms** (text, surface, media, field, trigger, etc.)
+
+
+They are used by UI Compounds (Avatar, Card, Button, etc.) to build screens that:
+
+
+- always render something meaningful,
+- can “morph” with style or mode changes,
+- can swap between apps (journal, planner, scanner) without rewriting everything.
+
+
+The 3 primitives:
+
+
+1. SurfacePrimitive
+2. MediaPrimitive
+3. ContentPrimitive
+
+
+Each one wraps **multiple atoms** and knows *how to read* from the System-7 / HI configuration.
+
+
+---
+
+
+## 1. SURFACE PRIMITIVE
+
+
+**Concept:**
+> “SurfacePrimitive is the universal ‘card / panel / container’ for everything visual.”
+
+
+### 1.1. What it wraps
+
+
+Internally, SurfacePrimitive composes:
+
+
+- `surface` atom (background, elevation, radius, border)
+- `text` atom (titles, subtitles, labels)
+- `shell` atom (padding and layout)
+- optionally `collection` atom (for child stacks)
+
+
+### 1.2. Inputs it reads
+
+
+- from STYLE:
+  - radius, shadow, border, density (0-1 later)
+- from ENVIRONMENT:
+  - preferred contrast (light/dark emphasis)
+- from PARAMETERS:
+  - what size/density is allowed, how “heavy” the surface can feel
+
+
+### 1.3. Behavior hooks
+
+
+SurfacePrimitive exposes simple props like:
+
+
+- `onClick`
+- `onHover`
+- `selected`
+- `variant` (“card”, “chip”, “banner”, etc.)
+
+
+These map into the behavior engine via JSON:
+- `onClick: { behavior: "sequence", params: {...} }`
+
+
+**Why it matters:**
+
+
+- Every compound that “looks like a card” doesn’t need its own full styling logic.
+- Style changes (Google vs Kids vs Business) can flow through **one primitive** instead of 50 components.
+
+
+---
+
+
+## 2. MEDIA PRIMITIVE
+
+
+**Concept:**
+> “MediaPrimitive is the single place that knows how to display HI Media in any app.”
+
+
+### 2.1. What it wraps
+
+
+Internally, MediaPrimitive composes:
+
+
+- `media` atom (img/video component)
+- `surface` atom (background/border frame)
+- `text` atom (caption, overlay labels)
+- optionally measurement overlays (later) drawing on System-7 MEDIA:
+
+
+It can render:
+
+
+- static image thumbnails (from HI Media)
+- playable video windows
+- audio cards (with visual waveform)
+- spatial previews (simple visual hints, 2D for now)
+- annotation markers / tags
+
+
+### 2.2. Inputs it reads
+
+
+- from the HI Media container:
+  - preview frame
+  - duration
+  - type (image, video, audio, mixed)
+- from STYLE:
+  - thumbnail shape (rounded vs square)
+  - border and shadow
+- from PARAMETERS:
+  - size constraints, autoplay rules
+
+
+### 2.3. Export / compatibility behavior
+
+
+MediaPrimitive is the **single gateway** for:
+
+
+- reading rich HI media,
+- choosing a representation,
+- and handing off “dumber exports” for other tools:
+  - `onExport("mp4")`
+  - `onExport("mp3")`
+  - `onExport("jpg")`
+
+
+In practice, the primitive just calls into a media helper or behavior:
+- `runBehavior("media.export", { format: "mp4", mediaId })`
+
+
+**Why it matters:**
+
+
+- Any app you build (journal, drift scanner, stock visualizer, construction estimator) gets **the same media intelligence** for free.
+- You never rebuild “video + audio + depth + annotations” logic inside each feature; it all goes through this primitive.
+
+
+---
+
+
+## 3. CONTENT PRIMITIVE
+
+
+**Concept:**
+> “ContentPrimitive is the universal text / description / explanation block that binds CONTENT to the screen.”
+
+
+### 3.1. What it wraps
+
+
+Internally, ContentPrimitive composes:
+
+
+- `text` atom (headline, body, metadata)
+- `collection` atom (stack of bullet points, questions, answers)
+- `field` atom (optional inline input or reflection box)
+- `sequence` atom (for ordered steps)
+
+
+### 3.2. Inputs it reads
+
+
+- from CONTENT (System-7):
+  - main idea / title
+  - key bullet points
+  - associated verse or reference
+  - reflection prompts
+- from STYLE:
+  - typography (weight, serifness, size — later via 0-1)
+- from PARAMETERS:
+  - max length
+  - read vs write mode (is user editing?)
+
+
+### 3.3. Behavior hooks
+
+
+ContentPrimitive wires into behaviors for:
+
+
+- “rephrase / simplify / expand” (HI-guided, deterministic)
+- “save reflection”
+- “link to next step” (e.g., planner, journal, tracker)
+- “flag for review” (e.g., drift or conviction)
+
+
+**Why it matters:**
+
+
+- Every screen that shows “meaning” (not just raw media) can use the same structure.
+- Your journal, drift scanner, and planner all show content in consistent, structured ways.
+
+
+---
+
+
+## 4. HOW THE THREE PRIMITIVES WORK TOGETHER
+
+
+In a typical compound (e.g. Card, Stepper, Toast):
+
+
+- `SurfacePrimitive` provides the **frame** and interaction area.
+- `MediaPrimitive` shows the **what happened** (image, clip, waveform).
+- `ContentPrimitive` shows the **what it means** and **what to do next**.
+
+
+This same trio can power:
+
+
+- a **HI video recorder** (media + surface overlays + content prompts),
+- a **drift recovery card** (short clip + reflection text + button to respond),
+- a **contractor estimate card** (site photo + measured dimensions + scope bullets),
+- a **Scripture learning tile** (verse thumbnail art + verse text + prompt to recall).
+
+
+The benefit:
+- once these three are upgraded, **all 12 UI compounds** get smarter immediately.
+
+
+---
+
+
+## 5. WHY THIS IS REVOLUTIONARY (ONE SENTENCE SUMMARY)
+
+
+> By centralizing all visual containers (Surface), all rich media (Media), and all semantic text/meaning (Content) into three primitives that sit above the atoms but below every app, HI OS can upgrade the entire system’s look, feel, function, and export power by touching just a few files instead of hundreds.
+
+
+
+If you want, next step I can help you:
+choose exact filenames and folders (e.g. src/definitions/system7-hi-media.def.txt, src/definitions/ux-primitives.def.txt), and
+add a short “GPT starter” file that tells a new chat: “Read these definition files first, then ask me for project-tree.txt + project-allfiles.json.”
+
+
+
+

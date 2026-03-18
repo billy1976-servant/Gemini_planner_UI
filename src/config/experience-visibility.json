@@ -1,0 +1,8 @@
+{
+  "website": { "strategy": "renderAll" },
+  "app": { "strategy": "dashboard", "depth1Section": "collapse" },
+  "learning": { "strategy": "step", "useStepIndex": true },
+  "focus": { "strategy": "step", "useStepIndex": true },
+  "presentation": { "strategy": "step", "useStepIndex": true },
+  "kids": { "strategy": "maxDepth", "maxDepth": 2 }
+}

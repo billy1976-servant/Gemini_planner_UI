@@ -1,0 +1,172 @@
+{
+  "id": "systemSignalsHubRoot",
+  "type": "screen",
+  "capabilities": {},
+  "state": {},
+  "children": [
+    {
+      "id": "sectionIntro",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "System Signals V2 — Intro" },
+      "children": [
+        {
+          "id": "cardIntro",
+          "type": "card",
+          "content": { "body": "Battery, network, device, screen. Uses capture → input-log → interpret. Test all or snapshot; per-signal buttons below." },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "sectionTestAll",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "Test All" },
+      "children": [
+        {
+          "id": "cardTestAll",
+          "type": "card",
+          "content": { "body": "Fire all system signals and show combined result." },
+          "children": [
+            {
+              "id": "btnSystemSignalsReadAll",
+              "type": "button",
+              "content": { "label": "Run system signals (all)" },
+              "behavior": { "type": "Action", "params": { "name": "diagnostics:systemSignalsReadAll" } }
+            },
+            {
+              "type": "diagnostics-value",
+              "stateKey": "diagnostics_systemSignalsReadAll"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sectionSnapshot",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "Snapshot" },
+      "children": [
+        {
+          "id": "cardSnapshot",
+          "type": "card",
+          "content": { "body": "Unified system snapshot (battery, network, device, screen in one object)." },
+          "children": [
+            {
+              "id": "btnSystemSnapshot",
+              "type": "button",
+              "content": { "label": "Refresh system snapshot" },
+              "behavior": { "type": "Action", "params": { "name": "diagnostics:systemSnapshot" } }
+            },
+            {
+              "type": "diagnostics-value",
+              "stateKey": "diagnostics_systemSnapshot"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sectionBattery",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "Battery" },
+      "children": [
+        {
+          "id": "cardBattery",
+          "type": "card",
+          "content": { "body": "Read battery (level, charging)." },
+          "children": [
+            {
+              "id": "btnBattery",
+              "type": "button",
+              "content": { "label": "Read battery" },
+              "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "battery" } }
+            },
+            {
+              "type": "diagnostics-value",
+              "stateKey": "diagnostics_sensor_battery"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sectionNetwork",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "Network" },
+      "children": [
+        {
+          "id": "cardNetwork",
+          "type": "card",
+          "content": { "body": "Read network (online, effectiveType)." },
+          "children": [
+            {
+              "id": "btnNetwork",
+              "type": "button",
+              "content": { "label": "Read network" },
+              "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "network" } }
+            },
+            {
+              "type": "diagnostics-value",
+              "stateKey": "diagnostics_sensor_network"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sectionDevice",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "Device" },
+      "children": [
+        {
+          "id": "cardDevice",
+          "type": "card",
+          "content": { "body": "Read device (platform, userAgent)." },
+          "children": [
+            {
+              "id": "btnDevice",
+              "type": "button",
+              "content": { "label": "Read device" },
+              "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "device" } }
+            },
+            {
+              "type": "diagnostics-value",
+              "stateKey": "diagnostics_sensor_device"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sectionScreen",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "Screen" },
+      "children": [
+        {
+          "id": "cardScreen",
+          "type": "card",
+          "content": { "body": "Read screen (width, height, scale)." },
+          "children": [
+            {
+              "id": "btnScreen",
+              "type": "button",
+              "content": { "label": "Read screen" },
+              "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "screen" } }
+            },
+            {
+              "type": "diagnostics-value",
+              "stateKey": "diagnostics_sensor_screen"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

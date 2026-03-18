@@ -1,0 +1,398 @@
+{
+  "id": "container-creations-landing",
+  "palette": "container-creations",
+  "state": {
+    "landingStep": 0,
+    "intent": null,
+    "ribHeight": null,
+    "containerLength": null,
+    "recommendation": null
+  },
+  "root": {
+    "type": "json-skin",
+    "id": "container-creations-landing",
+    "children": [
+      {
+        "id": "step-0-hero",
+        "type": "section",
+        "role": "hero",
+        "when": { "state": "landingStep", "equals": 0 },
+        "params": {
+          "containerLayout": "full",
+          "wrapStyle": "none",
+          "layout": "hero-split",
+          "splitIndex": 5,
+          "padding": 80,
+          "paddingMobile": 48,
+          "columnGap": 64,
+          "verticalSpacingDesktop": 96,
+          "verticalSpacingTablet": 64,
+          "verticalSpacingMobile": 48
+        },
+        "children": [
+          {
+            "type": "text",
+            "content": { "text": "Before You Cut a Hole in Your Container Roof." },
+            "params": {
+              "variant": "headline",
+              "fontSize": "clamp(32px, 4vw, 48px)",
+              "color": "tokens.textPrimary",
+              "maxLines": 2
+            }
+          },
+          {
+            "type": "text",
+            "content": { "text": "Water. Light. Structure. One engineered system." },
+            "params": {
+              "variant": "subheadline",
+              "fontSize": "18px",
+              "opacity": 0.8,
+              "color": "tokens.textPrimary",
+              "maxLines": 1
+            }
+          },
+          {
+            "type": "button",
+            "content": { "label": "Condensation / ventilation" },
+            "behavior": { "params": { "intent": "condensation", "landingStep": 1 } },
+            "params": { "intentKey": "condensation", "unselectedOpacity": 0.6, "selectedElevation": true }
+          },
+          {
+            "type": "button",
+            "content": { "label": "Lighting" },
+            "behavior": { "params": { "intent": "lighting", "landingStep": 1 } },
+            "params": { "intentKey": "lighting", "unselectedOpacity": 0.6, "selectedElevation": true }
+          },
+          {
+            "type": "button",
+            "content": { "label": "Both" },
+            "behavior": { "params": { "intent": "both", "landingStep": 1 } },
+            "params": { "intentKey": "both", "unselectedOpacity": 0.6, "selectedElevation": true }
+          },
+          {
+            "type": "video",
+            "id": "install-video",
+            "src": "/Videos/hero-install.mp4.mp4",
+            "params": {
+              "caption": "60-second install overview",
+              "aspectRatio": "16/9",
+              "maxWidth": 560,
+              "borderRadius": 16,
+              "objectFit": "contain",
+              "background": "tokens.surface",
+              "autoplay": true,
+              "muted": true,
+              "loop": true,
+              "controls": false
+            }
+          }
+        ]
+      },
+      {
+        "id": "step-1-proof",
+        "type": "section",
+        "role": "content",
+        "when": { "state": "landingStep", "equals": 1 },
+        "params": {
+          "maxWidth": 1000,
+          "margin": "auto",
+          "padding": 96,
+          "paddingTablet": 64,
+          "paddingMobile": 48,
+          "verticalSpacingDesktop": 96,
+          "verticalSpacingTablet": 64,
+          "verticalSpacingMobile": 48
+        },
+        "children": [
+          {
+            "type": "image",
+            "src": ["/images/Container%20Images%20(6).jpg", "/images/Container%20Images%20(7).jpg"],
+            "params": {
+              "layout": "side-by-side",
+              "maxWidth": 1100,
+              "width": "100%",
+              "objectFit": "contain",
+              "aspectRatio": "16/9",
+              "borderRadius": 20,
+              "background": "tokens.cardBackground"
+            },
+            "alt": "Install comparison"
+          },
+          {
+            "type": "text",
+            "content": { "text": "Engineered for Real Installs." },
+            "params": { "variant": "headline", "fontSize": "16px", "opacity": 0.65 }
+          },
+          {
+            "type": "text",
+            "content": { "text": "Container roofs are structural steel. Corrugation changes load transfer." }
+          },
+          {
+            "type": "button",
+            "content": { "label": "Continue to Fit Check" },
+            "behavior": { "params": { "landingStep": 2 } }
+          }
+        ]
+      },
+      {
+        "id": "step-2-structural",
+        "type": "section",
+        "role": "content",
+        "when": { "state": "landingStep", "equals": 2 },
+        "params": {
+          "maxWidth": 1000,
+          "margin": "auto",
+          "padding": 96,
+          "paddingTablet": 64,
+          "paddingMobile": 48,
+          "verticalSpacingDesktop": 96,
+          "verticalSpacingTablet": 64,
+          "verticalSpacingMobile": 48
+        },
+        "children": [
+          {
+            "type": "image",
+            "src": "/images/Container%20Images%20(6).jpg",
+            "params": {
+              "layout": "full",
+              "maxWidth": 1100,
+              "width": "100%",
+              "objectFit": "contain",
+              "aspectRatio": "16/9",
+              "borderRadius": 20,
+              "background": "tokens.cardBackground"
+            },
+            "alt": "Vent structural close-up"
+          },
+          {
+            "type": "text",
+            "content": { "text": "Engineered for Corrugated Steel." },
+            "params": { "variant": "headline", "fontSize": "16px", "opacity": 0.65 }
+          },
+          {
+            "type": "text",
+            "content": { "text": "Residential vents are built for plywood. Corrugation changes load transfer." }
+          },
+          {
+            "type": "button",
+            "content": { "label": "Continue to Fit Check" },
+            "behavior": { "params": { "landingStep": 3 } }
+          }
+        ]
+      },
+      {
+        "id": "step-3-vent",
+        "type": "section",
+        "role": "content",
+        "when": { "state": "landingStep", "equals": 3 },
+        "params": {
+          "maxWidth": 1000,
+          "margin": "auto",
+          "padding": 96,
+          "paddingTablet": 64,
+          "paddingMobile": 48,
+          "verticalSpacingDesktop": 96,
+          "verticalSpacingTablet": 64,
+          "verticalSpacingMobile": 48
+        },
+        "children": [
+          {
+            "type": "image",
+            "src": "/images/12_%20vent.png",
+            "params": {
+              "layout": "full",
+              "maxWidth": 1100,
+              "width": "100%",
+              "objectFit": "contain",
+              "aspectRatio": "16/9",
+              "borderRadius": 20,
+              "background": "tokens.cardBackground"
+            },
+            "alt": "12 vent — airflow and moisture control"
+          },
+          {
+            "type": "text",
+            "content": { "text": "Airflow is king with moisture control." },
+            "params": { "variant": "subheadline", "fontSize": "18px", "opacity": 0.9 }
+          },
+          {
+            "type": "button",
+            "content": { "label": "Continue" },
+            "behavior": { "params": { "landingStep": 4 } }
+          }
+        ]
+      },
+      {
+        "id": "step-3-fit",
+        "type": "section",
+        "role": "content",
+        "when": { "state": "landingStep", "equals": 4 },
+        "params": {
+          "maxWidth": 1000,
+          "margin": "auto",
+          "padding": 96,
+          "paddingTablet": 64,
+          "paddingMobile": 48,
+          "verticalSpacingDesktop": 96,
+          "verticalSpacingTablet": 64,
+          "verticalSpacingMobile": 48
+        },
+        "children": [
+          {
+            "type": "text",
+            "content": { "text": "Dial In Your Structural Fit." },
+            "params": { "variant": "headline", "fontSize": "16px", "opacity": 0.65 }
+          },
+          {
+            "type": "image",
+            "src": "/images/Container%20Images%20(8).jpg",
+            "params": {
+              "layout": "full",
+              "maxWidth": 1100,
+              "width": "100%",
+              "objectFit": "contain",
+              "aspectRatio": "16/9",
+              "borderRadius": 20,
+              "background": "tokens.cardBackground"
+            },
+            "alt": "Measurement diagram"
+          },
+          {
+            "type": "select",
+            "params": { "label": "Rib height" },
+            "state": { "key": "ribHeight" },
+            "content": { "options": ["3.5\"", "2.75\"", "Not sure"] }
+          },
+          {
+            "type": "select",
+            "params": { "label": "Container length" },
+            "state": { "key": "containerLength" },
+            "content": { "options": ["20 ft", "40 ft"] }
+          },
+          {
+            "type": "button",
+            "content": { "label": "Get my recommendation" },
+            "behavior": { "params": { "submitFitCheck": true, "landingStep": 5 } }
+          }
+        ]
+      },
+      {
+        "id": "step-4-upgrade",
+        "type": "section",
+        "role": "content",
+        "when": { "state": "landingStep", "equals": 5 },
+        "params": {
+          "maxWidth": 1000,
+          "margin": "auto",
+          "padding": 96,
+          "paddingTablet": 64,
+          "paddingMobile": 48,
+          "verticalSpacingDesktop": 96,
+          "verticalSpacingTablet": 64,
+          "verticalSpacingMobile": 48
+        },
+        "children": [
+          {
+            "type": "text",
+            "content": { "text": "Cut Once. Upgrade Fully." },
+            "params": { "variant": "headline", "fontSize": "16px", "opacity": 0.65 }
+          },
+          {
+            "type": "text",
+            "content": { "text": "See the difference natural light makes." },
+            "params": { "variant": "subheadline" }
+          },
+          {
+            "type": "image",
+            "id": "before-after",
+            "params": {
+              "layout": "slider",
+              "beforeSrc": "/images/Container%20Images%20(1).jpg",
+              "afterSrc": "/images/Container%20Images%20(1).jpg",
+              "darkenBefore": true,
+              "maxWidth": 900,
+              "width": "100%",
+              "objectFit": "contain",
+              "aspectRatio": "16/9",
+              "borderRadius": 20,
+              "background": "tokens.cardBackground"
+            },
+            "alt": "Dark container vs same space with light"
+          },
+          {
+            "type": "text",
+            "content": { "text": "You're already cutting structural steel." }
+          },
+          {
+            "type": "text",
+            "content": { "text": "Upgrade light while you're there." }
+          },
+          {
+            "type": "button",
+            "content": { "label": "See why we lead" },
+            "behavior": { "params": { "landingStep": 5 } }
+          }
+        ]
+      },
+      {
+        "id": "step-5-industry",
+        "type": "section",
+        "role": "content",
+        "when": { "state": "landingStep", "equals": 6 },
+        "params": {
+          "maxWidth": 1000,
+          "margin": "auto",
+          "padding": 96,
+          "paddingTablet": 64,
+          "paddingMobile": 48,
+          "verticalSpacingDesktop": 96,
+          "verticalSpacingTablet": 64,
+          "verticalSpacingMobile": 48
+        },
+        "children": [
+          {
+            "type": "image",
+            "src": "/images/Container%20Images%20(8).jpg",
+            "params": {
+              "layout": "full",
+              "maxWidth": 1100,
+              "width": "100%",
+              "objectFit": "contain",
+              "aspectRatio": "16/9",
+              "borderRadius": 20,
+              "background": "tokens.cardBackground"
+            },
+            "alt": "Final install"
+          },
+          {
+            "type": "text",
+            "content": { "text": "Built to Outlast the Container." },
+            "params": { "variant": "headline", "fontSize": "16px", "opacity": 0.65 }
+          },
+          {
+            "type": "text",
+            "content": { "text": "Formed 20-gauge adapter. No weld distortion. Designed for container rib transfer. Hundreds of 5-star installs." }
+          },
+          {
+            "type": "text",
+            "content": { "text": "★★★★★" },
+            "params": { "variant": "headline" }
+          },
+          {
+            "type": "text",
+            "content": { "text": "I ordered a second set immediately after I opened the box." }
+          },
+          {
+            "type": "text",
+            "content": { "text": "– David S, Payson AZ" }
+          },
+          {
+            "type": "button",
+            "content": { "label": "Build My Container System" },
+            "behavior": { "params": { "openUrl": "https://containercreations.com" } }
+          }
+        ]
+      }
+    ]
+  }
+}

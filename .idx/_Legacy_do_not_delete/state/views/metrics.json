@@ -1,0 +1,7 @@
+{
+    "id": "metrics",
+    "label": "Metrics & Trends",
+    "mode": "chart",
+    "filters": ["metric"]
+  }
+  

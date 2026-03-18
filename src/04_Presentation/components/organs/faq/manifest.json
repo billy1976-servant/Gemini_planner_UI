@@ -1,0 +1,6 @@
+{
+  "id": "faq",
+  "label": "FAQ",
+  "slotSchema": ["faq.primary", "faq.title", "faq.items"],
+  "variantIds": ["accordion", "list", "two-column"]
+}

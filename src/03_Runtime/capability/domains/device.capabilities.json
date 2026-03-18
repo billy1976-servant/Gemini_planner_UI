@@ -1,0 +1,4 @@
+{
+  "lite": { "platform": true, "screen": true, "battery": false, "network": false, "orientation": false, "motion": false },
+  "full": { "platform": true, "screen": true, "battery": true, "network": true, "orientation": true, "motion": true }
+}

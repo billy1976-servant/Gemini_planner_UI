@@ -1,0 +1,7 @@
+{
+    "id": "timeline",
+    "label": "Timeline Replay",
+    "mode": "temporal",
+    "features": ["scrub", "replay", "step"]
+  }
+  

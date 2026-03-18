@@ -1,0 +1,302 @@
+[support:1.1]
+claim: "Typical construction crews range from 3-10 members, with most projects using 5-7 crew members."
+whyItMatters: "Crew size directly impacts cleanup time and labor costs. Larger crews can clean faster but cost more per hour."
+calcHook: "If your crew is {{crewSize}} members and spends {{minutesPerDay}} minutes per day on cleanup..."
+numbers:
+- key: "typical_crew_size_range"
+  value: "3-10 members"
+confidence: "high"
+
+citations:
+- title: "TODO: Research Source"
+  publisher: "TODO"
+  url: "TODO"
+  date: "TODO"
+  quote: "TODO: Add research quote"
+
+[support:1.2]
+claim: "Construction crews typically spend 30-60 minutes per day on cleanup activities."
+whyItMatters: "Daily cleanup time accumulates quickly. 45 minutes per day equals 3.75 hours per week, or 195 hours per year per crew member."
+calcHook: "With {{crewSize}} crew members spending {{minutesPerDay}} minutes daily..."
+numbers:
+- key: "cleanup_time_range"
+  value: "30-60 minutes/day"
+confidence: "high"
+
+citations:
+- title: "TODO: Research Source"
+  publisher: "TODO"
+  url: "TODO"
+  date: "TODO"
+  quote: "TODO: Add research quote"
+
+[support:1.3]
+claim: "Average construction labor rates range from $18-35 per hour depending on region and skill level."
+whyItMatters: "Labor costs are the largest component of cleanup expenses. Even small time savings multiply significantly at scale."
+calcHook: "At {{wage}} per hour, with {{crewSize}} crew members..."
+numbers:
+- key: "typical_wage_range"
+  value: "$18-35/hour"
+confidence: "medium"
+
+citations:
+- title: "TODO: Research Source"
+  publisher: "TODO"
+  url: "TODO"
+  date: "TODO"
+  quote: "TODO: Add research quote"
+
+[support:1.4]
+claim: "This metric helps calculate your total cleanup costs."
+whyItMatters: "Understanding this variable is essential for accurate cost calculation."
+calcHook: "Using {{siteMessLevel}} in your calculations..."
+confidence: "low"
+
+citations:
+- title: "TODO: Research Source"
+  publisher: "TODO"
+  url: "TODO"
+  date: "TODO"
+  quote: "TODO: Add research quote"
+
+[support:1.5]
+claim: "This metric helps calculate your total cleanup costs."
+whyItMatters: "Understanding this variable is essential for accurate cost calculation."
+calcHook: "Using {{clientPerceptionRisk}} in your calculations..."
+confidence: "low"
+
+citations:
+- title: "TODO: Research Source"
+  publisher: "TODO"
+  url: "TODO"
+  date: "TODO"
+  quote: "TODO: Add research quote"
+
+[support:1.6]
+claim: "This metric helps calculate your total cleanup costs."
+whyItMatters: "Understanding this variable is essential for accurate cost calculation."
+calcHook: "Using {{workflowClarity}} in your calculations..."
+confidence: "low"
+
+citations:
+- title: "TODO: Research Source"
+  publisher: "TODO"
+  url: "TODO"
+  date: "TODO"
+  quote: "TODO: Add research quote"
+
+[support:1.7]
+claim: "This metric helps calculate your total cleanup costs."
+whyItMatters: "Understanding this variable is essential for accurate cost calculation."
+calcHook: "Using {{workflowClarity}} in your calculations..."
+confidence: "low"
+
+citations:
+- title: "TODO: Research Source"
+  publisher: "TODO"
+  url: "TODO"
+  date: "TODO"
+  quote: "TODO: Add research quote"
+
+[support:2.0]
+claim: "Calculated metrics provide objective measurement of cleanup costs and operational impact."
+whyItMatters: "These metrics transform raw inputs into actionable insights. Annual costs reveal the true financial impact, while friction and risk scores highlight operational challenges."
+calcHook: "Based on your inputs, we calculate daily and annual cleanup costs, plus workflow friction and reputation risk scores."
+numbers:
+- key: "work_days_per_year"
+  value: "260 days"
+confidence: "high"
+
+citations:
+- title: "TODO: Industry Cost Analysis"
+  publisher: "TODO"
+  url: "TODO"
+  date: "TODO"
+  quote: "TODO: Add research quote"
+
+[support:5.0]
+claim: "High cleanup costs directly impact profitability and project margins."
+whyItMatters: "When annual cleanup costs exceed thresholds, they become a significant operational expense that reduces competitive pricing ability and profit margins."
+confidence: "medium"
+
+citations:
+- title: "TODO: Research Source"
+  publisher: "TODO"
+  url: "TODO"
+  date: "TODO"
+  quote: "TODO: Add research quote"
+
+[support:6.0]
+claim: "Site appearance and cleanliness directly affect client trust and referral rates."
+whyItMatters: "Clients form first impressions quickly. Messy sites reduce confidence, increase inspection concerns, and decrease referral likelihood."
+confidence: "medium"
+
+citations:
+- title: "TODO: Research Source"
+  publisher: "TODO"
+  url: "TODO"
+  date: "TODO"
+  quote: "TODO: Add research quote"
+
+[support:7.0]
+claim: "Optimization opportunities exist even when costs are relatively low."
+whyItMatters: "Small improvements in efficiency compound over time and can free up resources for revenue-generating activities."
+confidence: "medium"
+
+citations:
+- title: "TODO: Research Source"
+  publisher: "TODO"
+  url: "TODO"
+  date: "TODO"
+  quote: "TODO: Add research quote"
+
+[support:10.0]
+claim: "Industry best practices show that optimized cleanup processes can reduce costs by 20-40% while improving site appearance."
+whyItMatters: "Understanding industry benchmarks and success stories helps justify investment in cleanup optimization and sets realistic expectations for improvement."
+numbers:
+- key: "typical_cost_reduction"
+  value: "20-40%"
+confidence: "medium"
+
+citations:
+- title: "TODO: Industry Best Practices Study"
+  publisher: "TODO"
+  url: "TODO"
+  date: "TODO"
+  quote: "TODO: Add research quote"
+
+[support:10.1]
+claim: "Industry best practices show that optimized cleanup processes can reduce costs by 20-40% while improving site appearance."
+whyItMatters: "Understanding industry benchmarks and success stories helps justify investment in cleanup optimization and sets realistic expectations for improvement."
+numbers:
+- key: "typical_cost_reduction"
+  value: "20-40%"
+confidence: "medium"
+
+citations:
+- title: "TODO: Industry Best Practices Study"
+  publisher: "TODO"
+  url: "TODO"
+  date: "TODO"
+  quote: "TODO: Add research quote"
+
+[support:10.2]
+claim: "Industry best practices show that optimized cleanup processes can reduce costs by 20-40% while improving site appearance."
+whyItMatters: "Understanding industry benchmarks and success stories helps justify investment in cleanup optimization and sets realistic expectations for improvement."
+numbers:
+- key: "typical_cost_reduction"
+  value: "20-40%"
+confidence: "medium"
+
+citations:
+- title: "TODO: Industry Best Practices Study"
+  publisher: "TODO"
+  url: "TODO"
+  date: "TODO"
+  quote: "TODO: Add research quote"
+
+[support:10.3]
+claim: "Industry best practices show that optimized cleanup processes can reduce costs by 20-40% while improving site appearance."
+whyItMatters: "Understanding industry benchmarks and success stories helps justify investment in cleanup optimization and sets realistic expectations for improvement."
+numbers:
+- key: "typical_cost_reduction"
+  value: "20-40%"
+confidence: "medium"
+
+citations:
+- title: "TODO: Industry Best Practices Study"
+  publisher: "TODO"
+  url: "TODO"
+  date: "TODO"
+  quote: "TODO: Add research quote"
+
+[support:10.4]
+claim: "Industry best practices show that optimized cleanup processes can reduce costs by 20-40% while improving site appearance."
+whyItMatters: "Understanding industry benchmarks and success stories helps justify investment in cleanup optimization and sets realistic expectations for improvement."
+numbers:
+- key: "typical_cost_reduction"
+  value: "20-40%"
+confidence: "medium"
+
+citations:
+- title: "TODO: Industry Best Practices Study"
+  publisher: "TODO"
+  url: "TODO"
+  date: "TODO"
+  quote: "TODO: Add research quote"
+
+[support:10.5]
+claim: "Industry best practices show that optimized cleanup processes can reduce costs by 20-40% while improving site appearance."
+whyItMatters: "Understanding industry benchmarks and success stories helps justify investment in cleanup optimization and sets realistic expectations for improvement."
+numbers:
+- key: "typical_cost_reduction"
+  value: "20-40%"
+confidence: "medium"
+
+citations:
+- title: "TODO: Industry Best Practices Study"
+  publisher: "TODO"
+  url: "TODO"
+  date: "TODO"
+  quote: "TODO: Add research quote"
+
+[support:11.0]
+claim: "Taking action on cleanup optimization typically shows ROI within 3-6 months."
+whyItMatters: "The calculated costs and identified problems provide a clear business case. Immediate action prevents continued losses and starts the path to improvement."
+numbers:
+- key: "typical_roi_timeline"
+  value: "3-6 months"
+confidence: "medium"
+
+citations:
+- title: "TODO: ROI Case Study"
+  publisher: "TODO"
+  url: "TODO"
+  date: "TODO"
+  quote: "TODO: Add research quote"
+
+[support:11.1]
+claim: "Taking action on cleanup optimization typically shows ROI within 3-6 months."
+whyItMatters: "The calculated costs and identified problems provide a clear business case. Immediate action prevents continued losses and starts the path to improvement."
+numbers:
+- key: "typical_roi_timeline"
+  value: "3-6 months"
+confidence: "medium"
+
+citations:
+- title: "TODO: ROI Case Study"
+  publisher: "TODO"
+  url: "TODO"
+  date: "TODO"
+  quote: "TODO: Add research quote"
+
+[support:11.2]
+claim: "Taking action on cleanup optimization typically shows ROI within 3-6 months."
+whyItMatters: "The calculated costs and identified problems provide a clear business case. Immediate action prevents continued losses and starts the path to improvement."
+numbers:
+- key: "typical_roi_timeline"
+  value: "3-6 months"
+confidence: "medium"
+
+citations:
+- title: "TODO: ROI Case Study"
+  publisher: "TODO"
+  url: "TODO"
+  date: "TODO"
+  quote: "TODO: Add research quote"
+
+[support:11.3]
+claim: "Taking action on cleanup optimization typically shows ROI within 3-6 months."
+whyItMatters: "The calculated costs and identified problems provide a clear business case. Immediate action prevents continued losses and starts the path to improvement."
+numbers:
+- key: "typical_roi_timeline"
+  value: "3-6 months"
+confidence: "medium"
+
+citations:
+- title: "TODO: ROI Case Study"
+  publisher: "TODO"
+  url: "TODO"
+  date: "TODO"
+  quote: "TODO: Add research quote"
+

@@ -1,0 +1,4 @@
+{
+  "off": { "conversations": false, "threads": false, "email": false, "sms": false },
+  "on": { "conversations": true, "threads": true, "email": true, "sms": true }
+}

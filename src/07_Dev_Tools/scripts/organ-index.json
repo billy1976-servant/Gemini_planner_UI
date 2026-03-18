@@ -1,0 +1,48 @@
+{
+  "organs": {
+    "hero": {
+      "slots": ["hero.title", "hero.subtitle", "hero.media", "hero.cta"],
+      "variants": ["centered", "image-bg", "split-left", "split-right", "full-screen", "short", "with-cta", "video-ready", "right-aligned"]
+    },
+    "header": {
+      "slots": ["header.logo", "header.cta"],
+      "variants": ["default", "sticky-split", "transparent", "minimal", "centered", "full-width", "mega-ready", "shrink-on-scroll", "with-announcement", "compact", "logo-center", "nav-left"]
+    },
+    "nav": {
+      "slots": ["nav.primary", "nav.logo", "nav.links", "nav.cta"],
+      "variants": ["default", "dropdown", "mobile-collapse", "centered-links"]
+    },
+    "footer": {
+      "slots": ["footer.primary", "footer.columns", "footer.newsletter", "footer.copyright"],
+      "variants": ["multi-column", "minimal", "with-newsletter", "centered", "dense"]
+    },
+    "content-section": {
+      "slots": ["content.title", "content.body", "content.media", "content.block1", "content.block2"],
+      "variants": ["text-only", "media-left", "media-right", "zigzag"]
+    },
+    "features-grid": {
+      "slots": ["features.items", "features.title", "features.cards"],
+      "variants": ["2-col", "3-col", "4-col", "repeater"]
+    },
+    "gallery": {
+      "slots": ["gallery.items", "gallery.title", "gallery.images"],
+      "variants": ["grid-2", "grid-3", "grid-4", "carousel-ready"]
+    },
+    "testimonials": {
+      "slots": ["testimonials.items", "testimonials.title", "testimonials.featured"],
+      "variants": ["grid-3", "grid-2", "single-featured", "carousel-ready"]
+    },
+    "pricing": {
+      "slots": ["pricing.primary", "pricing.title", "pricing.tiers"],
+      "variants": ["2-tier", "3-tier", "4-tier", "highlighted", "minimal"]
+    },
+    "faq": {
+      "slots": ["faq.primary", "faq.title", "faq.items"],
+      "variants": ["accordion", "list", "two-column"]
+    },
+    "cta": {
+      "slots": ["cta.primary", "cta.title", "cta.body", "cta.button"],
+      "variants": ["banner", "strip", "split", "full-width"]
+    }
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "id": "Gibson",
+  "title": "Why This Matters (with Metadata-Rama1)",
+  "steps": [
+    {
+      "id": "profit-drain",
+      "title": "Profit Drain",
+      "body": "Cleanup time quietly drains profit daily.",
+      "image": "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&h=400&fit=crop",
+      "imageAlt": "Profit loss visualization",
+      "meta": {
+        "purpose": "explain",
+        "weight": 3,
+        "tags": ["profit", "cost"],
+        "exportRole": "primary"
+      },
+      "choices": [
+        {
+          "id": "next",
+          "label": "Next",
+          "kind": "understand",
+          "meta": {
+            "weight": 1
+          },
+          "outcome": {
+            "signals": [
+              "profit_drain"
+            ],
+            "opportunities": [
+              "profit_drain_understood"
+            ],
+            "severity": "high",
+            "affects": [
+              "timeline",
+              "bid_quality",
+              "profitability"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "safety-trust",
+      "title": "Safety & Trust",
+      "body": "Clean sites reduce safety risk and improve trust.",
+      "image": "https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&h=400&fit=crop",
+      "imageAlt": "Clean and safe construction site",
+      "meta": {
+        "purpose": "decide",
+        "weight": 5,
+        "tags": ["safety", "trust"],
+        "exportRole": "primary"
+      },
+      "choices": [
+        {
+          "id": "yes",
+          "label": "Yes, this matters",
+          "kind": "yes",
+          "meta": {
+            "weight": 2
+          },
+          "outcome": {
+            "signals": [
+              "safety_priority",
+              "trust_building"
+            ],
+            "opportunities": [
+              "safety_improvement",
+              "client_satisfaction"
+            ],
+            "severity": "medium",
+            "affects": [
+              "safety",
+              "reputation"
+            ]
+          }
+        },
+        {
+          "id": "no",
+          "label": "Not a priority",
+          "kind": "no",
+          "meta": {
+            "weight": 1
+          },
+          "outcome": {
+            "signals": [
+              "safety_not_priority"
+            ],
+            "blockers": [
+              "safety_risk"
+            ],
+            "severity": "high",
+            "affects": [
+              "safety",
+              "compliance"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "time-cost",
+      "title": "Time = Cost",
+      "body": "Every minute spent cleaning is a minute not spent on revenue-generating work.",
+      "image": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&h=400&fit=crop",
+      "imageAlt": "Time and cost relationship",
+      "meta": {
+        "purpose": "input",
+        "weight": 4,
+        "tags": ["time", "cost", "efficiency"],
+        "exportRole": "primary"
+      },
+      "choices": [
+        {
+          "id": "understand",
+          "label": "I understand",
+          "kind": "understand",
+          "meta": {
+            "weight": 1
+          },
+          "outcome": {
+            "signals": [
+              "time_cost_understood"
+            ],
+            "opportunities": [
+              "efficiency_gain"
+            ],
+            "severity": "medium",
+            "affects": [
+              "profitability",
+              "efficiency"
+            ]
+          }
+        },
+        {
+          "id": "more",
+          "label": "Tell me more",
+          "kind": "more",
+          "meta": {
+            "weight": 1
+          },
+          "outcome": {
+            "signals": [
+              "needs_more_info"
+            ],
+            "opportunities": [
+              "education_opportunity"
+            ],
+            "severity": "low",
+            "affects": [
+              "engagement"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "routing": {
+    "defaultNext": "linear",
+    "rules": [
+      {
+        "when": {
+          "signals": ["profit_drain", "safety_priority"]
+        },
+        "then": "goto",
+        "gotoStep": "time-cost"
+      }
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "organ:footer:minimal",
+  "type": "Section",
+  "role": "footer",
+  "layout": {
+    "type": "column",
+    "params": {
+      "gap": "1rem",
+      "align": "center"
+    }
+  },
+  "params": {},
+  "children": [
+    { "type": "slot", "slotKey": "footer.primary" }
+  ]
+}

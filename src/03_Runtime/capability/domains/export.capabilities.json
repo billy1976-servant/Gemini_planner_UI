@@ -1,0 +1,4 @@
+{
+  "basic": { "pdf": true, "image": false, "mp4": false, "mp3": false, "json": false, "hybrid": false },
+  "advanced": { "pdf": true, "image": true, "mp4": true, "mp3": true, "json": true, "hybrid": true }
+}

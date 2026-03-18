@@ -1,0 +1,62 @@
+2️⃣ MOLECULES — COMPOUNDS + QUICKBOOKS/REPORT ANALOGY
+File suggestion: src/system/definitions/molecules-and-organs.md
+ (You can rename later, but I’m including QuickBooks / report analogy in the title section as you asked.)
+Molecules = Compounds that arrange atoms
+A molecule (compound) is:
+“A reusable pattern that chooses and arranges atoms into a meaningful UI object.”
+Examples:
+ButtonCompound – uses:
+surface (button body)
+text (label)
+media (optional icon)
+trigger (click action)
+CardCompound – uses:
+surface (card body)
+media (image/icon)
+text (title/subtitle/body)
+collection (list of items inside the card)
+The molecule itself is still simple TSX:
+It doesn’t know about Kanban, calendar, “website builder”, etc.
+It just says: “For this pattern, I want 1 surface + 1 text + 1 media + 1 trigger, wired like this.”
+
+Where variants live (and why molecules stay tiny)
+Molecules do not contain variants like “primary button”, “secondary button”, “ghost button”.
+Instead:
+The molecule just defines slots (label text, icon, layout, density, emphasis).
+A molecule JSON definition (e.g. button.compound.json) specifies:
+Families/variants: ["primary", "ghost", "danger", "icon-only", ...]
+For each variant, which atom sliders to use:
+Text size / weight
+Surface elevation / radius
+Media icon style
+Spacing and padding
+The screen JSON or organ JSON picks “which variant” to use in context.
+So:
+Molecule TSX = fixed wiring of atoms
+Molecule JSON = variant recipes
+Screen JSON = which recipe is active right now
+
+Organs & QuickBooks analogy (where this is heading)
+You introduced:
+Organs – like Kanban, Calendar, Journal, Website Builder, etc.
+Brain / Content Engine – the “QuickBooks” part that owns the data
+QuickBooks Analogy:
+The data engine = chart of accounts + transactions (your unified content/tasks/life data)
+The views/reports = calendar view, Kanban view, list view, journal view, etc.
+In that analogy:
+Atoms = the raw UI primitives (text cells, lines, boxes, icons)
+Molecules = reusable UI widgets (button, card, list, input row)
+Organs = the screens/widgets that feel like “apps” (Kanban, Calendar, Journal)
+Brain / QuickBooks-style Engine = the part that decides which data feeds each organ and how it’s grouped/filtered.
+This file (molecules/compounds definition) should:
+Stay focused on how molecules wire atoms
+Explicitly reference that organs will combine multiple molecules
+Explicitly reference that QuickBooks/report-style views are just different organs showing the same underlying data in different ways.
+
+Summary contracts for molecules
+Molecules never define global style → they reuse atom + UI tokens.
+Variants are chosen by JSON, not baked into TSX.
+Any organ/screen (Kanban, Calendar, etc.) is just a JSON tree that:
+Picks which molecules to use
+Picks which variants/families for those molecules
+Lets the global “brain” decide what data flows into them.

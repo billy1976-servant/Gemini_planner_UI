@@ -1,0 +1,275 @@
+{
+  "atoms": {
+    "text": {
+      "requiredProps": [],
+      "optionalProps": ["params", "children"],
+      "contentKeys": [],
+      "paramKeys": [],
+      "note": "Visual params (fontFamily, size, weight, color, align, etc.) come from Style System / definitions, not screen JSON."
+    },
+    "media": {
+      "requiredProps": [],
+      "optionalProps": ["params", "children", "src", "alt", "caption"],
+      "contentKeys": [],
+      "paramKeys": [],
+      "note": "Visual params (aspectRatio, objectFit, radius, etc.) come from Style System, not screen JSON."
+    },
+    "surface": {
+      "requiredProps": [],
+      "optionalProps": ["params", "children"],
+      "contentKeys": [],
+      "paramKeys": [],
+      "note": "Visual params (background, border, radius, etc.) come from Style System / palette, not screen JSON."
+    },
+    "sequence": {
+      "requiredProps": [],
+      "optionalProps": ["params", "children"],
+      "contentKeys": [],
+      "paramKeys": [],
+      "note": "Layout (flow, direction, gap, etc.) comes from Layout Engine, not screen JSON."
+    },
+    "trigger": {
+      "requiredProps": [],
+      "optionalProps": ["params", "onTap", "children"],
+      "contentKeys": [],
+      "paramKeys": ["disabled"],
+      "note": "Visual/UX params (transition, hoverLift, etc.) come from Style System, not screen JSON."
+    },
+    "collection": {
+      "requiredProps": [],
+      "optionalProps": ["params", "children"],
+      "contentKeys": [],
+      "paramKeys": [],
+      "note": "Layout (direction, gap, padding) comes from Layout Engine, not screen JSON."
+    },
+    "condition": {
+      "requiredProps": [],
+      "optionalProps": ["params", "children"],
+      "contentKeys": [],
+      "paramKeys": ["if"]
+    },
+    "shell": {
+      "requiredProps": [],
+      "optionalProps": ["params", "children"],
+      "contentKeys": [],
+      "paramKeys": [],
+      "note": "Visual/layout params come from Style System / Layout Engine, not screen JSON."
+    },
+    "field": {
+      "requiredProps": [],
+      "optionalProps": ["params", "children"],
+      "contentKeys": [],
+      "paramKeys": ["value", "fieldKey", "multiline", "rows", "onChange"],
+      "note": "Visual params (background, border, radius, padding) come from Style System, not screen JSON."
+    }
+  },
+  "molecules": {
+    "section": {
+      "allowedContentKeys": ["title"],
+      "allowedChildren": ["any"],
+      "allowedParams": ["title", "role"],
+      "allowedBehaviors": [],
+      "note": "Layout (containerWidth, heroMode, moleculeLayout, layoutPreset) comes from Layout Engine / Preset System at runtime, not screen JSON."
+    },
+    "button": {
+      "allowedContentKeys": ["label", "supportingText"],
+      "allowedChildren": ["any"],
+      "allowedParams": ["label", "supportingText"],
+      "allowedBehaviors": ["Navigation", "Action", "Interaction"]
+    },
+    "card": {
+      "allowedContentKeys": ["media", "title", "body"],
+      "allowedChildren": ["any"],
+      "allowedParams": ["media", "title", "body", "mediaPosition"],
+      "allowedBehaviors": ["Navigation", "Action", "Interaction"],
+      "note": "mediaPosition is semantic intent only (e.g. left/right). Layout/spacing from Layout Engine or molecule defaults."
+    },
+    "avatar": {
+      "allowedContentKeys": ["media", "text"],
+      "allowedChildren": ["any"],
+      "allowedParams": ["media", "text"],
+      "allowedBehaviors": ["Navigation", "Action", "Interaction"]
+    },
+    "chip": {
+      "allowedContentKeys": ["title", "body", "media"],
+      "allowedChildren": ["any"],
+      "allowedParams": ["text", "body", "media"],
+      "allowedBehaviors": ["Navigation", "Action", "Interaction"]
+    },
+    "field": {
+      "allowedContentKeys": ["label", "error"],
+      "allowedChildren": ["any"],
+      "allowedParams": ["label", "field", "error", "state"],
+      "allowedBehaviors": []
+    },
+    "footer": {
+      "allowedContentKeys": ["left", "right"],
+      "allowedChildren": [],
+      "allowedParams": ["item"],
+      "allowedBehaviors": []
+    },
+    "list": {
+      "allowedContentKeys": ["items"],
+      "allowedChildren": [],
+      "allowedParams": ["item"],
+      "allowedBehaviors": []
+    },
+    "modal": {
+      "allowedContentKeys": ["title", "body"],
+      "allowedChildren": ["any"],
+      "allowedParams": ["title", "body"],
+      "allowedBehaviors": []
+    },
+    "stepper": {
+      "allowedContentKeys": [],
+      "allowedChildren": [],
+      "allowedParams": [],
+      "allowedBehaviors": [],
+      "note": "Uses steps[] array (steps[].content.label, steps[].params, steps[].behavior), not content. Layout from molecule defaults."
+    },
+    "toast": {
+      "allowedContentKeys": ["message"],
+      "allowedChildren": [],
+      "allowedParams": ["text"],
+      "allowedBehaviors": ["Navigation", "Action", "Interaction"]
+    },
+    "toolbar": {
+      "allowedContentKeys": ["actions"],
+      "allowedChildren": [],
+      "allowedParams": ["item"],
+      "allowedBehaviors": []
+    },
+    "JournalHistory": {
+      "allowedContentKeys": [],
+      "allowedChildren": [],
+      "allowedParams": ["track", "entries"],
+      "allowedBehaviors": []
+    },
+    "UserInputViewer": {
+      "allowedContentKeys": [],
+      "allowedChildren": [],
+      "allowedParams": [],
+      "allowedBehaviors": []
+    }
+  },
+  "organs": {
+    "header": {
+      "slots": ["header.logo", "header.cta"],
+      "emittedMolecules": ["Section"],
+      "requiredLayoutParams": []
+    },
+    "hero": {
+      "slots": ["hero.title", "hero.subtitle", "hero.cta"],
+      "emittedMolecules": ["Section"],
+      "requiredLayoutParams": []
+    },
+    "nav": {
+      "slots": [],
+      "emittedMolecules": ["Section"],
+      "requiredLayoutParams": []
+    },
+    "footer": {
+      "slots": [],
+      "emittedMolecules": ["Section", "Footer"],
+      "requiredLayoutParams": []
+    },
+    "content-section": {
+      "slots": [],
+      "emittedMolecules": ["Section"],
+      "requiredLayoutParams": []
+    },
+    "features-grid": {
+      "slots": ["features.title", "features.items"],
+      "emittedMolecules": ["Section", "Grid"],
+      "requiredLayoutParams": [],
+      "note": "Layout is supplied by Layout Engine / Preset at runtime, not from screen JSON."
+    },
+    "gallery": {
+      "slots": [],
+      "emittedMolecules": ["Section"],
+      "requiredLayoutParams": []
+    },
+    "testimonials": {
+      "slots": [],
+      "emittedMolecules": ["Section"],
+      "requiredLayoutParams": []
+    },
+    "pricing": {
+      "slots": [],
+      "emittedMolecules": ["Section"],
+      "requiredLayoutParams": []
+    },
+    "faq": {
+      "slots": [],
+      "emittedMolecules": ["Section"],
+      "requiredLayoutParams": []
+    },
+    "cta": {
+      "slots": [],
+      "emittedMolecules": ["Section"],
+      "requiredLayoutParams": []
+    }
+  },
+  "organNode": {
+    "note": "Structural placeholder only; expanded at runtime. No layout/styling in screen JSON.",
+    "requiredKeys": ["type", "organId", "variant", "content", "children"],
+    "optionalKeys": ["id"],
+    "forbiddenKeys": ["layout", "params", "role", "style", "palette"],
+    "contentKeysRule": "Keys must match organs[organId].slots"
+  },
+  "layoutPrimitives": "REMOVED — Layout (row/column/grid/stack/page) is owned by Layout Engine and Preset System at runtime. Screen JSON must not define or reference layout primitives.",
+  "behaviorVerbs": {
+    "interaction": {
+      "verbs": ["tap", "double", "long", "dragX", "dragY", "dragXY", "scrollUp", "scrollDown", "swipeLeft", "swipeRight", "swipeUp", "swipeDown"],
+      "handlerFormat": "interact.<verb>",
+      "moleculeCategories": ["button", "card", "chip", "avatar", "toast", "list", "footer", "toolbar", "stepper"]
+    },
+    "navigation": {
+      "verbs": ["go", "back", "open", "close", "route"],
+      "variants": { "go": ["screen", "modal", "flow"], "back": ["one", "all", "root"], "open": ["panel", "sheet"], "close": ["panel", "sheet"], "route": ["internal", "external"] },
+      "handlerFormat": "nav.<verb><Variant>",
+      "moleculeCategories": ["button", "card", "chip", "avatar", "toast", "list", "footer", "toolbar", "stepper"]
+    },
+    "action": {
+      "verbs": ["crop", "filter", "frame", "layout", "motion", "overlay"],
+      "domains": ["image", "video", "audio", "document", "canvas", "map", "camera"],
+      "moleculeCategories": ["button", "card", "chip", "avatar", "toast"]
+    },
+    "strippedTypes": ["section", "field", "avatar", "modal"],
+    "behaviorObjectShape": {
+      "Navigation": { "type": "Navigation", "params": ["verb", "screenId", "modalId", "flowId", "panelId", "sheetId", "path", "url", "to"] },
+      "Action": { "type": "Action", "params": ["name", "target", "domain", "valueFrom", "value", "key", "track"] },
+      "Interaction": { "type": "Interaction", "params": [] }
+    }
+  },
+  "stateModel": {
+    "stateLocation": "state-store (deriveState from log), keys: currentView, values, journal, scans, interactions",
+    "conditionalVisibility": {
+      "when": { "state": "string (state key)", "equals": "any (value for equality)" },
+      "usedIn": "json-renderer.shouldRenderNode, json-skin.engine selectActiveChildren"
+    },
+    "fieldBinding": {
+      "params.field.fieldKey": "string key into state.values",
+      "intent": "state.update",
+      "usedBy": "Field compound + FieldAtom; input-change → dispatchState('state.update', { key, value })"
+    },
+    "mutationIntents": ["state:currentView", "state.update", "journal.set", "journal.add", "scan.result", "scan.interpreted", "interaction.record"],
+    "stateTargetingFromJSON": ["node.when.state", "node.when.equals", "params.field.fieldKey", "params.track (JournalHistory)"]
+  },
+  "paramKeyMapping": "See src/contracts/PARAM_KEY_MAPPING.md — definition variant keys and compound props must align with allowedParams",
+  "rendererExpectations": {
+    "requiredKeysPerNode": ["type"],
+    "optionalKeysPerNode": ["id", "params", "content", "behavior", "onTap", "children", "items", "when", "role"],
+    "typeResolution": "definitions[type] ?? definitions[type.toLowerCase()]; Registry[type] (case-sensitive key); fallback: Missing registry entry div",
+    "conditionalRender": "If node.when present, render only when state[node.when.state] === node.when.equals; else do not render",
+    "repeaterMode": "If node.items is non-empty array: render each item as Card (params.repeater.itemType ignored in practice—always Card), content from item.title, item.body, item.icon|item.image",
+    "specialTypes": {
+      "json-skin": "Rendered by JsonSkinEngine; expects screen.children, uses when.state/equals for gating",
+      "JournalHistory": "params.entries injected from state.journal[params.track].entry if params.track string",
+      "stepper": "Expects steps[] not content; each step: content.label, params, behavior"
+    },
+    "layoutSource": "Layout and wrapping come from Layout Engine / Preset System (section key + role + overrides), not from node.layout or node.layoutPreset.",
+    "behaviorStripping": "Behavior stripped for types: section, field, avatar; for modal stripped unless close-only (Navigation verb close or Action name close)",
+    "noFallbackBehavior": "Missing type renders red div 'Missing registry entry: <type>'"
+  }
+}

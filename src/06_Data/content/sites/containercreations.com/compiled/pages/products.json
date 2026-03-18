@@ -1,0 +1,63 @@
+{
+  "id": "products",
+  "path": "/products",
+  "title": "Products",
+  "sections": [
+    {
+      "id": "block-products-0",
+      "type": "productGrid",
+      "content": {
+        "products": [
+          {
+            "id": "conex-container-intake-vents",
+            "name": "2.5-inch Intake Vents (10-pack)",
+            "images": [
+              "https://www.containercreations.com/cdn/shop/files/10_Louver_Vents_20x_crop_center.jpg?v=1741487812",
+              "https://www.containercreations.com/cdn/shop/files/10_Louver_Vents.jpg?v=1741487812",
+              "https://www.containercreations.com/cdn/shop/files/Louver_Back_Mesh_20x_crop_center.jpg?v=1741487825",
+              "https://www.containercreations.com/cdn/shop/files/Louver_Back_Mesh.jpg?v=1741487825",
+              "https://www.containercreations.com/cdn/shop/files/Louver_installed_on_Container_20x_crop_center.jpg?v=1741487838",
+              "https://www.containercreations.com/cdn/shop/files/Louver_installed_on_Container.jpg?v=1741487838",
+              "https://www.containercreations.com/cdn/shop/files/preview_images/8077b611c9ad419685400b82bcaa9918.thumbnail.0000000000_580x.jpg?v=1712095032",
+              "https://www.containercreations.com/cdn/shop/files/preview_images/8077b611c9ad419685400b82bcaa9918.thumbnail.0000000000_20x_crop_center.jpg?v=1712095032",
+              "https://www.containercreations.com/cdn/shop/files/preview_images/8077b611c9ad419685400b82bcaa9918.thumbnail.0000000000.jpg?v=1712095032",
+              "https://www.containercreations.com/cdn/shop/files/new-v_20x11_crop_center.png?v=1720594384",
+              "https://www.containercreations.com/cdn/shop/files/new-v_306x180_crop_center.png?v=1720594384",
+              "http://www.containercreations.com/cdn/shop/files/10_Louver_Vents.jpg?v=1741487812"
+            ],
+            "url": "https://containercreations.com/products/conex-container-intake-vents"
+          },
+          {
+            "id": "12-inch-whirlybird-turbine",
+            "name": "Whirlybird Wind Turbine for AdaptAIR™",
+            "images": [
+              "https://www.containercreations.com/cdn/shop/files/Turbine_Studio_Cutout_20x_crop_center.png?v=1730839842",
+              "https://www.containercreations.com/cdn/shop/files/Turbine_Studio_Cutout.png?v=1730839842",
+              "https://www.containercreations.com/cdn/shop/files/Turbine_-_24_Blades_20x_crop_center.png?v=1730838729",
+              "https://www.containercreations.com/cdn/shop/files/Turbine_-_24_Blades.png?v=1730838729",
+              "https://www.containercreations.com/cdn/shop/files/Wind_Turbine_v2_20x_crop_center.png?v=1738796554",
+              "https://www.containercreations.com/cdn/shop/files/Wind_Turbine_v2.png?v=1738796554",
+              "https://www.containercreations.com/cdn/shop/files/MAIN_IMAGE_KIT_v2_20x_crop_center.png?v=1730838764",
+              "https://www.containercreations.com/cdn/shop/files/MAIN_IMAGE_KIT_v2.png?v=1730838764",
+              "https://www.containercreations.com/cdn/shop/files/new-v_20x11_crop_center.png?v=1720594384",
+              "https://www.containercreations.com/cdn/shop/files/new-v_306x180_crop_center.png?v=1720594384",
+              "http://www.containercreations.com/cdn/shop/files/Turbine_Studio_Cutout.png?v=1730839842"
+            ],
+            "url": "https://containercreations.com/products/12-inch-whirlybird-turbine"
+          }
+        ]
+      },
+      "source": "products",
+      "role": "features"
+    },
+    {
+      "id": "block-products-1",
+      "type": "footer",
+      "content": {
+        "type": "footer",
+        "role": "footer"
+      },
+      "role": "footer"
+    }
+  ]
+}

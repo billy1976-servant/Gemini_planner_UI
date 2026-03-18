@@ -1,0 +1,67 @@
+{
+    "$schema": "slider-definitions.v1",
+    "text": {
+      "fontSize":        { "min": 12,   "max": 48 },
+      "fontWeight":      { "min": 100,  "max": 900 },
+      "lineHeight":      { "min": 1.0,  "max": 2.0 },
+      "letterSpacing":   { "min": -1.0, "max": 2.0 },
+      "wordSpacing":     { "min": 0.0,  "max": 8.0 }
+    },
+  
+  
+    "surface": {
+      "radius":          { "min": 0,    "max": 40 },
+      "shadow":          { "min": 0,    "max": 40 },
+      "borderWidth":     { "min": 0,    "max": 6 },
+      "opacity":         { "min": 0.2,  "max": 1.0 },
+      "padding":         { "min": 0,    "max": 60 }
+    },
+  
+  
+    "media": {
+      "size":            { "min": 16,   "max": 240 },
+      "roundness":       { "min": 0,    "max": 1 },
+      "brightness":      { "min": 0.6,  "max": 1.4 }
+    },
+  
+  
+    "collection": {
+      "gap":             { "min": 0,    "max": 40 },
+      "padding":         { "min": 0,    "max": 40 },
+      "columns":         { "min": 1,    "max": 6 }
+    },
+  
+  
+    "sequence": {
+      "gap":             { "min": 0,    "max": 40 },
+      "padding":         { "min": 0,    "max": 40 },
+      "direction":       { "min": 0,    "max": 1 } 
+    },
+  
+  
+    "shell": {
+      "padding":         { "min": 0,    "max": 60 },
+      "maxWidth":        { "min": 280,  "max": 1600 }
+    },
+  
+  
+    "field": {
+      "fontSize":        { "min": 14,   "max": 32 },
+      "borderWidth":     { "min": 0,    "max": 4 },
+      "padding":         { "min": 4,    "max": 24 }
+    },
+  
+  
+    "trigger": {
+      "scale":           { "min": 0.9,  "max": 1.2 },
+      "opacity":         { "min": 0.4,  "max": 1.0 }
+    },
+  
+  
+    "condition": {
+      "delay":           { "min": 0,    "max": 2000 }
+    }
+  }
+  
+  
+  

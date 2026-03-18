@@ -1,0 +1,5 @@
+{
+  "onboarding": "Onboarding/trial.json",
+  "calculator": "behavior-tests/A-to-D-Test.json",
+  "education": "new-blueprint-test/app-1.json"
+}

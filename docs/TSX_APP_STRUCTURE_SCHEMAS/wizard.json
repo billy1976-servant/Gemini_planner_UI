@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "tsx-structure-wizard",
+  "title": "Wizard Structure Config",
+  "description": "Config for Wizard/Flow structure: steps, progress, next/back, optional branching",
+  "type": "object",
+  "properties": {
+    "steps": {
+      "type": "object",
+      "properties": {
+        "source": { "type": "string", "enum": ["config", "data"], "default": "config" },
+        "showProgress": { "type": "boolean", "default": true },
+        "progressStyle": { "type": "string", "enum": ["bar", "stepper", "dots", "minimal"], "default": "stepper" }
+      }
+    },
+    "navigation": {
+      "type": "object",
+      "properties": {
+        "back": { "type": "boolean", "default": true },
+        "next": { "type": "boolean", "default": true },
+        "skip": { "type": "boolean", "default": false },
+        "placement": { "type": "string", "enum": ["bottom", "top", "sides"], "default": "bottom" }
+      }
+    },
+    "branching": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean", "default": false },
+        "decisionKey": { "type": "string" }
+      }
+    },
+    "linear": {
+      "type": "boolean",
+      "description": "If true, strict linear order; no branching",
+      "default": true
+    }
+  },
+  "additionalProperties": false
+}

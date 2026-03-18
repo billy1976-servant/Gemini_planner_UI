@@ -1,0 +1,168 @@
+{
+  "id": "integrationLabRoot",
+  "type": "screen",
+  "capabilities": {},
+  "state": {},
+  "children": [
+    {
+      "id": "sectionLabIntro",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "09_Integrations — Integration Lab" },
+      "children": [
+        {
+          "id": "cardIntro",
+          "type": "card",
+          "content": {
+            "body": "All device hooks go through the 09_Integrations facade. Use buttons below to read sensors; results appear in state (diagnostics_sensor_*)."
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "sectionMotionOrientation",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "Motion & Orientation" },
+      "children": [
+        {
+          "id": "cardOrientation",
+          "type": "card",
+          "content": { "body": "Read orientation (deviceorientation)." },
+          "children": [
+            {
+              "id": "btnReadOrientation",
+              "type": "button",
+              "content": { "label": "Read Orientation" },
+              "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "orientation" } }
+            },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_orientation" }
+          ]
+        },
+        {
+          "id": "cardMotion",
+          "type": "card",
+          "content": { "body": "Read motion (devicemotion)." },
+          "children": [
+            {
+              "id": "btnReadMotion",
+              "type": "button",
+              "content": { "label": "Read Motion" },
+              "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "motion" } }
+            },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_motion" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sectionLocationBattery",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "Location & Battery" },
+      "children": [
+        {
+          "id": "cardLocation",
+          "type": "card",
+          "content": { "body": "Read location (GPS)." },
+          "children": [
+            {
+              "id": "btnReadLocation",
+              "type": "button",
+              "content": { "label": "Read Location" },
+              "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "location" } }
+            },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_location" }
+          ]
+        },
+        {
+          "id": "cardBattery",
+          "type": "card",
+          "content": { "body": "Read battery." },
+          "children": [
+            {
+              "id": "btnReadBattery",
+              "type": "button",
+              "content": { "label": "Read Battery" },
+              "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "battery" } }
+            },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_battery" }
+          ]
+        },
+        {
+          "id": "cardDevice",
+          "type": "card",
+          "content": { "body": "Read device (platform, userAgent)." },
+          "children": [
+            {
+              "id": "btnReadDevice",
+              "type": "button",
+              "content": { "label": "Read Device" },
+              "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "device" } }
+            },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_device" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sectionCameraAudio",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "Camera & Audio" },
+      "children": [
+        {
+          "id": "cardCamera",
+          "type": "card",
+          "content": { "body": "Camera test (getUserMedia video)." },
+          "children": [
+            {
+              "id": "btnCameraTest",
+              "type": "button",
+              "content": { "label": "Camera Test" },
+              "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "camera" } }
+            },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_camera" }
+          ]
+        },
+        {
+          "id": "cardAudio",
+          "type": "card",
+          "content": { "body": "Audio test (getUserMedia audio)." },
+          "children": [
+            {
+              "id": "btnAudioTest",
+              "type": "button",
+              "content": { "label": "Audio Test" },
+              "behavior": { "type": "Action", "params": { "name": "diagnostics:sensorRead", "sensorId": "audio" } }
+            },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_sensor_audio" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sectionLogSnapshot",
+      "type": "section",
+      "role": "content",
+      "content": { "title": "Latest from Log" },
+      "children": [
+        {
+          "id": "cardLogSnapshot",
+          "type": "card",
+          "content": { "body": "Show last 10 input log events (capture → log)." },
+          "children": [
+            {
+              "id": "btnShowLogSnapshot",
+              "type": "button",
+              "content": { "label": "Show Latest Log Snapshot" },
+              "behavior": { "type": "Action", "params": { "name": "diagnostics:inputLogSnapshot" } }
+            },
+            { "type": "diagnostics-value", "stateKey": "diagnostics_inputLogSnapshot" }
+          ]
+        }
+      ]
+    }
+  ]
+}

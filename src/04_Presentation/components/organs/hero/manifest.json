@@ -1,0 +1,6 @@
+{
+  "id": "hero",
+  "label": "Hero",
+  "slotSchema": ["hero.title", "hero.subtitle", "hero.media", "hero.cta"],
+  "variantIds": ["centered", "image-bg", "split-left", "split-right", "full-screen", "short", "with-cta", "video-ready", "right-aligned"]
+}

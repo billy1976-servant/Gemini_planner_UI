@@ -1,0 +1,6 @@
+{
+  "id": "nav",
+  "label": "Navigation",
+  "slotSchema": ["nav.primary", "nav.logo", "nav.links", "nav.cta"],
+  "variantIds": ["default", "dropdown", "mobile-collapse", "centered-links"]
+}

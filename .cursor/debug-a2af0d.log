@@ -1,0 +1,40 @@
+{"sessionId":"a2af0d","location":"dev/page.tsx:useLayoutEffect:entry","message":"useLayoutEffect (section heights) ran","data":{},"timestamp":1772660400437,"hypothesisId":"H4"}
+{"sessionId":"a2af0d","location":"layout.tsx:hydrationEffect","message":"hydration effect ran","data":{"hasHydrated":false,"hasHydratedGlobal":false},"timestamp":1772660400443,"hypothesisId":"H2"}
+{"sessionId":"a2af0d","location":"layout.tsx:experienceEffect","message":"experience effect ran","data":{"experienceParam":"","willCheck":true},"timestamp":1772660400445,"hypothesisId":"H1"}
+{"sessionId":"a2af0d","location":"dev/page.tsx:useLayoutEffect:entry","message":"useLayoutEffect (section heights) ran","data":{},"timestamp":1772660400447,"hypothesisId":"H4"}
+{"sessionId":"a2af0d","location":"layout.tsx:hydrationEffect","message":"hydration effect ran","data":{"hasHydrated":true,"hasHydratedGlobal":true},"timestamp":1772660400448,"hypothesisId":"H2"}
+{"sessionId":"a2af0d","location":"layout.tsx:experienceEffect","message":"experience effect ran","data":{"experienceParam":"","willCheck":true},"timestamp":1772660400449,"hypothesisId":"H1"}
+{"sessionId":"a2af0d","location":"dev/page.tsx:useLayoutEffect:entry","message":"useLayoutEffect (section heights) ran","data":{},"timestamp":1772660400451,"hypothesisId":"H4"}
+{"sessionId":"a2af0d","location":"dev/page.tsx:useLayoutEffect:entry","message":"useLayoutEffect (section heights) ran","data":{},"timestamp":1772660400459,"hypothesisId":"H4"}
+{"sessionId":"a2af0d","location":"layout.tsx:fetchScreens:setIndex","message":"layout setIndex called","data":{"count":22},"timestamp":1772660400563,"hypothesisId":"H3"}
+{"sessionId":"a2af0d","location":"layout.tsx:fetchScreens:setIndex","message":"layout setIndex called","data":{"count":22},"timestamp":1772660400592,"hypothesisId":"H3"}
+{"sessionId":"a2af0d","location":"dev/page.tsx:useLayoutEffect:entry","message":"useLayoutEffect (section heights) ran","data":{},"timestamp":1772660400704,"hypothesisId":"H4"}
+{"sessionId":"a2af0d","location":"dev/page.tsx:useLayoutEffect:entry","message":"useLayoutEffect (section heights) ran","data":{},"timestamp":1772660413699,"hypothesisId":"H4"}
+{"sessionId":"a2af0d","location":"layout.tsx:hydrationEffect","message":"hydration effect ran","data":{"hasHydrated":false,"hasHydratedGlobal":false},"timestamp":1772660413705,"hypothesisId":"H2"}
+{"sessionId":"a2af0d","location":"layout.tsx:experienceEffect","message":"experience effect ran","data":{"experienceParam":"","willCheck":true},"timestamp":1772660413707,"hypothesisId":"H1"}
+{"sessionId":"a2af0d","location":"dev/page.tsx:useLayoutEffect:entry","message":"useLayoutEffect (section heights) ran","data":{},"timestamp":1772660413709,"hypothesisId":"H4"}
+{"sessionId":"a2af0d","location":"layout.tsx:hydrationEffect","message":"hydration effect ran","data":{"hasHydrated":true,"hasHydratedGlobal":true},"timestamp":1772660413712,"hypothesisId":"H2"}
+{"sessionId":"a2af0d","location":"layout.tsx:experienceEffect","message":"experience effect ran","data":{"experienceParam":"","willCheck":true},"timestamp":1772660413713,"hypothesisId":"H1"}
+{"sessionId":"a2af0d","location":"dev/page.tsx:useLayoutEffect:entry","message":"useLayoutEffect (section heights) ran","data":{},"timestamp":1772660413747,"hypothesisId":"H4"}
+{"sessionId":"a2af0d","location":"dev/page.tsx:useLayoutEffect:entry","message":"useLayoutEffect (section heights) ran","data":{},"timestamp":1772660413775,"hypothesisId":"H4"}
+{"sessionId":"a2af0d","location":"layout.tsx:fetchScreens:setIndex","message":"layout setIndex called","data":{"count":22},"timestamp":1772660413801,"hypothesisId":"H3"}
+{"sessionId":"a2af0d","location":"layout.tsx:fetchScreens:setIndex","message":"layout setIndex called","data":{"count":22},"timestamp":1772660414040,"hypothesisId":"H3"}
+{"sessionId":"a2af0d","location":"dev/page.tsx:useLayoutEffect:entry","message":"useLayoutEffect (section heights) ran","data":{},"timestamp":1772660457237,"hypothesisId":"H4"}
+{"sessionId":"a2af0d","location":"layout.tsx:hydrationEffect","message":"hydration effect ran","data":{"hasHydrated":false,"hasHydratedGlobal":false},"timestamp":1772660457247,"hypothesisId":"H2"}
+{"sessionId":"a2af0d","location":"dev/page.tsx:useLayoutEffect:entry","message":"useLayoutEffect (section heights) ran","data":{},"timestamp":1772660457254,"hypothesisId":"H4"}
+{"sessionId":"a2af0d","location":"layout.tsx:hydrationEffect","message":"hydration effect ran","data":{"hasHydrated":true,"hasHydratedGlobal":true},"timestamp":1772660457265,"hypothesisId":"H2"}
+{"sessionId":"a2af0d","location":"dev/page.tsx:useLayoutEffect:entry","message":"useLayoutEffect (section heights) ran","data":{},"timestamp":1772660457270,"hypothesisId":"H4"}
+{"sessionId":"a2af0d","location":"dev/page.tsx:useLayoutEffect:entry","message":"useLayoutEffect (section heights) ran","data":{},"timestamp":1772660457278,"hypothesisId":"H4"}
+{"sessionId":"a2af0d","location":"layout.tsx:fetchScreens:setIndex","message":"layout setIndex called","data":{"count":22},"timestamp":1772660457308,"hypothesisId":"H3"}
+{"sessionId":"a2af0d","location":"layout.tsx:fetchScreens:setIndex","message":"layout setIndex called","data":{"count":22},"timestamp":1772660457357,"hypothesisId":"H3"}
+{"sessionId":"a2af0d","location":"dev/page.tsx:useLayoutEffect:entry","message":"useLayoutEffect (section heights) ran","data":{},"timestamp":1772660457533,"hypothesisId":"H4"}
+{"sessionId":"a2af0d","location":"dev/page.tsx:useLayoutEffect:entry","message":"useLayoutEffect (section heights) ran","data":{},"timestamp":1772660464405,"hypothesisId":"H4"}
+{"sessionId":"a2af0d","location":"dev/page.tsx:useLayoutEffect:entry","message":"useLayoutEffect (section heights) ran","data":{},"timestamp":1772660464418,"hypothesisId":"H4"}
+{"sessionId":"a2af0d","location":"dev/page.tsx:useLayoutEffect:entry","message":"useLayoutEffect (section heights) ran","data":{},"timestamp":1772660464439,"hypothesisId":"H4"}
+{"sessionId":"a2af0d","location":"dev/page.tsx:useLayoutEffect:entry","message":"useLayoutEffect (section heights) ran","data":{},"timestamp":1772660464464,"hypothesisId":"H4"}
+{"sessionId":"a2af0d","location":"dev/page.tsx:useLayoutEffect:entry","message":"useLayoutEffect (section heights) ran","data":{},"timestamp":1772660464746,"hypothesisId":"H4"}
+{"sessionId":"a2af0d","location":"dev/page.tsx:useLayoutEffect:entry","message":"useLayoutEffect (section heights) ran","data":{},"timestamp":1772660469412,"hypothesisId":"H4"}
+{"sessionId":"a2af0d","location":"dev/page.tsx:useLayoutEffect:entry","message":"useLayoutEffect (section heights) ran","data":{},"timestamp":1772660469431,"hypothesisId":"H4"}
+{"sessionId":"a2af0d","location":"dev/page.tsx:useLayoutEffect:entry","message":"useLayoutEffect (section heights) ran","data":{},"timestamp":1772660469467,"hypothesisId":"H4"}
+{"sessionId":"a2af0d","location":"dev/page.tsx:useLayoutEffect:entry","message":"useLayoutEffect (section heights) ran","data":{},"timestamp":1772660469478,"hypothesisId":"H4"}
+{"sessionId":"a2af0d","location":"dev/page.tsx:useLayoutEffect:entry","message":"useLayoutEffect (section heights) ran","data":{},"timestamp":1772660469883,"hypothesisId":"H4"}

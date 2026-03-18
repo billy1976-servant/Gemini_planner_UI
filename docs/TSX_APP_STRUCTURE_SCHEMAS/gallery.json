@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "tsx-structure-gallery",
+  "title": "Gallery Structure Config",
+  "description": "Config for Gallery structure: grid of items, aspect ratio, lightbox, layout",
+  "type": "object",
+  "properties": {
+    "layout": {
+      "type": "string",
+      "enum": ["grid", "masonry", "uniform"],
+      "default": "grid"
+    },
+    "grid": {
+      "type": "object",
+      "properties": {
+        "columns": { "type": "integer", "minimum": 1, "maximum": 12, "default": 3 },
+        "gap": { "type": "integer", "minimum": 0, "default": 16 },
+        "aspectRatio": { "type": "string", "description": "e.g. 16/9, 1/1, auto", "default": "1/1" }
+      }
+    },
+    "lightbox": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean", "default": true },
+        "swipe": { "type": "boolean", "default": true }
+      }
+    },
+    "density": {
+      "type": "string",
+      "enum": ["compact", "default", "spacious"],
+      "default": "default"
+    }
+  },
+  "additionalProperties": false
+}

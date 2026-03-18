@@ -1,0 +1,4 @@
+{
+  "criticalRoles": ["header", "footer"],
+  "optionalRoles": ["hero", "features", "pricing", "testimonials", "gallery", "faq", "cta"]
+}

@@ -1,0 +1,7 @@
+{
+    "id": "monthly",
+    "label": "Monthly Patterns",
+    "mode": "aggregate",
+    "range": "30d"
+  }
+  

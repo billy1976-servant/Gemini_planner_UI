@@ -1,0 +1,27 @@
+{
+  "meta": {
+    "domain": "containercreations.com",
+    "pageId": "onboarding",
+    "version": 1,
+    "generatedAt": "2026-01-29"
+  },
+  "nodes": [
+    { "id": "brand", "type": "Section", "role": "header", "content": { "title": "Onboarding" } },
+    { "id": "back", "type": "Button", "role": "header", "content": { "label": "Back" } },
+    {
+      "id": "intro",
+      "type": "Section",
+      "role": "content",
+      "content": { "title": "Step through the flow" },
+      "children": [
+        { "id": "desc", "type": "text", "content": { "text": "Same nodes; switch experience to recompose shell." } }
+      ]
+    },
+    { "id": "flow_stepper", "type": "slot", "role": "content", "slotKey": "onboarding.stepper", "renderAs": "Stepper" },
+    { "id": "footer", "type": "Footer", "role": "footer" }
+  ],
+  "dataSlots": {
+    "onboarding.stepper": { "description": "Stepper molecule nodes generated from onboarding.flow.json" }
+  }
+}
+

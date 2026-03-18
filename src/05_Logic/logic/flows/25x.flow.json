@@ -1,0 +1,9 @@
+{
+    "start": "|intro",
+    "complete": "|summary",
+    "steps": [
+      { "requires": "cleanup-labor", "view": "|calculator.cleanup" },
+      { "requires": "morale", "view": "|calculator.morale" }
+    ]
+  }
+  

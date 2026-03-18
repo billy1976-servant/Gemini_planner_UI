@@ -1,0 +1,67 @@
+FILE 3 — HI-OS_BEHAVIOR-ENGINE.md
+(Definitions of behaviors, triggers, verbs, delegations, sequences)
+# HI OS — Behavior Engine, Verbs, Triggers, Sequences
+
+
+The Behavior Engine is the universal translator between UI and action.
+
+
+Every action in the OS uses the SAME shape:
+
+
+    { behavior: "verb.name", params: {...} }
+
+
+## 1. VERBS
+Universal verbs include:
+- state.set
+- ui.toast
+- ui.navigate
+- ui.highlight
+- sequence.start
+- sequence.next
+- media.process
+- content.generate
+- content.transform
+
+
+Verbs are global. They apply to ANY media type.
+
+
+## 2. TRIGGERS
+Triggers include:
+- onPress
+- onChange
+- onLoad
+- onStepDone
+- onSequenceEnd
+
+
+Triggers connect compounds → behaviors → engine.
+
+
+## 3. SEQUENCES
+A sequence is a list of universal steps, e.g.:
+
+
+    edit-video:
+      - media.cut
+      - media.split
+      - sequence.branch(select-clips)
+      - media.comp(audio,text)
+      - media.render
+      - upload.youtube
+      - stamp.hi-authenticity
+
+
+Sequences unify ALL tools across:
+- images
+- audio
+- video
+- PDF
+- code
+- text
+- 3D / LiDAR
+
+
+The OS reduces the entire functionality universe to a few universal verbs.

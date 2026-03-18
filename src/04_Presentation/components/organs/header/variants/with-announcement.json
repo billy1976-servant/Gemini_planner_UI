@@ -1,0 +1,34 @@
+{
+  "id": "organ:header:with-announcement",
+  "type": "Section",
+  "role": "header",
+  "layout": {
+    "type": "column",
+    "params": {
+      "gap": "0",
+      "align": "stretch"
+    }
+  },
+  "params": {
+    "moleculeLayout": {
+      "type": "row",
+      "preset": null,
+      "params": {
+        "gap": "1rem",
+        "justify": "space-between",
+        "align": "center",
+        "wrap": "wrap"
+      }
+    }
+  },
+  "children": [
+    {
+      "type": "slot",
+      "slotKey": "header.logo"
+    },
+    {
+      "type": "slot",
+      "slotKey": "header.cta"
+    }
+  ]
+}

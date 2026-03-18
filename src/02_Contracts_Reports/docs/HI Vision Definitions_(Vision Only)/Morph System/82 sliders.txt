@@ -1,0 +1,159 @@
+HI-CURV ATOMIC PARAMETER MODEL — “82”
+============================================
+“82” = the complete set of atomic-level parametric sliders that control all visual, spatial, motion, density, interaction, and expressive behavior across the entire HI-CURV system.
+These sliders exist ONLY at the atomic level.
+Molecules never define sliders — they only route slider values into atoms.
+Screens never define code — they only supply values to the sliders.
+Every visual change in the system comes from some combination of these 82 knobs.
+This is the entire parametric surface of your OS.
+
+=========================
+1. GLOBAL 0–1 SLIDERS (shared across ALL atoms)
+=========================
+These 22 sliders apply to every atom (text, media, surface, trigger, field, shell, sequence, condition, collection).
+They define the universal styling language of the entire OS.
+A. Visual (10)
+brightness (0 = dark, 1 = bright)
+contrast
+saturation
+hueShift
+warmthCool
+tintStrength
+clarity
+grain
+softness
+vividness
+B. Geometry (6)
+roundness
+edgeSharpness
+thickness
+sizeScale
+aspectRatio
+cornerBias
+C. Motion (3)
+motionSpring
+motionDamp
+motionSpeed
+D. Density (3)
+paddingScale
+gapScale
+clusterTightness
+These 22 global sliders are the backbone of the UI theme (Google, Apple, Kids, Minimal, etc.).
+
+=========================
+2. ATOM-SPECIFIC SLIDERS (the remaining 60)
+=========================
+These are unique to each atom — not shared — and make up the remaining 60 sliders, for a total of 82.
+Each atom has between 6 and 14 sliders depending on need.
+
+----------------------------------
+TEXT ATOM — 16 Sliders
+----------------------------------
+Construction (12)
+serifness
+geometryCurve
+aperture
+xHeightScale
+monoFactor
+widthAxis
+strokeContrast
+strokeExpansion
+terminalStyle
+displayFactor
+opticalSize
+softnessText
+Style (4)
+weight
+italicness
+slant
+decorationStrength
+
+----------------------------------
+SURFACE ATOM — 10 Sliders
+----------------------------------
+elevation
+shadowDepth
+shadowBlur
+fillOpacity
+borderOpacity
+borderThickness
+surfaceTexture
+highlightStrength
+surfaceNoise
+blendModeIntensity
+
+----------------------------------
+MEDIA ATOM — 10 Sliders
+----------------------------------
+scale
+cropBias
+panX
+panY
+rotation
+filterStrength
+maskRoundness
+maskFeather
+depthCue
+mediaBrightnessBias
+
+----------------------------------
+TRIGGER ATOM — 6 Sliders
+----------------------------------
+pressDepth
+hoverIntensity
+tapResponsiveness
+activationEnergy
+bounce
+gestureSensitivity
+
+----------------------------------
+FIELD ATOM — 6 Sliders
+----------------------------------
+caretBlinkRate
+caretThickness
+fieldGlow
+validityTint
+autoSuggestScale
+placeholderOpacity
+
+----------------------------------
+CONDITION ATOM — 4 Sliders
+----------------------------------
+threshold
+confidence
+decayRate
+hysteresis
+
+----------------------------------
+SEQUENCE ATOM — 4 Sliders
+----------------------------------
+stepDuration
+stepEase
+stepIntensity
+loopDamping
+
+----------------------------------
+COLLECTION ATOM — 4 Sliders
+----------------------------------
+itemSpacing
+itemAlignment
+distribution
+overflowMode
+
+============================================
+TOTAL = 82 SLIDERS
+============================================
+22 global sliders
+60 atom-specific sliders
+82 total
+These power EVERY molecule, EVERY variant, EVERY view, EVERY app.
+
+================================
+HOW THEY ARE USED
+================================
+Atoms expose sliders → Molecules configure sliders → Screens choose values.
+An atom is a bag of sliders.
+A molecule chooses which atoms to activate and which slider values to pass into them.
+A screen simply supplies numeric values (0–1 or presets like S/M/L mapped into numeric ranges).
+This is why your system can morph any button, any card, any calendar, any Kanban, any organ — instantly — using the exact same engine.
+

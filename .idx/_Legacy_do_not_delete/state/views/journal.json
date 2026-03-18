@@ -1,0 +1,7 @@
+{
+    "id": "journal",
+    "label": "Journal View",
+    "mode": "linear",
+    "filters": ["journal"]
+  }
+  
