@@ -3,8 +3,6 @@
  * capture [domain-resolve] trace, and report the FIRST step that returns null/FALLBACK.
  * Run: npx ts-node -r tsconfig-paths/register scripts/trace-domain-resolve.ts
  */
-process.env.NODE_ENV = "development";
-
 const HOST = "learn.containercreations.com";
 
 // Capture console.log for [domain-resolve] and [domain-map]
