@@ -19,7 +19,6 @@
 import { dispatchState, getState } from "@/state/state-store";
 import { safeImportJson } from "@/engine/core/safe-json-import";
 import { makeFallbackScreen } from "@/engine/core/fallback-screen";
-import containerCreationsLandingJson from "@/05_Logic/logic/content/landing/container-creations.landing.json";
 
 export async function loadScreen(path: string): Promise<any> {
   try {
@@ -38,11 +37,6 @@ export async function loadScreen(path: string): Promise<any> {
       decodedPath = path;
     }
     path = decodedPath;
-
-    /* Container Creations landing — single source: static JSON (same as /landing); render via ExperienceRenderer → JsonSkinEngine */
-    if (path === "container-creations-landing") {
-      return Promise.resolve(containerCreationsLandingJson as any);
-    }
 
     /* ==================================================
        🚫 SCREEN IDS ARE DEAD — return fallback instead of throw
@@ -86,6 +80,11 @@ export async function loadScreen(path: string): Promise<any> {
     console.log("File exists:", exists);
     if (result.ok) {
       const parsedJson = result.json;
+      // Attach diagnostic path so callers (like domain router) can log
+      // which file was actually served (important for folder-default fallback).
+      if (result.resolvedPath) {
+        (parsedJson as any).__resolvedJsonPath = result.resolvedPath;
+      }
       console.log("Parsed JSON keys:", Object.keys(parsedJson || {}));
     }
 
@@ -110,6 +109,10 @@ export async function loadScreen(path: string): Promise<any> {
     }
 
     const json = result.json;
+    if (result.resolvedPath) {
+      console.log("[screen-loader] ✅ Resolved file path", { requested: path, resolved: result.resolvedPath });
+      (json as any).__resolvedJsonPath = result.resolvedPath;
+    }
 
     console.log("[screen-loader] 📥 LOADED", {
       path: resolvedPath,

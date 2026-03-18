@@ -32,7 +32,7 @@ function normalizeError(err: unknown): string {
 export type SafeImportJsonErrorCode = "FILE_NOT_FOUND" | "JSON_PARSE";
 
 export type SafeImportJsonResult =
-  | { ok: true; json: any }
+  | { ok: true; json: any; resolvedPath?: string }
   | { ok: false; error: string; code?: SafeImportJsonErrorCode };
 
 /**
@@ -75,7 +75,8 @@ export async function safeImportJson(path: string): Promise<SafeImportJsonResult
         code: "JSON_PARSE",
       };
     }
-    return { ok: true, json };
+    const resolvedPath = res.headers.get("X-Screen-Resolved-Path") ?? undefined;
+    return { ok: true, json, resolvedPath };
   } catch (e) {
     return { ok: false, error: normalizeError(e) };
   }

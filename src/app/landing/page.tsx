@@ -2,9 +2,10 @@
 
 export const dynamic = "force-dynamic";
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useSyncExternalStore } from "react";
 import ExperienceRenderer from "@/engine/core/ExperienceRenderer";
+import { loadScreen } from "@/engine/core/screen-loader";
 import { getState, subscribeState, dispatchState } from "@/state/state-store";
 import { setCurrentScreenTree } from "@/engine/core/current-screen-tree-store";
 import { getExperienceProfile } from "@/lib/layout/profile-resolver";
@@ -16,8 +17,6 @@ import {
 } from "@/components/organs";
 import { applySkinBindings } from "@/logic/bridges/skinBindings.apply";
 import { collectSectionKeysAndNodes, collectSectionLabels } from "@/layout";
-
-import landingJson from "@/05_Logic/logic/content/landing/container-creations.landing.json";
 
 const SHOP_URL = "https://containercreations.com";
 
@@ -31,17 +30,30 @@ const DEFAULT_LANDING_STATE = {
 
 export default function LandingPage() {
   const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
-
-  const json = landingJson as {
-    id?: string;
-    state?: Record<string, unknown>;
-    root?: { type: string; id?: string; children?: unknown[] };
-  };
+  const [json, setJson] = useState<any | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const initialState = useMemo(() => ({
     ...DEFAULT_LANDING_STATE,
     ...json?.state,
   }), [json?.state]);
+
+  useEffect(() => {
+    setError(null);
+    loadScreen("ContainerCreations/Learn/landing/landing.json")
+      .then((loaded) => {
+        if (loaded?.__type === "screen-error") {
+          setError(loaded?.message ?? "Landing config unavailable");
+          setJson(null);
+          return;
+        }
+        setJson(loaded);
+      })
+      .catch((err) => {
+        setError(err?.message ?? "Failed to load landing screen");
+        setJson(null);
+      });
+  }, []);
 
   React.useEffect(() => {
     Object.entries(initialState).forEach(([key, value]) => {
@@ -59,6 +71,7 @@ export default function LandingPage() {
 
   const organInternalLayoutOverrides: Record<string, string> = {};
   const { treeForRender, sectionKeysFromTree, sectionLabels } = useMemo(() => {
+    if (!json) return { treeForRender: null, sectionKeysFromTree: [] as string[], sectionLabels: {} as Record<string, string> };
     const renderNode = json?.root ?? json;
     const rawChildren = Array.isArray((renderNode as { children?: unknown[] })?.children) ? (renderNode as { children?: unknown[] }).children : [];
     const children = assignSectionInstanceKeys(rawChildren);
@@ -92,12 +105,32 @@ export default function LandingPage() {
   }, [json, stateSnapshot]);
 
   React.useEffect(() => {
-    setCurrentScreenTree(treeForRender);
+    if (treeForRender) setCurrentScreenTree(treeForRender);
   }, [treeForRender]);
 
   const experienceProfile = getExperienceProfile("website");
 
   const screenKey = json?.id ?? "container-creations-landing";
+
+  if (error) {
+    return (
+      <div className="landing-container-creations" data-landing="container-creations">
+        <main style={{ flex: 1, minHeight: "100vh", width: "100%", maxWidth: "none", padding: 0, margin: 0, color: "var(--color-text-primary)" }}>
+          <p style={{ padding: "2rem" }}>Failed to load: {error}</p>
+        </main>
+      </div>
+    );
+  }
+
+  if (!json || !treeForRender) {
+    return (
+      <div className="landing-container-creations" data-landing="container-creations">
+        <main style={{ flex: 1, minHeight: "100vh", width: "100%", maxWidth: "none", padding: 0, margin: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--color-text-primary)" }}>
+          Loading…
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="landing-container-creations" data-landing="container-creations">

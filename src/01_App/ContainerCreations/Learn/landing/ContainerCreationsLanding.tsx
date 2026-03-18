@@ -8,6 +8,7 @@ import React, { useMemo } from "react";
 import { useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import ExperienceRenderer from "@/engine/core/ExperienceRenderer";
+import { loadScreen } from "@/engine/core/screen-loader";
 import { getState, subscribeState, dispatchState } from "@/state/state-store";
 import { setCurrentScreenTree } from "@/engine/core/current-screen-tree-store";
 import { getExperienceProfile } from "@/lib/layout/profile-resolver";
@@ -19,8 +20,6 @@ import {
 } from "@/components/organs";
 import { applySkinBindings } from "@/logic/bridges/skinBindings.apply";
 import { collectSectionKeysAndNodes, collectSectionLabels } from "@/layout";
-
-import landingJson from "@/05_Logic/logic/content/landing/container-creations.landing.json";
 
 import "@/app/landing/landing-theme.css";
 
@@ -34,12 +33,36 @@ const DEFAULT_LANDING_STATE = {
   recommendation: null as string | null,
 };
 
-export default function ContainerCreationsLanding() {
-  const json = landingJson as {
-    id?: string;
-    state?: Record<string, unknown>;
-    root?: { type: string; id?: string; children?: unknown[] };
-  };
+type ContainerCreationsLandingProps = {
+  /**
+   * Exact JSON path to load (domain routing passes this when TSX fallback is used).
+   * Example: "ContainerCreations/Learn/landing/ContainerCreationsLanding-5.json"
+   */
+  screenJsonPath?: string;
+};
+
+export default function ContainerCreationsLanding({ screenJsonPath }: ContainerCreationsLandingProps) {
+  const [json, setJson] = React.useState<any | null>(null);
+
+  React.useEffect(() => {
+    // Domain router passes the exact JSON path to load.
+    // If absent, this TSX wrapper cannot render JSON-skin content.
+    const resolved = screenJsonPath;
+    if (!resolved) return;
+    let cancelled = false;
+    loadScreen(resolved)
+      .then((loaded) => {
+        if (cancelled) return;
+        setJson(loaded);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setJson(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [screenJsonPath]);
 
   const initialState = useMemo(
     () => ({
@@ -65,6 +88,10 @@ export default function ContainerCreationsLanding() {
 
   const organInternalLayoutOverrides: Record<string, string> = {};
   const { treeForRender, sectionKeysFromTree, sectionLabels } = useMemo(() => {
+    if (!json || json?.__type === "screen-error" || json?.__type === "tsx-screen") {
+      return { treeForRender: null, sectionKeysFromTree: [] as string[], sectionLabels: {} as Record<string, string> };
+    }
+
     const renderNode = (json?.root ?? json) as { type?: string; id?: string; children?: unknown[] } | undefined;
     const rawChildren = Array.isArray(renderNode?.children) ? renderNode.children : [];
     const children = assignSectionInstanceKeys(rawChildren);
@@ -96,7 +123,7 @@ export default function ContainerCreationsLanding() {
   }, [json]);
 
   React.useEffect(() => {
-    setCurrentScreenTree(treeForRender);
+    if (treeForRender) setCurrentScreenTree(treeForRender);
   }, [treeForRender]);
 
   const experienceProfile = getExperienceProfile("website");
@@ -161,6 +188,11 @@ export default function ContainerCreationsLanding() {
       className={`landing-container-creations${landingStep === 0 ? " landing-step-hero" : ""}${landingStep === 1 ? " landing-step-stamped" : ""}${landingStep === 2 ? " measure-step-active" : ""}`}
       data-landing="container-creations"
     >
+      {!json ? (
+        <main style={{ padding: "2rem", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          Loading…
+        </main>
+      ) : (
       <header
         className="landing-shop-bar"
         style={{
@@ -556,7 +588,7 @@ export default function ContainerCreationsLanding() {
               </button>
             </section>
           </div>
-        ) : (
+        ) : treeForRender ? (
           <ExperienceRenderer
             key={screenKey}
             node={heroFilteredTree}
@@ -571,8 +603,11 @@ export default function ContainerCreationsLanding() {
             sectionKeys={sectionKeysFromTree}
             sectionLabels={sectionLabels}
           />
+        ) : (
+          <div style={{ padding: "2rem", textAlign: "center" }}>Loading…</div>
         )}
       </main>
+      )}
     </div>
   );
 }

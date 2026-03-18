@@ -231,3 +231,50 @@ export function traceDomainResolutionFromWindow(domainSegmentFromParams?: string
   });
   console.log("[domain-resolve] ========== END RESOLUTION TRACE ==========");
 }
+
+/**
+ * Build the exact JSON file request path for domain routing.
+ *
+ * URL path segments contract (after middleware rewrites):
+ * - first = route folder (e.g. "landing")
+ * - second (optional) = file name stem without ".json" (e.g. "ContainerCreationsLanding-5")
+ *
+ * Rules:
+ * - If fileName is present:
+ *   -> `${resolvedPath}/${fileName}.json`
+ * - If fileName is absent:
+ *   -> `${resolvedPath}/${route}.json` (API will fallback to first available *.json in folder if missing)
+ *
+ * Note: This function does not do any FS guessing/version picking.
+ */
+export function buildDomainJsonPath(resolvedPath: string | null, pathSegments: string[]): {
+  route: string;
+  fileName?: string;
+  jsonPath: string;
+} | null {
+  if (!resolvedPath) return null;
+
+  const routeFromResolvedPath = resolvedPath.split("/").filter(Boolean).pop() ?? "landing";
+  // Folder name is authoritative (getResolvedPath lowercases for container-creations routes),
+  // and default JSON preference is "<folderName>.json".
+  const route = routeFromResolvedPath;
+
+  let fileName = pathSegments[1];
+  if (fileName && fileName.toLowerCase().endsWith(".json")) {
+    // Allow URL patterns that include the extension: /.../MyScreen.json
+    // while keeping the contract of loading `${fileNameStem}.json`.
+    fileName = fileName.slice(0, -5);
+  }
+  if (fileName) {
+    return {
+      route,
+      fileName,
+      jsonPath: `${resolvedPath}/${fileName}.json`,
+    };
+  }
+
+  return {
+    route,
+    jsonPath: `${resolvedPath}/${route}.json`,
+  };
+}

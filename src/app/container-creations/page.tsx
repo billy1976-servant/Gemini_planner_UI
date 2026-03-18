@@ -24,10 +24,17 @@ export default function ContainerCreationsPage() {
   const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
 
   useEffect(() => {
-    loadScreen("container-creations-landing")
+    // Domain-driven JSON lives in src/01_App/**.
+    // Default fallback preference is "<folder>/landing.json" with API fallback to first *.json.
+    loadScreen("ContainerCreations/Learn/landing/landing.json")
       .then((data) => {
-        if (data?.__type === "tsx-screen" || data?.title === "Landing config unavailable") {
-          setError(data?.message ?? "Screen unavailable");
+        if (data?.__type === "tsx-screen") {
+          setError(data?.message ?? "Landing config unavailable");
+          setJson(null);
+          return;
+        }
+        if (data?.__type === "screen-error") {
+          setError(data?.message ?? "Landing config unavailable");
           setJson(null);
           return;
         }
