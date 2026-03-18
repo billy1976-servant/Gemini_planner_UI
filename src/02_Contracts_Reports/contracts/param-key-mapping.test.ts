@@ -129,7 +129,10 @@ assert(textRoleLabelSize != null, "resolveToken('textRole.label.size') must reso
 async function runApp1Assertions() {
   const result = await loadAppOfflineJson("journal_track/app-1.json");
   if (!result.ok) {
-    console.warn("Param key mapping test: skipping app-1.json assertions (file missing or invalid):", result.error);
+    console.warn(
+      "Param key mapping test: skipping app-1.json assertions (file missing or invalid):",
+      "error" in result ? result.error : "unknown"
+    );
     return;
   }
   const app1 = result.json;

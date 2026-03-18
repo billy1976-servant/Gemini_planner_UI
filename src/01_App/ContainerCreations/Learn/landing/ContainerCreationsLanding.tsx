@@ -192,7 +192,7 @@ export default function ContainerCreationsLanding({ screenJsonPath }: ContainerC
         <main style={{ padding: "2rem", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
           Loading…
         </main>
-      ) : (
+      ) : (<>
       <header
         className="landing-shop-bar"
         style={{
@@ -607,6 +607,7 @@ export default function ContainerCreationsLanding({ screenJsonPath }: ContainerC
           <div style={{ padding: "2rem", textAlign: "center" }}>Loading…</div>
         )}
       </main>
+      </>
       )}
     </div>
   );
