@@ -23,7 +23,7 @@ const DOMAIN_TRACE =
 
 function trace(msg: string, data?: object) {
   if (DOMAIN_TRACE && typeof console !== "undefined" && console.log) {
-    console.log("[domain-resolve]", msg, data ?? "");
+    console.log("[domain-resolve]", msg, data ? data : "");
   }
 }
 
@@ -92,15 +92,24 @@ export function getDomainSegmentForHost(host: string | null): string | null {
  */
 function parseDomainParts(domain: string): { subdomain: string; root: string } {
   const normalized = domain.toLowerCase().trim();
-  if (!normalized) return { subdomain: "", root: "" };
-  if (normalized.includes(".")) {
-    const parts = normalized.split(".");
-    const subdomain = parts[0] ?? "";
-    const root = parts.length >= 2 ? parts.slice(-2).join(".") : "";
-    return { subdomain, root };
+  if (!normalized) {
+    throw new Error("DOMAIN PARSE FAILED — NO FALLBACK ALLOWED");
   }
-  // Path-only segment (e.g. from hiclarify rewrite): treat as subdomain with implied hiclarify root
-  return { subdomain: normalized, root: "hiclarify.com" };
+  if (!normalized.includes(".")) {
+    throw new Error("DOMAIN PARSE FAILED — NO FALLBACK ALLOWED");
+  }
+
+  const parts = normalized.split(".");
+  if (parts.length < 3) {
+    throw new Error("DOMAIN PARSE FAILED — NO FALLBACK ALLOWED");
+  }
+
+  const subdomain = parts[0];
+  const root = parts.slice(-2).join(".");
+  if (!subdomain || !root) {
+    throw new Error("DOMAIN PARSE FAILED — NO FALLBACK ALLOWED");
+  }
+  return { subdomain, root };
 }
 
 /** Root domain (e.g. containercreations.com) → Domain folder name (01_App top-level). */
@@ -111,12 +120,9 @@ const ROOT_TO_DOMAIN: Record<string, string> = {
 
 /** Subdomain (lowercase) → PascalCase segment for path. */
 function subdomainToSegment(sub: string): string {
-  if (!sub) return "";
+  if (!sub) throw new Error("DOMAIN PARSE FAILED — NO FALLBACK ALLOWED");
   return sub.charAt(0).toUpperCase() + sub.slice(1).toLowerCase();
 }
-
-/** Default route when path is empty (e.g. learn.containercreations.com/ → landing). */
-const CONTAINERCREATIONS_DEFAULT_ROUTE = "landing";
 
 /** HIClarify subdomain → folder path (Domain/Subdomain; route appended by path). */
 const HICLARIFY_SUBDOMAIN_TO_FOLDER: Record<string, string> = {
@@ -129,19 +135,23 @@ const HICLARIFY_SUBDOMAIN_TO_FOLDER: Record<string, string> = {
 
 /**
  * Resolve domain + path segments to loader key: Domain/Subdomain/Route.
- * - learn.containercreations.com + [] → ContainerCreations/Learn/landing (default route)
+ * - learn.containercreations.com + ["<route>"] → ContainerCreations/Learn/<route>
  * - learn.containercreations.com + ["onboarding"] → ContainerCreations/Learn/onboarding
  * - christian.hiclarify.com + [] → HIClarify/Christian
  * - christian (path) + ["prayer"] → HIClarify/Christian/prayer
  */
 export function getResolvedPath(domain: string, pathSegments: string[]): string | null {
+  if (!pathSegments || pathSegments.length < 1) {
+    throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
+  }
   const { subdomain, root } = parseDomainParts(domain);
   trace("getResolvedPath: parse", { domain, subdomain, root, pathSegments });
 
   if (root.includes("containercreations")) {
-    const domainFolder = ROOT_TO_DOMAIN[root] ?? "ContainerCreations";
+    const domainFolder = ROOT_TO_DOMAIN[root];
+    if (!domainFolder) throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
     const subSegment = subdomainToSegment(subdomain);
-    const route = pathSegments[0]?.toLowerCase() ?? CONTAINERCREATIONS_DEFAULT_ROUTE;
+    const route = pathSegments[0].toLowerCase();
     const result = `${domainFolder}/${subSegment}/${route}`;
     if (DOMAIN_TRACE && typeof console !== "undefined" && console.log) {
       console.log("[AUTO-RESOLVE] → " + result);
@@ -152,13 +162,10 @@ export function getResolvedPath(domain: string, pathSegments: string[]): string 
   }
 
   if (root.includes("hiclarify")) {
-    const base = HICLARIFY_SUBDOMAIN_TO_FOLDER[subdomain] ?? null;
-    if (base === null) {
-      trace("getResolvedPath: FALLBACK — hiclarify subdomain not in map", { subdomain });
-      return null;
-    }
-    const route = pathSegments[0]?.toLowerCase();
-    const result = route ? `${base}/${route}` : base;
+    const base = HICLARIFY_SUBDOMAIN_TO_FOLDER[subdomain];
+    if (!base) throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
+    const route = pathSegments[0].toLowerCase();
+    const result = `${base}/${route}`;
     if (DOMAIN_TRACE && typeof console !== "undefined" && console.log) {
       console.log("[AUTO-RESOLVE] → " + result);
       if (typeof window !== "undefined") (window as any).__LAST_AUTO_RESOLVE__ = result;
@@ -167,8 +174,7 @@ export function getResolvedPath(domain: string, pathSegments: string[]): string 
     return result;
   }
 
-  trace("getResolvedPath: return null (root not containercreations or hiclarify)", { root });
-  return null;
+  throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
 }
 
 /**
@@ -176,11 +182,8 @@ export function getResolvedPath(domain: string, pathSegments: string[]): string 
  * Backward-compat: returns same as getResolvedPath(domain, []).
  */
 export function getFolderForSubdomain(domain: string): string | null {
-  const result = getResolvedPath(domain, []);
-  if (typeof console !== "undefined" && console.log) {
-    console.log("[domain-map]", { domain, resolved: result });
-  }
-  return result;
+  // Strict contract: no default routeFolder; caller must provide routeFolder from URL.
+  throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
 }
 
 /**
@@ -200,9 +203,11 @@ export function traceDomainResolutionFromWindow(domainSegmentFromParams?: string
   if (typeof window === "undefined") return;
   const hostname = window.location.hostname;
   const pathname = window.location.pathname;
-  const domainFromPath = pathname === "/" ? "" : pathname.split("/").filter(Boolean)[0] ?? "";
-  const domain = domainSegmentFromParams ?? domainFromPath;
-  const pathSegments = pathSegmentsFromParams ?? (pathname.split("/").filter(Boolean).slice(1));
+  const domainFirst = pathname.split("/").filter(Boolean)[0];
+  const domainFromPath = pathname === "/" ? "" : domainFirst ? domainFirst : "";
+
+  const domain = domainSegmentFromParams ? domainSegmentFromParams : domainFromPath;
+  const pathSegments = pathSegmentsFromParams ? pathSegmentsFromParams : pathname.split("/").filter(Boolean).slice(1);
 
   console.log("[domain-resolve] ========== FULL RESOLUTION TRACE (window) ==========");
   console.log("[domain-resolve] Step 1 — hostname parse", { hostname, pathname, "domain (param/path)": domain, pathSegments });
@@ -222,7 +227,7 @@ export function traceDomainResolutionFromWindow(domainSegmentFromParams?: string
     ...(resolvedPath === null ? { "FALLBACK": "resolved path null — Unknown domain" } : {}),
   });
 
-  const loaderKey = resolvedPath ?? "";
+  const loaderKey = resolvedPath as string;
   console.log("[domain-resolve] Step 4 — selected layout/folder", { resolvedPath, loaderKey });
   console.log("[domain-resolve] Step 5 — selected flow/component", {
     loaderKey,
@@ -236,7 +241,7 @@ export function traceDomainResolutionFromWindow(domainSegmentFromParams?: string
  * Build the exact JSON file request path for domain routing.
  *
  * URL path segments contract (after middleware rewrites):
- * - first = route folder (e.g. "landing")
+ * - first = route folder (e.g. "route")
  * - second (optional) = file name stem without ".json" (e.g. "ContainerCreationsLanding-5")
  *
  * Rules:
@@ -252,39 +257,25 @@ export function buildDomainJsonPath(resolvedPath: string | null, pathSegments: s
   fileName?: string;
   jsonPath: string;
 } | null {
-  if (!resolvedPath) return null;
+  if (!resolvedPath) throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
+  if (!pathSegments || pathSegments.length < 2) throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
 
   const resolvedParts = resolvedPath.split("/").filter(Boolean);
-  const routeFromResolvedPath = resolvedParts.pop() ?? "landing";
+  const routeFromResolvedPath = resolvedParts.pop();
+  if (!routeFromResolvedPath) throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
   const baseResolvedPath = resolvedParts.join("/");
-  // Folder name is authoritative (getResolvedPath lowercases for container-creations routes),
-  // and default JSON preference is "<folderName>.json".
-  let route = routeFromResolvedPath;
 
-  let fileName = pathSegments[1];
-  // When URL is /<slug> under containercreations subdomains, avoid slug-as-folder pathing.
-  // Example bad: ContainerCreations/Learn/<slug>/<slug>.json
-  // Example good: ContainerCreations/Learn/landing/<slug>.json
-  if (!fileName && pathSegments[0] && pathSegments[0].toLowerCase() === routeFromResolvedPath.toLowerCase()) {
-    route = "landing";
-    fileName = pathSegments[0];
+  const routeFromUrl = pathSegments[0];
+  if (routeFromUrl.toLowerCase() !== routeFromResolvedPath.toLowerCase()) {
+    throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
   }
-  if (fileName && fileName.toLowerCase().endsWith(".json")) {
-    // Allow URL patterns that include the extension: /.../MyScreen.json
-    // while keeping the contract of loading `${fileNameStem}.json`.
-    fileName = fileName.slice(0, -5);
-  }
-  const routeRoot = route === routeFromResolvedPath ? resolvedPath : `${baseResolvedPath}/${route}`;
-  if (fileName) {
-    return {
-      route,
-      fileName,
-      jsonPath: `${routeRoot}/${fileName}.json`,
-    };
-  }
+
+  const fileStem = pathSegments[pathSegments.length - 1];
+  const jsonFileName = fileStem.toLowerCase().endsWith(".json") ? fileStem : `${fileStem}.json`;
 
   return {
-    route,
-    jsonPath: `${routeRoot}/${route}.json`,
+    route: routeFromResolvedPath,
+    fileName: fileStem,
+    jsonPath: `${resolvedPath}/${jsonFileName}`,
   };
 }

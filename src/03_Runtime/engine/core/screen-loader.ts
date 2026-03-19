@@ -1,6 +1,5 @@
 /**
- * SCREEN LOADER — FINAL, STATE-SAFE (ID-FREE)
- * NEVER THROWS: missing/invalid screens return a fallback diagnostic screen.
+ * SCREEN LOADER — STRICT (NO FALLBACK)
  *
  * Rules:
  * - Screen JSON may declare default state
@@ -18,7 +17,6 @@
 
 import { dispatchState, getState } from "@/state/state-store";
 import { safeImportJson } from "@/engine/core/safe-json-import";
-import { makeFallbackScreen } from "@/engine/core/fallback-screen";
 
 type ResolveScreenResponse = {
   type: "json" | "tsx";
@@ -30,46 +28,20 @@ type ResolveScreenResponse = {
 export async function loadScreen(path: string): Promise<any> {
   try {
     if (!path || typeof path !== "string") {
-      return makeFallbackScreen({
-        title: "Screen load error",
-        message: "loadScreen was called with an empty or invalid path.",
-        meta: { path: String(path) },
-      });
+      throw new Error("SCREEN LOAD FAILED — NO FALLBACK ALLOWED");
     }
 
-    let decodedPath: string;
-    try {
-      decodedPath = decodeURIComponent(path);
-    } catch {
-      decodedPath = path;
-    }
-    path = decodedPath;
+    path = decodeURIComponent(path);
 
-    /* ==================================================
-       🚫 SCREEN IDS ARE DEAD — return fallback instead of throw
-       ================================================== */
     if (!path.includes("/") && !path.startsWith("tsx:")) {
-      return makeFallbackScreen({
-        title: "Invalid screen reference",
-        message: `Screen IDs are forbidden. Use a path (e.g. "apps/Onboarding/trial.json") or "tsx:tsx-screens/...".`,
-        meta: { path },
-      });
+      throw new Error("SCREEN LOAD FAILED — NO FALLBACK ALLOWED");
     }
 
-    /* ==================================================
-       🧠 TSX SCREEN BRANCH
-       ================================================== */
     if (path.startsWith("tsx:")) {
       const tsxPath = path.replace(/^tsx:/, "");
-      return {
-        __type: "tsx-screen",
-        path: tsxPath,
-      };
+      return { __type: "tsx-screen", path: tsxPath };
     }
 
-    /* ==================================================
-       📄 JSON SCREEN — safe load, explicit diagnostics, no silent fallback
-       ================================================== */
     const normalized = path
       .replace(/^\/+/, "")
       .replace(/^src\//, "")
@@ -78,50 +50,22 @@ export async function loadScreen(path: string): Promise<any> {
       .replace(/^apps\//, "");
     const normalizedWithoutJson = normalized.replace(/\.json$/i, "");
 
-    console.log("Resolving screen:", path);
-    console.log("Resolve request path:", normalizedWithoutJson);
+    const resolveSegments = normalizedWithoutJson.split("/").filter(Boolean);
+    const resolvePath =
+      resolveSegments.length >= 4 ? resolveSegments.slice(2).join("/") : resolveSegments.join("/");
 
-    const resolveUrl = `/api/screens/resolve/${normalizedWithoutJson}?t=${Date.now()}`;
+    const resolveUrl = `/api/screens/resolve/${resolvePath}?t=${Date.now()}`;
     const resolveRes = await fetch(resolveUrl, {
       cache: "no-store",
       headers: { "Cache-Control": "no-cache, no-store", Pragma: "no-cache" },
     });
 
-    if (resolveRes.status === 404) {
-      return {
-        __type: "screen-error",
-        code: "SCREEN_NOT_FOUND" as const,
-        message: "Screen not found",
-        requestedPath: normalizedWithoutJson,
-      };
-    }
+    if (resolveRes.status === 404) throw new Error("SCREEN LOAD FAILED — NO FALLBACK ALLOWED");
+    if (!resolveRes.ok) throw new Error("SCREEN LOAD FAILED — NO FALLBACK ALLOWED");
 
-    if (!resolveRes.ok) {
-      const detail = await resolveRes.text().catch(() => "");
-      return makeFallbackScreen({
-        title: "Screen resolve error",
-        message: `HTTP ${resolveRes.status}: ${resolveRes.statusText}${detail ? ` — ${detail}` : ""}`,
-        meta: { requestedPath: normalizedWithoutJson },
-      });
-    }
-
-    let resolved: ResolveScreenResponse;
-    try {
-      resolved = (await resolveRes.json()) as ResolveScreenResponse;
-    } catch (err) {
-      return makeFallbackScreen({
-        title: "Screen resolve error",
-        message: "Resolver returned invalid JSON",
-        meta: { requestedPath: normalizedWithoutJson, err: String(err) },
-      });
-    }
+    const resolved = (await resolveRes.json()) as ResolveScreenResponse;
 
     if (resolved.type === "tsx") {
-      console.log("[screen-loader] RESOLVED TYPE: TSX", {
-        requested: path,
-        resolvedPath: resolved.path,
-        resolvedFilePath: resolved.resolvedFilePath,
-      });
       return {
         __type: "tsx-screen",
         path: resolved.path,
@@ -130,79 +74,20 @@ export async function loadScreen(path: string): Promise<any> {
       };
     }
 
-    console.log("[screen-loader] RESOLVED TYPE: JSON", {
-      requested: path,
-      resolvedPath: resolved.path,
-      resolvedFilePath: resolved.resolvedFilePath,
-    });
-
     const result = await safeImportJson(resolved.path);
-    if (!result.ok) {
-      const fail = result as { ok: false; error: string; code?: "FILE_NOT_FOUND" | "JSON_PARSE" };
-      if (fail.code === "JSON_PARSE") {
-        return { __type: "screen-error", code: "JSON_PARSE" as const, message: fail.error };
-      }
-      if (fail.code === "FILE_NOT_FOUND") {
-        return {
-          __type: "screen-error",
-          code: "SCREEN_NOT_FOUND" as const,
-          message: "Screen not found",
-          requestedPath: resolved.path,
-        };
-      }
-      return makeFallbackScreen({
-        title: "Screen unavailable",
-        message: fail.error,
-        meta: { requestedPath: path, normalized: resolved.path },
-      });
-    }
+    if (!result.ok) throw new Error("SCREEN LOAD FAILED — NO FALLBACK ALLOWED");
 
     const json = result.json;
-    if (result.resolvedPath) {
-      console.log("[screen-loader] ✅ Resolved file path", { requested: path, resolved: result.resolvedPath });
-      (json as any).__resolvedJsonPath = result.resolvedPath;
-    } else {
-      (json as any).__resolvedJsonPath = resolved.path;
-    }
 
-    console.log("[screen-loader] 📥 LOADED", {
-      path: resolved.path,
-      id: json?.id,
-      type: json?.type,
-      hasState: !!json?.state,
-      currentView: json?.state?.currentView,
-      childrenCount: json?.children?.length,
-      timestamp: Date.now(),
-    });
+    (json as any).__resolvedJsonPath = result.resolvedPath ? result.resolvedPath : resolved.path;
 
-    /* ==================================================
-       🧠 DEFAULT STATE (ALWAYS APPLY ON SCREEN LOAD)
-       ================================================== */
     if (json?.state?.currentView) {
-      const currentState = getState().currentView;
-      const jsonState = json.state.currentView;
-      console.log("[screen-loader] ✅ Applying default state", {
-        from: currentState,
-        to: jsonState,
-        screenPath: path,
-      });
-      dispatchState("state:currentView", { value: jsonState });
-    } else {
-      console.log("[screen-loader] ⚠️ No default state in JSON", {
-        hasState: !!json?.state,
-        stateKeys: json?.state ? Object.keys(json.state) : [],
-        screenPath: path,
-      });
+      dispatchState("state:currentView", { value: json.state.currentView });
     }
 
     return json;
-  } catch (err: any) {
-    console.error("[screen-loader] Unexpected error", { path, err: err?.message ?? err });
-    return makeFallbackScreen({
-      title: "Screen load error",
-      message: err?.message ?? String(err),
-      meta: { path, unexpected: true },
-    });
+  } catch {
+    throw new Error("SCREEN LOAD FAILED — NO FALLBACK ALLOWED");
   }
 }
 
