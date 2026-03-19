@@ -111,6 +111,10 @@ export async function GET(
     }
 
     const requestedPath = params.path.join("/");
+    console.debug("[api/screens/[...path]] requested JSON path", {
+      requestedPath,
+      segments: params.path,
+    });
 
     /* ===============================
        0️⃣ 09_INTEGRATIONS LAB (single path)
@@ -186,11 +190,20 @@ export async function GET(
     const jsonPathWithExt = jsonPathNoExt.endsWith(".json")
       ? jsonPathNoExt
       : jsonPathNoExt + ".json";
-    const jsonPath = fs.existsSync(jsonPathWithExt)
+    const jsonPathWithExtExists = fs.existsSync(jsonPathWithExt);
+    const jsonPathNoExtExists = fs.existsSync(jsonPathNoExt);
+    const jsonPath = jsonPathWithExtExists
       ? jsonPathWithExt
-      : fs.existsSync(jsonPathNoExt)
+      : jsonPathNoExtExists
         ? jsonPathNoExt
         : null;
+    console.debug("[api/screens/[...path]] resolved filesystem path(s)", {
+      jsonPathNoExt,
+      jsonPathNoExtExists,
+      jsonPathWithExt,
+      jsonPathWithExtExists,
+      chosenJsonPath: jsonPath,
+    });
     if (jsonPath) {
       try {
         const fileContent = fs.readFileSync(jsonPath, "utf8");
@@ -240,6 +253,14 @@ export async function GET(
       });
     }
 
+    console.warn("[api/screens/[...path]] FILE_NOT_FOUND is returned (404)", {
+      requestedPath,
+      jsonPathNoExt,
+      jsonPathNoExtExists,
+      jsonPathWithExt,
+      jsonPathWithExtExists,
+      chosenJsonPath: jsonPath,
+    });
     return NextResponse.json(
       {
         error: "Screen not found",

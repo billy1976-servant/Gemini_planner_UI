@@ -118,16 +118,20 @@ export default function DomainPage() {
             fileName: fileName ?? null,
             jsonPath,
             resolvedFinal,
-            isFileNotFound:
-              loaded?.__type === "screen-error" && loaded?.code === "FILE_NOT_FOUND",
+            resolvedType:
+              loaded?.__type === "tsx-screen"
+                ? "TSX"
+                : loaded?.__type === "screen-error"
+                  ? "ERROR"
+                  : "JSON",
           });
         }
 
-        if (loaded?.__type === "screen-error" && loaded?.code === "FILE_NOT_FOUND") {
-          // Fallback: TSX only when JSON was genuinely not found.
+        if (loaded?.__type === "tsx-screen") {
           if (process.env.NODE_ENV === "development") {
-            console.log("[domain-page] FALLBACK — JSON not found; loading TSX via APP_MODULE_LOADERS", {
+            console.log("[domain-page] DIRECT LOAD — TSX resolved; loading via APP_MODULE_LOADERS", {
               loaderKey,
+              tsxPath: loaded?.path,
             });
           }
 
@@ -155,7 +159,14 @@ export default function DomainPage() {
           return;
         }
 
-        // JSON success (or non-FILE_NOT_FOUND error should be rendered as fallback JSON screen)
+        if (loaded?.__type === "screen-error") {
+          setComponent(null);
+          setJson(null);
+          setError(loaded?.message ?? "Screen not found");
+          return;
+        }
+
+        // JSON success
         setComponent(null);
         setJson(loaded);
         setError(null);
@@ -332,19 +343,17 @@ export default function DomainPage() {
   if (json && json?.__type === "screen-error") {
     return (
       <div style={{ padding: "2rem", textAlign: "center", color: "#666" }}>
-        {json?.code === "FILE_NOT_FOUND"
-          ? "Screen JSON not found."
-          : `Screen JSON error: ${json?.code ?? "UNKNOWN"}`}
+        {`Screen JSON error: ${json?.code ?? "UNKNOWN"}`}
       </div>
     );
   }
 
-  // Loading state for both JSON and TSX fallback
+  // Loading state for both JSON and TSX
   if (!Component && !json) {
     return <div style={{ padding: "2rem", textAlign: "center" }}>Loading…</div>;
   }
 
-  // TSX fallback mode
+  // TSX mode
   if (!Component) return null;
 
   // Prayer app expects in-app path only; strip leading "prayer" segment when present
