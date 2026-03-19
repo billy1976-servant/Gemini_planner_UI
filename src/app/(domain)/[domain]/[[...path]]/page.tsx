@@ -65,6 +65,12 @@ export default function DomainPage() {
     setRequestedJsonPath(null);
     setFatalError(null);
 
+    console.log("INPUT PARAMS:", {
+      domain,
+      paramsPath: (params as any)?.path,
+      fullUrl: typeof window !== "undefined" ? window.location.href : "server",
+    });
+
     if (process.env.NODE_ENV === "development") {
       console.log("[domain-page] Step 1 — domain param (from URL segment)", { domain });
       console.log("[domain-page] Step 2 — Domain/Subdomain/Route (getResolvedPath)", {
@@ -84,16 +90,19 @@ export default function DomainPage() {
     (async () => {
       try {
         const resolvePath = pathSegments.join("/");
+        console.log("FETCH PATH:", resolvePath);
         const resolveRes = await fetch(`/api/screens/resolve/${resolvePath}`, {
           cache: "no-store",
           headers: { "Cache-Control": "no-cache, no-store, must-revalidate" },
         });
 
+        console.log("FETCH RESPONSE STATUS:", resolveRes.status);
         if (!resolveRes.ok) {
           throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
         }
 
         const resolved = (await resolveRes.json()) as { type: "json" | "tsx"; path: string };
+        console.log("RESOLVED DATA:", resolved);
 
         if (resolved?.type === "json") {
           const dataRes = await fetch(`/api/screens/${resolved.path}`, {
@@ -130,6 +139,7 @@ export default function DomainPage() {
         throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
       } catch (err) {
         if (cancelled) return;
+        console.error("RESOLVER FAILURE CAUGHT IN PAGE.tsx", err);
         setFatalError(new Error("RESOLVER FAILURE — DO NOT FALLBACK"));
       }
     })();

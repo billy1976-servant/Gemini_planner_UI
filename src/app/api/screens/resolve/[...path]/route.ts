@@ -133,14 +133,28 @@ function resolveLiveScreenFromFilesystemContract(
     segments
   );
 
+  console.log("COMPUTED PATH:", {
+    domainFolder,
+    subdomainFolder,
+    routeFolder,
+    fileStem,
+    folderPath,
+  });
+
   // STEP 2 — SCAN FOLDER (NO DIRECT FILE BUILDING)
   // Contract: match filename prefix against `fileStem`
   let files: string[];
   try {
     files = fs.readdirSync(folderPath);
-  } catch {
+  } catch (err) {
+    console.error("FILES IN TARGET FOLDER read failed:", {
+      folderPath,
+      err,
+    });
     throw new Error("RESOLVE FAILED — INVALID PATH OR FILE NOT FOUND");
   }
+
+  console.log("FILES IN TARGET FOLDER:", files);
 
   const fileStemLower = fileStem.toLowerCase();
   const matching = files.filter((filename) => filename.toLowerCase().startsWith(fileStemLower));
@@ -182,9 +196,24 @@ export async function GET(
     throw new Error("RESOLVE FAILED — INVALID PATH OR FILE NOT FOUND");
   }
 
-  const segments = params.path;
+  const rawSegments = params.path || [];
+
+  const segments = rawSegments.filter((s) => {
+    if (!s) return false;
+    if (s.includes(".")) return false; // REMOVE ANY DOMAIN OR HOST VALUES
+    return true;
+  });
+
+  console.log("CLEAN SEGMENTS:", segments);
+  console.log("RAW PARAMS.PATH:", params.path);
+  console.log("FINAL SEGMENTS USED:", segments);
   let hostHeader = req.headers.get("x-forwarded-host");
   if (!hostHeader) hostHeader = req.headers.get("host");
+
+  console.log("RESOLVER INPUT:", {
+    host: hostHeader,
+    segments: params.path,
+  });
 
   runResolverRuntimeAssertions(hostHeader);
 
