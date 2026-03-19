@@ -34,10 +34,6 @@ type ResolvePayload = {
   source: "integrations" | "dead-json" | "live-json" | "tsx";
 };
 
-function hasExcludedFolder(segments: string[]): boolean {
-  return segments.some((s) => s.startsWith("_") || s.startsWith("("));
-}
-
 function ensureJsonFilename(name: string): string {
   return name.toLowerCase().endsWith(".json") ? name : `${name}.json`;
 }
@@ -72,7 +68,7 @@ function resolveJsonFromDeadRoot(segments: string[]): ResolvePayload | null {
 }
 
 function resolveJsonFromLiveRoot(segments: string[]): ResolvePayload | null {
-  if (!segments.length || hasExcludedFolder(segments)) return null;
+  if (!segments.length) return null;
 
   const slug = stripJsonSuffix(segments[segments.length - 1] ?? "");
   const domainFolder = segments[0] ?? "";
@@ -80,11 +76,17 @@ function resolveJsonFromLiveRoot(segments: string[]): ResolvePayload | null {
   const resolvedRoute = segments[2] ?? "landing";
   const routeFolder =
     resolvedRoute.toLowerCase() === slug.toLowerCase() ? "landing" : resolvedRoute;
-  if (!domainFolder || !subdomainFolder || !routeFolder || !slug) return null;
 
   const folderPath = path.join(JSON_LIVE_ROOT, domainFolder, subdomainFolder, routeFolder);
-  if (!fs.existsSync(folderPath)) return null;
-  const files = fs.readdirSync(folderPath);
+  let files: string[] = [];
+  try {
+    files = fs
+      .readdirSync(folderPath, { withFileTypes: true })
+      .filter((e) => e.isFile())
+      .map((e) => e.name);
+  } catch {
+    files = [];
+  }
   const match = files.find(
     (f) =>
       f.toLowerCase().endsWith(".json") &&
@@ -204,15 +206,32 @@ export async function GET(
     return NextResponse.json(resolved);
   }
 
-  const folderForLiveJson = path.join(JSON_LIVE_ROOT, ...segments.slice(0, -1));
-  const dirListingAttempted = fs.existsSync(folderForLiveJson)
-    ? fs.readdirSync(folderForLiveJson, { withFileTypes: true }).filter((e) => e.isFile()).map((e) => e.name)
-    : [];
+  const slugForTrace = stripJsonSuffix(segments[segments.length - 1] ?? "");
+  const domainForTrace = segments[0] ?? "";
+  const subdomainForTrace = segments[1] ?? "";
+  const resolvedRouteForTrace = segments[2] ?? "landing";
+  const routeFolderForTrace =
+    resolvedRouteForTrace.toLowerCase() === slugForTrace.toLowerCase() ? "landing" : resolvedRouteForTrace;
+  const folderForLiveJson = path.join(
+    JSON_LIVE_ROOT,
+    domainForTrace,
+    subdomainForTrace,
+    routeFolderForTrace
+  );
+  let dirListingAttempted: string[] = [];
+  try {
+    dirListingAttempted = fs
+      .readdirSync(folderForLiveJson, { withFileTypes: true })
+      .filter((e) => e.isFile())
+      .map((e) => e.name);
+  } catch {
+    dirListingAttempted = [];
+  }
   const canonicalLandingDir = path.join(JSON_LIVE_ROOT, "ContainerCreations", "Learn", "landing");
   const canonicalLandingListing = fs.existsSync(canonicalLandingDir)
     ? fs.readdirSync(canonicalLandingDir, { withFileTypes: true }).filter((e) => e.isFile()).map((e) => e.name)
     : [];
-  console.warn("[api/screens/resolve] SCREEN_NOT_FOUND", {
+  console.warn("[api/screens/resolve] SCREEN_UNRESOLVED_AFTER_FS_LOOKUP", {
     requestedPath,
     segments,
     exactJsonFilenameSearched,
@@ -227,9 +246,9 @@ export async function GET(
   });
   return NextResponse.json(
     {
-      error: "Screen not found",
+      error: "SCREEN_UNRESOLVED_AFTER_FS_LOOKUP",
       requested: requestedPath,
-      code: "SCREEN_NOT_FOUND",
+      code: "SCREEN_UNRESOLVED_AFTER_FS_LOOKUP",
     },
     { status: 404 }
   );

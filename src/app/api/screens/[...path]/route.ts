@@ -41,15 +41,10 @@ const TSX_ROOT = path.join(
   "(dead) Tsx"
 );
 
-function isExcludedByFolderRules(segments: string[]): boolean {
-  return segments.some((s) => s.startsWith("_") || s.startsWith("("));
-}
-
 function tryResolveLiveJson(
   jsonSegments: string[]
 ): { json: any; resolvedRelativePath: string } | null {
   if (!jsonSegments?.length) return null;
-  if (isExcludedByFolderRules(jsonSegments)) return null;
 
   const slug = (jsonSegments[jsonSegments.length - 1] ?? "").replace(/\.json$/i, "");
   const domainFolder = jsonSegments[0] ?? "";
@@ -57,14 +52,17 @@ function tryResolveLiveJson(
   const resolvedRoute = jsonSegments[2] ?? "landing";
   const routeFolder =
     resolvedRoute.toLowerCase() === slug.toLowerCase() ? "landing" : resolvedRoute;
-  if (!domainFolder || !subdomainFolder || !routeFolder || !slug) return null;
 
   const folderPath = path.join(JSON_LIVE_ROOT, domainFolder, subdomainFolder, routeFolder);
-  if (!fs.existsSync(folderPath)) return null;
-  const stat = fs.statSync(folderPath);
-  if (!stat.isDirectory()) return null;
-
-  const files = fs.readdirSync(folderPath);
+  let files: string[] = [];
+  try {
+    files = fs
+      .readdirSync(folderPath, { withFileTypes: true })
+      .filter((e) => e.isFile())
+      .map((e) => e.name);
+  } catch {
+    files = [];
+  }
   const match = files.find(
     (f) =>
       f.toLowerCase().endsWith(".json") &&
@@ -241,7 +239,7 @@ export async function GET(
       });
     }
 
-    console.warn("[api/screens/[...path]] FILE_NOT_FOUND is returned (404)", {
+    console.warn("[api/screens/[...path]] SCREEN_UNRESOLVED_AFTER_FS_LOOKUP (404)", {
       requestedPath,
       jsonPathNoExt,
       jsonPathNoExtExists,
@@ -251,7 +249,7 @@ export async function GET(
     });
     return NextResponse.json(
       {
-        error: "Screen not found",
+        error: "SCREEN_UNRESOLVED_AFTER_FS_LOOKUP",
         requested: requestedPath,
       },
       { status: 404 }
