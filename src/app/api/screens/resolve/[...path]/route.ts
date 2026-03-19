@@ -55,18 +55,13 @@ function fileExists(filePath: string): boolean {
   }
 }
 
-function getFirstJsonFileInDirectory(dirPath: string): string | null {
-  if (!fs.existsSync(dirPath)) return null;
-  const entries = fs.readdirSync(dirPath, { withFileTypes: true });
-  const file = entries.find((entry) => entry.isFile() && entry.name.toLowerCase().endsWith(".json"));
-  return file?.name ?? null;
-}
-
 function resolveJsonFromDeadRoot(segments: string[]): ResolvePayload | null {
   if (!segments.length) return null;
   const last = ensureJsonFilename(segments[segments.length - 1]);
   const jsonSegments = [...segments.slice(0, -1), last];
   const fullPath = path.join(JSON_APPS_ROOT, ...jsonSegments);
+  const fullJsonPath = fullPath;
+  console.log("FULL PATH CHECK:", fullJsonPath);
   if (!fileExists(fullPath)) return null;
   return {
     type: "json",
@@ -79,33 +74,34 @@ function resolveJsonFromDeadRoot(segments: string[]): ResolvePayload | null {
 function resolveJsonFromLiveRoot(segments: string[]): ResolvePayload | null {
   if (!segments.length || hasExcludedFolder(segments)) return null;
 
-  const last = ensureJsonFilename(segments[segments.length - 1]);
-  const folderSegments = segments.slice(0, -1);
-  const fullPath = path.join(JSON_LIVE_ROOT, ...folderSegments, last);
-  if (fileExists(fullPath)) {
+  const slug = stripJsonSuffix(segments[segments.length - 1] ?? "");
+  const domainFolder = segments[0] ?? "";
+  const subdomainFolder = segments[1] ?? "";
+  const resolvedRoute = segments[2] ?? "landing";
+  const routeFolder =
+    resolvedRoute.toLowerCase() === slug.toLowerCase() ? "landing" : resolvedRoute;
+  if (!domainFolder || !subdomainFolder || !routeFolder || !slug) return null;
+
+  const folderPath = path.join(JSON_LIVE_ROOT, domainFolder, subdomainFolder, routeFolder);
+  if (!fs.existsSync(folderPath)) return null;
+  const files = fs.readdirSync(folderPath);
+  const match = files.find(
+    (f) =>
+      f.toLowerCase().endsWith(".json") &&
+      f.toLowerCase().replace(/\.(json|tsx)$/, "") === slug.toLowerCase()
+  );
+  if (!match) return null;
+
+  const finalPath = path.join(folderPath, match);
+  console.log("FINAL RESOLVED PATH:", finalPath);
+  console.log("FULL PATH CHECK:", finalPath);
+  if (fileExists(finalPath)) {
     return {
       type: "json",
-      path: [...folderSegments, last].join("/"),
-      resolvedFilePath: fullPath,
+      path: [domainFolder, subdomainFolder, routeFolder, match].join("/"),
+      resolvedFilePath: finalPath,
       source: "live-json",
     };
-  }
-
-  // Keep prior deterministic default-file rule used by live JSON resolution:
-  // if asking for <folder>/<folder>.json and it's missing, use first JSON in the folder.
-  const folderPath = path.join(JSON_LIVE_ROOT, ...folderSegments);
-  const preferredFilename = `${path.basename(folderPath)}.json`;
-  if (last === preferredFilename) {
-    const first = getFirstJsonFileInDirectory(folderPath);
-    if (first) {
-      const firstPath = path.join(folderPath, first);
-      return {
-        type: "json",
-        path: [...folderSegments, first].join("/"),
-        resolvedFilePath: firstPath,
-        source: "live-json",
-      };
-    }
   }
 
   return null;
@@ -153,6 +149,19 @@ export async function GET(
   const segments = params.path.filter(Boolean);
   const requestedPath = segments.join("/");
 
+  // Diagnostic: exact filename being searched (case-sensitive)
+  const lastSegment = segments[segments.length - 1] ?? "";
+  const exactJsonFilenameSearched = lastSegment.toLowerCase().endsWith(".json")
+    ? lastSegment
+    : `${lastSegment}.json`;
+  console.log("[api/screens/resolve] EXACT FILENAME BEING SEARCHED (case-sensitive)", {
+    requestedPath,
+    segments,
+    lastSegment,
+    exactJsonFilenameSearched,
+    fullPathAttemptedLive: path.join(JSON_LIVE_ROOT, ...segments.slice(0, -1), exactJsonFilenameSearched),
+  });
+
   const isIntegrationLab = requestedPath === "integration-lab" || requestedPath === "integration-lab.json";
   if (isIntegrationLab) {
     const integrationPath = path.join(INTEGRATIONS_TEST_ROOT, "IntegrationLab.screen.json");
@@ -195,7 +204,27 @@ export async function GET(
     return NextResponse.json(resolved);
   }
 
-  console.warn("[api/screens/resolve] SCREEN_NOT_FOUND", { requestedPath, segments });
+  const folderForLiveJson = path.join(JSON_LIVE_ROOT, ...segments.slice(0, -1));
+  const dirListingAttempted = fs.existsSync(folderForLiveJson)
+    ? fs.readdirSync(folderForLiveJson, { withFileTypes: true }).filter((e) => e.isFile()).map((e) => e.name)
+    : [];
+  const canonicalLandingDir = path.join(JSON_LIVE_ROOT, "ContainerCreations", "Learn", "landing");
+  const canonicalLandingListing = fs.existsSync(canonicalLandingDir)
+    ? fs.readdirSync(canonicalLandingDir, { withFileTypes: true }).filter((e) => e.isFile()).map((e) => e.name)
+    : [];
+  console.warn("[api/screens/resolve] SCREEN_NOT_FOUND", {
+    requestedPath,
+    segments,
+    exactJsonFilenameSearched,
+    folderAttempted: folderForLiveJson,
+    filesInFolderAttempted: dirListingAttempted,
+    canonicalLandingFolder: canonicalLandingDir,
+    filesInCanonicalLanding: canonicalLandingListing,
+    caseSensitiveMismatch:
+      requestedPath.toLowerCase().includes("landing") && requestedPath.toLowerCase().includes("containercreationslanding-5")
+        ? `Requested filename "${exactJsonFilenameSearched}" vs on disk: ${canonicalLandingListing.filter((f) => f.toLowerCase().includes("containercreationslanding-5")).join(", ") || "none"}`
+        : undefined,
+  });
   return NextResponse.json(
     {
       error: "Screen not found",

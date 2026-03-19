@@ -45,54 +45,42 @@ function isExcludedByFolderRules(segments: string[]): boolean {
   return segments.some((s) => s.startsWith("_") || s.startsWith("("));
 }
 
-function firstJsonFileInDirectory(dirPath: string): string | null {
-  if (!fs.existsSync(dirPath)) return null;
-  const entries = fs.readdirSync(dirPath, { withFileTypes: true });
-  const files = entries
-    .filter((e) => e.isFile() && e.name.endsWith(".json"))
-    .map((e) => e.name);
-  return files[0] ?? null;
-}
-
 function tryResolveLiveJson(
   jsonSegments: string[]
 ): { json: any; resolvedRelativePath: string } | null {
   if (!jsonSegments?.length) return null;
   if (isExcludedByFolderRules(jsonSegments)) return null;
 
-  const filename = jsonSegments[jsonSegments.length - 1];
-  if (!filename.toLowerCase().endsWith(".json")) return null;
+  const slug = (jsonSegments[jsonSegments.length - 1] ?? "").replace(/\.json$/i, "");
+  const domainFolder = jsonSegments[0] ?? "";
+  const subdomainFolder = jsonSegments[1] ?? "";
+  const resolvedRoute = jsonSegments[2] ?? "landing";
+  const routeFolder =
+    resolvedRoute.toLowerCase() === slug.toLowerCase() ? "landing" : resolvedRoute;
+  if (!domainFolder || !subdomainFolder || !routeFolder || !slug) return null;
 
-  const folderSegments = jsonSegments.slice(0, -1);
-  const folderPath = path.join(JSON_LIVE_ROOT, ...folderSegments);
+  const folderPath = path.join(JSON_LIVE_ROOT, domainFolder, subdomainFolder, routeFolder);
   if (!fs.existsSync(folderPath)) return null;
   const stat = fs.statSync(folderPath);
   if (!stat.isDirectory()) return null;
 
-  const entries = fs.readdirSync(folderPath, { withFileTypes: true });
-  const exactMatch = entries.find((e) => e.isFile() && e.name === filename);
-  if (exactMatch) {
-    const filePath = path.join(folderPath, exactMatch.name);
-    const fileContent = fs.readFileSync(filePath, "utf8");
-    if (!fileContent.trim()) return null;
-    const parsed = JSON.parse(fileContent);
-    return { json: parsed, resolvedRelativePath: jsonSegments.join("/") };
-  }
+  const files = fs.readdirSync(folderPath);
+  const match = files.find(
+    (f) =>
+      f.toLowerCase().endsWith(".json") &&
+      f.toLowerCase().replace(/\.(json|tsx)$/, "") === slug.toLowerCase()
+  );
+  if (!match) return null;
 
-  // Folder default fallback:
-  // If the requested file is exactly "<folderName>.json" and missing,
-  // load the first available *.json file in that folder.
-  const folderName = path.basename(folderPath);
-  const preferredFilename = `${folderName}.json`;
-  if (filename === preferredFilename) {
-    const firstFile = firstJsonFileInDirectory(folderPath);
-    if (!firstFile) return null;
-    const filePath = path.join(folderPath, firstFile);
-    const fileContent = fs.readFileSync(filePath, "utf8");
-    if (!fileContent.trim()) return null;
-    const parsed = JSON.parse(fileContent);
-    return { json: parsed, resolvedRelativePath: [...folderSegments, firstFile].join("/") };
-  }
+  const finalPath = path.join(folderPath, match);
+  console.log("FINAL RESOLVED PATH:", finalPath);
+  const fileContent = fs.readFileSync(finalPath, "utf8");
+  if (!fileContent.trim()) return null;
+  const parsed = JSON.parse(fileContent);
+  return {
+    json: parsed,
+    resolvedRelativePath: [domainFolder, subdomainFolder, routeFolder, match].join("/"),
+  };
 
   return null;
 }

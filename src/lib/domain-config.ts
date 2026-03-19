@@ -254,27 +254,37 @@ export function buildDomainJsonPath(resolvedPath: string | null, pathSegments: s
 } | null {
   if (!resolvedPath) return null;
 
-  const routeFromResolvedPath = resolvedPath.split("/").filter(Boolean).pop() ?? "landing";
+  const resolvedParts = resolvedPath.split("/").filter(Boolean);
+  const routeFromResolvedPath = resolvedParts.pop() ?? "landing";
+  const baseResolvedPath = resolvedParts.join("/");
   // Folder name is authoritative (getResolvedPath lowercases for container-creations routes),
   // and default JSON preference is "<folderName>.json".
-  const route = routeFromResolvedPath;
+  let route = routeFromResolvedPath;
 
   let fileName = pathSegments[1];
+  // When URL is /<slug> under containercreations subdomains, avoid slug-as-folder pathing.
+  // Example bad: ContainerCreations/Learn/<slug>/<slug>.json
+  // Example good: ContainerCreations/Learn/landing/<slug>.json
+  if (!fileName && pathSegments[0] && pathSegments[0].toLowerCase() === routeFromResolvedPath.toLowerCase()) {
+    route = "landing";
+    fileName = pathSegments[0];
+  }
   if (fileName && fileName.toLowerCase().endsWith(".json")) {
     // Allow URL patterns that include the extension: /.../MyScreen.json
     // while keeping the contract of loading `${fileNameStem}.json`.
     fileName = fileName.slice(0, -5);
   }
+  const routeRoot = route === routeFromResolvedPath ? resolvedPath : `${baseResolvedPath}/${route}`;
   if (fileName) {
     return {
       route,
       fileName,
-      jsonPath: `${resolvedPath}/${fileName}.json`,
+      jsonPath: `${routeRoot}/${fileName}.json`,
     };
   }
 
   return {
     route,
-    jsonPath: `${resolvedPath}/${route}.json`,
+    jsonPath: `${routeRoot}/${route}.json`,
   };
 }
