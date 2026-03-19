@@ -34,6 +34,14 @@ type ResolvePayload = {
   source: "integrations" | "dead-json" | "live-json" | "tsx";
 };
 
+type LiveFolderResolution = {
+  domainFolder: string;
+  subdomainFolder: string;
+  routeFolder: string;
+  slug: string;
+  folderPath: string;
+};
+
 function ensureJsonFilename(name: string): string {
   return name.toLowerCase().endsWith(".json") ? name : `${name}.json`;
 }
@@ -67,17 +75,92 @@ function resolveJsonFromDeadRoot(segments: string[]): ResolvePayload | null {
   };
 }
 
-function resolveJsonFromLiveRoot(segments: string[]): ResolvePayload | null {
-  if (!segments.length) return null;
+function parseHostParts(host?: string): { subdomain: string; root: string } {
+  const normalized = (host ?? "").trim().toLowerCase();
+  const hostNoPort = normalized.split(":")[0] ?? "";
+  if (!hostNoPort) return { subdomain: "", root: "" };
+  const parts = hostNoPort.split(".").filter(Boolean);
+  if (parts.length < 2) return { subdomain: "", root: hostNoPort };
+  const root = parts.slice(-2).join(".");
+  const subdomain = parts.length > 2 ? parts[0] : "";
+  return { subdomain, root };
+}
 
+function assertNotRootFolder(folderPath: string): void {
+  const normalized = path.normalize(folderPath);
+  const appRoot = path.normalize(JSON_LIVE_ROOT);
+  if (normalized === appRoot) {
+    throw new Error(`[api/screens/resolve] Illegal resolver target: root folder used (${folderPath})`);
+  }
+}
+
+function resolveLiveFolderFromHostAndSegments(
+  host: string | undefined,
+  segments: string[]
+): LiveFolderResolution {
   const slug = stripJsonSuffix(segments[segments.length - 1] ?? "");
-  const domainFolder = segments[0] ?? "";
-  const subdomainFolder = segments[1] ?? "";
-  const resolvedRoute = segments[2] ?? "landing";
-  const routeFolder =
-    resolvedRoute.toLowerCase() === slug.toLowerCase() ? "landing" : resolvedRoute;
+
+  let domainFolder = segments[0] ?? "";
+  let subdomainFolder = segments[1] ?? "";
+  let routeFolder = segments[2] ?? "landing";
+
+  if (segments.length === 1) {
+    const { subdomain, root } = parseHostParts(host);
+    if (root.includes("containercreations")) {
+      domainFolder = "ContainerCreations";
+      subdomainFolder = subdomain ? subdomain[0].toUpperCase() + subdomain.slice(1) : "Learn";
+      routeFolder = "landing";
+    }
+  } else {
+    routeFolder = routeFolder.toLowerCase() === slug.toLowerCase() ? "landing" : routeFolder;
+  }
 
   const folderPath = path.join(JSON_LIVE_ROOT, domainFolder, subdomainFolder, routeFolder);
+  assertNotRootFolder(folderPath);
+  return { domainFolder, subdomainFolder, routeFolder, slug, folderPath };
+}
+
+function runResolverRuntimeAssertions(host: string | undefined): void {
+  const basePath = path.join(JSON_LIVE_ROOT, "ContainerCreations", "Learn", "landing");
+  const cases = [
+    {
+      host: host ?? "learn.containercreations.com",
+      segments: ["ContainerCreationsLanding-5"],
+      expected: basePath,
+    },
+    {
+      host: host ?? "learn.containercreations.com",
+      segments: ["ContainerCreations", "Learn", "landing", "ContainerCreationsLanding-5"],
+      expected: basePath,
+    },
+  ];
+
+  for (const c of cases) {
+    const result = resolveLiveFolderFromHostAndSegments(c.host, c.segments);
+    console.log("RESOLVER TEST RESULT:", {
+      host: c.host,
+      segments: c.segments,
+      domainFolder: result.domainFolder,
+      subdomainFolder: result.subdomainFolder,
+      routeFolder: result.routeFolder,
+      folderPath: result.folderPath,
+    });
+    if (path.normalize(result.folderPath) !== path.normalize(c.expected)) {
+      throw new Error(
+        `[api/screens/resolve] Resolver assertion failed. Expected ${c.expected}, got ${result.folderPath}`
+      );
+    }
+    if (path.normalize(result.folderPath) === path.normalize(JSON_LIVE_ROOT)) {
+      throw new Error("[api/screens/resolve] Resolver assertion failed: folderPath points to src/01_App root");
+    }
+  }
+}
+
+function resolveJsonFromLiveRoot(segments: string[], host?: string): ResolvePayload | null {
+  if (!segments.length) return null;
+
+  const { domainFolder, subdomainFolder, routeFolder, slug, folderPath } =
+    resolveLiveFolderFromHostAndSegments(host, segments);
   let files: string[] = [];
   try {
     files = fs
@@ -141,7 +224,7 @@ function resolveTsx(segments: string[]): ResolvePayload | null {
 }
 
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: { path?: string[] } }
 ) {
   if (!params?.path?.length) {
@@ -150,6 +233,8 @@ export async function GET(
 
   const segments = params.path.filter(Boolean);
   const requestedPath = segments.join("/");
+  const hostHeader = req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? undefined;
+  runResolverRuntimeAssertions(hostHeader);
 
   // Diagnostic: exact filename being searched (case-sensitive)
   const lastSegment = segments[segments.length - 1] ?? "";
@@ -180,7 +265,7 @@ export async function GET(
   }
 
   const jsonDead = resolveJsonFromDeadRoot(segments);
-  const jsonLive = resolveJsonFromLiveRoot(segments);
+  const jsonLive = resolveJsonFromLiveRoot(segments, hostHeader);
   const jsonResolved = jsonDead ?? jsonLive;
   const tsxResolved = resolveTsx(segments);
 
