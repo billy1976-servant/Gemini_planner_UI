@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 
-const JSON_LIVE_ROOT = path.join(process.cwd(), "src", "01_App");
-
 type ResolvedType = "json" | "tsx";
 
 type ResolvePayload = {
@@ -45,23 +43,15 @@ function parseHostParts(host?: string): { subdomain: string; root: string } {
 
 function resolveLiveFolderFromHostAndSegments(
   host: string | undefined,
-  segments: string[]
+  segments: string[],
+  domainFolder: string,
+  basePath: string
 ): LiveFolderResolution {
   if (segments.length < 2) {
     throw new Error("INVALID PATH — MUST BE routeFolder/fileStem");
   }
 
-  const { subdomain, root } = parseHostParts(host);
-
-  // domainFolder = from host root
-  const domainFolder =
-    root === "containercreations.com"
-      ? "ContainerCreations"
-      : root === "hiclarify.com"
-        ? "HIClarify"
-        : (() => {
-            throw new Error(`[api/screens/resolve] INVALID HOST ROOT — ${root}`);
-          })();
+  const { subdomain } = parseHostParts(host);
 
   // subdomainFolder = from host subdomain
   const subdomainFolder =
@@ -79,7 +69,7 @@ function resolveLiveFolderFromHostAndSegments(
   // fileStem = from URL LAST segment (NO suffix stripping; contract is prefix-match against on-disk filenames)
   const slug = segments[segments.length - 1];
 
-  const folderPath = path.join(JSON_LIVE_ROOT, domainFolder, subdomainFolder, routeFolder);
+  const folderPath = path.join(basePath, subdomainFolder, routeFolder);
 
   // HARD ASSERTION (NEVER SILENT FAIL)
   if (!folderPath.includes(domainFolder) || !folderPath.includes(subdomainFolder)) {
@@ -99,18 +89,22 @@ function runResolverRuntimeAssertions(host: string | undefined): void {
     {
       host: "learn.containercreations.com",
       segments: ["landing", "ContainerCreationsLanding-5"],
-      expected: path.join(JSON_LIVE_ROOT, "ContainerCreations", "Learn", "landing"),
+      expected: path.join(process.cwd(), "src", "01_App", "ContainerCreations", "Learn", "landing"),
     },
     {
       host: "christian.hiclarify.com",
       segments: ["prayer", "prayerapp"],
-      expected: path.join(JSON_LIVE_ROOT, "HIClarify", "Christian", "prayer"),
+      expected: path.join(process.cwd(), "src", "01_App", "HIClarify", "Christian", "prayer"),
     },
   ];
 
   try {
     for (const t of tests) {
-      const result = resolveLiveFolderFromHostAndSegments(t.host, t.segments);
+      const domainFolder = t.host?.includes("containercreations.com")
+        ? "ContainerCreations"
+        : "HIClarify";
+      const basePath = path.join(process.cwd(), "src", "01_App", domainFolder);
+      const result = resolveLiveFolderFromHostAndSegments(t.host, t.segments, domainFolder, basePath);
       if (path.normalize(result.folderPath).toLowerCase() !== path.normalize(t.expected).toLowerCase()) {
         throw new Error(
           `[api/screens/resolve] Resolver assertion failed.\nhost=${t.host}\nsegments=${JSON.stringify(t.segments)}\nexpectedFolder=${t.expected}\ngotFolder=${result.folderPath}`
@@ -126,11 +120,15 @@ function runResolverRuntimeAssertions(host: string | undefined): void {
 
 function resolveLiveScreenFromFilesystemContract(
   host: string | undefined,
-  segments: string[]
+  segments: string[],
+  domainFolder: string,
+  basePath: string
 ): ResolvePayload {
-  const { domainFolder, subdomainFolder, routeFolder, slug: fileStem, folderPath } = resolveLiveFolderFromHostAndSegments(
+  const { subdomainFolder, routeFolder, slug: fileStem, folderPath } = resolveLiveFolderFromHostAndSegments(
     host,
-    segments
+    segments,
+    domainFolder,
+    basePath
   );
 
   console.log("COMPUTED PATH:", {
@@ -210,6 +208,22 @@ export async function GET(
   let hostHeader = req.headers.get("x-forwarded-host");
   if (!hostHeader) hostHeader = req.headers.get("host");
 
+  const host = req.headers.get("host") || "";
+
+  let domainFolder = null;
+
+  if (host.includes("hiclarify.com")) {
+    domainFolder = "HiClarify";
+  } else if (host.includes("containercreations.com")) {
+    domainFolder = "ContainerCreations";
+  } else {
+    throw new Error("UNKNOWN DOMAIN — BLOCKED");
+  }
+
+  const basePath = path.join(process.cwd(), "src", "01_App", domainFolder);
+
+  console.log("LOCKED BASE PATH:", basePath);
+
   console.log("RESOLVER INPUT:", {
     host: hostHeader,
     segments: params.path,
@@ -218,7 +232,7 @@ export async function GET(
   runResolverRuntimeAssertions(hostHeader);
 
   // Strict contract resolution only
-  const resolved = resolveLiveScreenFromFilesystemContract(hostHeader, segments);
+  const resolved = resolveLiveScreenFromFilesystemContract(hostHeader, segments, domainFolder, basePath);
   return NextResponse.json(resolved);
 }
 
