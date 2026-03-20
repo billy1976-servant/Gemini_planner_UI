@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getGroups, updateGroup } from "@/01_App/HIClarify/Christian/Prayer/data/store";
+import { getGroups, updateGroup } from "@/01_App/hiclarify/christian/prayer/data/store";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

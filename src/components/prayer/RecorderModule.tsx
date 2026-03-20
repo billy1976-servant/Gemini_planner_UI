@@ -2,11 +2,11 @@
 
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { uploadPrayer } from "@/01_App/HIClarify/Christian/Prayer/api/prayer-api";
-import type { Prayer } from "@/01_App/HIClarify/Christian/Prayer/PrayerTypes";
-import { getDraft, saveDraft, deleteDraft } from "@/01_App/HIClarify/Christian/Prayer/utils/prayerDraftStore";
-import { formatTime } from "@/01_App/HIClarify/Christian/Prayer/utils/formatTime";
-import { createRecordingEngine } from "@/01_App/HIClarify/Christian/Prayer/room/recording-engine";
+import { uploadPrayer } from "@/01_App/hiclarify/christian/prayer/api/prayer-api";
+import type { Prayer } from "@/01_App/hiclarify/christian/prayer/PrayerTypes";
+import { getDraft, saveDraft, deleteDraft } from "@/01_App/hiclarify/christian/prayer/utils/prayerDraftStore";
+import { formatTime } from "@/01_App/hiclarify/christian/prayer/utils/formatTime";
+import { createRecordingEngine } from "@/01_App/hiclarify/christian/prayer/room/recording-engine";
 
 export type RecordingType = "audio" | "video" | "screen";
 

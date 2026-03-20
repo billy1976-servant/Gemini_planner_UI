@@ -91,7 +91,7 @@ export default function DomainPage() {
       try {
         const resolvePath = pathSegments.join("/");
         console.log("FETCH PATH:", resolvePath);
-        const resolveRes = await fetch(`/api/screens/resolve/${resolvePath}`, {
+        const resolveRes = await fetch(`/api/screens/resolve-strict/${resolvePath}`, {
           cache: "no-store",
           headers: { "Cache-Control": "no-cache, no-store, must-revalidate" },
         });
@@ -101,24 +101,17 @@ export default function DomainPage() {
           throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
         }
 
-        const resolved = (await resolveRes.json()) as { type: "json" | "tsx"; path: string };
+        const resolved = (await resolveRes.json()) as { type: "json" | "tsx"; path: string; jsonData?: any };
         console.log("RESOLVED DATA:", resolved);
 
         if (resolved?.type === "json") {
-          const dataRes = await fetch(`/api/screens/${resolved.path}`, {
-            cache: "no-store",
-            headers: { "Cache-Control": "no-cache, no-store, must-revalidate" },
-          });
-
-          if (!dataRes.ok) {
-            throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
-          }
-
-          const data = await dataRes.json();
           if (cancelled) return;
+          if (resolved.jsonData === undefined) {
+            throw new Error("RESOLVER FAILURE — STRICT_ROUTER_MISSING_JSON_DATA");
+          }
           setRequestedJsonPath(resolved.path);
           setComponent(null);
-          setJson(data);
+          setJson(resolved.jsonData);
           return;
         }
 

@@ -57,15 +57,15 @@ containerCreationsContext.keys().forEach((key: string) => {
 
 const EXPLICIT_TSX_MAP: Record<string, () => Promise<any>> = {
   "ContainerCreations/Learn/landing/ContainerCreationsWebsite": () =>
-    import("@/01_App/ContainerCreations/Learn/landing/ContainerCreationsWebsite"),
+    import("@/01_App/containercreations/learn/landing/ContainerCreationsWebsite"),
   "ContainerCreations/Learn/landing/ContainerCreationsLanding": () =>
-    import("@/01_App/ContainerCreations/Learn/landing/ContainerCreationsLanding"),
+    import("@/01_App/containercreations/learn/landing/ContainerCreationsLanding"),
   "Business/Container_Creations/ContainerCreationsWebsite": () =>
-    import("@/01_App/ContainerCreations/Learn/landing/ContainerCreationsWebsite"),
+    import("@/01_App/containercreations/learn/landing/ContainerCreationsWebsite"),
   "Business/Container_Creations/ContainerCreationsLanding": () =>
-    import("@/01_App/ContainerCreations/Learn/landing/ContainerCreationsLanding"),
+    import("@/01_App/containercreations/learn/landing/ContainerCreationsLanding"),
   "Christian/Discipleship/GospelDiscipleship": () =>
-    import("@/01_App/HIClarify/Christian/Discipleship/GospelDiscipleship"),
+    import("@/01_App/hiclarify/christian/Discipleship/GospelDiscipleship"),
   "Runtime/FlowRuntimeScreen": () =>
     import("@/engine/onboarding/FlowRuntimeScreen"),
 };

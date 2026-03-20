@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import crypto from "crypto";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth";
-import { getRooms, saveRooms } from "@/01_App/HIClarify/Christian/Prayer/data/store";
-import type { RoomRecord, RoomParticipantRecord, RoomSessionType } from "@/01_App/HIClarify/Christian/Prayer/data/store";
+import { getRooms, saveRooms } from "@/01_App/hiclarify/christian/prayer/data/store";
+import type { RoomRecord, RoomParticipantRecord, RoomSessionType } from "@/01_App/hiclarify/christian/prayer/data/store";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

@@ -51,7 +51,7 @@ export async function GET(request: Request) {
     const validSessions = sessions.filter((s) => s.lastHeartbeat >= now - HEARTBEAT_TTL_MS);
 
     if (groupId) {
-      const { getPrayers } = await import("@/01_App/HIClarify/Christian/Prayer/data/store");
+      const { getPrayers } = await import("@/01_App/hiclarify/christian/prayer/data/store");
       const prayers = await getPrayers();
       const groupPrayerIds = new Set(
         prayers.filter((p) => (p as { groupId?: string }).groupId === groupId).map((p) => (p as { id: string }).id)
@@ -79,7 +79,7 @@ export async function POST(request: Request) {
     const sessionId = body?.sessionId as string | undefined;
 
     if (action === "played" && prayerId) {
-      const { getPrayers, updatePrayer } = await import("@/01_App/HIClarify/Christian/Prayer/data/store");
+      const { getPrayers, updatePrayer } = await import("@/01_App/hiclarify/christian/prayer/data/store");
       const prayers = await getPrayers();
       const p = prayers.find((x) => (x as { id?: string }).id === prayerId) as Record<string, unknown> | undefined;
       if (p) {

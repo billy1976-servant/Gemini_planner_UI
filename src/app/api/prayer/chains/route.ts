@@ -4,7 +4,7 @@ import {
   getPrayerChains,
   addPrayerChain,
   type PrayerChainRecord,
-} from "@/01_App/HIClarify/Christian/Prayer/data/store";
+} from "@/01_App/hiclarify/christian/prayer/data/store";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

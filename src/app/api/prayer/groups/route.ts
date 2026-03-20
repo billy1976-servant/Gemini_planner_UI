@@ -6,7 +6,7 @@ import {
   getGroups,
   addGroup,
   joinGroup,
-} from "@/01_App/HIClarify/Christian/Prayer/data/store";
+} from "@/01_App/hiclarify/christian/prayer/data/store";
 import {
   addOrganization,
   addOrgMembership,

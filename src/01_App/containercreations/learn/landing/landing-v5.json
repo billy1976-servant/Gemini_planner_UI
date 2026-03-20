@@ -17,12 +17,8 @@
       "layout": "hero",
       "title": "Upgrade Your Shipping Container",
       "subtitle": "Ventilation • Natural Light • Structural Integration",
-      "content": [
-        { "type": "badge", "text": "60-Minute DIY Install • No Welding Required" }
-      ],
-      "media": [
-        { "type": "video", "src": "/Videos/hero-install.mp4.mp4" }
-      ],
+      "content": [{ "type": "badge", "text": "60-Minute DIY Install • No Welding Required" }],
+      "media": [{ "type": "video", "src": "/Videos/hero-install.mp4.mp4" }],
       "buttons": [
         { "type": "link", "label": "Shop Now", "hrefKey": "shopUrl", "nodeId": "shop-now-hero" },
         { "type": "goto", "label": "Explore the Container Upgrade System", "target": "structural-fit", "nodeId": "explore-container" }

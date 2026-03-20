@@ -10,31 +10,33 @@ export const APP_MODULE_LOADERS: Record<
   () => Promise<{ default: React.ComponentType<any> }>
 > = {
   // Legacy short keys (path segment "christian" etc.)
-  Christian: () => import("@/01_App/HIClarify/Christian/ChristianApp"),
+  Christian: () => import("@/01_App/hiclarify/christian/ChristianApp"),
   "Christian/prayer": () =>
-    import("@/01_App/HIClarify/Christian/Prayer/PrayerApp").then((m) => ({ default: m.PrayerApp })),
+    import("@/01_App/hiclarify/christian/prayer/prayer-app").then((m) => ({ default: m.PrayerApp })),
   "Christian/discipleship": () =>
-    import("@/01_App/HIClarify/Christian/Discipleship/GospelDiscipleship"),
-  Business: () => import("@/01_App/Business/BusinessApp"),
-  Plan: () => import("@/01_App/HIClarify/Plan/PlanApp"),
-  Protect: () => import("@/01_App/HIClarify/Protect/ProtectApp"),
-  Research: () => import("@/01_App/HIClarify/Research/ResearchApp"),
-  Learn: () => import("@/01_App/HIClarify/Learn/LearnApp"),
+    import("@/01_App/hiclarify/christian/Discipleship/GospelDiscipleship"),
+  Business: () => import("@/01_App/business/BusinessApp"),
+  Plan: () => import("@/01_App/hiclarify/plan/PlanApp"),
+  Protect: () => import("@/01_App/hiclarify/protect/ProtectApp"),
+  Research: () => import("@/01_App/hiclarify/research/ResearchApp"),
+  Learn: () => import("@/01_App/hiclarify/learn/LearnApp"),
   // Domain-mapped full folder keys (getFolderForSubdomain returns these)
-  "HIClarify/Christian": () => import("@/01_App/HIClarify/Christian/ChristianApp"),
+  "HIClarify/Christian": () => import("@/01_App/hiclarify/christian/ChristianApp"),
   "HIClarify/Christian/prayer": () =>
-    import("@/01_App/HIClarify/Christian/Prayer/PrayerApp").then((m) => ({ default: m.PrayerApp })),
+    import("@/01_App/hiclarify/christian/prayer/prayer-app").then((m) => ({ default: m.PrayerApp })),
   "HIClarify/Christian/discipleship": () =>
-    import("@/01_App/HIClarify/Christian/Discipleship/GospelDiscipleship"),
-  "HIClarify/Learn": () => import("@/01_App/HIClarify/Learn/LearnApp"),
-  "HIClarify/Plan": () => import("@/01_App/HIClarify/Plan/PlanApp"),
-  "HIClarify/Protect": () => import("@/01_App/HIClarify/Protect/ProtectApp"),
-  "HIClarify/Research": () => import("@/01_App/HIClarify/Research/ResearchApp"),
+    import("@/01_App/hiclarify/christian/Discipleship/GospelDiscipleship"),
+  "HIClarify/Learn": () => import("@/01_App/hiclarify/learn/LearnApp"),
+  "HIClarify/Plan": () => import("@/01_App/hiclarify/plan/PlanApp"),
+  "HIClarify/Protect": () => import("@/01_App/hiclarify/protect/ProtectApp"),
+  "HIClarify/Research": () => import("@/01_App/hiclarify/research/ResearchApp"),
   // Domain/Subdomain/Route (ContainerCreations)
   "ContainerCreations/Learn/landing": () =>
-    import("@/01_App/ContainerCreations/Learn/landing/ContainerCreationsLanding").then((m) => ({ default: m.default })),
+    import("@/01_App/containercreations/learn/landing/ContainerCreationsLanding").then((m) => ({ default: m.default })),
   "ContainerCreations/Learn/onboarding": () =>
-    import("@/01_App/ContainerCreations/Learn/onboarding/FlowsIndex").then((m) => ({ default: m.default })),
+    import("@/01_App/containercreations/learn/onboarding/FlowsIndex").then((m) => ({ default: m.default })),
+  "hiclarify/christian/prayer/prayer-app": () =>
+    import("@/01_App/hiclarify/christian/prayer/prayer-app").then((m) => ({ default: m.default })),
 };
 
 /** Path segment (e.g. /prayer, /learn) → loader key in APP_MODULE_LOADERS. */

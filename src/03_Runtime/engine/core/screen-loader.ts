@@ -54,7 +54,7 @@ export async function loadScreen(path: string): Promise<any> {
     const resolvePath =
       resolveSegments.length >= 4 ? resolveSegments.slice(2).join("/") : resolveSegments.join("/");
 
-    const resolveUrl = `/api/screens/resolve/${resolvePath}?t=${Date.now()}`;
+    const resolveUrl = `/api/screens/resolve-strict/${resolvePath}?t=${Date.now()}`;
     const resolveRes = await fetch(resolveUrl, {
       cache: "no-store",
       headers: { "Cache-Control": "no-cache, no-store", Pragma: "no-cache" },
