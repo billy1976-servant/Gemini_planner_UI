@@ -13,8 +13,6 @@ export const APP_MODULE_LOADERS: Record<
   Christian: () => import("@/01_App/hiclarify/christian/ChristianApp"),
   "Christian/prayer": () =>
     import("@/01_App/hiclarify/christian/prayer/prayer-app").then((m) => ({ default: m.PrayerApp })),
-  "Christian/discipleship": () =>
-    import("@/01_App/hiclarify/christian/Discipleship/GospelDiscipleship"),
   Business: () => import("@/01_App/business/BusinessApp"),
   Plan: () => import("@/01_App/hiclarify/plan/PlanApp"),
   Protect: () => import("@/01_App/hiclarify/protect/ProtectApp"),
@@ -24,8 +22,6 @@ export const APP_MODULE_LOADERS: Record<
   "HIClarify/Christian": () => import("@/01_App/hiclarify/christian/ChristianApp"),
   "HIClarify/Christian/prayer": () =>
     import("@/01_App/hiclarify/christian/prayer/prayer-app").then((m) => ({ default: m.PrayerApp })),
-  "HIClarify/Christian/discipleship": () =>
-    import("@/01_App/hiclarify/christian/Discipleship/GospelDiscipleship"),
   "HIClarify/Learn": () => import("@/01_App/hiclarify/learn/LearnApp"),
   "HIClarify/Plan": () => import("@/01_App/hiclarify/plan/PlanApp"),
   "HIClarify/Protect": () => import("@/01_App/hiclarify/protect/ProtectApp"),
@@ -43,7 +39,6 @@ export const APP_MODULE_LOADERS: Record<
 export const PATH_SEGMENT_TO_LOADER_KEY: Record<string, string> = {
   prayer: "Christian/prayer",
   learn: "Learn",
-  gospel: "Christian/discipleship",
   christian: "Christian",
   business: "Business",
   plan: "Plan",
