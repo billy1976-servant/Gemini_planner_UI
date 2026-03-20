@@ -49,18 +49,19 @@ function parseStrictHost(hostHeader: string): { host: string; domain: string; su
 }
 
 function parseStrictSegments(segments: string[]): { route: string; file: string } {
-  if (!Array.isArray(segments) || segments.length !== 2) {
+  if (!Array.isArray(segments) || segments.length < 1) {
     throw new Error("STRICT_ROUTER_INVALID_PATH_FORMAT");
   }
 
-  const [route, file] = segments;
-  assertLowercaseExact(route, "route");
-  assertLowercaseExact(file, "file");
-
-  if (route.includes(".") || file.includes(".") || route.includes("/") || file.includes("/")) {
-    throw new Error("STRICT_ROUTER_INVALID_PATH_SEGMENT");
+  for (const segment of segments) {
+    assertLowercaseExact(segment, "route_segment");
+    if (!segment || segment.includes(".") || segment.includes("/")) {
+      throw new Error("STRICT_ROUTER_INVALID_PATH_SEGMENT");
+    }
   }
 
+  const route = segments.join("/");
+  const file = segments[segments.length - 1];
   return { route, file };
 }
 
@@ -69,30 +70,47 @@ export function resolveStrictLowercaseRoute(hostHeader: string, segments: string
   const { route, file } = parseStrictSegments(segments);
 
   const domainFolder = ROOT_DOMAIN_TO_FOLDER[domain];
-  const basePath = path.join(process.cwd(), "src", "01_App", domainFolder, subdomain, route);
-  const jsonPath = path.join(basePath, `${file}.json`);
-  const tsxPath = path.join(basePath, `${file}.tsx`);
+  const basePath = path.join(process.cwd(), "src", "01_App", domainFolder, subdomain);
+  const routePath = path.join(basePath, ...segments);
+  const routeParentPath = path.join(basePath, ...segments.slice(0, -1));
+  const routeLeaf = file;
+
+  const candidates = [
+    { type: "json" as const, path: `${routePath}.json` }, // direct file match
+    { type: "tsx" as const, path: `${routePath}.tsx` }, // direct file match
+    { type: "json" as const, path: path.join(routePath, "index.json") }, // folder index
+    { type: "tsx" as const, path: path.join(routePath, "index.tsx") }, // folder index
+    { type: "json" as const, path: path.join(routePath, `${routeLeaf}.json`) }, // leaf fallback
+    { type: "tsx" as const, path: path.join(routePath, `${routeLeaf}.tsx`) }, // leaf fallback
+    { type: "json" as const, path: path.join(routeParentPath, `${routeLeaf}.json`) }, // parent leaf fallback
+    { type: "tsx" as const, path: path.join(routeParentPath, `${routeLeaf}.tsx`) }, // parent leaf fallback
+  ];
 
   let resolvedType: StrictResolvedType | null = null;
   let fullPath = "";
   let responsePath = "";
   let jsonData: any | undefined = undefined;
 
-  if (fs.existsSync(jsonPath)) {
-    resolvedType = "json";
-    fullPath = jsonPath;
-    responsePath = `${domainFolder}/${subdomain}/${route}/${file}.json`;
-    const fileContent = fs.readFileSync(jsonPath, "utf8");
-    if (!fileContent.trim()) {
-      throw new Error("STRICT_ROUTER_JSON_FILE_EMPTY");
+  for (const candidate of candidates) {
+    if (!fs.existsSync(candidate.path)) continue;
+    resolvedType = candidate.type;
+    fullPath = candidate.path;
+    if (candidate.type === "json") {
+      responsePath = path
+        .relative(path.join(process.cwd(), "src", "01_App"), candidate.path)
+        .replace(/\\/g, "/");
+      const fileContent = fs.readFileSync(candidate.path, "utf8");
+      if (!fileContent.trim()) {
+        throw new Error("STRICT_ROUTER_JSON_FILE_EMPTY");
+      }
+      jsonData = JSON.parse(fileContent);
+    } else {
+      responsePath = path
+        .relative(path.join(process.cwd(), "src", "01_App"), candidate.path)
+        .replace(/\\/g, "/")
+        .replace(/\.tsx$/i, "");
     }
-    jsonData = JSON.parse(fileContent);
-  } else if (fs.existsSync(tsxPath)) {
-    resolvedType = "tsx";
-    fullPath = tsxPath;
-    responsePath = `${domainFolder}/${subdomain}/${route}/${file}`;
-  } else {
-    fullPath = tsxPath;
+    break;
   }
 
   console.log({
@@ -100,8 +118,8 @@ export function resolveStrictLowercaseRoute(hostHeader: string, segments: string
     domain,
     subdomain,
     route,
-    file,
-    fullPath,
+    segments,
+    resolvedFilePath: fullPath,
   });
 
   if (!resolvedType) {

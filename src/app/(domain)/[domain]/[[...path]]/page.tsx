@@ -40,19 +40,24 @@ export default function DomainPage() {
   const domainParam = params?.domain as string | undefined;
   if (!domainParam) throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
   const domain = domainParam;
+  const domainParts = domain.toLowerCase().split(".").filter(Boolean);
+  const subdomain = domainParts.length === 3 ? domainParts[0] : "";
 
   const pathParam = params?.path;
-  const pathSegments = Array.isArray(pathParam)
+  const rawPathSegments = Array.isArray(pathParam)
     ? pathParam
     : pathParam != null
       ? [String(pathParam)]
       : [];
+  const pathSegments =
+    subdomain && rawPathSegments[0]?.toLowerCase() === subdomain ? rawPathSegments.slice(1) : rawPathSegments;
 
   const resolvedPath = getResolvedPath(domain, pathSegments);
   const [Component, setComponent] = useState<React.ComponentType<any> | null>(null);
   const [json, setJson] = useState<any | null>(null);
   const [requestedJsonPath, setRequestedJsonPath] = useState<string | null>(null);
   const [fatalError, setFatalError] = useState<Error | null>(null);
+  const [resolverFallback, setResolverFallback] = useState(false);
 
   // Full domain→subdomain→layout→flow resolution trace (dev; or set window.__DOMAIN_RESOLVE_TRACE__ = true)
   useEffect(() => {
@@ -64,6 +69,7 @@ export default function DomainPage() {
     setComponent(null);
     setRequestedJsonPath(null);
     setFatalError(null);
+    setResolverFallback(false);
 
     console.log("INPUT PARAMS:", {
       domain,
@@ -106,6 +112,13 @@ export default function DomainPage() {
 
         if (resolved?.type === "json") {
           if (cancelled) return;
+          if (resolved.path === "fallback") {
+            setResolverFallback(true);
+            setRequestedJsonPath("fallback");
+            setComponent(null);
+            setJson({});
+            return;
+          }
           if (resolved.jsonData === undefined) {
             throw new Error("RESOLVER FAILURE — STRICT_ROUTER_MISSING_JSON_DATA");
           }
@@ -133,7 +146,10 @@ export default function DomainPage() {
       } catch (err) {
         if (cancelled) return;
         console.error("RESOLVER FAILURE CAUGHT IN PAGE.tsx", err);
-        setFatalError(new Error("RESOLVER FAILURE — DO NOT FALLBACK"));
+        setResolverFallback(true);
+        setRequestedJsonPath("fallback");
+        setJson({});
+        setComponent(null);
       }
     })();
 
@@ -199,6 +215,10 @@ export default function DomainPage() {
 
   if (fatalError) {
     throw fatalError;
+  }
+
+  if (resolverFallback) {
+    return <div style={{ padding: "2rem", textAlign: "center" }}>Fallback screen</div>;
   }
 
   // Strict contract: pass URL path segments through without rewriting
