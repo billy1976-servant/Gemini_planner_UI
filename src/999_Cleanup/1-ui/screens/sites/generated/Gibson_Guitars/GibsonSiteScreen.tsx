@@ -1,8 +1,10 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import ScreenRenderer from "@/apps-tsx/core/ScreenRenderer";
+import dynamic from "next/dynamic";
 import type { CompiledSiteModel } from "@/lib/siteCompiler/types";
+
+const ScreenRenderer = dynamic(() => import("@/apps-tsx/core/ScreenRenderer"), { ssr: false });
 
 export default function GibsonSiteScreen({ site }: { site: CompiledSiteModel }) {
   const searchParams = useSearchParams();

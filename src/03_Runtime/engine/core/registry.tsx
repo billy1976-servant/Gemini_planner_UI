@@ -43,12 +43,6 @@ import PageLayout from "@/lib/layout/molecules/page-layout";
 // FLOW/ONBOARDING CARDS (JSON type → component; adapter for JsonRenderer props)
 // =====================================================
 import { CalculatorCard, EducationCard, SummaryCard } from "@/ui/molecules/cards";
-// =====================================================
-// OSB HOME V2 (text-first, registry-driven)
-// =====================================================
-import OsbHomeV2 from "@/apps-tsx/HiClarify/OsbHomeV2";
-import AppsListV2 from "@/apps-tsx/HiClarify/AppsListV2";
-
 /** Wrap card components so they receive JsonRenderer spread props; provide no-op callbacks for standalone render. */
 function wrapCard(CardComponent: React.ComponentType<any>) {
   return (props: any) => (
@@ -199,13 +193,6 @@ export const Registry = {
   page: PageLayout,
   Page: PageLayout,
 
-  // 🔹 OSB Home V2 (single doorway screen; content from osb-home-registry.json)
-  OsbHomeV2,
-  osbHomeV2: OsbHomeV2,
-
-  // 🔹 Apps list V2 (search + alphabetical; data from apps_categories.json)
-  AppsListV2,
-  appsListV2: AppsListV2,
 };
 
 

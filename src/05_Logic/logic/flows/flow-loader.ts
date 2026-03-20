@@ -142,10 +142,6 @@ businessFlowsContext.keys().forEach((key: string) => {
 
 console.log("REGISTERED FLOWS:", Object.keys(FLOWS));
 
-import GibsonFlow from "@/apps-tsx/tsx-screens/Gibson_Guitars/generated.flow-Gibson.json";
-FLOWS[GibsonFlow.id] = GibsonFlow as EducationFlow;
-FLOWS["Gibson_Landing"] = GibsonFlow as EducationFlow;
-
 // Cache for loaded flows
 const flowCache: Record<string, EducationFlow> = {};
 
