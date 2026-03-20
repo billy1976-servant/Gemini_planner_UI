@@ -3,9 +3,9 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { uploadPrayer } from "@/01_App/hiclarify/christian/prayer/api/prayer-api";
-import type { Prayer } from "@/01_App/hiclarify/christian/prayer/PrayerTypes";
-import { getDraft, saveDraft, deleteDraft } from "@/01_App/hiclarify/christian/prayer/utils/prayerDraftStore";
-import { formatTime } from "@/01_App/hiclarify/christian/prayer/utils/formatTime";
+import type { Prayer } from "@/01_App/hiclarify/christian/prayer/prayertypes";
+import { getDraft, saveDraft, deleteDraft } from "@/01_App/hiclarify/christian/prayer/utils/prayerdraftstore";
+import { formatTime } from "@/01_App/hiclarify/christian/prayer/utils/formattime";
 import { createRecordingEngine } from "@/01_App/hiclarify/christian/prayer/room/recording-engine";
 
 export type RecordingType = "audio" | "video" | "screen";

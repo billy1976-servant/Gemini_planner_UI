@@ -1,0 +1,912 @@
+{
+  "renamedCount": 0,
+  "skippedCount": 181,
+  "renamed": [],
+  "skipped": [
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\sites\\generated\\gibson_guitars\\CompiledSiteViewer.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\sites\\generated\\gibson_guitars\\compiledsiteviewer.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\sites\\generated\\gibson_guitars\\GibsonSiteScreen.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\sites\\generated\\gibson_guitars\\gibsonsitescreen.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) screens\\tsx-screens\\sites\\generated\\gibson_guitars\\GibsonSiteScreen.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) screens\\tsx-screens\\sites\\generated\\gibson_guitars\\gibsonsitescreen.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\utils\\formatTime.ts",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\utils\\formattime.ts",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\utils\\prayerDraftStore.ts",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\utils\\prayerdraftstore.ts",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\utils\\safeFetch.ts",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\utils\\safefetch.ts",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\study\\StudyDeckManager.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\study\\studydeckmanager.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\study\\StudySlide.ts",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\study\\studyslide.ts",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\ActiveRoomsContext.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\activeroomscontext.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\AnnotationOverlay.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\annotationoverlay.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\EmptyContentState.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\emptycontentstate.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\ModeratorPanel.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\moderatorpanel.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\ParticipantVideoGrid.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\participantvideogrid.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\PrayerRoom.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\prayerroom.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\PrayerRoomContext.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\prayerroomcontext.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\PrayerRoomEngine.ts",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\prayerroomengine.ts",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\PrayerRoomRecorder.ts",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\prayerroomrecorder.ts",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\ScreenShareView.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\screenshareview.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\SessionReplayViewer.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\sessionreplayviewer.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\SessionSlidesView.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\sessionslidesview.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\SlideViewer.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\slideviewer.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\StudyPagesManager.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\studypagesmanager.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\usePrayerRoomSignaling.ts",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\useprayerroomsignaling.ts",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\usePrayerRoomWebRTC.ts",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\useprayerroomwebrtc.ts",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\useRoomRecording.ts",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\useroomrecording.ts",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\VideoContentView.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\videocontentview.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\VideoTile.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\room\\videotile.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\onboarding\\OrgOnboardingBanner.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\onboarding\\orgonboardingbanner.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\moments\\MomentsSection.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\moments\\momentssection.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\live\\LiveSection.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\live\\livesection.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\guided\\GuidedPrayerCreate.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\guided\\guidedprayercreate.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\guided\\GuidedSection.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\guided\\guidedsection.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\flow\\PrayerFlowWrapper.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\flow\\prayerflowwrapper.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\community\\CommunitySection.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\community\\communitysection.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\onboarding\\legacy\\IntegrationFlowEngine.legacy.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\onboarding\\legacy\\integrationflowengine.legacy.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\onboarding\\legacy\\OnboardingEngine.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\onboarding\\legacy\\onboardingengine.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\onboarding\\legacy\\OnboardingSkin.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\onboarding\\legacy\\onboardingskin.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\onboarding\\legacy\\OnboardingSkinPreviewScreen.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\onboarding\\legacy\\onboardingskinpreviewscreen.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\onboarding\\legacy\\SiteOnboardingScreen.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\onboarding\\legacy\\siteonboardingscreen.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\onboarding\\legacy\\SitesDirectoryScreen.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\onboarding\\legacy\\sitesdirectoryscreen.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\onboarding\\legacy\\SiteSkinPreviewScreen.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\onboarding\\legacy\\siteskinpreviewscreen.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\onboarding\\legacy\\SiteViewerScreen.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\onboarding\\legacy\\siteviewerscreen.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\global-scans\\selectors\\UseGlobalWindow.ts",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\global-scans\\selectors\\useglobalwindow.ts",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) screens\\tsx-screens\\onboarding\\legacy\\IntegrationFlowEngine.legacy.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) screens\\tsx-screens\\onboarding\\legacy\\integrationflowengine.legacy.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) screens\\tsx-screens\\global-scans\\selectors\\UseGlobalWindow.ts",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) screens\\tsx-screens\\global-scans\\selectors\\useglobalwindow.ts",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) screens\\tsx-screens\\global-scans\\charts\\LineChart.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) screens\\tsx-screens\\global-scans\\charts\\linechart.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\BUILD_PLAN_LIVE_COLLAB.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\build_plan_live_collab.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\CORPORATE_PRAYER_IMPLEMENTATION_REPORT.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\corporate_prayer_implementation_report.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\CORPORATE_PRAYER_PLAYER_PLAN.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\corporate_prayer_player_plan.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\ENGINE_REFACTOR_ARCHITECTURE_REPORT.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\engine_refactor_architecture_report.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\ENGINE_REFACTOR_IMPLEMENTATION_REPORT.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\engine_refactor_implementation_report.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\FLOW_ENGINE_FINAL_VERIFICATION.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\flow_engine_final_verification.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\GOOGLE_OAUTH_AUDIT.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\google_oauth_audit.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\GroupAdmin.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\groupadmin.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\LISTENER_TRACKING_PLAN.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\listener_tracking_plan.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\LivePrayerCta.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\liveprayercta.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\PHASE_A_LIVE_COLLAB_REPORT.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\phase_a_live_collab_report.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\PLAN.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\plan.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\prayerAnonId.ts",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\prayeranonid.ts",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\PrayerAuthControls.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\prayerauthcontrols.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\PrayerRoomTypes.ts",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\prayerroomtypes.ts",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\PrayerShare.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\prayershare.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\PrayerTypes.ts",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\prayertypes.ts",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\PrayerUpload.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\prayerupload.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\PrayerWaveform.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\prayerwaveform.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\PRAYER_ANNOTATION_OVERLAY_STAGE_FIX.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\prayer_annotation_overlay_stage_fix.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\PRAYER_ANNOTATION_POINTER_FIX.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\prayer_annotation_pointer_fix.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\PRAYER_FULL_HICLARIFY_REFACTOR_ANALYSIS.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\prayer_full_hiclarify_refactor_analysis.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\PRAYER_HICLARIFY_STATE_IMPLEMENTATION.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\prayer_hiclarify_state_implementation.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\PRAYER_HICLARIFY_STATE_INTEGRATION_ANALYSIS.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\prayer_hiclarify_state_integration_analysis.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\PRAYER_LIVE_ROOM_AUDIT_REPORT.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\prayer_live_room_audit_report.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\PRAYER_METRICS_DELIVERABLE.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\prayer_metrics_deliverable.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\PRAYER_PHASED_STABILIZATION_IMPLEMENTATION_PLAN.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\prayer_phased_stabilization_implementation_plan.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\PRAYER_REGRESSION_CHECKLIST.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\prayer_regression_checklist.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\PRAYER_SLIDE_ANNOTATION_RECOVERY_IMPLEMENTATION.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\prayer_slide_annotation_recovery_implementation.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\PRAYER_STUDY_DECK_SYSTEM.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\prayer_study_deck_system.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\PRAYER_STUDY_SYSTEM_IMPLEMENTATION.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\prayer_study_system_implementation.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\PRAYER_UI_SURFACE_AUDIT.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\prayer_ui_surface_audit.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\ReplayTimeline.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\replaytimeline.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\REPORT.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\report.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\SnapshotsPanel.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\snapshotspanel.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\STABILITY_FIX_REPORT.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\stability_fix_report.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\UI_REFINEMENT_PLAN.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\ui_refinement_plan.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\UI_REFINEMENT_REPORT.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\prayer\\ui_refinement_report.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\discipleship\\GospelDiscipleship.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\discipleship\\gospeldiscipleship.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\containercreations\\learn\\onboarding\\ContainerCreationsLanding-3.json",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\containercreations\\learn\\onboarding\\containercreationslanding-3.json",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\containercreations\\learn\\onboarding\\FlowsIndex.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\containercreations\\learn\\onboarding\\flowsindex.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\containercreations\\learn\\onboarding\\FlowViewer.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\containercreations\\learn\\onboarding\\flowviewer.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\containercreations\\learn\\landing\\ContainerCreationsLanding-2.json",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\containercreations\\learn\\landing\\containercreationslanding-2.json",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\containercreations\\learn\\landing\\ContainerCreationsLanding-2.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\containercreations\\learn\\landing\\containercreationslanding-2.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\containercreations\\learn\\landing\\ContainerCreationsLanding.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\containercreations\\learn\\landing\\containercreationslanding.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\containercreations\\learn\\landing\\ContainerCreationsWebsite.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\containercreations\\learn\\landing\\containercreationswebsite.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\containercreations\\learn\\landing\\DEV_PALETTE_PROPAGATION_TRACE.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\containercreations\\learn\\landing\\dev_palette_propagation_trace.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\containercreations\\learn\\landing\\ENVELOPE_PALETTE_BYPASS_DIAGNOSIS.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\containercreations\\learn\\landing\\envelope_palette_bypass_diagnosis.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\containercreations\\learn\\landing\\FLOW_RUNTIME_RENDERING_DIAGNOSIS.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\containercreations\\learn\\landing\\flow_runtime_rendering_diagnosis.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\containercreations\\learn\\landing\\FLOW_VALIDATION_REPORT.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\containercreations\\learn\\landing\\flow_validation_report.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\containercreations\\learn\\landing\\ONBOARDING_5_PALETTE_REPORT.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\containercreations\\learn\\landing\\onboarding_5_palette_report.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\charts\\CpaTrendChart.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\charts\\cpatrendchart.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\charts\\HeadroomGauge.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\charts\\headroomgauge.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\charts\\ProjectionVarianceChart.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\charts\\projectionvariancechart.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\charts\\RevenueVsSpendChart.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\charts\\revenuevsspendchart.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\charts\\RoasOverTimeChart.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\charts\\roasovertimechart.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\sites\\SiteIndex.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\sites\\siteindex.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\global-scans\\25x-Onboarding.Test.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\global-scans\\25x-onboarding.test.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\global-scans\\GlobalSystemProbe.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\global-scans\\globalsystemprobe.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\global-scans\\ScanDashboard.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\global-scans\\scandashboard.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\gibson_guitars\\generated.flow-Gibson.json",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\gibson_guitars\\generated.flow-gibson.json",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\gibson_guitars\\Gibson_Landing.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\gibson_guitars\\gibson_landing.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\flows-cleanup-co\\premiumOnboarding-TSX2.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\flows-cleanup-co\\premiumonboarding-tsx2.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\calculators\\Education-flow.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\tsx-screens\\calculators\\education-flow.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\generated-websites\\gibson\\CompiledSiteViewer.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\generated-websites\\gibson\\compiledsiteviewer.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\generated-websites\\containercreations.com\\OnboardingGeneratedScreen.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\generated-websites\\containercreations.com\\onboardinggeneratedscreen.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\generated-websites\\containercreations.com\\SiteGeneratedScreen.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\generated-websites\\containercreations.com\\sitegeneratedscreen.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) screens\\tsx-screens\\sites\\SiteIndex.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) screens\\tsx-screens\\sites\\siteindex.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) screens\\tsx-screens\\flows-cleanup-co\\premiumOnboarding-TSX2.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) screens\\tsx-screens\\flows-cleanup-co\\premiumonboarding-tsx2.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) screens\\tsx-screens\\diagnostics\\ScreenDiagnostics.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) screens\\tsx-screens\\diagnostics\\screendiagnostics.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) json\\apps\\hiclarify\\README.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) json\\apps\\hiclarify\\readme.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) json\\apps\\behavior-tests\\A-to-B.json",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) json\\apps\\behavior-tests\\a-to-b.json",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) json\\apps\\behavior-tests\\Journal_with_sections.json",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) json\\apps\\behavior-tests\\journal_with_sections.json",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) json\\apps\\behavior-tests\\Layout-2.json",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) json\\apps\\behavior-tests\\layout-2.json",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) json\\apps\\behavior-tests\\Layout_Dropdown-2.json",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) json\\apps\\behavior-tests\\layout_dropdown-2.json",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) json\\apps\\behavior-tests\\Layout_Dropdown.json",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) json\\apps\\behavior-tests\\layout_dropdown.json",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\_auto-generated\\test-planner-app\\BUILD_PLAN_REPORT.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\_auto-generated\\test-planner-app\\build_plan_report.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\research\\ResearchApp.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\research\\researchapp.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\protect\\ProtectApp.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\protect\\protectapp.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\plan\\PlanApp.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\plan\\planapp.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\learn\\LearnApp.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\learn\\learnapp.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\ChristianApp.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\hiclarify\\christian\\christianapp.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\Accordion.module.css",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\accordion.module.css",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\Accordion.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\accordion.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\AdsTab.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\adstab.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\CommandCenterTab.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\commandcentertab.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\CompareTab.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\comparetab.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\DataTab.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\datatab.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\DecisionConsoleTab.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\decisionconsoletab.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\EmptyStatePanel.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\emptystatepanel.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\OverviewPage.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\overviewpage.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\ProjectionsTab.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\projectionstab.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\ReportsTab.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\reportstab.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\SettingsTab.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\settingstab.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\TimelineTab.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\timelinetab.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\useBusinesses.ts",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\usebusinesses.ts",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\WorkspaceLayout.module.css",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\workspacelayout.module.css",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\WorkspaceLayout.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\workspace\\workspacelayout.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\shopify\\Shopify_Intelligence.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\shopify\\shopify_intelligence.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\prayer_stream\\PrayerStreamOnboarding.json",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\prayer_stream\\prayerstreamonboarding.json",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\prayer_stream\\PrayerStreamOnboarding.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\prayer_stream\\prayerstreamonboarding.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\onboarding\\FlowViewer.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\onboarding\\flowviewer.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\apps-tsx\\test\\AutoStructureTest.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\apps-tsx\\test\\autostructuretest.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\apps-tsx\\demo\\FocusWorkStudio.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\apps-tsx\\demo\\focusworkstudio.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\wrappers\\GlobalAppSkin-test.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\wrappers\\globalappskin-test.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\wrappers\\README.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\wrappers\\readme.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\test\\AutoStructureTest.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\test\\autostructuretest.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\AppsListV2.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\appslistv2.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\ChunkPlannerLayer.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\chunkplannerlayer.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\HiClarifyOnboarding.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\hiclarifyonboarding.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\JSX_AddTasks.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\jsx_addtasks.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\JSX_ConfirmList.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\jsx_confirmlist.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\JSX_DayView.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\jsx_dayview.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\JSX_MonthView.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\jsx_monthview.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\JSX_Palette_Test.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\jsx_palette_test.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\JSX_PlannerShell.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\jsx_plannershell.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\JSX_planner_test.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\jsx_planner_test.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\JSX_WeekView.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\jsx_weekview.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\OSBBar.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\osbbar.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\OsbHomeV2.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\osbhomev2.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\TimelineAxis.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\timelineaxis.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\TopTextNav.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\toptextnav.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\UnifiedPlannerLayout.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\unifiedplannerlayout.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\usePlannerViewModels.ts",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\useplannerviewmodels.ts",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\ViewSwitcherLinks.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\hiclarify\\viewswitcherlinks.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\generated-websites\\_template_OnboardingGeneratedScreen.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\generated-websites\\_template_onboardinggeneratedscreen.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\generated-websites\\_template_SiteGeneratedScreen.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\generated-websites\\_template_sitegeneratedscreen.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\dev_tools\\ScreenDiagnostics.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\dev_tools\\screendiagnostics.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\dev_tools\\SystemControlCenter.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\dev_tools\\systemcontrolcenter.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\demo\\AutoTestScreen.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\demo\\autotestscreen.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\demo\\FocusWorkStudio.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) tsx\\demo\\focusworkstudio.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) screens\\core\\ScreenRenderer.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) screens\\core\\screenrenderer.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) json\\apps\\MODULE_CONTRACT.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\(dead) json\\apps\\module_contract.md",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\BusinessApp.tsx",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\business\\businessapp.tsx",
+      "reason": "target-exists"
+    },
+    {
+      "oldPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\DOMAIN_REFACTOR_REPORT.md",
+      "newPath": "C:\\Users\\New User\\Documents\\HiSense\\src\\01_App\\domain_refactor_report.md",
+      "reason": "target-exists"
+    }
+  ]
+}
