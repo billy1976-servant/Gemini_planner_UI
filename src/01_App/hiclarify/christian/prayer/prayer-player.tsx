@@ -2,7 +2,7 @@
 
 import React, { useRef, useState, useCallback, useEffect } from "react";
 import { PrayerWaveform } from "./PrayerWaveform";
-import { formatTime } from "./utils/formatTime";
+import { formatTime } from "./utils/formattime";
 
 const SKIP_SECONDS = 15;
 const SPEED_CYCLE = [1, 1.25, 1.5] as const;

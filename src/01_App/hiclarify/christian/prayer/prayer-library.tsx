@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import type { Prayer } from "./PrayerTypes";
+import type { Prayer } from "./prayertypes";
 
 export interface PrayerLibraryProps {
   prayers: Prayer[];

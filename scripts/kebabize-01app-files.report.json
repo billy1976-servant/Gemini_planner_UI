@@ -1,0 +1,112 @@
+{
+  "renamedCount": 26,
+  "updatedImportFiles": 0,
+  "skippedCount": 0,
+  "renamed": [
+    {
+      "old": "src/01_App/(dead) json/apps/behavior-tests/journal_without_sections.json",
+      "new": "src/01_App/(dead) json/apps/behavior-tests/journal-without-sections.json"
+    },
+    {
+      "old": "src/01_App/(dead) json/apps/hiclarify/apps_screen.json",
+      "new": "src/01_App/(dead) json/apps/hiclarify/apps-screen.json"
+    },
+    {
+      "old": "src/01_App/(dead) json/apps/hiclarify/build_home.json",
+      "new": "src/01_App/(dead) json/apps/hiclarify/build-home.json"
+    },
+    {
+      "old": "src/01_App/(dead) json/apps/hiclarify/conversations_screen.json",
+      "new": "src/01_App/(dead) json/apps/hiclarify/conversations-screen.json"
+    },
+    {
+      "old": "src/01_App/(dead) json/apps/hiclarify/diagnostics_screen.json",
+      "new": "src/01_App/(dead) json/apps/hiclarify/diagnostics-screen.json"
+    },
+    {
+      "old": "src/01_App/(dead) json/apps/hiclarify/ideas_screen.json",
+      "new": "src/01_App/(dead) json/apps/hiclarify/ideas-screen.json"
+    },
+    {
+      "old": "src/01_App/(dead) json/apps/hiclarify/journal_screen.json",
+      "new": "src/01_App/(dead) json/apps/hiclarify/journal-screen.json"
+    },
+    {
+      "old": "src/01_App/(dead) json/apps/hiclarify/learning_screen.json",
+      "new": "src/01_App/(dead) json/apps/hiclarify/learning-screen.json"
+    },
+    {
+      "old": "src/01_App/(dead) json/apps/hiclarify/me_home.json",
+      "new": "src/01_App/(dead) json/apps/hiclarify/me-home.json"
+    },
+    {
+      "old": "src/01_App/(dead) json/apps/hiclarify/notes_screen.json",
+      "new": "src/01_App/(dead) json/apps/hiclarify/notes-screen.json"
+    },
+    {
+      "old": "src/01_App/(dead) json/apps/hiclarify/others_home.json",
+      "new": "src/01_App/(dead) json/apps/hiclarify/others-home.json"
+    },
+    {
+      "old": "src/01_App/(dead) json/apps/hiclarify/outreach_screen.json",
+      "new": "src/01_App/(dead) json/apps/hiclarify/outreach-screen.json"
+    },
+    {
+      "old": "src/01_App/(dead) json/apps/hiclarify/people_journal_screen.json",
+      "new": "src/01_App/(dead) json/apps/hiclarify/people-journal-screen.json"
+    },
+    {
+      "old": "src/01_App/(dead) json/apps/hiclarify/personal_tracker_screen.json",
+      "new": "src/01_App/(dead) json/apps/hiclarify/personal-tracker-screen.json"
+    },
+    {
+      "old": "src/01_App/(dead) json/apps/hiclarify/planner_screen.json",
+      "new": "src/01_App/(dead) json/apps/hiclarify/planner-screen.json"
+    },
+    {
+      "old": "src/01_App/(dead) json/apps/hiclarify/prayer_list_screen.json",
+      "new": "src/01_App/(dead) json/apps/hiclarify/prayer-list-screen.json"
+    },
+    {
+      "old": "src/01_App/(dead) json/apps/hiclarify/projects_screen.json",
+      "new": "src/01_App/(dead) json/apps/hiclarify/projects-screen.json"
+    },
+    {
+      "old": "src/01_App/(dead) json/apps/hiclarify/protection_screen.json",
+      "new": "src/01_App/(dead) json/apps/hiclarify/protection-screen.json"
+    },
+    {
+      "old": "src/01_App/(dead) json/apps/hiclarify/research_screen.json",
+      "new": "src/01_App/(dead) json/apps/hiclarify/research-screen.json"
+    },
+    {
+      "old": "src/01_App/(dead) json/apps/hiclarify/system_settings_screen.json",
+      "new": "src/01_App/(dead) json/apps/hiclarify/system-settings-screen.json"
+    },
+    {
+      "old": "src/01_App/(dead) json/apps/hiclarify/tools_home.json",
+      "new": "src/01_App/(dead) json/apps/hiclarify/tools-home.json"
+    },
+    {
+      "old": "src/01_App/(dead) json/apps/journal_track/journal_replicate-2.json",
+      "new": "src/01_App/(dead) json/apps/journal_track/journal-replicate-2.json"
+    },
+    {
+      "old": "src/01_App/(dead) json/apps/journal_track/journal_replicate.json",
+      "new": "src/01_App/(dead) json/apps/journal_track/journal-replicate.json"
+    },
+    {
+      "old": "src/01_App/(dead) json/hiclarify/apps_categories.json",
+      "new": "src/01_App/(dead) json/hiclarify/apps-categories.json"
+    },
+    {
+      "old": "src/01_App/(dead) json/hiclarify/apps_screen.json",
+      "new": "src/01_App/(dead) json/hiclarify/apps-screen.json"
+    },
+    {
+      "old": "src/01_App/business/sieboraphotography/siebora_onboarding.json",
+      "new": "src/01_App/business/sieboraphotography/siebora-onboarding.json"
+    }
+  ],
+  "skipped": []
+}

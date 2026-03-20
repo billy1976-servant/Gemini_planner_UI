@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { formatTime } from "./utils/formatTime";
+import { formatTime } from "./utils/formattime";
 
 const DURATIONS = [1, 5, 10, 15] as const;
 

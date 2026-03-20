@@ -4,7 +4,7 @@
  * Uses safeFetch: never throws, always returns safe defaults to prevent UI crashes.
  */
 
-import type { Prayer, Group } from "../PrayerTypes";
+import type { Prayer, Group } from "../prayertypes";
 import { safeFetch } from "../utils/safeFetch";
 
 function getBase(): string {
