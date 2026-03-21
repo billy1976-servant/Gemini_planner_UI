@@ -4,7 +4,7 @@
 // Layout = structural only
 // Palette must never mutate layout config, dropdowns, or layout persistence.
 // / = user app only (no navigator/chrome). /dev = full builder with navigator and tools.
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useSyncExternalStore } from "react";
 
@@ -133,7 +133,7 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
   const [index, setIndex] = useState<ScreensIndex[]>([]);
   const [flowsIndex, setFlowsIndex] = useState<FlowIndexEntry[]>([]);
   const [urlReady, setUrlReady] = useState(false);
-  useEffect(() => {
+  useLayoutEffect(() => {
     setUrlReady(true);
   }, []);
 

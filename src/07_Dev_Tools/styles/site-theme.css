@@ -566,15 +566,18 @@
 }
 
 .editor-left-sidebar {
-  width: 60px;
+  width: auto;
   min-width: 60px;
   flex-shrink: 0;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: stretch;
+  align-self: stretch;
+  min-height: 0;
   background: var(--editor-surface);
   border-right: 1px solid var(--editor-border);
   z-index: 90;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .editor-canvas-area {

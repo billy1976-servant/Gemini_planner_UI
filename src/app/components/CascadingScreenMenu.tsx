@@ -22,7 +22,13 @@ export type FlowIndexEntry = {
 /** Known TSX paths (no tsx: prefix) so pill shows .tsx even if URL was restored without prefix */
 function isKnownTsxPath(normalized: string): boolean {
   const n = normalized.replace(/\\/g, "/").trim();
-  return /^Business\//i.test(n) || /^Christian\//i.test(n) || /^ContainerCreations\//i.test(n) || /^Container_Creations\/ContainerCreationsWebsite$/i.test(n);
+  return (
+    /^Business\//i.test(n) ||
+    /^Christian\//i.test(n) ||
+    /^hiclarify\//i.test(n) ||
+    /^ContainerCreations\//i.test(n) ||
+    /^Container_Creations\/ContainerCreationsWebsite$/i.test(n)
+  );
 }
 
 /** Full path for accessibility/title (e.g. "File: (dead) Tsx/Gibson Guitars/blueprint.tsx") */
@@ -279,7 +285,14 @@ export default function CascadingScreenMenu({ index, flowsIndex = [], currentScr
     background: "#ffffff",
     color: "#111",
     minWidth: 200,
+    alignSelf: "stretch",
+    minHeight: 0,
+    maxHeight: "100%",
+    overflowY: "auto",
+    overflowX: "hidden",
   };
+
+  const PANEL_OUTER_MAX_HEIGHT = "min(82vh, calc(100vh - 8px))";
 
   return (
     <div
@@ -326,6 +339,8 @@ export default function CascadingScreenMenu({ index, flowsIndex = [], currentScr
               display: "flex",
               flexDirection: "column",
               minWidth: 200,
+              maxHeight: PANEL_OUTER_MAX_HEIGHT,
+              overflow: "hidden",
               pointerEvents: "auto",
               background: "#ffffff",
               color: "#111",
@@ -358,14 +373,13 @@ export default function CascadingScreenMenu({ index, flowsIndex = [], currentScr
           ) : (
           <div
             className="cascading-screen-menu-panels-inner"
-            style={{ display: "flex", flex: 1, minHeight: 0 }}
+            style={{ display: "flex", flex: 1, minHeight: 0, minWidth: 0, overflow: "hidden", alignItems: "stretch" }}
           >
             {/* Column 1: Root sections only — accordion, expand inline in same column */}
             <div
               className="cascading-screen-menu-panel"
               style={{
-                position: "relative",
-                background: "#ffffff",
+                ...panelStyle,
                 borderRight: "1px solid #e5e7eb",
                 minWidth: 220,
                 borderRadius: "10px 0 0 10px",

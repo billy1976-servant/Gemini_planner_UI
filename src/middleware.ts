@@ -61,8 +61,13 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  const domainPrefix = `/${domainSegment}`;
+  if (pathname === domainPrefix || pathname.startsWith(`${domainPrefix}/`)) {
+    return NextResponse.next();
+  }
+
   // Domain rewrite: christian.hiclarify.com → /christian; learn.containercreations.com → /learn.containercreations.com
-  const rewritePath = pathname === "/" ? `/${domainSegment}` : `/${domainSegment}${pathname}`;
+  const rewritePath = pathname === "/" ? domainPrefix : `${domainPrefix}${pathname}`;
   if (process.env.NODE_ENV === "development") {
     console.log("[middleware] Step 3 — selected layout (rewrite target)", {
       domainSegment,
