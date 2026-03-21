@@ -263,7 +263,11 @@ export function buildDomainJsonPath(resolvedPath: string | null, pathSegments: s
   const resolvedParts = resolvedPath.split("/").filter(Boolean);
   const routeFromResolvedPath = resolvedParts.pop();
   if (!routeFromResolvedPath) throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
-  const baseResolvedPath = resolvedParts.join("/");
+  const domainFolderRaw = resolvedParts[0];
+  const subdomainFolderRaw = resolvedParts[1];
+  if (!domainFolderRaw || !subdomainFolderRaw) {
+    throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
+  }
 
   const routeFromUrl = pathSegments[0];
   if (routeFromUrl.toLowerCase() !== routeFromResolvedPath.toLowerCase()) {
@@ -272,10 +276,25 @@ export function buildDomainJsonPath(resolvedPath: string | null, pathSegments: s
 
   const fileStem = pathSegments[pathSegments.length - 1];
   const jsonFileName = fileStem.toLowerCase().endsWith(".json") ? fileStem : `${fileStem}.json`;
+  const domainFolder = domainFolderRaw.toLowerCase();
+  const subdomainFolder = subdomainFolderRaw.toLowerCase();
+  const routeFolder = routeFromResolvedPath.toLowerCase();
+  const jsonPath = `${domainFolder}/${subdomainFolder}/${routeFolder}/${jsonFileName}`;
+  const debugFullPath = `src/01_App/${jsonPath}`;
+
+  if (process.env.NODE_ENV === "development") {
+    console.log("[domain-path] final json path", {
+      resolvedPath,
+      pathSegments,
+      oldPath: `${routeFromResolvedPath}/${jsonFileName}`,
+      newPath: jsonPath,
+      fullPath: debugFullPath,
+    });
+  }
 
   return {
     route: routeFromResolvedPath,
     fileName: fileStem,
-    jsonPath: `${resolvedPath}/${jsonFileName}`,
+    jsonPath,
   };
 }

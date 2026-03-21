@@ -226,29 +226,14 @@ function collectTsxDirectFiles(rootPath: string, rootName: string, categoryName:
   };
 }
 
-/** Minimal list when scan fails or 01_App missing so dropdown still shows known screens. */
-function getDefensiveFallbackList(): ScreensIndexItem[] {
-  return [
-    { category: "Prayer_Stream", directFiles: ["PrayerStreamOnboarding"], folders: {}, rootSection: "Business", displayName: "Business" },
-    { category: "Discipleship", directFiles: ["GospelDiscipleship"], folders: {}, rootSection: "Christian", displayName: "Christian" },
-    { category: "Prayer", directFiles: ["PrayerApp"], folders: {}, rootSection: "Christian", displayName: "Christian" },
-    { category: "Learn", directFiles: ["LearnApp"], folders: {}, rootSection: "Learn", displayName: "Learn" },
-    { category: "Plan", directFiles: ["PlanApp"], folders: {}, rootSection: "Plan", displayName: "Plan" },
-    { category: "Protect", directFiles: ["ProtectApp"], folders: {}, rootSection: "Protect", displayName: "Protect" },
-    { category: "Research", directFiles: ["ResearchApp"], folders: {}, rootSection: "Research", displayName: "Research" },
-    { category: "HiClarify", directFiles: ["HiClarifyOnboarding"], folders: {}, rootSection: "(dead) Tsx", displayName: "(dead) Tsx" },
-  ];
-}
-
 /**
  * GET /api/screens
  * Scans src/01_App/* — each directory is a root section.
  * Returns categories with rootSection = displayName = dir.name (no renaming, no tsx: prefix).
- * On any failure (missing paths, fs errors), returns 200 with defensive fallback list so dev viewer always loads.
  */
 export async function GET() {
   const safeFallback = (): Response =>
-    NextResponse.json(getDefensiveFallbackList(), {
+    NextResponse.json([], {
       status: 200,
       headers: { "Cache-Control": "no-cache, no-store, must-revalidate" },
     });
@@ -316,28 +301,6 @@ export async function GET() {
       console.warn("[api/screens] Scan returned no sections, using fallback list");
       return NextResponse.json(getDefensiveFallbackList(), {
         headers: { "Cache-Control": "no-cache, no-store, must-revalidate" },
-      });
-    }
-
-    // Defensive fallbacks when fs missed a known screen (e.g. monorepo cwd, permissions)
-    const businessSection = "Business";
-    const christianSection = "Christian";
-    if (!result.some((x) => x.rootSection === businessSection && x.category === "Prayer_Stream")) {
-      result.push({
-        category: "Prayer_Stream",
-        directFiles: ["PrayerStreamOnboarding"],
-        folders: {},
-        rootSection: businessSection,
-        displayName: businessSection,
-      });
-    }
-    if (!result.some((x) => x.rootSection === christianSection && x.category === "Discipleship")) {
-      result.push({
-        category: "Discipleship",
-        directFiles: ["GospelDiscipleship"],
-        folders: {},
-        rootSection: christianSection,
-        displayName: christianSection,
       });
     }
 

@@ -33,6 +33,7 @@ import { TsxEmbedProvider } from "@/lib/tsx-embed-context";
 import { resolveTsxScreen } from "@/lib/tsx-screen-resolver";
 import { TSXScreenWithEnvelope } from "@/lib/tsx-structure/TSXScreenWithEnvelope";
 import { AppShellDirector } from "@/lib/director/AppShellDirector";
+import { convertLandingConfigToJsonSkin } from "@/05_Logic/logic/landing/convert-landing-config-to-json-skin";
 
 /** Canonical default when URL/state missing or invalid (bare id). Never pass bare ids to loadScreen. */
 const DEFAULT_SCREEN_PATH = "tsx:HiClarify/HiClarifyOnboarding";
@@ -115,7 +116,18 @@ export default function Page() {
   const templateProfile = getTemplateProfile(effectiveTemplateId ?? "");
 
   const isTsxScreen = data?.__type === "tsx-screen";
-  const json = isTsxScreen ? null : data;
+  const json = useMemo(() => {
+    if (isTsxScreen || !data) return isTsxScreen ? null : data;
+    // Some 01_App JSON files are authored as landing flow configs (screens[] contract),
+    // not json-skin trees. Convert them to runtime json-skin before rendering.
+    if (
+      Array.isArray((data as { screens?: unknown[] }).screens) &&
+      !(data as { root?: unknown }).root
+    ) {
+      return convertLandingConfigToJsonSkin(data as any);
+    }
+    return data;
+  }, [data, isTsxScreen]);
 
   // Capability hub: resolve and write to store on screen/template change (JSON screens only)
   useEffect(() => {

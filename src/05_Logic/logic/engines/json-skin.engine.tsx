@@ -38,12 +38,26 @@ export function JsonSkinEngine({ screen }: { screen: any }) {
 
   // Merge both state sources (currentView from global; currentFlow if present on global)
   const g = globalState as { currentView?: string; currentFlow?: unknown } | null;
-  const state = {
-    ...globalState?.values,
-    ...engineState,
-    currentView: g?.currentView,
-    currentFlow: g?.currentFlow,
+  const state: Record<string, any> = {
+    ...(screen?.state ?? {}),
   };
+  const mergeDefined = (source: Record<string, any> | undefined | null) => {
+    if (!source) return;
+    for (const [key, value] of Object.entries(source)) {
+      if (value === undefined) continue;
+      if (
+        Object.prototype.hasOwnProperty.call(state, key) &&
+        (value === null || value === "")
+      ) {
+        continue;
+      }
+      state[key] = value;
+    }
+  };
+  mergeDefined(globalState?.values as Record<string, any> | undefined);
+  mergeDefined(engineState as Record<string, any> | undefined);
+  if (g?.currentView !== undefined) state.currentView = g.currentView;
+  if (g?.currentFlow !== undefined) state.currentFlow = g.currentFlow;
 
   // 🔒 AUTHORITATIVE SCREEN SELECTION
   // Only ONE section may render at a time
@@ -91,8 +105,11 @@ function selectActiveChildren(children: any[], state: any) {
       (node) => state?.[node.when.state] === node.when.equals
     );
 
-    // Render ONLY the active section, or fallback to default sections if none match
-    return active ? [active] : defaultSections;
+    // Render ONLY the active section. If none match and there are no defaults,
+    // render the first conditional section to avoid a blank screen on first load.
+    if (active) return [active];
+    if (defaultSections.length > 0) return defaultSections;
+    return [{ ...conditionalSections[0], __forceVisible: true }];
   }
 
   // Fallback: no conditional sections → render all
@@ -113,7 +130,7 @@ function JsonNode({ node, state, palette }: { node: any; state: any; palette?: R
   }
 
   // 🔒 NODE-LEVEL VISIBILITY (SECONDARY SAFETY)
-  if (node.when) {
+  if (node.when && node.__forceVisible !== true) {
     const { state: key, equals } = node.when;
     if (state?.[key] !== equals) {
       return null;
@@ -305,6 +322,15 @@ function JsonNode({ node, state, palette }: { node: any; state: any; palette?: R
     case "button": {
       const params = node.behavior?.params ?? {};
       const handleClick = () => {
+        if (typeof params.gotoScreenId === "string" && params.gotoScreenId.length > 0) {
+          dispatchState("state.update", { key: "currentScreenId", value: params.gotoScreenId });
+          writeEngineState({ currentScreenId: params.gotoScreenId });
+          recordInteraction({
+            type: "button.press",
+            verb: { gotoScreenId: params.gotoScreenId },
+          });
+          return;
+        }
         if (params.openUrl && typeof params.openUrl === "string") {
           window.open(params.openUrl, "_blank", "noopener,noreferrer");
           return;

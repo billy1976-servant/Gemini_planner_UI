@@ -106,17 +106,7 @@ const EXPERIENCES: Record<string, any> = {
   learning: (presentationProfiles as Record<string, any>).learning,
 };
 
-/** Minimal screen list when /api/screens fails so the navigator still shows options. Auto-populate from known 01_App roots. */
-const FALLBACK_SCREENS_INDEX: ScreensIndex[] = [
-  { category: "Prayer_Stream", directFiles: ["PrayerStreamOnboarding"], folders: {}, rootSection: "Business", displayName: "Business" },
-  { category: "Discipleship", directFiles: ["GospelDiscipleship"], folders: {}, rootSection: "Christian", displayName: "Christian" },
-  { category: "Prayer", directFiles: ["PrayerApp"], folders: {}, rootSection: "Christian", displayName: "Christian" },
-  { category: "Learn", directFiles: ["LearnApp"], folders: {}, rootSection: "Learn", displayName: "Learn" },
-  { category: "Plan", directFiles: ["PlanApp"], folders: {}, rootSection: "Plan", displayName: "Plan" },
-  { category: "Protect", directFiles: ["ProtectApp"], folders: {}, rootSection: "Protect", displayName: "Protect" },
-  { category: "Research", directFiles: ["ResearchApp"], folders: {}, rootSection: "Research", displayName: "Research" },
-  { category: "HiClarify", directFiles: ["HiClarifyOnboarding"], folders: {}, rootSection: "(dead) Tsx", displayName: "(dead) Tsx" },
-];
+const FALLBACK_SCREENS_INDEX: ScreensIndex[] = [];
 
 function RootLayoutBody({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -290,13 +280,12 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
       .then((res) => (res.ok ? res.json() : Promise.resolve([])))
       .then((data) => {
         const list = Array.isArray(data) ? data : [];
-        const useList = list.length > 0 ? list : FALLBACK_SCREENS_INDEX;
-        setIndex(useList);
-        setScreenPaths(flattenIndexToPaths(useList));
+        setIndex(list);
+        setScreenPaths(flattenIndexToPaths(list));
       })
       .catch(() => {
-        setIndex(FALLBACK_SCREENS_INDEX);
-        setScreenPaths(flattenIndexToPaths(FALLBACK_SCREENS_INDEX));
+        setIndex([]);
+        setScreenPaths([]);
       });
   }, []);
 
@@ -560,6 +549,10 @@ function UserLayoutChrome({ children }: { children: React.ReactNode }) {
 
 export default function RootLayout({ children }: any) {
   const pathname = usePathname();
+  const [hasMounted, setHasMounted] = useState(false);
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
   const isUserMode = pathname === "/" || !pathname?.startsWith("/dev");
 
   return (
@@ -579,7 +572,9 @@ export default function RootLayout({ children }: any) {
       <body className="app-body">
         <SessionProvider refetchInterval={0}>
           <Suspense fallback={<div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>Loading...</div>}>
-            {pathname === "/landing" || pathname === "/flow" || pathname === "/onboarding" || pathname === "/container-creations" || pathname?.startsWith("/prayer") || pathname?.startsWith("/_domain") || pathname?.match(/^\/(christian|business|plan|protect|research|learn)(\/|$)/) ? (
+            {!hasMounted ? (
+              children
+            ) : pathname === "/landing" || pathname === "/flow" || pathname === "/onboarding" || pathname === "/container-creations" || pathname?.startsWith("/prayer") || pathname?.startsWith("/_domain") || pathname?.match(/^\/(christian|business|plan|protect|research|learn)(\/|$)/) ? (
               children
             ) : isUserMode ? (
               <UserLayoutChrome>{children}</UserLayoutChrome>

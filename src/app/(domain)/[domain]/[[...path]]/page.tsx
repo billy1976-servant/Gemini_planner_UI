@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { useSyncExternalStore } from "react";
 import ExperienceRenderer from "@/engine/core/ExperienceRenderer";
+import { loadScreen } from "@/engine/core/screen-loader";
 import { subscribeLayout, getLayout } from "@/engine/core/layout-store";
 import { subscribeState, getState } from "@/state/state-store";
 import { setCurrentScreenTree } from "@/engine/core/current-screen-tree-store";
@@ -28,7 +29,8 @@ import {
 } from "@/03_Runtime/capability";
 import { APP_MODULE_LOADERS } from "@/lib/app-loaders";
 import { TSXScreenWithEnvelope } from "@/lib/tsx-structure/TSXScreenWithEnvelope";
-import { getResolvedPath, traceDomainResolutionFromWindow } from "@/lib/domain-config";
+import { buildDomainJsonPath, getResolvedPath, traceDomainResolutionFromWindow } from "@/lib/domain-config";
+import { convertLandingConfigToJsonSkin } from "@/05_Logic/logic/landing/convert-landing-config-to-json-skin";
 
 /**
  * Canonical domain route for /{domain}/* (e.g. /christian/prayer, /learn.containercreations.com/onboarding).
@@ -37,27 +39,25 @@ import { getResolvedPath, traceDomainResolutionFromWindow } from "@/lib/domain-c
 
 export default function DomainPage() {
   const params = useParams();
-  const domainParam = params?.domain as string | undefined;
-  if (!domainParam) throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
-  const domain = domainParam;
-  const domainParts = domain.toLowerCase().split(".").filter(Boolean);
-  const subdomain = domainParts.length === 3 ? domainParts[0] : "";
-
+  let domain = (params?.domain as string) ?? "";
   const pathParam = params?.path;
-  const rawPathSegments = Array.isArray(pathParam)
-    ? pathParam
-    : pathParam != null
-      ? [String(pathParam)]
-      : [];
+  const pathArray = Array.isArray(pathParam) ? pathParam : pathParam != null ? [String(pathParam)] : [];
+  let rawPath = pathArray;
+  // Path-based /prayer routes: when first segment is "prayer" (no rewrite), treat as christian + path ["prayer", ...] so Prayer app resolves.
+  if (domain.toLowerCase() === "prayer") {
+    domain = "christian";
+    rawPath = ["prayer", ...rawPath];
+  }
+  // Strip leading segment if it duplicates the domain (rewrite can produce /christian/christian/prayer or path param may include domain).
   const pathSegments =
-    subdomain && rawPathSegments[0]?.toLowerCase() === subdomain ? rawPathSegments.slice(1) : rawPathSegments;
-
+    rawPath.length > 0 && rawPath[0].toLowerCase() === domain.toLowerCase()
+      ? rawPath.slice(1)
+      : rawPath;
   const resolvedPath = getResolvedPath(domain, pathSegments);
   const [Component, setComponent] = useState<React.ComponentType<any> | null>(null);
   const [json, setJson] = useState<any | null>(null);
   const [requestedJsonPath, setRequestedJsonPath] = useState<string | null>(null);
-  const [fatalError, setFatalError] = useState<Error | null>(null);
-  const [resolverFallback, setResolverFallback] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Full domain→subdomain→layout→flow resolution trace (dev; or set window.__DOMAIN_RESOLVE_TRACE__ = true)
   useEffect(() => {
@@ -68,90 +68,117 @@ export default function DomainPage() {
     setJson(null);
     setComponent(null);
     setRequestedJsonPath(null);
-    setFatalError(null);
-    setResolverFallback(false);
-
-    console.log("INPUT PARAMS:", {
-      domain,
-      paramsPath: (params as any)?.path,
-      fullUrl: typeof window !== "undefined" ? window.location.href : "server",
-    });
-
     if (process.env.NODE_ENV === "development") {
       console.log("[domain-page] Step 1 — domain param (from URL segment)", { domain });
       console.log("[domain-page] Step 2 — Domain/Subdomain/Route (getResolvedPath)", {
         domain,
         pathSegments,
         resolvedPath,
+        ...(resolvedPath === null ? { FALLBACK: "return null — will show Unknown domain" } : {}),
       });
     }
 
     if (!resolvedPath) {
-      setFatalError(new Error("RESOLVER FAILURE — DO NOT FALLBACK"));
+      setError("Unknown domain");
       return;
     }
 
+    const built = buildDomainJsonPath(resolvedPath, pathSegments);
+    if (!built) {
+      setError("Unknown domain");
+      return;
+    }
+
+    const loaderKey = resolvedPath ?? "";
+    const { fileName, jsonPath, route } = built;
+    setRequestedJsonPath(jsonPath);
+
+    if (process.env.NODE_ENV === "development") {
+      console.log("[domain-page] Step 3 — route/fileName", {
+        domain,
+        resolvedPath,
+        route,
+        ...(fileName ? { fileName } : {}),
+      });
+      console.log("[domain-page] Step 4 — final JSON path being loaded", {
+        jsonPath,
+        "APP_MODULE_LOADERS fallback key": loaderKey,
+      });
+    }
+
     let cancelled = false;
+    loadScreen(jsonPath)
+      .then((loaded) => {
+        if (cancelled) return;
 
-    (async () => {
-      try {
-        const resolvePath = pathSegments.join("/");
-        console.log("FETCH PATH:", resolvePath);
-        const resolveRes = await fetch(`/api/screens/resolve-strict/${resolvePath}`, {
-          cache: "no-store",
-          headers: { "Cache-Control": "no-cache, no-store, must-revalidate" },
-        });
-
-        console.log("FETCH RESPONSE STATUS:", resolveRes.status);
-        if (!resolveRes.ok) {
-          throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
+        const resolvedFinal = loaded?.__resolvedJsonPath ?? jsonPath;
+        if (process.env.NODE_ENV === "development") {
+          console.log("[domain-page] Step 5 — loadScreen result", {
+            domain,
+            resolvedPath,
+            fileName: fileName ?? null,
+            jsonPath,
+            resolvedFinal,
+            resolvedType:
+              loaded?.__type === "tsx-screen"
+                ? "TSX"
+                : loaded?.__type === "screen-error"
+                  ? "ERROR"
+                  : "JSON",
+          });
         }
 
-        const resolved = (await resolveRes.json()) as { type: "json" | "tsx"; path: string; jsonData?: any };
-        console.log("RESOLVED DATA:", resolved);
+        if (loaded?.__type === "tsx-screen") {
+          if (process.env.NODE_ENV === "development") {
+            console.log("[domain-page] DIRECT LOAD — TSX resolved; loading via APP_MODULE_LOADERS", {
+              loaderKey,
+              tsxPath: loaded?.path,
+            });
+          }
 
-        if (resolved?.type === "json") {
-          if (cancelled) return;
-          if (resolved.path === "fallback") {
-            setResolverFallback(true);
-            setRequestedJsonPath("fallback");
+          const loader = APP_MODULE_LOADERS[loaderKey];
+          if (!loader) {
             setComponent(null);
-            setJson({});
+            setJson(null);
+            setError(`Module not found: 01_App/${loaderKey}`);
             return;
           }
-          if (resolved.jsonData === undefined) {
-            throw new Error("RESOLVER FAILURE — STRICT_ROUTER_MISSING_JSON_DATA");
-          }
-          setRequestedJsonPath(resolved.path);
+          loader()
+            .then((mod) => {
+              if (cancelled) return;
+              setComponent(() => mod.default);
+              setJson(null);
+              setError(null);
+            })
+            .catch((err) => {
+              if (cancelled) return;
+              console.warn("[domain-router] Loader failed for", loaderKey, err);
+              setComponent(null);
+              setJson(null);
+              setError(`Module load failed: ${loaderKey}`);
+            });
+          return;
+        }
+
+        if (loaded?.__type === "screen-error") {
           setComponent(null);
-          setJson(resolved.jsonData);
-          return;
-        }
-
-        if (resolved?.type === "tsx") {
-          const loader = APP_MODULE_LOADERS[resolved.path];
-          if (!loader) {
-            throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
-          }
-
-          const mod = await loader();
-          if (cancelled) return;
-          setComponent(() => mod.default);
           setJson(null);
-          setRequestedJsonPath(null);
+          setError(loaded?.message ?? "Screen not found");
           return;
         }
 
-        throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
-      } catch (err) {
-        if (cancelled) return;
-        console.error("RESOLVER FAILURE CAUGHT IN PAGE.tsx", err);
-        setResolverFallback(true);
-        setRequestedJsonPath("fallback");
-        setJson({});
+        // JSON success
         setComponent(null);
-      }
-    })();
+        setJson(loaded);
+        setError(null);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.warn("[domain-router] loadScreen threw unexpectedly", err);
+        setComponent(null);
+        setJson(null);
+        setError(err?.message ?? "Failed to load screen");
+      });
 
     return () => {
       cancelled = true;
@@ -161,21 +188,18 @@ export default function DomainPage() {
   const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
   const layoutSnapshot = useSyncExternalStore(subscribeLayout, getLayout, getLayout);
 
-  const experienceFromState = stateSnapshot?.values?.experience;
-  const experienceFromLayout = (layoutSnapshot as { experience?: string })?.experience;
-  const experience = experienceFromState != null ? experienceFromState : experienceFromLayout != null ? experienceFromLayout : "website";
-
-  const templateIdFromState = stateSnapshot?.values?.templateId;
-  const templateIdFromLayout = (layoutSnapshot as { templateId?: string })?.templateId;
+  const experience =
+    (stateSnapshot?.values?.experience ?? (layoutSnapshot as { experience?: string })?.experience) ?? "website";
   const effectiveTemplateId =
-    templateIdFromState != null ? templateIdFromState : templateIdFromLayout != null ? templateIdFromLayout : null;
-
-  const layoutModeFromState = stateSnapshot?.values?.layoutMode;
-  const layoutModeFromLayout = (layoutSnapshot as { mode?: "template" | "custom" })?.mode;
+    stateSnapshot?.values?.templateId ??
+    (layoutSnapshot as { templateId?: string })?.templateId ??
+    null;
   const effectiveLayoutMode =
-    layoutModeFromState != null ? layoutModeFromState : layoutModeFromLayout != null ? layoutModeFromLayout : "template";
+    stateSnapshot?.values?.layoutMode ??
+    (layoutSnapshot as { mode?: "template" | "custom" })?.mode ??
+    "template";
 
-  const templateProfile = getTemplateProfile(effectiveTemplateId ? effectiveTemplateId : "");
+  const templateProfile = getTemplateProfile(effectiveTemplateId ?? "");
   const experienceProfile = getExperienceProfile(experience);
 
   const effectiveProfile = useMemo(() => {
@@ -197,61 +221,69 @@ export default function DomainPage() {
     };
   }, [experienceProfile, templateProfile, effectiveLayoutMode]);
 
+  const renderableJson = useMemo(() => {
+    if (!json || json?.__type === "tsx-screen" || json?.__type === "screen-error") return json;
+    if (
+      Array.isArray((json as { screens?: unknown[] }).screens) &&
+      !(json as { root?: unknown }).root
+    ) {
+      const converted = convertLandingConfigToJsonSkin(json as any);
+      if (process.env.NODE_ENV === "development") {
+        const childCount = Array.isArray(converted?.root?.children) ? converted.root.children.length : 0;
+        console.log("[domain-page] landing adapter applied", { childCount });
+      }
+      return converted;
+    }
+    return json;
+  }, [json]);
+
   // Capability hub (same contract as app/page.tsx, for JSON screens)
   useEffect(() => {
-    if (!json) return;
+    if (!renderableJson) return;
     const global = loadGlobalCapabilities();
-    const screenCapabilitiesFromJson = (json as { capabilities?: Record<string, string> })?.capabilities;
     const options: ResolveCapabilityProfileOptions = {
       global,
       domainMicroLoaders: getDomainMicroLoaders(),
-      templateId: effectiveTemplateId ? effectiveTemplateId : undefined,
+      templateId: effectiveTemplateId ?? undefined,
       templateProfile: templateProfile ? { capabilities: templateProfile.capabilities } : undefined,
-      screenCapabilities: screenCapabilitiesFromJson != null ? screenCapabilitiesFromJson : undefined,
+      screenCapabilities: (renderableJson as { capabilities?: Record<string, string> })?.capabilities ?? undefined,
     };
     const profile = resolveCapabilityProfile(options);
     setCapabilityProfile(profile);
-  }, [json, effectiveTemplateId, templateProfile]);
+  }, [renderableJson, effectiveTemplateId, templateProfile]);
 
-  if (fatalError) {
-    throw fatalError;
+  if (error) {
+    return <div style={{ padding: "2rem", textAlign: "center", color: "#666" }}>{error}</div>;
   }
 
-  if (resolverFallback) {
-    return <div style={{ padding: "2rem", textAlign: "center" }}>Fallback screen</div>;
-  }
-
-  // Strict contract: pass URL path segments through without rewriting
-  const appSlug = pathSegments;
+  // Prayer app expects in-app path only; strip leading "prayer" segment when present
+  const appSlug =
+    pathSegments[0]?.toLowerCase() === "prayer" ? pathSegments.slice(1) : pathSegments;
   // Stable base path for all app links (e.g. /christian/prayer).
   const appBase = pathSegments.length > 0 ? `/${domain}/${pathSegments[0]}` : `/${domain}`;
-  if (!resolvedPath) throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
-  const routeKey = `${resolvedPath}-${pathSegments.join("-")}`;
+  const routeKey = `${resolvedPath ?? ""}-${pathSegments.join("-")}`;
 
   const isPrayer = resolvedPath === "Christian/prayer" || resolvedPath === "HIClarify/Christian/prayer";
 
   // JSON mode: render through ExperienceRenderer
-  if (json && json?.__type !== "tsx-screen" && json?.__type !== "screen-error") {
+  if (renderableJson && renderableJson?.__type !== "tsx-screen" && renderableJson?.__type !== "screen-error") {
     const organInternalLayoutOverrides: Record<string, string> = {};
-    const screenKeyFromJson = json?.id as string | undefined;
     const screenKey =
-      screenKeyFromJson != null ? screenKeyFromJson : requestedJsonPath ? requestedJsonPath.replace(/[/.]/g, "-") : "domain-screen";
+      (renderableJson?.id as string) ??
+      (requestedJsonPath ? requestedJsonPath.replace(/[/.]/g, "-") : "domain-screen");
 
     let renderNode =
-      json?.root != null
-        ? json.root
-        : json?.screen != null
-          ? json.screen
-          : json?.node != null
-            ? json.node
-            : json;
+      renderableJson?.root ??
+      renderableJson?.screen ??
+      renderableJson?.node ??
+      renderableJson;
     const rawChildren = Array.isArray(renderNode?.children) ? renderNode.children : [];
     const children = assignSectionInstanceKeys(rawChildren);
     const docForOrgans = { meta: { domain: "offline", pageId: "screen", version: 1 }, nodes: children };
     const expandedDoc = expandOrgansInDocument(docForOrgans as any, loadOrganVariant, organInternalLayoutOverrides);
-    const skinData = json?.data != null ? json.data : {};
+    const skinData = renderableJson?.data ?? {};
     const boundDoc = applySkinBindings(expandedDoc as any, skinData);
-    const finalChildren = (boundDoc as any).nodes != null ? (boundDoc as any).nodes : children;
+    const finalChildren = (boundDoc as any).nodes ?? children;
     renderNode = { ...renderNode, children: finalChildren };
 
     const layoutStateForCompose = {
@@ -272,8 +304,7 @@ export default function DomainPage() {
       treeForRender = collapseLayoutNodes(composed) as typeof composed;
     }
 
-    const treeChildren = treeForRender?.children != null ? treeForRender.children : [];
-    let { sectionKeys: sectionKeysFromTree, sectionByKey } = collectSectionKeysAndNodes(treeChildren);
+    let { sectionKeys: sectionKeysFromTree, sectionByKey } = collectSectionKeysAndNodes(treeForRender?.children ?? []);
     if (sectionKeysFromTree.length === 0 && treeForRender != null) {
       const wrapped = {
         type: "section",
@@ -288,15 +319,14 @@ export default function DomainPage() {
 
     const sectionLayoutPresetOverrides: Record<string, string> = {};
     const cardLayoutPresetOverrides: Record<string, string> = {};
-    const behaviorProfileValue = stateSnapshot?.values?.behaviorProfile;
-    const behaviorProfile = (behaviorProfileValue != null ? behaviorProfileValue : "default") as string;
+    const behaviorProfile = (stateSnapshot?.values?.behaviorProfile ?? "default") as string;
     const screenContainerKey = `screen-${screenKey}-${effectiveTemplateId || "default"}`;
     const sectionBackgroundPattern = (effectiveProfile as { sectionBackgroundPattern?: string } | null)?.sectionBackgroundPattern;
 
     return (
       <CapabilityProvider>
-          <div
-          data-section-background-pattern={sectionBackgroundPattern != null ? sectionBackgroundPattern : "none"}
+        <div
+          data-section-background-pattern={sectionBackgroundPattern ?? "none"}
           className={
             sectionBackgroundPattern === "alternate"
               ? "template-section-alternate"
@@ -315,7 +345,7 @@ export default function DomainPage() {
           <ExperienceRenderer
             key={screenContainerKey}
             node={treeForRender}
-            defaultState={json?.state}
+            defaultState={renderableJson?.state}
             profileOverride={effectiveProfile}
             sectionLayoutPresetOverrides={sectionLayoutPresetOverrides}
             cardLayoutPresetOverrides={cardLayoutPresetOverrides}
@@ -332,7 +362,11 @@ export default function DomainPage() {
   }
 
   if (json && json?.__type === "screen-error") {
-    throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
+    return (
+      <div style={{ padding: "2rem", textAlign: "center", color: "#666" }}>
+        {`Screen JSON error: ${json?.code ?? "UNKNOWN"}`}
+      </div>
+    );
   }
 
   // Loading state for both JSON and TSX
@@ -353,7 +387,7 @@ export default function DomainPage() {
             key={routeKey}
             slug={appSlug}
             basePath={appBase}
-            screenJsonPath={requestedJsonPath ? requestedJsonPath : undefined}
+            screenJsonPath={requestedJsonPath ?? undefined}
             {...envelopeProps}
           />
         )}
@@ -361,12 +395,5 @@ export default function DomainPage() {
     );
   }
 
-  return (
-    <Component
-      key={routeKey}
-      slug={appSlug}
-      basePath={appBase}
-      screenJsonPath={requestedJsonPath ? requestedJsonPath : undefined}
-    />
-  );
+  return <Component key={routeKey} slug={appSlug} basePath={appBase} screenJsonPath={requestedJsonPath ?? undefined} />;
 }

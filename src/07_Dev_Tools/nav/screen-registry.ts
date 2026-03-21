@@ -55,16 +55,15 @@ export function flattenIndexToPaths(
 ): string[] {
   const paths: string[] = [];
   for (const item of index) {
-    const prefix =
-      item.rootSection === "(dead) Tsx" ||
-      item.rootSection.includes("(live)") ||
-      item.rootSection === "Business" ||
-      item.rootSection === "Christian" ||
-      item.rootSection === "tsx-organisms" ||
-      item.rootSection === "tsx-organs"
-        ? `tsx:${item.rootSection}/`
-        : "";
-    const base = `${prefix}${item.category}`;
+    const root = item.rootSection ?? "";
+    const isDeadJson = root === "(dead) Json";
+    const isDeadTsx = root === "(dead) Tsx";
+    const isTsxLibrary = root === "tsx-organisms" || root === "tsx-organs";
+
+    // Live 01_App roots must keep rootSection in path (e.g. containercreations/learn/landing-v5).
+    const basePath = isDeadJson || isDeadTsx || isTsxLibrary ? `${item.category}` : `${root}/${item.category}`;
+    const prefix = isDeadTsx || isTsxLibrary ? "tsx:" : "";
+    const base = `${prefix}${basePath}`;
     const directFiles = item.directFiles ?? [];
     for (const f of directFiles) paths.push(`${base}/${f}`);
     const folders = item.folders ?? {};

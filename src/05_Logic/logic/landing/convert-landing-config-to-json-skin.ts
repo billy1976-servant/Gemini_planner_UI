@@ -171,6 +171,7 @@ export function convertLandingConfigToJsonSkin(config: LandingConfig): {
   const screens = config.screens ?? [];
   const shopUrl = config.shopUrl ?? "https://containercreations.com";
   const firstId = screens.length > 0 ? screens[0].id : "intro";
+  const trackerTitle = config.stepTracker?.title ?? "Progress";
 
   const sections: any[] = screens.map((screen, screenIndex) => {
     const children: any[] = [];
@@ -211,6 +212,24 @@ export function convertLandingConfigToJsonSkin(config: LandingConfig): {
     (screen.buttons ?? []).forEach((block) => {
       const mapped = mapButtonBlock(block, screen, screens, shopUrl, screenIndex);
       if (mapped) children.push(mapped);
+    });
+
+    // Step tracker footer links (restores multi-screen progress nav in landing flow).
+    children.push({
+      type: "text",
+      id: `tracker-title-${screen.id}`,
+      content: {
+        text: `${trackerTitle} — Step ${screenIndex + 1} of ${Math.max(1, screens.length)}`,
+      },
+      params: { variant: "subheadline" },
+    });
+    screens.forEach((target, targetIndex) => {
+      children.push({
+        type: "button",
+        id: `tracker-link-${screen.id}-${target.id}`,
+        content: { label: target.stepLabel ?? `Step ${targetIndex + 1}` },
+        behavior: { params: { gotoScreenId: target.id } },
+      });
     });
 
     const layout = screen.layout ?? "contained";

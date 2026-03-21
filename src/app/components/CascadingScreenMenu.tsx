@@ -173,24 +173,17 @@ export default function CascadingScreenMenu({ index, flowsIndex = [], currentScr
     setHoveredFolder(null);
   };
 
-  /** Build path and navigate; (dead) Tsx and (live)* use tsx: prefix so loader resolves TSX. */
+  /** Build path and navigate using real filesystem path shape from src/01_App. */
   const navigate = (rootSection: string, category: string, folder: string, file?: string) => {
-    const useTsx =
-      rootSection === "(dead) Tsx" ||
-      rootSection.includes("(live)") ||
-      rootSection === "Business" ||
-      rootSection === "Christian" ||
-      rootSection === "tsx-organisms" ||
-      rootSection === "tsx-organs";
-    const prefix = useTsx
-      ? rootSection.includes("(live)") || rootSection === "Business" || rootSection === "Christian" || rootSection === "tsx-organisms" || rootSection === "tsx-organs"
-        ? `tsx:${rootSection}/`
-        : "tsx:"
-      : "";
+    const isDeadJson = rootSection === "(dead) Json";
+    const isDeadTsx = rootSection === "(dead) Tsx";
+    const isTsxLibrary = rootSection === "tsx-organisms" || rootSection === "tsx-organs";
+    const prefix = isDeadTsx || isTsxLibrary ? "tsx:" : "";
+    const basePath = isDeadJson || isDeadTsx || isTsxLibrary ? `${category}` : `${rootSection}/${category}`;
     const screenPath =
       file === undefined
-        ? `${prefix}${category}/${folder}`
-        : `${prefix}${category}/${folder}/${file}`;
+        ? `${prefix}${basePath}/${folder}`
+        : `${prefix}${basePath}/${folder}/${file}`;
     const params = new URLSearchParams(searchParams?.toString() ?? "");
     params.set("screen", screenPath);
     router.replace(`${base}?${params.toString()}`);
