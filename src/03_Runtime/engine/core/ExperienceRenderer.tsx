@@ -42,6 +42,15 @@ export default function ExperienceRenderer({
   paletteOverride,
 }: ExperienceRendererProps) {
   console.log("ExperienceRenderer rendering");
+  console.log("[domain-render-trace] 7.JsonRenderer.input (ExperienceRenderer `node` prop)", {
+    screenId,
+    nodeType: node?.type,
+    nodeId: node?.id,
+    nodeKeys: node != null && typeof node === "object" ? Object.keys(node as object) : [],
+    childrenLen: Array.isArray((node as { children?: unknown[] })?.children)
+      ? (node as { children: unknown[] }).children.length
+      : 0,
+  });
   const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
   const experience = experienceProp ?? (stateSnapshot?.values?.experience as string) ?? "website";
 

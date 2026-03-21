@@ -218,9 +218,9 @@ export function getPrayerBasePathForHost(_host?: string): string {
 }
 
 /**
- * Run the full domain→subdomain→layout→flow resolution from current window location
- * and log each step. Call from the domain page on mount to see why a hostname
- * did or didn't resolve. Enable by setting window.__DOMAIN_RESOLVE_TRACE__ = true.
+ * Full domain resolution trace. When both domain + pathSegments are passed from the domain route
+ * (`useParams`), those are the single source of truth; window pathname is reference-only for drift.
+ * If params are omitted, falls back to parsing `window.location.pathname`.
  */
 export function traceDomainResolutionFromWindow(domainSegmentFromParams?: string, pathSegmentsFromParams?: string[]): void {
   if (typeof window === "undefined") return;
@@ -229,11 +229,26 @@ export function traceDomainResolutionFromWindow(domainSegmentFromParams?: string
   const domainFirst = pathname.split("/").filter(Boolean)[0];
   const domainFromPath = pathname === "/" ? "" : domainFirst ? domainFirst : "";
 
-  const domain = domainSegmentFromParams ? domainSegmentFromParams : domainFromPath;
-  const pathSegments = pathSegmentsFromParams ? pathSegmentsFromParams : pathname.split("/").filter(Boolean).slice(1);
+  const pathFromWindow = pathname.split("/").filter(Boolean).slice(1);
+  const useRouterParams =
+    typeof domainSegmentFromParams === "string" &&
+    domainSegmentFromParams.length > 0 &&
+    Array.isArray(pathSegmentsFromParams);
+  const domain = useRouterParams ? domainSegmentFromParams! : domainFromPath;
+  const pathSegments = useRouterParams ? pathSegmentsFromParams! : pathFromWindow;
+  const pathnameDrift =
+    useRouterParams &&
+    (domainFromPath !== domain || JSON.stringify(pathFromWindow) !== JSON.stringify(pathSegments));
 
-  console.log("[domain-resolve] ========== FULL RESOLUTION TRACE (window) ==========");
-  console.log("[domain-resolve] Step 1 — hostname parse", { hostname, pathname, "domain (param/path)": domain, pathSegments });
+  console.log("[domain-resolve] ========== FULL RESOLUTION TRACE ==========");
+  console.log("[domain-resolve] Step 1 — source", {
+    hostname,
+    resolutionSource: useRouterParams ? "router_params" : "window_pathname",
+    pathnameReferenceOnly: pathname,
+    pathnameDriftVsParams: pathnameDrift || undefined,
+    domain,
+    pathSegments,
+  });
 
   const segment = getDomainSegmentForHost(hostname);
   console.log("[domain-resolve] Step 2 — resolver output (getDomainSegmentForHost)", {
@@ -242,7 +257,16 @@ export function traceDomainResolutionFromWindow(domainSegmentFromParams?: string
     ...(segment === null ? { "FALLBACK": "resolver returned null" } : {}),
   });
 
-  const resolvedPath = getResolvedPath(domain, pathSegments);
+  let resolvedPath: string | null = null;
+  try {
+    resolvedPath = getResolvedPath(domain, pathSegments);
+  } catch (e) {
+    console.log("[domain-resolve] Step 3 — getResolvedPath threw", {
+      domain,
+      pathSegments,
+      error: e instanceof Error ? e.message : String(e),
+    });
+  }
   console.log("[domain-resolve] Step 3 — Domain/Subdomain/Route (getResolvedPath)", {
     domain,
     pathSegments,

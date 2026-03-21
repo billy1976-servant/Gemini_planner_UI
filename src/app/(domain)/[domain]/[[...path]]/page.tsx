@@ -42,6 +42,41 @@ import { convertLandingConfigToJsonSkin } from "@/05_Logic/logic/landing/convert
  * Resolution: Domain/Subdomain/Route via getResolvedPath(domain, pathSegments). No path → default route (e.g. landing).
  */
 
+/** Diagnostics: trace payload shape without dumping full JSON (routing/layout unchanged). */
+function summarizeLoadScreenPayload(
+  label: string,
+  payload: unknown,
+  extra?: Record<string, unknown>
+) {
+  if (payload == null) {
+    console.log(`[domain-render-trace] ${label}`, { payload: null, ...extra });
+    return;
+  }
+  const p = payload as Record<string, unknown>;
+  const root = p.root as { type?: string; children?: unknown[] } | undefined;
+  const screen = p.screen as { type?: string; children?: unknown[] } | undefined;
+  const node = p.node as { type?: string; children?: unknown[] } | undefined;
+  const screens = p.screens as unknown[] | undefined;
+  console.log(`[domain-render-trace] ${label}`, {
+    ...extra,
+    __type: p.__type,
+    id: p.id,
+    topLevelKeys: Object.keys(p),
+    hasRoot: !!p.root,
+    hasScreen: !!p.screen,
+    hasNode: !!p.node,
+    hasScreensArray: Array.isArray(screens),
+    screensCount: Array.isArray(screens) ? screens.length : 0,
+    rootType: root?.type,
+    rootChildrenLen: Array.isArray(root?.children) ? root.children.length : 0,
+    screenType: screen?.type,
+    screenChildrenLen: Array.isArray(screen?.children) ? screen.children.length : 0,
+    nodeType: node?.type,
+    rawType: p.type,
+    topLevelChildrenLen: Array.isArray(p.children) ? p.children.length : 0,
+  });
+}
+
 export default function DomainPage() {
   const params = useParams();
   let domain = (params?.domain as string) ?? "";
@@ -124,12 +159,25 @@ export default function DomainPage() {
       });
     }
 
+    console.log("[domain-render-trace] 1.inputPath → loadScreen(jsonPath)", {
+      jsonPath,
+      resolvedPath,
+      route,
+      fileName,
+      loaderKey,
+    });
+
     let cancelled = false;
     loadScreen(jsonPath)
       .then((loaded) => {
         if (cancelled) return;
 
         const resolvedFinal = loaded?.__resolvedJsonPath ?? jsonPath;
+        summarizeLoadScreenPayload("2.loadScreen(jsonPath) return", loaded, {
+          inputJsonPath: jsonPath,
+          resolvedPath,
+          __resolvedJsonPath: resolvedFinal,
+        });
         if (process.env.NODE_ENV === "development") {
           console.log("[domain-page] Step 5 — loadScreen result", {
             domain,
@@ -153,6 +201,10 @@ export default function DomainPage() {
               tsxPath: loaded?.path,
             });
           }
+          console.log(
+            "[domain-render-trace] TSX branch — composeOfflineScreen / JsonRenderer JSON path skipped",
+            { loaderKey, tsxMarkerPath: (loaded as { path?: string })?.path }
+          );
 
           const loader = APP_MODULE_LOADERS[loaderKey];
           if (!loader) {
@@ -170,10 +222,15 @@ export default function DomainPage() {
             })
             .catch((err) => {
               if (cancelled) return;
-              console.warn("[domain-router] Loader failed for", loaderKey, err);
+              const msg = err instanceof Error ? err.message : String(err);
+              console.error("[domain-router] Prayer/TSX loader failed", {
+                loaderKey,
+                errorMessage: msg,
+                error: err,
+              });
               setComponent(null);
               setJson(null);
-              setError(`Module load failed: ${loaderKey}`);
+              setError(`Module load failed: ${loaderKey}${msg ? ` — ${msg}` : ""}`);
             });
           return;
         }
@@ -250,8 +307,14 @@ export default function DomainPage() {
         const childCount = Array.isArray(converted?.root?.children) ? converted.root.children.length : 0;
         console.log("[domain-page] landing adapter applied", { childCount });
       }
+      summarizeLoadScreenPayload("3.renderableJson (after landing adapter)", converted, {
+        note: "landing screens[] → json-skin",
+      });
       return converted;
     }
+    summarizeLoadScreenPayload("3.renderableJson (pass-through, no adapter)", json, {
+      note: "no screens[] or already has root",
+    });
     return json;
   }, [json]);
 
@@ -295,6 +358,20 @@ export default function DomainPage() {
       renderableJson?.screen ??
       renderableJson?.node ??
       renderableJson;
+    console.log("[domain-render-trace] 4.renderNode (pick root|screen|node|self)", {
+      pickedFrom: renderableJson?.root
+        ? "root"
+        : renderableJson?.screen
+          ? "screen"
+          : renderableJson?.node
+            ? "node"
+            : "self",
+      renderNodeType: (renderNode as { type?: string })?.type,
+      renderNodeId: (renderNode as { id?: string })?.id,
+      renderNodeChildrenLen: Array.isArray((renderNode as { children?: unknown[] })?.children)
+        ? (renderNode as { children: unknown[] }).children.length
+        : 0,
+    });
     const rawChildren = Array.isArray(renderNode?.children) ? renderNode.children : [];
     const children = assignSectionInstanceKeys(rawChildren);
     const docForOrgans = { meta: { domain: "offline", pageId: "screen", version: 1 }, nodes: children };
@@ -310,10 +387,20 @@ export default function DomainPage() {
       templateId: effectiveTemplateId,
       mode: effectiveLayoutMode,
     };
+    summarizeLoadScreenPayload("composeOfflineScreen.inputRootNode", renderNode, {
+      step: "final renderNode after organs + skin bindings",
+    });
     const composed = composeOfflineScreen({
       rootNode: renderNode as any,
       experienceProfile,
       layoutState: layoutStateForCompose,
+    });
+    console.log("[domain-render-trace] 5.composeOfflineScreen output", {
+      composedType: (composed as { type?: string })?.type,
+      composedId: (composed as { id?: string })?.id,
+      composedChildrenLen: Array.isArray((composed as { children?: unknown[] })?.children)
+        ? (composed as { children: unknown[] }).children.length
+        : 0,
     });
     setCurrentScreenTree(composed);
 
@@ -340,6 +427,16 @@ export default function DomainPage() {
     const behaviorProfile = (stateSnapshot?.values?.behaviorProfile ?? "default") as string;
     const screenContainerKey = `screen-${screenKey}-${effectiveTemplateId || "default"}`;
     const sectionBackgroundPattern = (effectiveProfile as { sectionBackgroundPattern?: string } | null)?.sectionBackgroundPattern;
+
+    console.log("[domain-render-trace] 6.treeForRender → ExperienceRenderer → JsonRenderer (node prop)", {
+      treeType: (treeForRender as { type?: string })?.type,
+      treeId: (treeForRender as { id?: string })?.id,
+      treeChildrenLen: Array.isArray((treeForRender as { children?: unknown[] })?.children)
+        ? (treeForRender as { children: unknown[] }).children.length
+        : 0,
+      screenKey,
+      defaultStateKeys: renderableJson?.state ? Object.keys(renderableJson.state as object) : [],
+    });
 
     return (
       <CapabilityProvider>
