@@ -29,7 +29,12 @@ import {
 } from "@/03_Runtime/capability";
 import { APP_MODULE_LOADERS } from "@/lib/app-loaders";
 import { TSXScreenWithEnvelope } from "@/lib/tsx-structure/TSXScreenWithEnvelope";
-import { buildDomainJsonPath, getResolvedPath, traceDomainResolutionFromWindow } from "@/lib/domain-config";
+import {
+  buildDomainJsonPath,
+  getResolvedPath,
+  normalizeHiclarifyChristianPathSegments,
+  traceDomainResolutionFromWindow,
+} from "@/lib/domain-config";
 import { convertLandingConfigToJsonSkin } from "@/05_Logic/logic/landing/convert-landing-config-to-json-skin";
 
 /**
@@ -49,11 +54,18 @@ export default function DomainPage() {
     rawPath = ["prayer", ...rawPath];
   }
   // Strip leading segment if it duplicates the domain (rewrite can produce /christian/christian/prayer or path param may include domain).
-  const pathSegments =
+  const pathSegmentsBase =
     rawPath.length > 0 && rawPath[0].toLowerCase() === domain.toLowerCase()
       ? rawPath.slice(1)
       : rawPath;
-  const resolvedPath = getResolvedPath(domain, pathSegments);
+  const pathSegments = normalizeHiclarifyChristianPathSegments(domain, pathSegmentsBase);
+  const resolvedPath = useMemo(() => {
+    try {
+      return getResolvedPath(domain, pathSegments);
+    } catch {
+      return null;
+    }
+  }, [domain, pathSegments.join("/")]);
   const [Component, setComponent] = useState<React.ComponentType<any> | null>(null);
   const [json, setJson] = useState<any | null>(null);
   const [requestedJsonPath, setRequestedJsonPath] = useState<string | null>(null);
@@ -83,7 +95,13 @@ export default function DomainPage() {
       return;
     }
 
-    const built = buildDomainJsonPath(resolvedPath, pathSegments);
+    let built: { route: string; fileName?: string; jsonPath: string } | null;
+    try {
+      built = buildDomainJsonPath(resolvedPath, pathSegments);
+    } catch {
+      setError("Invalid route format");
+      return;
+    }
     if (!built) {
       setError("Unknown domain");
       return;

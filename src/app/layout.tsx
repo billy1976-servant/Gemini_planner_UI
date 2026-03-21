@@ -12,6 +12,7 @@ import "@/styles/site-theme.css";
 import "@/styles/dev-mobile.css";
 import "@/styles/navigator-density.css";
 import { getBaseUrl } from "@/lib/app-base-url";
+import { getDomainSegmentForHost } from "@/lib/domain-config";
 import { getCanonicalScreenKey } from "@/07_Dev_Tools/navigation/getDevScreenKey";
 import DevicePreviewToggle from "@/dev/DevicePreviewToggle";
 import EditorPreviewToggle from "@/07_Dev_Tools/editor/EditorPreviewToggle";
@@ -83,6 +84,14 @@ const MobileShell = dynamic(() => import("@/mobile/MobileShell"), { ssr: false }
 import OsbMinimalTopBar from "@/04_Presentation/shells/OsbMinimalTopBar";
 import { useDevMobileMode } from "@/app/dev/useDevMobileMode";
 import DevHome from "@/app/dev/DevHome";
+
+/** Middleware rewrites custom domains to pathname /{host}/... — first segment is hostname (contains "."). */
+function isDomainRoutePathname(pathname: string | null | undefined): boolean {
+  if (!pathname) return false;
+  const first = pathname.split("/").filter(Boolean)[0] ?? "";
+  if (!first.includes(".")) return false;
+  return getDomainSegmentForHost(first) !== null;
+}
 
 /* ============================================================
    🔒 STATIC REGISTRIES
@@ -574,7 +583,7 @@ export default function RootLayout({ children }: any) {
           <Suspense fallback={<div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>Loading...</div>}>
             {!hasMounted ? (
               children
-            ) : pathname === "/landing" || pathname === "/flow" || pathname === "/onboarding" || pathname === "/container-creations" || pathname?.startsWith("/prayer") || pathname?.startsWith("/_domain") || pathname?.match(/^\/(christian|business|plan|protect|research|learn)(\/|$)/) ? (
+            ) : pathname === "/landing" || pathname === "/flow" || pathname === "/onboarding" || pathname === "/container-creations" || pathname?.startsWith("/prayer") || pathname?.startsWith("/_domain") || pathname?.match(/^\/(christian|business|plan|protect|research|learn)(\/|$)/) || isDomainRoutePathname(pathname) ? (
               children
             ) : isUserMode ? (
               <UserLayoutChrome>{children}</UserLayoutChrome>

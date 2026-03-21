@@ -97,6 +97,26 @@ function tryResolveLiveJson(
   return null;
 }
 
+/** Live TSX under src/01_App/** (e.g. hiclarify/christian/prayer/prayer-app.tsx) when no JSON exists. */
+function tryResolveLiveTsx(segments: string[]): { tsxRelativePath: string } | null {
+  if (!segments?.length || isExcludedByFolderRules(segments)) return null;
+  const last = segments[segments.length - 1];
+  let baseName: string;
+  let dirSegments: string[];
+  if (last.toLowerCase().endsWith(".json")) {
+    baseName = last.slice(0, -".json".length);
+    dirSegments = segments.slice(0, -1);
+  } else {
+    baseName = last;
+    dirSegments = segments.slice(0, -1);
+  }
+  if (!baseName) return null;
+  const tsxFile = path.join(JSON_LIVE_ROOT, ...dirSegments, `${baseName}.tsx`);
+  if (fs.existsSync(tsxFile) && fs.statSync(tsxFile).isFile()) {
+    return { tsxRelativePath: [...dirSegments, baseName].join("/") };
+  }
+  return null;
+}
 
 export async function GET(
   _req: Request,
@@ -250,6 +270,16 @@ export async function GET(
       console.warn("[api/screens/[...path]] Live JSON resolution failed; continuing", {
         requested: requestedPath,
         err: e?.message ?? String(e),
+      });
+    }
+
+    const liveTsx = tryResolveLiveTsx(jsonSegments);
+    if (liveTsx) {
+      return NextResponse.json({
+        __type: "tsx-screen",
+        __tsx__: true,
+        screen: liveTsx.tsxRelativePath,
+        path: liveTsx.tsxRelativePath,
       });
     }
 

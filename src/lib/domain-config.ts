@@ -140,6 +140,29 @@ const HICLARIFY_SUBDOMAIN_TO_FOLDER: Record<string, string> = {
  * - christian.hiclarify.com + [] → HIClarify/Christian
  * - christian (path) + ["prayer"] → HIClarify/Christian/prayer
  */
+/**
+ * christian.hiclarify.com public path /prayer-app → internal segments /prayer/prayer-app (strict contract).
+ */
+export function normalizeHiclarifyChristianPathSegments(
+  domain: string,
+  pathSegments: string[]
+): string[] {
+  if (!pathSegments || pathSegments.length !== 1) return pathSegments;
+  let subdomain: string;
+  let root: string;
+  try {
+    ({ subdomain, root } = parseDomainParts(domain));
+  } catch {
+    return pathSegments;
+  }
+  if (!root.includes("hiclarify") || subdomain !== "christian") return pathSegments;
+  const only = pathSegments[0].toLowerCase();
+  if (only === "prayer-app") {
+    return ["prayer", "prayer-app"];
+  }
+  return pathSegments;
+}
+
 export function getResolvedPath(domain: string, pathSegments: string[]): string | null {
   if (!pathSegments || pathSegments.length < 1) {
     throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
