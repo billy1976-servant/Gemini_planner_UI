@@ -85,7 +85,17 @@ import OsbMinimalTopBar from "@/04_Presentation/shells/OsbMinimalTopBar";
 import { useDevMobileMode } from "@/app/dev/useDevMobileMode";
 import DevHome from "@/app/dev/DevHome";
 
-/** Middleware rewrites custom domains to pathname /{host}/... — first segment is hostname (contains "."). */
+/**
+ * Middleware rewrites custom domains to /{hostname}/... where a segment looks like a FQDN (contains ".").
+ * Any such segment must bypass UserLayoutChrome — do not rely only on the *first* segment (locale/basePath
+ * prefixes can push the host to segment 2+).
+ */
+function pathnameHasHostStyleSegment(pathname: string | null | undefined): boolean {
+  if (!pathname) return false;
+  return pathname.split("/").some((seg) => seg.length > 0 && seg.includes("."));
+}
+
+/** Legacy: first segment only + allowlist via getDomainSegmentForHost (stricter; used for diagnostics). */
 function isDomainRoutePathname(pathname: string | null | undefined): boolean {
   if (!pathname) return false;
   const first = pathname.split("/").filter(Boolean)[0] ?? "";
@@ -562,7 +572,21 @@ export default function RootLayout({ children }: any) {
   useEffect(() => {
     setHasMounted(true);
   }, []);
-  const isUserMode = pathname === "/" || !pathname?.startsWith("/dev");
+
+  useEffect(() => {
+    const first = pathname?.split("/").filter(Boolean)[0] ?? "";
+    console.log("[RootLayout] chrome bypass probe", {
+      pathname,
+      firstSegment: first,
+      getDomainSegmentForHost_firstSegment: getDomainSegmentForHost(first),
+      isDomainRoutePathname: isDomainRoutePathname(pathname),
+      pathnameHasHostStyleSegment: pathnameHasHostStyleSegment(pathname),
+    });
+  }, [pathname]);
+
+  // If pathname is briefly undefined (client hydration), !pathname?.startsWith("/dev") is true and wrongly forced UserLayoutChrome.
+  const isUserMode =
+    pathname === "/" || (typeof pathname === "string" && pathname.length > 0 && !pathname.startsWith("/dev"));
 
   return (
     <html>
@@ -583,7 +607,7 @@ export default function RootLayout({ children }: any) {
           <Suspense fallback={<div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>Loading...</div>}>
             {!hasMounted ? (
               children
-            ) : pathname === "/landing" || pathname === "/flow" || pathname === "/onboarding" || pathname === "/container-creations" || pathname?.startsWith("/prayer") || pathname?.startsWith("/_domain") || pathname?.match(/^\/(christian|business|plan|protect|research|learn)(\/|$)/) || isDomainRoutePathname(pathname) ? (
+            ) : pathname === "/landing" || pathname === "/flow" || pathname === "/onboarding" || pathname === "/container-creations" || pathname?.startsWith("/prayer") || pathname?.startsWith("/_domain") || pathname?.match(/^\/(christian|business|plan|protect|research|learn)(\/|$)/) || pathnameHasHostStyleSegment(pathname) ? (
               children
             ) : isUserMode ? (
               <UserLayoutChrome>{children}</UserLayoutChrome>
