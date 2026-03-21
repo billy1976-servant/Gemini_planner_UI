@@ -8,7 +8,7 @@ import { PrayerShare } from "./PrayerShare";
 import { PrayerLibrary } from "./prayer-library";
 import { PrayerUpload } from "./PrayerUpload";
 import { GroupAdmin } from "./GroupAdmin";
-import { PrayerRoom } from "./prayer-room";
+import { PrayerRoom } from "./room/PrayerRoom";
 import { PrayerFlowWrapper } from "./flow/PrayerFlowWrapper";
 import { ActiveRoomsProvider } from "./room/ActiveRoomsContext";
 import { LivePrayerCta } from "./LivePrayerCta";
@@ -37,7 +37,7 @@ import {
   heartbeatSession,
   leaveSession,
 } from "./api/prayer-api";
-import type { Prayer, Group } from "./PrayerTypes";
+import type { Prayer, Group } from "./prayertypes";
 import { useTheme } from "../../../../components/ui/ThemeProvider";
 import type { PaletteId } from "@/lib/ui/palette";
 import { formatDuration } from "./utils/formattime";

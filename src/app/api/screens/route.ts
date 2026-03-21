@@ -231,6 +231,11 @@ function collectTsxDirectFiles(rootPath: string, rootName: string, categoryName:
  * Scans src/01_App/* — each directory is a root section.
  * Returns categories with rootSection = displayName = dir.name (no renaming, no tsx: prefix).
  */
+/** When filesystem scan yields nothing (misconfigured cwd in serverless, etc.), return empty index — same shape as success. */
+function getDefensiveFallbackList(): ScreensIndexItem[] {
+  return [];
+}
+
 export async function GET() {
   const safeFallback = (): Response =>
     NextResponse.json([], {
