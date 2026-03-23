@@ -2,6 +2,14 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getDomainSegmentForHost } from "@/lib/domain-config";
 
+function isSafeDomainSegment(segment: string | null): segment is string {
+  if (!segment) return false;
+  // URL segment-safe contract for middleware rewrite prefix.
+  if (!/^[a-z0-9.-]+$/i.test(segment)) return false;
+  if (segment.includes("/") || segment.includes("\\") || segment.includes("..")) return false;
+  return true;
+}
+
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const searchParams = request.nextUrl.searchParams;
@@ -57,6 +65,15 @@ export function middleware(request: NextRequest) {
   if (!domainSegment) {
     if (process.env.NODE_ENV === "development") {
       console.log("[middleware] Step 3 — FALLBACK: no domain segment, returning next() (no rewrite)");
+    }
+    return NextResponse.next();
+  }
+
+  if (!isSafeDomainSegment(domainSegment)) {
+    if (process.env.NODE_ENV === "development") {
+      console.log("[middleware] Step 3 — FALLBACK: unsafe domain segment, returning next()", {
+        domainSegment,
+      });
     }
     return NextResponse.next();
   }

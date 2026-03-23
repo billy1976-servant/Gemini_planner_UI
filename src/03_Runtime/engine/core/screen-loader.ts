@@ -38,6 +38,11 @@ export async function loadScreen(path: string): Promise<any> {
     }
     path = decodedPath;
 
+    // Backward-compatible alias used by older navigation/deep links.
+    if (path === "container-creations-landing") {
+      path = "containercreations/learn/landing/landing-v5.json";
+    }
+
     /* ==================================================
        🚫 SCREEN IDS ARE DEAD — return fallback instead of throw
        ================================================== */

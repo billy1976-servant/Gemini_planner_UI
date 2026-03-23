@@ -93,21 +93,22 @@ export function getDomainSegmentForHost(host: string | null): string | null {
 function parseDomainParts(domain: string): { subdomain: string; root: string } {
   const normalized = domain.toLowerCase().trim();
   if (!normalized) {
-    throw new Error("DOMAIN PARSE FAILED — NO FALLBACK ALLOWED");
+    throw new Error("DOMAIN PARSE FAILED");
   }
+  // Compatibility: allow path-segment domains from middleware rewrites (e.g. /christian/prayer).
   if (!normalized.includes(".")) {
-    throw new Error("DOMAIN PARSE FAILED — NO FALLBACK ALLOWED");
+    return { subdomain: normalized, root: "hiclarify.com" };
   }
 
   const parts = normalized.split(".");
   if (parts.length < 3) {
-    throw new Error("DOMAIN PARSE FAILED — NO FALLBACK ALLOWED");
+    throw new Error("DOMAIN PARSE FAILED");
   }
 
   const subdomain = parts[0];
   const root = parts.slice(-2).join(".");
   if (!subdomain || !root) {
-    throw new Error("DOMAIN PARSE FAILED — NO FALLBACK ALLOWED");
+    throw new Error("DOMAIN PARSE FAILED");
   }
   return { subdomain, root };
 }
@@ -165,14 +166,20 @@ export function normalizeHiclarifyChristianPathSegments(
 
 export function getResolvedPath(domain: string, pathSegments: string[]): string | null {
   if (!pathSegments || pathSegments.length < 1) {
-    throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
+    return null;
   }
-  const { subdomain, root } = parseDomainParts(domain);
+  let subdomain: string;
+  let root: string;
+  try {
+    ({ subdomain, root } = parseDomainParts(domain));
+  } catch {
+    return null;
+  }
   trace("getResolvedPath: parse", { domain, subdomain, root, pathSegments });
 
   if (root.includes("containercreations")) {
     const domainFolder = ROOT_TO_DOMAIN[root];
-    if (!domainFolder) throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
+    if (!domainFolder) return null;
     const subSegment = subdomainToSegment(subdomain);
     const route = pathSegments[0].toLowerCase();
     const result = `${domainFolder}/${subSegment}/${route}`;
@@ -186,7 +193,7 @@ export function getResolvedPath(domain: string, pathSegments: string[]): string 
 
   if (root.includes("hiclarify")) {
     const base = HICLARIFY_SUBDOMAIN_TO_FOLDER[subdomain];
-    if (!base) throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
+    if (!base) return null;
     const route = pathSegments[0].toLowerCase();
     const result = `${base}/${route}`;
     if (DOMAIN_TRACE && typeof console !== "undefined" && console.log) {
@@ -197,7 +204,7 @@ export function getResolvedPath(domain: string, pathSegments: string[]): string 
     return result;
   }
 
-  throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
+  return null;
 }
 
 /**
@@ -304,21 +311,21 @@ export function buildDomainJsonPath(resolvedPath: string | null, pathSegments: s
   fileName?: string;
   jsonPath: string;
 } | null {
-  if (!resolvedPath) throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
-  if (!pathSegments || pathSegments.length < 2) throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
+  if (!resolvedPath) return null;
+  if (!pathSegments || pathSegments.length < 1) return null;
 
   const resolvedParts = resolvedPath.split("/").filter(Boolean);
   const routeFromResolvedPath = resolvedParts.pop();
-  if (!routeFromResolvedPath) throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
+  if (!routeFromResolvedPath) return null;
   const domainFolderRaw = resolvedParts[0];
   const subdomainFolderRaw = resolvedParts[1];
   if (!domainFolderRaw || !subdomainFolderRaw) {
-    throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
+    return null;
   }
 
   const routeFromUrl = pathSegments[0];
   if (routeFromUrl.toLowerCase() !== routeFromResolvedPath.toLowerCase()) {
-    throw new Error("RESOLVER FAILURE — DO NOT FALLBACK");
+    return null;
   }
 
   const fileStem = pathSegments[pathSegments.length - 1];

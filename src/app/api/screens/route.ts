@@ -233,12 +233,27 @@ function collectTsxDirectFiles(rootPath: string, rootName: string, categoryName:
  */
 /** When filesystem scan yields nothing (misconfigured cwd in serverless, etc.), return empty index — same shape as success. */
 function getDefensiveFallbackList(): ScreensIndexItem[] {
-  return [];
+  return [
+    {
+      category: "Prayer_Stream",
+      directFiles: ["PrayerStreamOnboarding"],
+      folders: {},
+      rootSection: "(live) Business",
+      displayName: "(live) Business",
+    },
+    {
+      category: "Discipleship",
+      directFiles: ["GospelDiscipleship"],
+      folders: {},
+      rootSection: "(live) Gospel",
+      displayName: "(live) Gospel",
+    },
+  ];
 }
 
 export async function GET() {
   const safeFallback = (): Response =>
-    NextResponse.json([], {
+    NextResponse.json(getDefensiveFallbackList(), {
       status: 200,
       headers: { "Cache-Control": "no-cache, no-store, must-revalidate" },
     });

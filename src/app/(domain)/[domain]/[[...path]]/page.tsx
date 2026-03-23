@@ -131,15 +131,9 @@ export default function DomainPage() {
       return;
     }
 
-    let built: { route: string; fileName?: string; jsonPath: string } | null;
-    try {
-      built = buildDomainJsonPath(resolvedPath, pathSegments);
-    } catch {
-      setError("Invalid route format");
-      return;
-    }
+    const built = buildDomainJsonPath(resolvedPath, pathSegments);
     if (!built) {
-      setError("Unknown domain");
+      setError("Invalid route format");
       return;
     }
 
