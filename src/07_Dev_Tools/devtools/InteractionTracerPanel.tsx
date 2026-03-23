@@ -1016,7 +1016,7 @@ function RuntimeTimelineBlock({
   };
 
   return (
-    <div style={{ marginTop: 8, paddingTop: 6, borderTop: "1px solid #333", display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
+    <div style={{ marginTop: 8, paddingTop: 6, borderTop: "1px solid #333" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6, flexWrap: "wrap", gap: 8 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <b>RUNTIME TIMELINE ({traceEvents.length} events)</b>
@@ -1054,7 +1054,7 @@ function RuntimeTimelineBlock({
           </button>
         </div>
       </div>
-      <div style={{ overflow: "auto", flex: 1, minHeight: 0 }}>
+      <div style={{ marginTop: 4 }}>
         {traceEvents.length === 0 ? (
           <div style={{ ...preStyle, padding: 20, textAlign: "center", color: "#666" }}>
             <div style={{ marginBottom: 8 }}>— No trace events yet</div>
@@ -1115,7 +1115,11 @@ function RuntimeTimelineBlock({
                   )}
                 </div>
                 {isExpanded && (
-                  <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${systemColor}33` }}>
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    role="presentation"
+                    style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${systemColor}33` }}
+                  >
                     {group.count > 1 && (
                       <div style={{ ...preStyle, marginBottom: 8, padding: 6, background: "rgba(0,0,0,0.2)", borderRadius: 3 }}>
                         <div style={{ color: systemColor, fontSize: 8, marginBottom: 4 }}>
@@ -1144,7 +1148,10 @@ function RuntimeTimelineBlock({
                       <div style={{ marginLeft: 12 }}>{formatValue(latestEvent.final)}</div>
                     </div>
                     {group.count > 1 && (
-                      <details style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${systemColor}33` }}>
+                      <details
+                        onClick={(e) => e.stopPropagation()}
+                        style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${systemColor}33` }}
+                      >
                         <summary style={{ cursor: "pointer", fontSize: 8, color: "#888", marginBottom: 4 }}>
                           Show all {group.count} events
                         </summary>
@@ -1198,7 +1205,11 @@ function RuntimeTimelineBlock({
                   )}
                 </div>
                 {isExpanded && (
-                  <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${systemColor}33` }}>
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    role="presentation"
+                    style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${systemColor}33` }}
+                  >
                     <div style={preStyle}>
                       <div style={{ color: systemColor, marginBottom: 4 }}>→ input:</div>
                       <div style={{ marginLeft: 12 }}>{formatValue(event.input)}</div>
@@ -1232,7 +1243,7 @@ function RuntimeTimelineBlock({
 
 function LiveStateView({ snapshot }: { snapshot: PipelineDebugSnapshot }) {
   return (
-    <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
+    <div style={{ minWidth: 0 }}>
       {snapshot.deadInteractionDetected && snapshot.deadInteractionDetails && (
         <DeadInteractionBanner details={snapshot.deadInteractionDetails} />
       )}
@@ -1768,6 +1779,7 @@ export default function InteractionTracerPanel({ defaultCollapsed = false, embed
     display: "flex" as const,
     flexDirection: "column" as const,
     minWidth: 0,
+    minHeight: 0,
   };
   const headerStyle = {
     height: 24,
@@ -1779,16 +1791,33 @@ export default function InteractionTracerPanel({ defaultCollapsed = false, embed
     color: "#00ff88",
     fontSize: 11,
   };
-  const scrollableStyle = {
-    overflow: "auto" as const,
+  /** Fixed chrome (buttons + tabs); scroll only the body below — avoids nested flex/overflow fighting. */
+  const panelShellStyle: React.CSSProperties = {
+    display: "flex",
+    flexDirection: "column",
     flex: 1,
     minHeight: 0,
+    minWidth: 0,
+    overflow: "hidden",
     padding: 8,
     color: embedded ? "#e5e5e5" : "#0f0",
     fontSize: 11,
-    display: "flex" as const,
-    flexDirection: "column" as const,
     background: embedded ? "#0d0d0d" : undefined,
+    isolation: "isolate",
+  };
+  const panelScrollBodyStyle: React.CSSProperties = {
+    flex: 1,
+    minHeight: 0,
+    minWidth: 0,
+    overflowX: "hidden",
+    overflowY: "auto",
+    WebkitOverflowScrolling: "touch",
+    userSelect: "text",
+    WebkitUserSelect: "text",
+    overscrollBehavior: "contain",
+    touchAction: "auto",
+    position: "relative",
+    pointerEvents: "auto",
   };
 
   function DebuggerPanelWrap({ embedded: emb, children }: { embedded: boolean; children: React.ReactNode }) {
@@ -1810,8 +1839,10 @@ export default function InteractionTracerPanel({ defaultCollapsed = false, embed
           ? {
               display: "flex",
               flexDirection: "column",
-              height: "100%",
+              flex: 1,
               minHeight: 0,
+              minWidth: 0,
+              alignSelf: "stretch",
               overflow: "hidden",
               background: "#0d0d0d",
               color: "#e5e5e5",
@@ -1863,9 +1894,8 @@ export default function InteractionTracerPanel({ defaultCollapsed = false, embed
       {showContent && (
         <>
           <DebuggerPanelWrap embedded={embedded}>
-        <div
-          style={scrollableStyle}
-        >
+        <div style={panelShellStyle}>
+          <div style={{ flexShrink: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
             <button
               type="button"
@@ -2017,10 +2047,11 @@ export default function InteractionTracerPanel({ defaultCollapsed = false, embed
               </button>
             ))}
           </div>
-
+          </div>
+          <div style={panelScrollBodyStyle} data-devtools-debugger-scroll>
           {/* Consolidated Interactions tab */}
           {tab === "consolidated" && (
-            <div style={{ flex: 1, overflow: "auto", minHeight: 0, display: "flex", flexDirection: "column" }}>
+            <div>
               <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap", alignItems: "center" }}>
                 <button
                   type="button"
@@ -2152,7 +2183,7 @@ export default function InteractionTracerPanel({ defaultCollapsed = false, embed
               })()}
 
               {/* Consolidated Interactions List */}
-              <div style={{ overflow: "auto", flex: 1, minHeight: 0 }}>
+              <div>
                 {consolidatedInteractions.length === 0 ? (
                   <div style={{ padding: 20, textAlign: "center", color: "#666", fontSize: 10 }}>
                     <div style={{ marginBottom: 8 }}>— No interactions yet</div>
@@ -2246,7 +2277,7 @@ export default function InteractionTracerPanel({ defaultCollapsed = false, embed
 
           {/* Runtime Timeline tab */}
           {tab === "runtime" && (
-            <div style={{ flex: 1, overflow: "hidden", minHeight: 0, display: "flex", flexDirection: "column" }}>
+            <div>
               <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap", alignItems: "center" }}>
                 <label style={{ display: "flex", alignItems: "center", gap: 4, cursor: "pointer", fontSize: 10 }}>
                   <input
@@ -2326,11 +2357,9 @@ export default function InteractionTracerPanel({ defaultCollapsed = false, embed
                 </div>
               )}
 
-              <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
-                <RuntimeTimelineBlock 
-                  systemFilter={runtimeTraceTab === "all" ? undefined : runtimeTraceTab}
-                />
-              </div>
+              <RuntimeTimelineBlock 
+                systemFilter={runtimeTraceTab === "all" ? undefined : runtimeTraceTab}
+              />
             </div>
           )}
 
@@ -2354,7 +2383,7 @@ export default function InteractionTracerPanel({ defaultCollapsed = false, embed
             mode === "live" ? (
               <LiveStateView snapshot={snapshot} />
             ) : (
-              <div style={{ flex: 1, overflow: "auto" }}>
+              <div>
                 {filtered.map((e, i) => (
                   <div key={i}>
                     [{e.type}] {e.label}
@@ -2368,25 +2397,25 @@ export default function InteractionTracerPanel({ defaultCollapsed = false, embed
           )}
 
           {tab === "state" && (
-            <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
+            <div>
               <StateDiffBlock snapshot={snapshot} />
             </div>
           )}
 
           {tab === "layout" && (
-            <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
+            <div>
               <LayoutChangeTraceBlock snapshot={snapshot} />
             </div>
           )}
 
           {tab === "sections" && (
-            <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
+            <div>
               <SectionRenderTableBlock rows={snapshot.sectionRenderRows ?? []} />
             </div>
           )}
 
           {tab === "tests" && (
-            <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
+            <div>
               <button
                 type="button"
                 onClick={runPipelineTests}
@@ -2414,7 +2443,7 @@ export default function InteractionTracerPanel({ defaultCollapsed = false, embed
           )}
 
           {tab === "contracts" && (
-            <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
+            <div>
               {snapshot.contractTestResults == null ? (
                 <div style={{ fontFamily: "monospace", fontSize: 10, color: "#888", marginTop: 8 }}>
                   Run a layout dropdown interaction to see contract results.
@@ -2451,10 +2480,11 @@ export default function InteractionTracerPanel({ defaultCollapsed = false, embed
           )}
 
           {tab === "renderer" && (
-            <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
+            <div>
               <RendererTraceTableBlock events={snapshot.rendererTraceEvents ?? []} />
             </div>
           )}
+        </div>
         </div>
           </DebuggerPanelWrap>
           {!embedded && (

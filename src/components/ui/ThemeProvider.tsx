@@ -25,10 +25,25 @@ interface ThemeContextValue {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
+/** Used when a consumer renders outside `<ThemeProvider>` (SSR edge, lazy tree, or mis-wrapped route). Never throw — avoids hard crashes. */
+const fallbackThemeValue: ThemeContextValue = {
+  palette: palettes[DEFAULT_PALETTE_ID],
+  paletteId: DEFAULT_PALETTE_ID,
+  setPaletteId: () => {},
+};
+
+let warnedMissingProvider = false;
+
 export function useTheme(): ThemeContextValue {
   const ctx = useContext(ThemeContext);
-  if (!ctx) throw new Error("useTheme must be used within ThemeProvider");
-  return ctx;
+  if (ctx) return ctx;
+  if (typeof process !== "undefined" && process.env.NODE_ENV === "development" && !warnedMissingProvider) {
+    warnedMissingProvider = true;
+    console.warn(
+      "[ThemeProvider] useTheme() ran without ThemeProvider; using default palette. Wrap the app with ThemeProvider if palette switching should persist."
+    );
+  }
+  return fallbackThemeValue;
 }
 
 export function usePalette(): PrayerPalette {

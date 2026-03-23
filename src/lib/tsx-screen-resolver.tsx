@@ -12,6 +12,8 @@ import nextDynamic from "next/dynamic";
 const EXPLICIT_TSX_MAP: Record<string, () => Promise<any>> = {
   "Runtime/FlowRuntimeScreen": () =>
     import("@/engine/onboarding/FlowRuntimeScreen"),
+  "hiclarify/christian/prayer/prayer-app": () =>
+    import("@/01_App/hiclarify/christian/prayer/prayer-app"),
 };
 
 export function resolveTsxScreen(path: string): React.ComponentType<any> | null {

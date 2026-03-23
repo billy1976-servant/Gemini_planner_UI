@@ -11,7 +11,6 @@ import { useSyncExternalStore } from "react";
 import "@/styles/site-theme.css";
 import "@/styles/dev-mobile.css";
 import "@/styles/navigator-density.css";
-import { getBaseUrl } from "@/lib/app-base-url";
 import { getDomainSegmentForHost } from "@/lib/domain-config";
 import { getCanonicalScreenKey } from "@/07_Dev_Tools/navigation/getDevScreenKey";
 import DevicePreviewToggle from "@/dev/DevicePreviewToggle";
@@ -64,6 +63,7 @@ import { setScreenPaths, flattenIndexToPaths, getScreenIdByPath } from "@/07_Dev
 import { installIdentityAuthBridge } from "@/engine/system7/identity-auth-bridge";
 import { installCapabilityDebug } from "@/03_Runtime/capability/capability-debug";
 import { SessionProvider } from "next-auth/react";
+import { ThemeProvider } from "../components/ui/ThemeProvider";
 
 
 /* ============================================================
@@ -592,8 +592,8 @@ export default function RootLayout({ children }: any) {
     <html>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-        <link rel="icon" href={`${getBaseUrl()}/icons/icon-192.png`} type="image/png" sizes="192x192" />
-        <link rel="apple-touch-icon" href={`${getBaseUrl()}/icons/icon-192.png`} />
+        <link rel="icon" href="/icons/icon-192.png" type="image/png" sizes="192x192" />
+        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
         <link rel="manifest" href="/manifest" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -604,17 +604,19 @@ export default function RootLayout({ children }: any) {
       </head>
       <body className="app-body">
         <SessionProvider refetchInterval={0}>
-          <Suspense fallback={<div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>Loading...</div>}>
-            {!hasMounted ? (
-              children
-            ) : pathname === "/landing" || pathname === "/flow" || pathname === "/onboarding" || pathname === "/container-creations" || pathname?.startsWith("/prayer") || pathname?.startsWith("/_domain") || pathname?.match(/^\/(christian|business|plan|protect|research|learn)(\/|$)/) || pathnameHasHostStyleSegment(pathname) ? (
-              children
-            ) : isUserMode ? (
-              <UserLayoutChrome>{children}</UserLayoutChrome>
-            ) : (
-              <RootLayoutBody>{children}</RootLayoutBody>
-            )}
-          </Suspense>
+          <ThemeProvider>
+            <Suspense fallback={<div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>Loading...</div>}>
+              {!hasMounted ? (
+                children
+              ) : pathname === "/landing" || pathname === "/flow" || pathname === "/onboarding" || pathname === "/container-creations" || pathname?.startsWith("/prayer") || pathname?.startsWith("/_domain") || pathname?.match(/^\/(christian|business|plan|protect|research|learn)(\/|$)/) || pathnameHasHostStyleSegment(pathname) ? (
+                children
+              ) : isUserMode ? (
+                <UserLayoutChrome>{children}</UserLayoutChrome>
+              ) : (
+                <RootLayoutBody>{children}</RootLayoutBody>
+              )}
+            </Suspense>
+          </ThemeProvider>
         </SessionProvider>
       </body>
     </html>

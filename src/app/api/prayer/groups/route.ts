@@ -31,7 +31,12 @@ export async function GET(request: Request) {
 
     if (slug) {
       const one = groups.find((g) => (g as { slug?: string }).slug === slug);
-      if (!one) return NextResponse.json({ error: "Not found" }, { status: 404 });
+      if (!one) {
+        return NextResponse.json(null, {
+          status: 200,
+          headers: { "Cache-Control": "no-store" },
+        });
+      }
       return NextResponse.json(one, { headers: { "Cache-Control": "no-store" } });
     }
 

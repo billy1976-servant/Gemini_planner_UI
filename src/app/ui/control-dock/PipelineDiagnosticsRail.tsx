@@ -317,9 +317,11 @@ export default function PipelineDiagnosticsRail(props: PipelineDiagnosticsRailPr
       </div>
     ) : openPanel === "debugger" ? (
       <div
+        data-dev-panel-content
         style={{
           flex: 1,
           minHeight: 0,
+          minWidth: 0,
           overflow: "hidden",
           display: "flex",
           flexDirection: "column",
@@ -419,6 +421,8 @@ export default function PipelineDiagnosticsRail(props: PipelineDiagnosticsRailPr
       <div
         data-dev-left-panel
         style={{
+          position: "relative",
+          zIndex: 95,
           width: openPanel ? panelWidth : 0,
           minWidth: 0,
           flexShrink: 0,

@@ -31,6 +31,7 @@ import { APP_MODULE_LOADERS } from "@/lib/app-loaders";
 import { TSXScreenWithEnvelope } from "@/lib/tsx-structure/TSXScreenWithEnvelope";
 import {
   buildDomainJsonPath,
+  getPrayerBasePathForHost,
   getResolvedPath,
   normalizeHiclarifyChristianPathSegments,
   traceDomainResolutionFromWindow,
@@ -340,11 +341,19 @@ export default function DomainPage() {
   // Prayer app expects in-app path only; strip leading "prayer" segment when present
   const appSlug =
     pathSegments[0]?.toLowerCase() === "prayer" ? pathSegments.slice(1) : pathSegments;
-  // Stable base path for all app links (e.g. /christian/prayer).
-  const appBase = pathSegments.length > 0 ? `/${domain}/${pathSegments[0]}` : `/${domain}`;
-  const routeKey = `${resolvedPath ?? ""}-${pathSegments.join("-")}`;
 
   const isPrayer = resolvedPath === "Christian/prayer" || resolvedPath === "HIClarify/Christian/prayer";
+
+  /** Public base for Link/router.push — never embed FQDN (e.g. christian.hiclarify.com) as a path segment. */
+  const isFqdnDomain = domain.includes(".");
+  const appBase = (() => {
+    if (isPrayer) return getPrayerBasePathForHost();
+    if (pathSegments.length === 0) return isFqdnDomain ? "/" : `/${domain}`;
+    if (isFqdnDomain) return `/${pathSegments[0]}`;
+    return `/${domain}/${pathSegments[0]}`;
+  })();
+
+  const routeKey = `${resolvedPath ?? ""}-${pathSegments.join("-")}`;
 
   // JSON mode: render through ExperienceRenderer
   if (renderableJson && renderableJson?.__type !== "tsx-screen" && renderableJson?.__type !== "screen-error") {
@@ -492,7 +501,6 @@ export default function DomainPage() {
   // TSX mode
   if (!Component) return null;
 
-  // Prayer app expects in-app path only; strip leading "prayer" segment when present
   if (isPrayer) {
     return (
       <TSXScreenWithEnvelope
