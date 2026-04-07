@@ -22,7 +22,7 @@ import InlineEditableText from "@/app/ui/control-dock/editor/InlineEditableText"
 import { getOverride, subscribe } from "@/04_Presentation/components/organs/tsx/website/node-order-override-store";
 import { useWizardConfig } from "@/lib/tsx-structure/engines/wizard";
 import { renderContentBlocks, type LandingContentBlock } from "@/lib/landing-content-blocks";
-import gospelConfig from "../tracts/gospel.json";
+import gospelConfig from "./tracts/gospel.json";
 import "@/app/landing/landing-theme.css";
 
 const COMPONENT_NAME = "GospelDiscipleship";
@@ -62,6 +62,35 @@ type LandingConfig = {
   stepTracker: { title: string; description: string };
   screens: Screen[];
 };
+
+const FALLBACK_CONFIG: LandingConfig = {
+  shopUrl: "#",
+  header: { logoSrc: "", logoAlt: "Gospel", shopNowLabel: "" },
+  stepTracker: { title: "Discipleship", description: "" },
+  screens: [],
+};
+
+function normalizeLandingConfig(input: unknown): LandingConfig {
+  if (!input || typeof input !== "object") return FALLBACK_CONFIG;
+  const candidate = input as Partial<LandingConfig>;
+  return {
+    shopUrl: typeof candidate.shopUrl === "string" ? candidate.shopUrl : FALLBACK_CONFIG.shopUrl,
+    header:
+      candidate.header &&
+      typeof candidate.header.logoSrc === "string" &&
+      typeof candidate.header.logoAlt === "string" &&
+      typeof candidate.header.shopNowLabel === "string"
+        ? candidate.header
+        : FALLBACK_CONFIG.header,
+    stepTracker:
+      candidate.stepTracker &&
+      typeof candidate.stepTracker.title === "string" &&
+      typeof candidate.stepTracker.description === "string"
+        ? candidate.stepTracker
+        : FALLBACK_CONFIG.stepTracker,
+    screens: Array.isArray(candidate.screens) ? (candidate.screens as Screen[]) : FALLBACK_CONFIG.screens,
+  };
+}
 
 function resolveHref(btn: ButtonBlock, cfg: LandingConfig): string {
   if (btn.type === "link" && "hrefKey" in btn && btn.hrefKey === "shopUrl") {
@@ -122,7 +151,7 @@ export default function GospelDiscipleship() {
   );
   const cardDevice = getCardDevice(shellDevice, editorMode);
 
-  const [config, setConfig] = useState<LandingConfig>(() => gospelConfig as LandingConfig);
+  const [config, setConfig] = useState<LandingConfig>(() => normalizeLandingConfig(gospelConfig));
   const cfg = config;
   const screens = cfg?.screens ?? [];
   const searchParams = useSearchParams();
@@ -139,8 +168,8 @@ export default function GospelDiscipleship() {
           .filter((s): s is Screen => s != null)
       : screens;
   const [currentScreenId, setCurrentScreenId] = useState<string | null>(() =>
-    Array.isArray((gospelConfig as LandingConfig)?.screens) && (gospelConfig as LandingConfig).screens.length > 0
-      ? (gospelConfig as LandingConfig).screens[0].id
+    Array.isArray(normalizeLandingConfig(gospelConfig).screens) && normalizeLandingConfig(gospelConfig).screens.length > 0
+      ? normalizeLandingConfig(gospelConfig).screens[0].id
       : null
   );
   const [failedMedia, setFailedMedia] = useState<Set<string>>(new Set());
@@ -157,7 +186,9 @@ export default function GospelDiscipleship() {
 
   useEffect(() => {
     if (!config?.screens?.length || canonicalKey == null) return;
-    registerJsonScreen(canonicalKey, config as Parameters<typeof registerJsonScreen>[1], (newConfig) => setConfig(newConfig as LandingConfig));
+    registerJsonScreen(canonicalKey, config as Parameters<typeof registerJsonScreen>[1], (newConfig) =>
+      setConfig(normalizeLandingConfig(newConfig))
+    );
   }, [config, canonicalKey]);
 
   const devProps = useSyncExternalStore(subscribeDevSidebarProps, getDevSidebarProps, getDevSidebarProps);
