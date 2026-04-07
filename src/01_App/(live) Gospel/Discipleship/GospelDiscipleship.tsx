@@ -28,7 +28,7 @@ import "@/app/landing/landing-theme.css";
 const COMPONENT_NAME = "GospelDiscipleship";
 
 /**
- * Same schema as ContainerCreationsLanding-2. Layouts use renderContentBlocks(screen.content) only.
+ * Same schema as landing-2. Layouts use renderContentBlocks(screen.content) only.
  */
 
 type MediaBlock =

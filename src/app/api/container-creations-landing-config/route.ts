@@ -14,14 +14,14 @@ const CONFIG_DIR = path.join(
 );
 
 const VARIANTS: Record<string, string> = {
-  default: "ContainerCreationsLanding-2.json",
+  default: "landing-2.json",
   v1: "ContainerCreationsLanding-v1.json",
   v2: "ContainerCreationsLanding-v2.json",
   v3: "ContainerCreationsLanding-3.json",
 };
 
 /** Fallback when requested variant file is missing. */
-const FALLBACK_FILENAME = "ContainerCreationsLanding-2.json";
+const FALLBACK_FILENAME = "landing-2.json";
 
 export async function GET(request: Request) {
   try {

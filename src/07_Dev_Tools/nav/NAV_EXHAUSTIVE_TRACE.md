@@ -46,14 +46,14 @@ This is where the value used for navigation is read from state. If the value is 
 **If wrong elementId / duplicate data-node-id:**
 
 ```diff
---- TSX screen (e.g. ContainerCreationsLanding-2.tsx)
+--- TSX screen (e.g. landing-2.tsx)
   Ensure every interactive element has a unique data-node-id attribute.
   No two elements must share the same data-node-id.
 ```
 
 ## DOM and MutationObserver
 
-- **DOM_SCAN** runs on panel navigable-element updates and on ContainerCreationsLanding-2 after each render; logs full list and `duplicateIds` / `mutation: { added, removed }`.
+- **DOM_SCAN** runs on panel navigable-element updates and on landing-2 after each render; logs full list and `duplicateIds` / `mutation: { added, removed }`.
 - **MutationObserver** (body) logs whenever any `[data-node-id]` is added, removed, or duplicated.
 
 ## React reconciliation

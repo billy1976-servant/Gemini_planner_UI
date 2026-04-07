@@ -49,7 +49,7 @@ When the Navigation panel has navigable elements (TSX screens, no tree), a DOM s
 
 **File:** `src/07_Dev_Tools/nav/nav-instrumentation.ts` → `scanDomForNodeIds`, `logDomNodeIdScan`; triggered from `DevNavigationPanel.tsx` in a `useEffect` when `!hasTree && navigableElements.length > 0`.
 
-**Fix if duplicates:** In the TSX screen (e.g. `ContainerCreationsLanding-2.tsx`), ensure every interactive element has a unique `data-node-id`. If the same id is used in a list or repeated block, make it unique (e.g. suffix with index or key).
+**Fix if duplicates:** In the TSX screen (e.g. `landing-2.tsx`), ensure every interactive element has a unique `data-node-id`. If the same id is used in a list or repeated block, make it unique (e.g. suffix with index or key).
 
 ---
 
@@ -103,7 +103,7 @@ If the **wrong value** appears:
 
 - **If the CLICK log shows the wrong `elementId` (e.g. always the same id):**
   - **DOM:** Duplicate or incorrect `data-node-id` (see section 4) or wrong `closest()` result (e.g. nested elements with same id).
-  - **Event target:** `e.target` might be a child; we use `closest("[data-node-id]")`, which is correct. If the **wrong** element has that id (e.g. two elements with same id), fix the TSX so each interactive element has a unique `data-node-id` at the exact file where the duplicate is set (e.g. `ContainerCreationsLanding-2.tsx`).
+  - **Event target:** `e.target` might be a child; we use `closest("[data-node-id]")`, which is correct. If the **wrong** element has that id (e.g. two elements with same id), fix the TSX so each interactive element has a unique `data-node-id` at the exact file where the duplicate is set (e.g. `landing-2.tsx`).
 
 - **If screenKey differs between SAVE and CLICK:**
   - Fix: Ensure both panel and `TsxNavCapture` receive `screenKey` from the same canonical source (`getCanonicalNavScreenKey(screen, {})` with the same `screen` from the current URL). See section 2.
@@ -119,7 +119,7 @@ Instrumentation now logs:
 3. **STATE TABLE** — After each save (next tick).
 4. **CLICK** — Full event path: `{ targetTag, closestNodeId, navTargetsMapEntryUsed }` plus full map and resolved target.
 5. **MutationObserver** — When any `[data-node-id]` is added, removed, or duplicated in the DOM: `[NavInstrument] MutationObserver [data-node-id] change` with `{ added, removed, duplicateIds }`.
-6. **ContainerCreationsLanding-2** — After each render: `[NavInstrument] RENDER` with `source: "ContainerCreationsLanding-2"` and `dataNodeIds` (every element’s `data-node-id` in the container).
+6. **landing-2** — After each render: `[NavInstrument] RENDER` with `source: "landing-2"` and `dataNodeIds` (every element’s `data-node-id` in the container).
 
 When the same element is saved and then clicked, the tracer compares **expected** (from save) vs **got** (resolved at click). On first mismatch it logs:
 
@@ -131,7 +131,7 @@ When the same element is saved and then clicked, the tracer compares **expected*
 | Cause | File and line | Fix |
 |-------|----------------|-----|
 | State has wrong value for this `elementId` | `src/03_Runtime/state/state-resolver.ts` L157–168 (merge), `src/07_Dev_Tools/nav/DevNavigationPanel.tsx` L152 (payload) | Ensure merge never overwrites other keys; ensure panel sends correct `screenKey` and `selectedElementId`. |
-| Wrong `elementId` at click (duplicate or wrong node) | `src/app/dev/page.tsx` L197–199 (`closest`, `getAttribute`) | Ensure each interactive element has a unique `data-node-id` in the TSX (e.g. `ContainerCreationsLanding-2.tsx`). Fix duplicate ids at the source. |
+| Wrong `elementId` at click (duplicate or wrong node) | `src/app/dev/page.tsx` L197–199 (`closest`, `getAttribute`) | Ensure each interactive element has a unique `data-node-id` in the TSX (e.g. `landing-2.tsx`). Fix duplicate ids at the source. |
 | `screenKey` differs between save and click | Panel: `dev/page.tsx` L40–41; Click: L712 | Ensure both use `getCanonicalNavScreenKey(screen, {})` with the same `screen` from the current URL. |
 
 ---

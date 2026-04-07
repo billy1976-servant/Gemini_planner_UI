@@ -2,7 +2,7 @@
 
 ## Summary
 
-Container Creations onboarding screens that previously used the ContainerCreationsLanding-2 config (screens[] format) and custom TSX renderer now run through the same pipeline as container-creations.landing.json: **ExperienceRenderer → JsonRenderer → JsonSkinEngine**. Layout, palette, wrappers, and nodes are controlled only by JsonSkinEngine and the unified json-skin schema.
+Container Creations onboarding screens that previously used the landing-2 config (screens[] format) and custom TSX renderer now run through the same pipeline as container-creations.landing.json: **ExperienceRenderer → JsonRenderer → JsonSkinEngine**. Layout, palette, wrappers, and nodes are controlled only by JsonSkinEngine and the unified json-skin schema.
 
 ---
 
@@ -11,7 +11,7 @@ Container Creations onboarding screens that previously used the ContainerCreatio
 | File | Format | Renders via |
 |------|--------|-------------|
 | [src/05_Logic/logic/content/landing/container-creations.landing.json](src/05_Logic/logic/content/landing/container-creations.landing.json) | json-skin (root.type, sections with when.landingStep) | ExperienceRenderer (landing page, ContainerCreationsLanding.tsx) |
-| [src/01_App/(live) Business/Container_Creations/ContainerCreationsLanding-2.json](src/01_App/(live) Business/Container_Creations/ContainerCreationsLanding-2.json) | screens[] (id, layout, title, content[], media[], buttons[]) | **Now** ExperienceRenderer after conversion |
+| [src/01_App/(live) Business/Container_Creations/landing-2.json](src/01_App/(live) Business/Container_Creations/landing-2.json) | screens[] (id, layout, title, content[], media[], buttons[]) | **Now** ExperienceRenderer after conversion |
 | [src/01_App/(live) Business/Container_Creations/ContainerCreationsLanding-3.json](src/01_App/(live) Business/Container_Creations/ContainerCreationsLanding-3.json) | Flow config (steps[], navigation) | Separate flow pipeline; not converted in this refactor |
 
 ---
@@ -20,7 +20,7 @@ Container Creations onboarding screens that previously used the ContainerCreatio
 
 | File | Role |
 |------|------|
-| [src/01_App/(live) Business/Container_Creations/ContainerCreationsLanding-2.tsx](src/01_App/(live) Business/Container_Creations/ContainerCreationsLanding-2.tsx) | Previously rendered -2.json via custom TSX (fetch config, map screens to JSX, step navigation). **No longer used** by /container-creations or dev; can be removed after validation. |
+| [src/01_App/(live) Business/Container_Creations/landing-2.tsx](src/01_App/(live) Business/Container_Creations/landing-2.tsx) | Previously rendered -2.json via custom TSX (fetch config, map screens to JSX, step navigation). **No longer used** by /container-creations or dev; can be removed after validation. |
 | [src/01_App/(live) Business/Container_Creations/ContainerCreationsLanding.tsx](src/01_App/(live) Business/Container_Creations/ContainerCreationsLanding.tsx) | Uses container-creations.landing.json (05_Logic) and ExperienceRenderer; unchanged. |
 | [src/app/flow/page.tsx](src/app/flow/page.tsx) | Uses ContainerCreationsLanding (TSX) with URL step → landingStep; unchanged. |
 | [src/app/api/container-creations-landing-config/route.ts](src/app/api/container-creations-landing-config/route.ts) | Serves -2.json (and variants v1, v2, v3); still used to feed the converter. |
@@ -72,7 +72,7 @@ Content is preserved; only structure is adapted to JsonSkinEngine node types (te
 
 | Entry | Before | After |
 |-------|--------|--------|
-| **Dev:** screen = `container-creations-landing` | loadScreen returned tsx-screen → ContainerCreationsLanding-2.tsx | loadScreen returns converted json-skin doc → JSON branch → ExperienceRenderer → JsonRenderer → JsonSkinEngine |
+| **Dev:** screen = `container-creations-landing` | loadScreen returned tsx-screen → landing-2.tsx | loadScreen returns converted json-skin doc → JSON branch → ExperienceRenderer → JsonRenderer → JsonSkinEngine |
 | **Route /container-creations** | Rendered `<ContainerCreationsLanding2 />` | Fetches config, converts to json-skin, builds tree, renders `<ExperienceRenderer node={treeForRender} … />` |
 | **Route /landing** | Unchanged; still uses container-creations.landing.json (05_Logic) and ExperienceRenderer. | Unchanged. |
 
@@ -93,7 +93,7 @@ All onboarding screens that use the -2 config now render through ExperienceRende
 
 ## PHASE 9 — Cleanup (recommended after validation)
 
-- **Remove or deprecate:** [ContainerCreationsLanding-2.tsx](src/01_App/(live) Business/Container_Creations/ContainerCreationsLanding-2.tsx) — No longer referenced by /container-creations or by dev for `container-creations-landing`. Can be deleted or kept as reference.
+- **Remove or deprecate:** [landing-2.tsx](src/01_App/(live) Business/Container_Creations/landing-2.tsx) — No longer referenced by /container-creations or by dev for `container-creations-landing`. Can be deleted or kept as reference.
 - **EXPLICIT_TSX_MAP** in dev page still has an entry for `container-creations-landing` pointing to -2; it is unused because loadScreen no longer returns tsx-screen for that path. The entry can be removed for clarity.
 
 ---
@@ -112,7 +112,7 @@ All onboarding screens that use the -2 config now render through ExperienceRende
 ## Schema compatibility
 
 - **container-creations.landing.json** (05_Logic): Already json-skin; uses landingStep and section params (containerLayout, wrapStyle on hero). Unchanged.
-- **ContainerCreationsLanding-2.json**: Not edited. Converted at runtime (screen-loader, container-creations page) to json-skin; sections get containerLayout/wrapStyle from layout (hero vs others).
+- **landing-2.json**: Not edited. Converted at runtime (screen-loader, container-creations page) to json-skin; sections get containerLayout/wrapStyle from layout (hero vs others).
 - **ContainerCreationsLanding-3.json**: Different flow schema; not part of this refactor.
 
 ---

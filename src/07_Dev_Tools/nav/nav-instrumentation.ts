@@ -159,7 +159,7 @@ function reportExactFailingLine(expected: NavTarget, got: NavTarget | undefined,
   );
   console.error(
     "[NavTrace] MINIMAL FIX PATCH (if wrong elementId / duplicate):",
-    "\n  --- TSX screen (e.g. ContainerCreationsLanding-2.tsx)",
+    "\n  --- TSX screen (e.g. landing-2.tsx)",
     "\n  Ensure every interactive element has a unique data-node-id attribute.",
     "\n  No two elements must share the same data-node-id."
   );

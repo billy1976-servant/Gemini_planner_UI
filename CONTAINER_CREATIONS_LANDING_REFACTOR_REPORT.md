@@ -10,8 +10,8 @@ The Container Creations landing system was refactored so that **JSON configurati
 
 | File | Changes |
 |------|--------|
-| `src/01_App/(live) Business/Container_Creations/ContainerCreationsLanding-2.tsx` | Removed all hardcoded step ids; added `lightTheme`, `nodePosition` to Screen type; navigation and layout derived from config; register `landingFlowScreens` with dev sidebar when in editor; refined summary text. |
-| `src/01_App/(live) Business/Container_Creations/ContainerCreationsLanding-2.json` | Added `lightTheme: true` for intro, structural-fit, ventilation; added optional `nodePosition` on intro; all screens already had `nextScreenId` and `inlineControls`. |
+| `src/01_App/(live) Business/Container_Creations/landing-2.tsx` | Removed all hardcoded step ids; added `lightTheme`, `nodePosition` to Screen type; navigation and layout derived from config; register `landingFlowScreens` with dev sidebar when in editor; refined summary text. |
+| `src/01_App/(live) Business/Container_Creations/landing-2.json` | Added `lightTheme: true` for intro, structural-fit, ventilation; added optional `nodePosition` on intro; all screens already had `nextScreenId` and `inlineControls`. |
 | `src/app/api/container-creations-landing-config/route.ts` | Variant `v3` maps to `ContainerCreationsLanding-3.json`; added `FALLBACK_FILENAME`; when requested variant file is missing, serve fallback (default config). |
 | `src/app/ui/control-dock/dev-right-sidebar-store.ts` | Added `LandingFlowScreen` type and `landingFlowScreens?: LandingFlowScreen[]` to `DevSidebarPropsFromPage`. |
 | `src/04_Presentation/components/organs/tsx/website/DevNodePanel.tsx` | When `landingFlowScreens` is set, render **Landing flow** view: list of nodes (id, title, layout, inlineControls, nextScreenId, buttons, nodePosition) and a **Connections** section (nextScreenId and goto targets). |
@@ -46,7 +46,7 @@ The Container Creations landing system was refactored so that **JSON configurati
 ## 3. Node Integration (Sidebar)
 
 - **Store** (`dev-right-sidebar-store.ts`): `DevSidebarPropsFromPage` now includes `landingFlowScreens?: LandingFlowScreen[]` with `id`, `title`, `stepLabel`, `layout`, `nextScreenId`, `inlineControls`, `nodePosition`, `buttons` (type, target, nodeId).
-- **Registration**: When `ContainerCreationsLanding-2` mounts with **editor mode** and config loaded, it calls `setDevSidebarProps({ ...prev, landingFlowScreens: config.screens mapped to LandingFlowScreen })` and clears it on unmount.
+- **Registration**: When `landing-2` mounts with **editor mode** and config loaded, it calls `setDevSidebarProps({ ...prev, landingFlowScreens: config.screens mapped to LandingFlowScreen })` and clears it on unmount.
 - **Nodes panel** (`DevNodePanel.tsx`): If `landingFlowScreens.length > 0`, it renders **Landing flow (from JSON)** instead of the website node-order UI. For each screen it shows:
   - Title, id, layout
   - Optional inlineControls, nextScreenId, goto targets from buttons, nodePosition
@@ -109,11 +109,11 @@ Root config: `shopUrl`, `header`, `stepTracker`, `screens`.
 
 - **Endpoint**: `GET /api/container-creations-landing-config?variant=vX`
 - **Mapping**:  
-  - `default` → `ContainerCreationsLanding-2.json`  
+  - `default` → `landing-2.json`  
   - `v1` → `ContainerCreationsLanding-v1.json`  
   - `v2` → `ContainerCreationsLanding-v2.json`  
   - `v3` → `ContainerCreationsLanding-3.json`
-- **Fallback**: If the file for the requested variant is missing, the API serves `FALLBACK_FILENAME` (`ContainerCreationsLanding-2.json`).
+- **Fallback**: If the file for the requested variant is missing, the API serves `FALLBACK_FILENAME` (`landing-2.json`).
 - **ContainerCreationsLanding-3.json**: Uses a different schema (`steps[]` with `instruction`, `input`, `next`, etc.). The current TSX expects `screens[]`. Using `-3.json` with the same renderer would require an adapter (steps → screens) or a separate component; not included in this refactor.
 
 ---

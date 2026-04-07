@@ -24,7 +24,7 @@ import { useWizardConfig } from "@/lib/tsx-structure/engines/wizard";
 import { renderContentBlocks, type LandingContentBlock } from "@/lib/landing-content-blocks";
 import "@/app/landing/landing-theme.css";
 
-const COMPONENT_NAME = "ContainerCreationsLanding-2";
+const COMPONENT_NAME = "landing-2";
 
 const CONFIG_URL = "/api/container-creations-landing-config";
 
@@ -314,7 +314,7 @@ const stepNavButtonStyleSteel: React.CSSProperties = {
   cursor: "pointer",
 };
 
-export default function ContainerCreationsLanding2() {
+export default function Landing2() {
   const wizardConfig = useWizardConfig();
   const containerRef = useRef<HTMLDivElement>(null);
   const editorMode = useSyncExternalStore(subscribeEditorMode, getEditorMode, getEditorMode);

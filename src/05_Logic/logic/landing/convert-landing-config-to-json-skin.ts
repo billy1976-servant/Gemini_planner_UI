@@ -1,5 +1,5 @@
 /**
- * Converts ContainerCreationsLanding-2 config (screens[] format) to json-skin tree
+ * Converts landing-2 config (screens[] format) to json-skin tree
  * so it can be rendered via ExperienceRenderer → JsonRenderer → JsonSkinEngine.
  */
 

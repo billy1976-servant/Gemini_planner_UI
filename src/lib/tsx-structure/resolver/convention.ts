@@ -22,7 +22,7 @@ const CO_LOCATED_MAP: Record<string, ConventionResult> = {
   // Wizard (onboarding / step-based flows)
   "(live) Business/Prayer_Stream/PrayerStreamOnboarding": { structureType: "wizard", templateId: "default", overrides: {} },
   "(live) Business/Container_Creations/ContainerCreationsLanding": { structureType: "wizard", templateId: "default", overrides: {} },
-  "(live) Business/Container_Creations/ContainerCreationsLanding-2": { structureType: "wizard", templateId: "default", overrides: {} },
+  "(live) Business/Container_Creations/landing-2": { structureType: "wizard", templateId: "default", overrides: {} },
   "(live) Gospel/Discipleship/GospelDiscipleship": { structureType: "wizard", templateId: "default", overrides: {} },
   "(live) Business/onboarding/FlowViewer": { structureType: "wizard", templateId: "default", overrides: {} },
   "HiClarify/HiClarifyOnboarding": { structureType: "wizard", templateId: "minimal", overrides: {} },
