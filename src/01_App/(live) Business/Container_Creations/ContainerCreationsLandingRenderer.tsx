@@ -27,12 +27,12 @@ import "@/app/landing/landing-theme.css";
 const CONFIG_URL = "/api/container-creations-landing-config";
 
 export type ContainerCreationsLandingRendererProps = {
-  /** Dev instrumentation id (e.g. `landing-2`). */
-  componentName: string;
+  /** Dev instrumentation id (e.g. `landing-2`). Defaults to `landing-2`. */
+  componentName?: string;
   /**
    * Default JSON version when the URL has no `variant` query.
    * Sent as `version` to the config API (e.g. `"2"` → `landing-2.json`).
-   * Omit to mirror legacy behavior: API default only (`?t=`).
+   * Defaults to `"2"` for `/landing-2` parity; omit props only when using those defaults.
    */
   configVersion?: string;
 };
@@ -324,9 +324,9 @@ const stepNavButtonStyleSteel: React.CSSProperties = {
 };
 
 export default function ContainerCreationsLandingRenderer({
-  componentName,
-  configVersion,
-}: ContainerCreationsLandingRendererProps) {
+  componentName = "landing-2",
+  configVersion = "2",
+}: ContainerCreationsLandingRendererProps = {}) {
   const wizardConfig = useWizardConfig();
   const containerRef = useRef<HTMLDivElement>(null);
   const editorMode = useSyncExternalStore(subscribeEditorMode, getEditorMode, getEditorMode);

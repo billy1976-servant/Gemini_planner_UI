@@ -10,7 +10,7 @@ import {
 
 /**
  * Toggle between Editor view (3-up cards) and User Preview (single step flow).
- * Only shown in layout when devMode=dev and screen is landing-2.
+ * Only shown in layout when devMode=dev and screen is Container Creations onboarding.
  */
 export default function OnboardingEditorToggle() {
   const enabled = useSyncExternalStore(

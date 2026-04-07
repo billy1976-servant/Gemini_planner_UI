@@ -6,7 +6,7 @@ import type { StateEvent } from "../src/03_Runtime/state/state";
 // @ts-ignore - deriveState is the only export we need
 import { deriveState } from "../src/03_Runtime/state/state-resolver";
 
-const SCREEN_KEY = "tsx--live--Business-Container_Creations-landing-2";
+const SCREEN_KEY = "tsx--live--Business-Container_Creations-Onboarding";
 const ENTRIES = [
   { id: "explore-container", toScreenId: "__same__", toAnchor: "#intro" },
   { id: "structural-fit", toScreenId: "__same__", toAnchor: "#structural-fit" },

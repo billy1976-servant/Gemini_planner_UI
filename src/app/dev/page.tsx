@@ -161,6 +161,9 @@ const EXPLICIT_TSX_MAP: Record<string, () => Promise<any>> = {
     import("@/01_App/(live) Business/Container_Creations/ContainerCreationsWebsite"),
   "(live) Business/Container_Creations/ContainerCreationsLanding": () =>
     import("@/01_App/(live) Business/Container_Creations/ContainerCreationsLanding"),
+  /** Legacy path after landing-2.tsx removal; same module as JSON wizard landing. */
+  "(live) Business/Container_Creations/landing-2": () =>
+    import("@/01_App/(live) Business/Container_Creations/ContainerCreationsLandingRenderer"),
   "(live) Gospel/Discipleship/GospelDiscipleship": () =>
     import("@/01_App/(live) Gospel/Discipleship/GospelDiscipleship"),
 };
