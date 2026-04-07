@@ -23,13 +23,29 @@ const VARIANTS: Record<string, string> = {
 /** Fallback when requested variant file is missing. */
 const FALLBACK_FILENAME = "landing-2.json";
 
+/** `version` query: `landing-{n}.json` (digits only; avoids path traversal). */
+function filenameFromVersionParam(versionRaw: string): string | null {
+  if (!/^\d+$/.test(versionRaw.trim())) return null;
+  return `landing-${versionRaw.trim()}.json`;
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const variantParam = searchParams.get("variant");
-    const variantKey =
-      variantParam && VARIANTS[variantParam] ? variantParam : "default";
-    const filename = VARIANTS[variantKey];
+    const versionParam = searchParams.get("version");
+
+    let filename: string;
+
+    if (variantParam && VARIANTS[variantParam]) {
+      filename = VARIANTS[variantParam];
+    } else if (versionParam) {
+      const fromVersion = filenameFromVersionParam(versionParam);
+      filename = fromVersion ?? VARIANTS.default;
+    } else {
+      filename = VARIANTS.default;
+    }
+
     const configPath = path.join(CONFIG_DIR, filename);
 
     if (!fs.existsSync(configPath)) {

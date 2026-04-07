@@ -1,3 +1,5 @@
-"use client";
+import Landing2 from "@/01_App/(live) Business/Container_Creations/landing-2";
 
-export { default } from "../container-creations/page";
+export default function Landing2Page() {
+  return <Landing2 />;
+}
