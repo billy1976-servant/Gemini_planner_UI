@@ -24,6 +24,23 @@ const CHECKMARK_SVG_LARGE = (
   </svg>
 );
 
+/** Semantic keys in JSON → emoji for trust strip; unknown values pass through (e.g. emoji in JSON). */
+function displayTrustIcon(icon?: string): string | undefined {
+  if (icon == null || icon === "") return undefined;
+  const key = icon.trim().toLowerCase();
+  const map: Record<string, string> = {
+    shield: "🛡",
+    check: "✓",
+    tool: "🔧",
+    truck: "🚚",
+    star: "★",
+    bolt: "⚡",
+    leaf: "🌿",
+    award: "🏆",
+  };
+  return map[key] ?? icon;
+}
+
 function getParagraphStyle(className?: string): React.CSSProperties {
   const style: React.CSSProperties = { marginBottom: 12 };
   if (className === "stars") {
@@ -134,6 +151,176 @@ export function renderContentBlocks(
           </audio>
         </div>
       );
+    }
+    if (block.type === "rating") {
+      const max = block.max ?? 5;
+      const v = Math.min(Math.max(block.value, 0), max);
+      const full = Math.round(v);
+      const stars = [];
+      for (let s = 1; s <= max; s++) {
+        stars.push(
+          <span
+            key={s}
+            className={`cc-block-rating__star${s <= full ? " cc-block-rating__star--on" : ""}`}
+            aria-hidden
+          >
+            ★
+          </span>
+        );
+      }
+      return (
+        <div
+          key={i}
+          className="cc-block-rating"
+          role="img"
+          aria-label={`${v} out of ${max} stars${block.reviewCount != null ? `, ${block.reviewCount} reviews` : ""}`}
+        >
+          <div className="cc-block-rating__stars">{stars}</div>
+          {(block.reviewCount != null || block.source) && (
+            <p className="cc-block-rating__meta">
+              {block.reviewCount != null && <span className="cc-block-rating__count">{block.reviewCount} reviews</span>}
+              {block.reviewCount != null && block.source ? " · " : null}
+              {block.source ? <span className="cc-block-rating__source">{block.source}</span> : null}
+            </p>
+          )}
+        </div>
+      );
+    }
+    if (block.type === "testimonial") {
+      return (
+        <figure key={i} className="cc-block-testimonial">
+          <blockquote className="cc-block-testimonial__quote">
+            <p>{block.quote}</p>
+          </blockquote>
+          <figcaption className="cc-block-testimonial__footer">
+            <span className="cc-block-testimonial__author">{block.author}</span>
+            {block.role != null && <span className="cc-block-testimonial__role">{block.role}</span>}
+            {block.location != null && <span className="cc-block-testimonial__location">{block.location}</span>}
+            {block.rating != null && (() => {
+              const r = Math.min(5, Math.max(0, Math.round(block.rating)));
+              return (
+                <span className="cc-block-testimonial__rating" aria-label={`${block.rating} out of 5`}>
+                  {Array.from({ length: r }, (_, k) => (
+                    <span key={k} className="cc-block-testimonial__rating-star">★</span>
+                  ))}
+                  {Array.from({ length: 5 - r }, (_, k) => (
+                    <span key={`e${k}`} className="cc-block-testimonial__rating-star cc-block-testimonial__rating-star--empty">☆</span>
+                  ))}
+                </span>
+              );
+            })()}
+          </figcaption>
+        </figure>
+      );
+    }
+    if (block.type === "trustStrip") {
+      return (
+        <ul key={i} className="cc-block-trust-strip" role="list">
+          {block.items.map((item, j) => {
+            const iconChar = displayTrustIcon(item.icon);
+            return (
+            <li key={j} className="cc-block-trust-strip__item">
+              {iconChar != null && iconChar !== "" && (
+                <span className="cc-block-trust-strip__icon" aria-hidden>
+                  {iconChar}
+                </span>
+              )}
+              <span className="cc-block-trust-strip__label">{item.label}</span>
+            </li>
+            );
+          })}
+        </ul>
+      );
+    }
+    if (block.type === "stats") {
+      return (
+        <div key={i} className="cc-block-stats">
+          {block.items.map((row, j) => (
+            <div key={j} className="cc-block-stats__item">
+              <div className="cc-block-stats__value">{row.value}</div>
+              <div className="cc-block-stats__label">{row.label}</div>
+              {row.hint != null && <div className="cc-block-stats__hint">{row.hint}</div>}
+            </div>
+          ))}
+        </div>
+      );
+    }
+    if (block.type === "iconFeatures") {
+      return (
+        <ul key={i} className="cc-block-icon-features" role="list">
+          {block.items.map((item, j) => (
+            <li key={j} className="cc-block-icon-features__item">
+              <span className="cc-block-icon-features__icon" aria-hidden>
+                {item.icon ?? "✓"}
+              </span>
+              <span className="cc-block-icon-features__text">
+                <strong className="cc-block-icon-features__title">{item.title}</strong>
+                {item.sub != null && <span className="cc-block-icon-features__sub">{item.sub}</span>}
+              </span>
+            </li>
+          ))}
+        </ul>
+      );
+    }
+    if (block.type === "comparison") {
+      const col = block.columnLabels;
+      const hasColLabels =
+        col != null && ((col.left != null && col.left !== "") || (col.right != null && col.right !== ""));
+      return (
+        <div key={i} className="cc-block-comparison">
+          {block.heading != null && <h3 className="cc-block-comparison__heading">{block.heading}</h3>}
+          <div className="cc-block-comparison__table" role="table" aria-label={block.heading ?? "Comparison"}>
+            {hasColLabels && col && (
+              <div className="cc-block-comparison__row cc-block-comparison__row--columns" role="row">
+                <div
+                  className="cc-block-comparison__cell cc-block-comparison__cell--left cc-block-comparison__cell--colhead"
+                  role="columnheader"
+                >
+                  {col.left ?? ""}
+                </div>
+                <div
+                  className="cc-block-comparison__cell cc-block-comparison__cell--right cc-block-comparison__cell--colhead"
+                  role="columnheader"
+                >
+                  {col.right ?? ""}
+                </div>
+              </div>
+            )}
+            {block.rows.map((row, j) => {
+              const hl = row.highlight ?? "none";
+              return (
+                <div
+                  key={j}
+                  className={`cc-block-comparison__row${hl !== "none" ? ` cc-block-comparison__row--hl-${hl}` : ""}`}
+                  role="row"
+                >
+                  <div className="cc-block-comparison__cell cc-block-comparison__cell--left" role="cell">
+                    {row.left}
+                  </div>
+                  <div className="cc-block-comparison__cell cc-block-comparison__cell--right" role="cell">
+                    {row.right}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+    if (block.type === "ctaBand") {
+      return (
+        <div
+          key={i}
+          className={`cc-block-cta-band${block.emphasis ? " cc-block-cta-band--emphasis" : ""}`}
+        >
+          <p className="cc-block-cta-band__headline">{block.headline}</p>
+          {block.sub != null && <p className="cc-block-cta-band__sub">{block.sub}</p>}
+        </div>
+      );
+    }
+    if (block.type === "divider") {
+      const sp = block.spacing ?? "md";
+      return <hr key={i} className={`cc-block-divider cc-block-divider--${sp}`} />;
     }
     if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
       console.warn("[landing-content-blocks] Unknown content block type:", (block as { type?: string }).type);

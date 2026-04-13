@@ -123,7 +123,7 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
   const templateList = getTemplateList();
 
   // Do not auto-attach bottom nav for onboarding / Google-style / OsbHomeV2; clean stage rules (no play button + icons strip, neutral bg, no extra maxWidth)
-  const isOnboardingTsx = /HiClarifyOnboarding|onboarding|HiClarify\/HiClarifyOnboarding|OsbHomeV2|ContainerCreationsLanding/i.test(currentScreen || "");
+  const isOnboardingTsx = /HiClarifyOnboarding|onboarding|HiClarify\/HiClarifyOnboarding|OsbHomeV2|ContainerCreationsLanding|Container_Creations|landing-2|container-creations/i.test(currentScreen || "");
 
   // State is source of truth; fall back to layout-store / palette-store when key is missing
   const experience = (stateSnapshot?.values?.experience ?? (layoutSnapshot as { experience?: string })?.experience) ?? "website";
@@ -552,7 +552,7 @@ export default function RootLayout({ children }: any) {
       </head>
       <body className="app-body">
         <Suspense fallback={<div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>Loading...</div>}>
-          {pathname === "/landing" || pathname === "/flow" || pathname === "/onboarding" || pathname === "/container-creations" || pathname?.startsWith("/prayer") ? (
+          {pathname === "/landing" || pathname === "/landing-2" || pathname === "/flow" || pathname === "/onboarding" || pathname === "/container-creations" || pathname?.startsWith("/prayer") ? (
             children
           ) : isUserMode ? (
             <UserLayoutChrome>{children}</UserLayoutChrome>

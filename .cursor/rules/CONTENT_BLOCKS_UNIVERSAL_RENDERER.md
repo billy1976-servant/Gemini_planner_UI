@@ -29,3 +29,7 @@
 ## Result
 
 Any JSON screen can include checklist, paragraph, video, images, and future block types, and they will always render correctly in both editor and preview.
+
+## Screen-level presentation (optional, does not violate this rule)
+
+Per-screen fields such as **`visualTone`** (`default` | `soft` | `bold`) and **`density`** (`comfortable` | `compact`) are allowed in JSON. They only set `data-*` attributes on a wrapper around the screen and adjust **spacing and visual weight via CSS**. They do **not** change which blocks render and must not be implemented by filtering `screen.content` by type. Content still flows only through `renderContentBlocks(screen.content, ...)`.

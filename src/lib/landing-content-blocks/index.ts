@@ -1,2 +1,7 @@
-export type { LandingContentBlock, LandingContentBlocksOptions } from "./types";
+export type {
+  LandingContentBlock,
+  LandingContentBlocksOptions,
+  LandingMediaTuning,
+  MediaBlock,
+} from "./types";
 export { renderContentBlocks } from "./renderContentBlocks";

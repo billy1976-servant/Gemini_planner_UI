@@ -21,7 +21,16 @@ import { registerJsonScreen } from "@/app/ui/control-dock/editor/registerJsonScr
 import InlineEditableText from "@/app/ui/control-dock/editor/InlineEditableText";
 import { getOverride, subscribe } from "@/04_Presentation/components/organs/tsx/website/node-order-override-store";
 import { useWizardConfig } from "@/lib/tsx-structure/engines/wizard";
-import { renderContentBlocks, type LandingContentBlock } from "@/lib/landing-content-blocks";
+import {
+  renderContentBlocks,
+  type LandingContentBlock,
+  type MediaBlock,
+} from "@/lib/landing-content-blocks";
+import {
+  landingScreenPresentationAttrs,
+  type LandingScreenDensity,
+  type LandingVisualTone,
+} from "@/lib/landing-screen-presentation";
 import gospelConfig from "./tracts/gospel.json";
 import "@/app/landing/landing-theme.css";
 
@@ -30,11 +39,6 @@ const COMPONENT_NAME = "GospelDiscipleship";
 /**
  * Same schema as landing-2. Layouts use renderContentBlocks(screen.content) only.
  */
-
-type MediaBlock =
-  | { type: "video"; src: string; caption?: string }
-  | { type: "image"; src: string; alt: string }
-  | { type: "beforeAfter"; before: string; after: string; altBefore: string; altAfter: string };
 
 type ButtonBlock =
   | { type: "link"; label: string; hrefKey: string; nodeId?: string }
@@ -54,6 +58,8 @@ type Screen = {
   nextScreenId?: string;
   lightTheme?: boolean;
   nodePosition?: { x: number; y: number };
+  visualTone?: LandingVisualTone;
+  density?: LandingScreenDensity;
 };
 
 type LandingConfig = {
@@ -249,6 +255,11 @@ export default function GospelDiscipleship() {
   const currentIndex = orderedScreens.findIndex((s) => s.id === currentScreenId);
   const currentScreen = orderedScreens[currentIndex] ?? orderedScreens[0];
   const isLightStep = currentScreen.lightTheme === true;
+  const lightLayoutStep =
+    (currentScreen.layout === "twoCol" ||
+      currentScreen.layout === "proofPanel" ||
+      currentScreen.layout === "splitProof") &&
+    currentScreen.lightTheme === true;
 
   const goToScreen = (id: string) => setCurrentScreenId(id);
   const goNext = () => {
@@ -345,54 +356,120 @@ export default function GospelDiscipleship() {
     );
   }
 
-  function renderMedia(screen: Screen, heroVideoError = false) {
+  function renderMedia(screen: Screen, opts?: { surface?: "proofBand" | "splitFrame" }) {
+    const surface = opts?.surface;
     const media = screen.media ?? [];
+    const defaultObjectFit: "cover" | "contain" =
+      surface === "splitFrame" || surface === "proofBand" ? "cover" : "cover";
+    const slotClass = `cc-media-slot${surface ? ` cc-media-slot--${surface}` : ""}`;
+    const wrapSlot = (idx: number, inner: React.ReactNode) => (
+      <div key={idx} className={slotClass}>
+        {inner}
+      </div>
+    );
+
     return media.map((m, i) => {
       if (m.type === "video") {
-        const isHeroVideo = screen.layout === "hero" && i === 0;
-        const hasError = (isHeroVideo && heroVideoError) || failedMedia.has(m.src);
-        if (hasError) {
-          return <MediaPlaceholder key={i} label="Intro video" />;
+        if (failedMedia.has(m.src)) {
+          return wrapSlot(i, <MediaPlaceholder label="Video" />);
         }
-        return (
-          <React.Fragment key={i}>
-            <video
-              autoPlay
-              muted
-              loop
-              playsInline
-              onError={() => (isHeroVideo ? setFailedMedia((prev) => new Set(prev).add(m.src)) : undefined)}
-              src={m.src}
-            />
+        const fit = m.objectFit ?? defaultObjectFit;
+        const videoEl = (
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            poster={m.poster}
+            onError={() => setFailedMedia((prev) => new Set(prev).add(m.src))}
+            src={m.src}
+            className="cc-media-video"
+            style={{
+              width: "100%",
+              height: m.aspectRatio ? "100%" : "auto",
+              maxHeight: m.maxHeight,
+              objectFit: fit,
+              display: "block",
+            }}
+          />
+        );
+        const videoBlock = (
+          <>
+            {m.aspectRatio ? (
+              <div className="cc-media-frame" style={{ aspectRatio: m.aspectRatio }}>
+                {videoEl}
+              </div>
+            ) : (
+              videoEl
+            )}
             {m.caption != null && (
-              <p style={{ fontSize: "0.875rem", opacity: 0.8, margin: "12px auto 0", maxWidth: 480, lineHeight: 1.45 }}>
+              <p className={`cc-media-caption${surface === "proofBand" ? " cc-media-caption--overlay" : ""}`}>
                 {m.caption}
               </p>
             )}
-          </React.Fragment>
+          </>
         );
+        const inner = m.fullBleed ? <div className="cc-media-fullbleed">{videoBlock}</div> : videoBlock;
+        return wrapSlot(i, inner);
       }
       if (m.type === "image") {
-        return (
+        const alt = m.decorative ? "" : m.alt;
+        const img = (
           <img
-            key={i}
             src={m.src}
-            alt={m.alt}
-            style={{ width: "100%", height: "auto" }}
+            alt={alt}
+            loading={m.loading ?? "lazy"}
+            className="cc-media-img"
+            style={{
+              width: "100%",
+              height: m.aspectRatio ? "100%" : "auto",
+              objectFit: m.objectFit ?? defaultObjectFit,
+              maxHeight: m.maxHeight,
+              display: "block",
+            }}
+            {...(m.decorative ? { role: "presentation" as const } : {})}
           />
         );
+        const imgBlock = m.aspectRatio ? (
+          <div className="cc-media-frame" style={{ aspectRatio: m.aspectRatio }}>
+            {img}
+          </div>
+        ) : (
+          img
+        );
+        const inner = m.fullBleed ? <div className="cc-media-fullbleed">{imgBlock}</div> : imgBlock;
+        return wrapSlot(i, inner);
       }
       if (m.type === "beforeAfter") {
-        return (
+        const inner = (
           <BeforeAfterSlider
-            key={i}
             beforeSrc={m.before}
             afterSrc={m.after}
             altBefore={m.altBefore}
             altAfter={m.altAfter}
             darkenBefore
-            objectFit="contain"
+            objectFit={m.objectFit ?? (surface === "splitFrame" ? "cover" : "contain")}
           />
+        );
+        const wrapped = m.aspectRatio ? (
+          <div className="cc-media-frame cc-media-frame--before-after" style={{ aspectRatio: m.aspectRatio }}>
+            {inner}
+          </div>
+        ) : (
+          inner
+        );
+        const outer = m.fullBleed ? <div className="cc-media-fullbleed">{wrapped}</div> : wrapped;
+        return wrapSlot(i, outer);
+      }
+      if (m.type === "imageGrid") {
+        const cols = m.columns ?? 2;
+        return wrapSlot(
+          i,
+          <div className={`cc-image-grid cc-image-grid--cols-${cols}`} style={m.gap ? { gap: m.gap } : undefined}>
+            {m.images.map((imgEl, j) => (
+              <img key={j} src={imgEl.src} alt={imgEl.alt} loading="lazy" className="cc-image-grid__img" />
+            ))}
+          </div>
         );
       }
       return null;
@@ -622,6 +699,92 @@ export default function GospelDiscipleship() {
           </div>
         );
 
+      case "proofPanel": {
+        const useLight = screen.lightTheme === true;
+        const panelInner = (
+          <div className={`cc-proof-panel${useLight ? " cc-proof-panel--light" : ""}`}>
+            <div className="cc-proof-panel__media">{renderMedia(screen, { surface: "proofBand" })}</div>
+            <div className="cc-proof-panel__body">
+              <div className="cc-proof-panel__head">
+                <div style={{ minHeight: "1.2em" }}>
+                  <InlineEditableText
+                    value={screen.title}
+                    onChange={(v) => updateScreenField(screen.id, "title", v)}
+                    isEditing={isEditor}
+                    as="h2"
+                    className="cc-proof-panel__title"
+                  />
+                </div>
+              </div>
+              <div className="cc-proof-panel__main">
+                <div className="cc-proof-panel__content cc-onboarding-stack">
+                  {renderContentBlocks(screen.content ?? [], contentBlocksOpts)}
+                </div>
+              </div>
+              <div className="cc-proof-panel__cta" data-zone="cta">
+                {renderButtons(screen, !useLight, isEditor, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
+              </div>
+            </div>
+          </div>
+        );
+        if (useLight) {
+          return (
+            <section id={screen.id} className="cc-step-section cc-step-section--light" style={containerStyle} data-screen-id={screen.id} {...selectNodeProps}>
+              <div className="landing-content-block">{panelInner}</div>
+            </section>
+          );
+        }
+        return (
+          <section id={screen.id} className="landing-content-block" style={containerStyle} data-screen-id={screen.id} {...selectNodeProps}>
+            {panelInner}
+          </section>
+        );
+      }
+
+      case "splitProof": {
+        const useLight = screen.lightTheme === true;
+        const splitInner = (
+          <div className={`cc-split-proof${useLight ? " cc-split-proof--light" : ""}`}>
+            <div className="cc-split-proof__grid">
+              <div className="cc-split-proof__media cc-media-card">
+                {renderMedia(screen, { surface: "splitFrame" })}
+              </div>
+              <div className={`cc-split-proof__copy${useLight ? " cc-text--on-light" : ""}`}>
+                <div className="cc-split-proof__head">
+                  <div style={{ minHeight: "1.2em" }}>
+                    <InlineEditableText
+                      value={screen.title}
+                      onChange={(v) => updateScreenField(screen.id, "title", v)}
+                      isEditing={isEditor}
+                      as="h2"
+                      className="cc-split-proof__title"
+                    />
+                  </div>
+                </div>
+                <div className="cc-split-proof__stack cc-onboarding-stack">
+                  {renderContentBlocks(screen.content ?? [], contentBlocksOpts)}
+                </div>
+                <div className="cc-split-proof__cta" data-zone="cta">
+                  {renderButtons(screen, !useLight, isEditor, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+        if (useLight) {
+          return (
+            <section id={screen.id} className="cc-step-section cc-step-section--light" style={containerStyle} data-screen-id={screen.id} {...selectNodeProps}>
+              <div className="landing-content-block">{splitInner}</div>
+            </section>
+          );
+        }
+        return (
+          <section id={screen.id} className="landing-content-block" style={containerStyle} data-screen-id={screen.id} {...selectNodeProps}>
+            {splitInner}
+          </section>
+        );
+      }
+
       case "textOnly":
         return (
           <div className="landing-content-block" style={containerStyle} data-screen-id={screen.id} {...selectNodeProps}>
@@ -655,7 +818,7 @@ export default function GospelDiscipleship() {
   return (
     <div
       ref={containerRef}
-      className={`landing-container-creations${currentScreen.layout === "hero" ? " landing-step-hero" : ""}${currentScreen.layout === "stamped" ? " landing-step-stamped" : ""}${currentScreen.layout === "twoCol" && currentScreen.lightTheme ? " measure-step-active" : ""}`}
+      className={`landing-container-creations${currentScreen.layout === "hero" ? " landing-step-hero" : ""}${currentScreen.layout === "stamped" ? " landing-step-stamped" : ""}${lightLayoutStep ? " measure-step-active" : ""}${currentScreen.layout === "proofPanel" || currentScreen.layout === "splitProof" ? " landing-step-proof" : ""}`}
       data-landing="gospel"
       data-structure-type="wizard"
       data-wizard-progress-style={progressStyle}
@@ -705,7 +868,9 @@ export default function GospelDiscipleship() {
         ) : null}
       </header>
 
-      <main style={{ flex: 1, minHeight: currentScreen.layout === "twoCol" && currentScreen.lightTheme && !isEditor ? "100vh" : "calc(100vh - 52px)" }}>
+      <main
+        className={`landing-cc-main${lightLayoutStep && !isEditor ? " landing-cc-main--fill" : ""}`}
+      >
         {isEditor ? (
           <div
             className={shellDevice === "phoneGrid" ? "dev-flow-grid editor-cards-phone" : "dev-flow-single"}
@@ -714,15 +879,21 @@ export default function GospelDiscipleship() {
             {orderedScreens.map((screen, index) => (
               <div key={screen.id} className="dev-step">
                 <h3>Step {index + 1} – {screen.stepLabel}</h3>
-                {renderScreen(screen)}
+                <div className="landing-screen-presentation" {...landingScreenPresentationAttrs(screen)}>
+                  {renderScreen(screen)}
+                </div>
               </div>
             ))}
           </div>
         ) : (
           <>
-            {orderedScreens.map((screen) => currentScreenId === screen.id && (
-              <React.Fragment key={screen.id}>{renderScreen(screen)}</React.Fragment>
-            ))}
+            {orderedScreens.map((screen) =>
+              currentScreenId === screen.id ? (
+                <div key={screen.id} className="landing-screen-presentation" {...landingScreenPresentationAttrs(screen)}>
+                  {renderScreen(screen)}
+                </div>
+              ) : null
+            )}
 
             {showStepProgress && (
             <aside className="stepTracker" aria-label={cfg.stepTracker.title} data-wizard-progress-style={progressStyle}>

@@ -21,7 +21,23 @@ import { registerJsonScreen } from "@/app/ui/control-dock/editor/registerJsonScr
 import InlineEditableText from "@/app/ui/control-dock/editor/InlineEditableText";
 import { getOverride, subscribe } from "@/04_Presentation/components/organs/tsx/website/node-order-override-store";
 import { useWizardConfig } from "@/lib/tsx-structure/engines/wizard";
-import { renderContentBlocks, type LandingContentBlock } from "@/lib/landing-content-blocks";
+import {
+  renderContentBlocks,
+  type LandingContentBlock,
+  type MediaBlock,
+} from "@/lib/landing-content-blocks";
+import {
+  landingScreenPresentationAttrs,
+  type LandingScreenDensity,
+  type LandingVisualTone,
+} from "@/lib/landing-screen-presentation";
+import {
+  buildSummaryFromConfig,
+  getScreenTrackerResponse,
+  type DynamicSummaryConfig,
+  type StepTrackerResponseConfig,
+  type TrackerResponseConfig,
+} from "@/lib/landing-tracker-responses";
 import "@/app/landing/landing-theme.css";
 
 const CONFIG_URL = "/api/container-creations-landing-config";
@@ -51,17 +67,6 @@ export type ContainerCreationsLandingRendererProps = {
  * and they will always render in both editor and preview.
  */
 
-type ContentBlock =
-  | { type: "badge"; text: string }
-  | { type: "paragraph"; text: string; className?: string }
-  | { type: "heading"; level?: number; text: string }
-  | { type: "checklist"; heading?: string; items: Array<{ title: string; sub: string } | string> };
-
-type MediaBlock =
-  | { type: "video"; src: string; caption?: string }
-  | { type: "image"; src: string; alt: string }
-  | { type: "beforeAfter"; before: string; after: string; altBefore: string; altAfter: string };
-
 type ButtonBlock =
   | { type: "link"; label: string; hrefKey: string; nodeId?: string }
   | { type: "goto"; label: string; target: string; nodeId?: string }
@@ -88,16 +93,24 @@ type Screen = {
   inlineControls?: InlineControlId[];
   /** When true, textOnly layout shows getFinalRecommendationSummary() instead of content. */
   dynamicSummary?: boolean;
+  /** Optional JSON-driven summary behavior for dynamicSummary screens. */
+  dynamicSummaryConfig?: DynamicSummaryConfig;
+  /** Optional tracker response rule for this step. */
+  trackerResponse?: TrackerResponseConfig;
   /** When true, header and step use light theme (e.g. white background). */
   lightTheme?: boolean;
   /** Optional position for node graph editor. */
   nodePosition?: { x: number; y: number };
+  /** Optional: softer or stronger visual weight for cards/headlines (CSS only). */
+  visualTone?: LandingVisualTone;
+  /** Optional: tighter vertical rhythm (CSS only). */
+  density?: LandingScreenDensity;
 };
 
 type LandingConfig = {
   shopUrl: string;
   header: { logoSrc: string; logoAlt: string; shopNowLabel: string };
-  stepTracker: { title: string; description: string };
+  stepTracker: StepTrackerResponseConfig;
   screens: Screen[];
 };
 
@@ -473,6 +486,11 @@ export default function ContainerCreationsLandingRenderer({
 
   const isHero = currentScreen.layout === "hero";
   const isLightStep = currentScreen.lightTheme === true;
+  const lightLayoutStep =
+    (currentScreen.layout === "twoCol" ||
+      currentScreen.layout === "proofPanel" ||
+      currentScreen.layout === "splitProof") &&
+    currentScreen.lightTheme === true;
 
   const goToScreen = (id: string) => setCurrentScreenId(id);
   const goNext = () => {
@@ -577,8 +595,8 @@ export default function ContainerCreationsLandingRenderer({
     return <>{controls.map((type) => renderInlineControl(type, isLight))}</>;
   }
 
-  /** Build final recommendation summary from stepInputs (config-driven; used when screen.dynamicSummary === true). */
-  function getFinalRecommendationSummary(): string {
+  /** Legacy summary output retained for backwards compatibility. */
+  function getLegacyFinalRecommendationSummary(): string {
     const parts: string[] = [];
     if (stepInputs.containerLength) parts.push(`Container: ${stepInputs.containerLength}.`);
     if (stepInputs.roofRibHeight != null) parts.push(`Roof rib height: ${stepInputs.roofRibHeight} in.`);
@@ -587,6 +605,16 @@ export default function ContainerCreationsLandingRenderer({
     if (stepInputs.ventFitVerified) parts.push("Vent fit verified.");
     if (stepInputs.orderSizeConfirmed) parts.push("Order size confirmed.");
     return parts.length ? parts.join(" ") : "Complete the steps above to see your recommendation.";
+  }
+
+  function getFinalRecommendationSummary(screen: Screen): string {
+    return buildSummaryFromConfig({
+      screens: orderedScreens,
+      values: stepInputs as Record<string, unknown>,
+      summaryConfig: screen.dynamicSummaryConfig,
+      trackerConfig: cfg.stepTracker,
+      legacyFallback: getLegacyFinalRecommendationSummary,
+    });
   }
 
   function renderButtons(
@@ -672,62 +700,145 @@ export default function ContainerCreationsLandingRenderer({
     );
   }
 
-  function renderMedia(screen: Screen, heroVideoError = false) {
-    return screen.media.map((m, i) => {
-      if (m.type === "video") {
-        const isHeroVideo = screen.layout === "hero" && i === 0;
-        const hasError = isHeroVideo && heroVideoError || failedMedia.has(m.src);
-        if (hasError) {
-          return <MediaPlaceholder key={i} label="Intro video" />;
-        }
-        return (
-          <React.Fragment key={i}>
-            <video
-              autoPlay
-              muted
-              loop
-              playsInline
-              onError={() => (isHeroVideo ? setFailedMedia((prev) => new Set(prev).add(m.src)) : undefined)}
-              src={m.src}
-            />
-            {m.caption != null && (
-              <p style={{ fontSize: "0.875rem", opacity: 0.8, margin: "12px auto 0", maxWidth: 480, lineHeight: 1.45 }}>
-                {m.caption}
-              </p>
-            )}
-          </React.Fragment>
-        );
+  function renderMediaItem(
+    m: MediaBlock,
+    i: number,
+    ctx: {
+      placement: "hero" | "stamped" | "card";
+      /** Framing for proof layouts (CSS: .cc-media-slot--proofBand | --splitFrame). */
+      surface?: "proofBand" | "splitFrame";
+    }
+  ): React.ReactNode {
+    const markVideoFailed = (src: string) => {
+      setFailedMedia((prev) => new Set(prev).add(src));
+    };
+
+    const defaultObjectFit: "cover" | "contain" = (() => {
+      if (ctx.surface === "splitFrame") return "cover";
+      if (ctx.surface === "proofBand") return "cover";
+      return ctx.placement === "card" ? "cover" : "contain";
+    })();
+
+    const slotClass = `cc-media-slot${ctx.surface ? ` cc-media-slot--${ctx.surface}` : ""}`;
+
+    const wrapSlot = (inner: React.ReactNode) => (
+      <div key={i} className={slotClass}>
+        {inner}
+      </div>
+    );
+
+    if (m.type === "video") {
+      if (failedMedia.has(m.src)) {
+        return wrapSlot(<MediaPlaceholder label={ctx.placement === "hero" ? "Intro video" : "Video"} />);
       }
-      if (m.type === "image") {
-        return (
-          <img
-            key={i}
-            src={m.src}
-            alt={m.alt}
-            style={{ width: "100%", height: "auto" }}
-          />
-        );
-      }
-      if (m.type === "beforeAfter") {
-        return (
-          <BeforeAfterSlider
-            key={i}
-            beforeSrc={m.before}
-            afterSrc={m.after}
-            altBefore={m.altBefore}
-            altAfter={m.altAfter}
-            darkenBefore
-            objectFit="contain"
-          />
-        );
-      }
-      return null;
-    });
+      const fit = m.objectFit ?? defaultObjectFit;
+      const videoEl = (
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster={m.poster}
+          onError={() => markVideoFailed(m.src)}
+          src={m.src}
+          className="cc-media-video"
+          style={{
+            width: "100%",
+            height: m.aspectRatio ? "100%" : "auto",
+            maxHeight: m.maxHeight,
+            objectFit: fit,
+            display: "block",
+          }}
+        />
+      );
+      const videoBlock = (
+        <>
+          {m.aspectRatio ? (
+            <div className="cc-media-frame" style={{ aspectRatio: m.aspectRatio }}>
+              {videoEl}
+            </div>
+          ) : (
+            videoEl
+          )}
+          {m.caption != null && (
+            <p className={`cc-media-caption${ctx.surface === "proofBand" ? " cc-media-caption--overlay" : ""}`}>{m.caption}</p>
+          )}
+        </>
+      );
+      const inner = m.fullBleed ? <div className="cc-media-fullbleed">{videoBlock}</div> : videoBlock;
+      return wrapSlot(inner);
+    }
+
+    if (m.type === "image") {
+      const alt = m.decorative ? "" : m.alt;
+      const img = (
+        <img
+          src={m.src}
+          alt={alt}
+          loading={m.loading ?? "lazy"}
+          className="cc-media-img"
+          style={{
+            width: "100%",
+            height: m.aspectRatio ? "100%" : "auto",
+            objectFit: m.objectFit ?? defaultObjectFit,
+            maxHeight: m.maxHeight,
+            display: "block",
+          }}
+          {...(m.decorative ? { role: "presentation" as const } : {})}
+        />
+      );
+      const imgBlock = m.aspectRatio ? (
+        <div className="cc-media-frame" style={{ aspectRatio: m.aspectRatio }}>
+          {img}
+        </div>
+      ) : (
+        img
+      );
+      const inner = m.fullBleed ? <div className="cc-media-fullbleed">{imgBlock}</div> : imgBlock;
+      return wrapSlot(inner);
+    }
+
+    if (m.type === "beforeAfter") {
+      const inner = (
+        <BeforeAfterSlider
+          beforeSrc={m.before}
+          afterSrc={m.after}
+          altBefore={m.altBefore}
+          altAfter={m.altAfter}
+          darkenBefore
+          objectFit={m.objectFit ?? (ctx.surface === "splitFrame" ? "cover" : "contain")}
+        />
+      );
+      const wrapped = m.aspectRatio ? (
+        <div className="cc-media-frame cc-media-frame--before-after" style={{ aspectRatio: m.aspectRatio }}>
+          {inner}
+        </div>
+      ) : (
+        inner
+      );
+      const outer = m.fullBleed ? <div className="cc-media-fullbleed">{wrapped}</div> : wrapped;
+      return wrapSlot(outer);
+    }
+
+    if (m.type === "imageGrid") {
+      const cols = m.columns ?? 2;
+      return wrapSlot(
+        <div
+          className={`cc-image-grid cc-image-grid--cols-${cols}`}
+          style={m.gap ? { gap: m.gap } : undefined}
+        >
+          {m.images.map((imgEl, j) => (
+            <img key={j} src={imgEl.src} alt={imgEl.alt} loading="lazy" className="cc-image-grid__img" />
+          ))}
+        </div>
+      );
+    }
+
+    return null;
   }
 
   function renderScreen(screen: Screen) {
     // SAFETY: Every layout must use renderContentBlocks(screen.content, ...) only. No screen.content.map or block.type filtering.
-    const heroVideoFailed = screen.layout === "hero" && screen.media.some((m) => m.type === "video" && failedMedia.has(m.src));
     const isSelected = isEditor && selectedLandingNodeId === screen.id;
     const outlineStyle: React.CSSProperties = isSelected
       ? { outline: "2px solid var(--color-accent, #1a73e8)", outlineOffset: 2 }
@@ -754,29 +865,17 @@ export default function ContainerCreationsLandingRenderer({
         const heroLinkIndex = heroLinkButton ? screen.buttons.indexOf(heroLinkButton) : -1;
         return (
           <div style={containerStyle} data-screen-id={screen.id} {...selectNodeProps}>
-            <section id={screen.id} className="landing-hero-video-wrap" style={{ position: "relative", width: "100%", overflow: "hidden" }}>
-              {videoBlock && videoBlock.type === "video" ? (
-                heroVideoFailed ? (
-                  <MediaPlaceholder label="Intro video" />
-                ) : (
-                  <video
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    onError={() => setFailedMedia((prev) => new Set(prev).add(videoBlock.src))}
-                  >
-                    <source src={videoBlock.src} type="video/mp4" />
-                  </video>
-                )
-              ) : null}
+            <section id={screen.id} className="landing-hero-video-wrap">
+              {videoBlock && videoBlock.type === "video"
+                ? renderMediaItem(videoBlock, screen.media.indexOf(videoBlock), { placement: "hero" })
+                : null}
               {heroLinkButton && (
                 <a
                   href={resolveHref(heroLinkButton, cfg)}
                   target="_blank"
                   rel="noopener noreferrer"
+                  className="landing-hero-shop-link"
                   data-node-id={"nodeId" in heroLinkButton ? heroLinkButton.nodeId : undefined}
-                  style={{ position: "absolute", top: 24, right: 24, color: "#fff", fontWeight: 600, textDecoration: "none", zIndex: 10 }}
                 >
                   {isEditor ? (
                     <InlineEditableText
@@ -841,19 +940,8 @@ export default function ContainerCreationsLandingRenderer({
               <div className="cc-stamped-description">
                 {renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t), checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" } : { checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" })}
               </div>
-              <div className="landing-phone-video-wrap" style={{ marginBottom: 16 }}>
-                {screen.media.filter((m) => m.type === "video").map((m, i) => (
-                  m.type === "video" ? (
-                    <React.Fragment key={i}>
-                      <video key={i} autoPlay muted loop playsInline src={m.src} />
-                      {m.caption != null && (
-                        <p style={{ fontSize: "0.875rem", opacity: 0.8, margin: "12px auto 0", maxWidth: 480, lineHeight: 1.45 }}>
-                          {m.caption}
-                        </p>
-                      )}
-                    </React.Fragment>
-                  ) : null
-                ))}
+              <div className="landing-phone-video-wrap cc-stamped-media">
+                {screen.media.map((m, i) => renderMediaItem(m, i, { placement: "stamped" }))}
               </div>
               {renderInlineUI(screen, true)}
               {renderButtons(screen, false, isEditor, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
@@ -865,38 +953,21 @@ export default function ContainerCreationsLandingRenderer({
         const useLightCard = screen.lightTheme === true;
         const twoColContent = (
           <div className="cc-two-col cc-step-card">
-            <div className="cc-media-card" style={useLightCard ? { background: "#f1f5f9", borderColor: "#e2e8f0" } : undefined}>
-              {screen.media.map((m, i) => {
-                if (m.type === "image") {
-                  return <img key={i} src={m.src} alt={m.alt} style={{ width: "100%", height: "auto", objectFit: "cover", display: "block" }} />;
-                }
-                if (m.type === "beforeAfter") {
-                  return (
-                    <BeforeAfterSlider
-                      key={i}
-                      beforeSrc={m.before}
-                      afterSrc={m.after}
-                      altBefore={m.altBefore}
-                      altAfter={m.altAfter}
-                      darkenBefore
-                      objectFit="contain"
-                    />
-                  );
-                }
-                return null;
-              })}
+            <div
+              className={`cc-media-card${useLightCard ? " cc-media-card--light" : ""}`}
+            >
+              {screen.media.map((m, i) => renderMediaItem(m, i, { placement: "card" }))}
             </div>
-            <div className="cc-text">
+            <div className={`cc-text${useLightCard ? " cc-text--on-light" : ""}`}>
               <div style={{ minHeight: "1.2em" }}>
                 <InlineEditableText
                   value={screen.title}
                   onChange={(v) => updateScreenField(screen.id, "title", v)}
                   isEditing={isEditor}
                   as="h2"
-                  style={useLightCard ? { color: "#1a1d23" } : undefined}
                 />
               </div>
-              <div style={useLightCard ? { color: "#1a1d23" } : undefined}>
+              <div>
                 {renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t), checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" } : { checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" })}
               </div>
               {renderInlineUI(screen, useLightCard)}
@@ -906,7 +977,7 @@ export default function ContainerCreationsLandingRenderer({
         );
         if (useLightCard) {
           return (
-            <section id={screen.id} style={{ width: "100%", background: "#fff", display: "flex", justifyContent: "center", ...containerStyle }} {...selectNodeProps}>
+            <section id={screen.id} className="cc-step-section cc-step-section--light" style={containerStyle} {...selectNodeProps}>
               <div className="landing-content-block">
                 {twoColContent}
                 {renderButtons(screen, false, isEditor, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
@@ -926,11 +997,7 @@ export default function ContainerCreationsLandingRenderer({
           <div className="landing-content-block" style={containerStyle} data-screen-id={screen.id} {...selectNodeProps}>
             <div className="cc-two-col cc-step-card">
               <div className="cc-media-card">
-                {screen.media.map((m, i) =>
-                  m.type === "image" ? (
-                    <img key={i} src={m.src} alt={m.alt} style={{ width: "100%", height: "auto", objectFit: "cover", display: "block" }} />
-                  ) : null
-                )}
+                {screen.media.map((m, i) => renderMediaItem(m, i, { placement: "card" }))}
               </div>
               <div className="cc-text">
                 <div style={{ minHeight: "1.2em" }}>
@@ -949,6 +1016,100 @@ export default function ContainerCreationsLandingRenderer({
           </div>
         );
 
+      case "proofPanel": {
+        const useLight = screen.lightTheme === true;
+        const panelInner = (
+          <div className={`cc-proof-panel${useLight ? " cc-proof-panel--light" : ""}`}>
+            <div className="cc-proof-panel__media">
+              {screen.media.map((m, i) =>
+                renderMediaItem(m, i, { placement: "card", surface: "proofBand" })
+              )}
+            </div>
+            <div className="cc-proof-panel__body">
+              <div className="cc-proof-panel__head">
+                <div style={{ minHeight: "1.2em" }}>
+                  <InlineEditableText
+                    value={screen.title}
+                    onChange={(v) => updateScreenField(screen.id, "title", v)}
+                    isEditing={isEditor}
+                    as="h2"
+                    className="cc-proof-panel__title"
+                  />
+                </div>
+              </div>
+              <div className="cc-proof-panel__main">
+                <div className="cc-proof-panel__content cc-onboarding-stack">
+                  {renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t), checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" } : { checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" })}
+                </div>
+                {renderInlineUI(screen, useLight)}
+              </div>
+              <div className="cc-proof-panel__cta" data-zone="cta">
+                {renderButtons(screen, !useLight, isEditor, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
+              </div>
+            </div>
+          </div>
+        );
+        if (useLight) {
+          return (
+            <section id={screen.id} className="cc-step-section cc-step-section--light" style={containerStyle} data-screen-id={screen.id} {...selectNodeProps}>
+              <div className="landing-content-block">{panelInner}</div>
+            </section>
+          );
+        }
+        return (
+          <section id={screen.id} className="landing-content-block" style={containerStyle} data-screen-id={screen.id} {...selectNodeProps}>
+            {panelInner}
+          </section>
+        );
+      }
+
+      case "splitProof": {
+        const useLight = screen.lightTheme === true;
+        const splitInner = (
+          <div className={`cc-split-proof${useLight ? " cc-split-proof--light" : ""}`}>
+            <div className="cc-split-proof__grid">
+              <div className="cc-split-proof__media cc-media-card">
+                {screen.media.map((m, i) =>
+                  renderMediaItem(m, i, { placement: "card", surface: "splitFrame" })
+                )}
+              </div>
+              <div className={`cc-split-proof__copy${useLight ? " cc-text--on-light" : ""}`}>
+                <div className="cc-split-proof__head">
+                  <div style={{ minHeight: "1.2em" }}>
+                    <InlineEditableText
+                      value={screen.title}
+                      onChange={(v) => updateScreenField(screen.id, "title", v)}
+                      isEditing={isEditor}
+                      as="h2"
+                      className="cc-split-proof__title"
+                    />
+                  </div>
+                </div>
+                <div className="cc-split-proof__stack cc-onboarding-stack">
+                  {renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t), checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" } : { checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" })}
+                </div>
+                {renderInlineUI(screen, useLight)}
+                <div className="cc-split-proof__cta" data-zone="cta">
+                  {renderButtons(screen, !useLight, isEditor, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+        if (useLight) {
+          return (
+            <section id={screen.id} className="cc-step-section cc-step-section--light" style={containerStyle} data-screen-id={screen.id} {...selectNodeProps}>
+              <div className="landing-content-block">{splitInner}</div>
+            </section>
+          );
+        }
+        return (
+          <section id={screen.id} className="landing-content-block" style={containerStyle} data-screen-id={screen.id} {...selectNodeProps}>
+            {splitInner}
+          </section>
+        );
+      }
+
       case "textOnly":
         return (
           <div className="landing-content-block" style={containerStyle} data-screen-id={screen.id} {...selectNodeProps}>
@@ -963,7 +1124,7 @@ export default function ContainerCreationsLandingRenderer({
                   />
                 </div>
                 {screen.dynamicSummary ? (
-                  <p style={{ marginBottom: 16 }}>{getFinalRecommendationSummary()}</p>
+                  <p style={{ marginBottom: 16 }}>{getFinalRecommendationSummary(screen)}</p>
                 ) : (
                   renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t), checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" } : { checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" })
                 )}
@@ -1002,7 +1163,7 @@ export default function ContainerCreationsLandingRenderer({
   return (
     <div
       ref={containerRef}
-      className={`landing-container-creations${currentScreen.layout === "hero" ? " landing-step-hero" : ""}${currentScreen.layout === "stamped" ? " landing-step-stamped" : ""}${currentScreen.layout === "twoCol" && currentScreen.lightTheme ? " measure-step-active" : ""}`}
+      className={`landing-container-creations${currentScreen.layout === "hero" ? " landing-step-hero" : ""}${currentScreen.layout === "stamped" ? " landing-step-stamped" : ""}${lightLayoutStep ? " measure-step-active" : ""}${currentScreen.layout === "proofPanel" || currentScreen.layout === "splitProof" ? " landing-step-proof" : ""}`}
       data-landing="container-creations"
       data-structure-type="wizard"
       data-wizard-progress-style={progressStyle}
@@ -1010,47 +1171,29 @@ export default function ContainerCreationsLandingRenderer({
       data-wizard-linear={wizardConfig?.linear ?? true}
     >
       <header
-        className="landing-shop-bar"
-        style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 10,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: "0.75rem 1.5rem",
-          background: isLightStep ? "#fff" : "var(--landing-steel-bg, #1a1d23)",
-          borderBottom: `1px solid ${isLightStep ? "#e2e8f0" : "var(--landing-steel-border, #2d3239)"}`,
-        }}
+        className={`landing-shop-bar ${isLightStep ? "landing-shop-bar--theme-light" : "landing-shop-bar--theme-steel"}`}
       >
-        <a href={cfg.shopUrl} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center" }} data-node-id="logo-link">
+        <a href={cfg.shopUrl} target="_blank" rel="noopener noreferrer" className="landing-shop-logo-link" data-node-id="logo-link">
           <img
             src={cfg.header.logoSrc}
             alt={cfg.header.logoAlt}
-            style={{ width: 120, height: "auto" }}
+            className="landing-shop-logo"
           />
         </a>
         <a
           href={cfg.shopUrl}
           target="_blank"
           rel="noopener noreferrer"
+          className="landing-shop-cta"
           data-node-id="shop-now-header"
-          style={{
-            padding: "0.5rem 1rem",
-            fontSize: "0.9375rem",
-            fontWeight: 600,
-            color: isLightStep ? "#1a1d23" : "var(--landing-steel-fg, #e2e8f0)",
-            background: "transparent",
-            border: `1px solid ${isLightStep ? "#e2e8f0" : "var(--landing-steel-border, #2d3239)"}`,
-            borderRadius: "6px",
-            textDecoration: "none",
-          }}
         >
           {cfg.header.shopNowLabel}
         </a>
       </header>
 
-      <main style={{ flex: 1, minHeight: currentScreen.layout === "twoCol" && currentScreen.lightTheme && !isEditor ? "100vh" : "calc(100vh - 52px)" }}>
+      <main
+        className={`landing-cc-main${lightLayoutStep && !isEditor ? " landing-cc-main--fill" : ""}`}
+      >
         {isEditor ? (
           <div
             className={shellDevice === "phoneGrid" ? "dev-flow-grid editor-cards-phone" : "dev-flow-single"}
@@ -1059,15 +1202,21 @@ export default function ContainerCreationsLandingRenderer({
             {orderedScreens.map((screen, index) => (
               <div key={screen.id} className="dev-step">
                 <h3>Step {index + 1} – {screen.stepLabel}</h3>
-                {renderScreen(screen)}
+                <div className="landing-screen-presentation" {...landingScreenPresentationAttrs(screen)}>
+                  {renderScreen(screen)}
+                </div>
               </div>
             ))}
           </div>
         ) : (
           <>
-            {orderedScreens.map((screen) => currentScreenId === screen.id && (
-              <React.Fragment key={screen.id}>{renderScreen(screen)}</React.Fragment>
-            ))}
+            {orderedScreens.map((screen) =>
+              currentScreenId === screen.id ? (
+                <div key={screen.id} className="landing-screen-presentation" {...landingScreenPresentationAttrs(screen)}>
+                  {renderScreen(screen)}
+                </div>
+              ) : null
+            )}
 
             {showStepProgress && (
             <aside className="stepTracker" aria-label={cfg.stepTracker.title} data-wizard-progress-style={progressStyle}>
@@ -1077,16 +1226,39 @@ export default function ContainerCreationsLandingRenderer({
                 {stepLabels.map((label, i) => {
                   const status = i < currentIndex ? "done" : i === currentIndex ? "current" : "todo";
                   const icon = status === "done" ? "✔" : status === "current" ? "➜" : "○";
+                  const screen = orderedScreens[i];
+                  const responseText = getScreenTrackerResponse({
+                    screen,
+                    values: stepInputs as Record<string, unknown>,
+                    trackerConfig: cfg.stepTracker,
+                    status,
+                  });
                   return (
                     <li key={label}>
                       <button
                         type="button"
-                        onClick={() => setCurrentScreenId(orderedScreens[i].id)}
+                        onClick={() => setCurrentScreenId(screen.id)}
                         className={`stepTracker-item stepTracker-item--${status}`}
                         data-node-id={`step-tracker-${i}`}
                       >
                         <span className="stepTracker-icon" aria-hidden>{icon}</span>
-                        <span className="stepTracker-label">{label}</span>
+                        <span>
+                          <span className="stepTracker-label">{label}</span>
+                          {responseText ? (
+                            <span
+                              className="stepTracker-response"
+                              style={{
+                                display: "block",
+                                fontSize: "0.85rem",
+                                opacity: 0.85,
+                                marginTop: 2,
+                                textAlign: "left",
+                              }}
+                            >
+                              {responseText}
+                            </span>
+                          ) : null}
+                        </span>
                       </button>
                     </li>
                   );

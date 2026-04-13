@@ -6,7 +6,13 @@
 export type LandingConfig = {
   shopUrl?: string;
   header?: { logoSrc?: string; logoAlt?: string; shopNowLabel?: string };
-  stepTracker?: { title?: string; description?: string };
+  stepTracker?: {
+    title?: string;
+    description?: string;
+    showResponses?: boolean;
+    responsePlaceholder?: string;
+    completedOnly?: boolean;
+  };
   screens?: ScreenConfig[];
 };
 
@@ -24,6 +30,11 @@ export type ScreenConfig = {
   nodePosition?: { x: number; y: number };
   inlineControls?: string[];
   dynamicSummary?: boolean;
+  dynamicSummaryConfig?: DynamicSummaryConfig;
+  trackerResponse?: TrackerResponseConfig;
+  /** Optional presentation hints (CSS only); forwarded when mapping to skin if needed. */
+  visualTone?: "default" | "soft" | "bold";
+  density?: "comfortable" | "compact";
 };
 
 type ContentBlock =
@@ -41,6 +52,26 @@ type ButtonBlock =
   | { type: "goto"; label: string; target: string; nodeId?: string }
   | { type: "back"; label: string; nodeId?: string }
   | { type: "next"; label: string; nodeId?: string };
+
+type ResponseRule =
+  | { type: "valueLabel"; field: string; map: Record<string, string> }
+  | { type: "boolean"; field: string; trueText: string; falseText?: string }
+  | { type: "numberTemplate"; field: string; template: string }
+  | { type: "range"; field: string; ranges: Array<{ min?: number; max?: number; text: string }>; defaultText?: string }
+  | { type: "compoundTemplate"; fields: string[]; template: string };
+
+type TrackerResponseConfig = {
+  enabled?: boolean;
+  rule?: ResponseRule;
+  fallbackText?: string;
+};
+
+type DynamicSummaryConfig = {
+  mode?: "autoFromTrackerRules" | "lines";
+  heading?: string;
+  includeUnanswered?: boolean;
+  lines?: Array<{ sourceStepId?: string; rule?: ResponseRule; prefix?: string }>;
+};
 
 function mapContentBlock(block: ContentBlock, index: number): any {
   if (block.type === "paragraph") {
