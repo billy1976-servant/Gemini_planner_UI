@@ -90,6 +90,35 @@ export interface LandingContentBlocksOptions {
   isEditor?: boolean;
   screenId?: string;
   onParagraphChange?: (blockIndex: number, text: string) => void;
+  onHeadingBlockChange?: (blockIndex: number, text: string) => void;
+  onBadgeChange?: (blockIndex: number, text: string) => void;
+  onTrustStripItemChange?: (blockIndex: number, itemIndex: number, label: string) => void;
+  onComparisonHeadingChange?: (blockIndex: number, heading: string) => void;
+  onComparisonColumnLabelChange?: (blockIndex: number, side: "left" | "right", text: string) => void;
+  onComparisonRowCellChange?: (
+    blockIndex: number,
+    rowIndex: number,
+    side: "left" | "right",
+    text: string
+  ) => void;
+  onStatsItemChange?: (
+    blockIndex: number,
+    itemIndex: number,
+    field: "label" | "value" | "hint",
+    text: string
+  ) => void;
+  onIconFeaturesItemChange?: (
+    blockIndex: number,
+    itemIndex: number,
+    field: "title" | "sub",
+    text: string
+  ) => void;
+  onTestimonialFieldChange?: (
+    blockIndex: number,
+    field: "quote" | "author" | "role" | "location",
+    text: string
+  ) => void;
+  onCtaBandFieldChange?: (blockIndex: number, field: "headline" | "sub", text: string) => void;
   /** Optional class names for checklist (e.g. cc-stamped-checklist-heading, cc-stamped-checklist). */
   checklistHeadingClassName?: string;
   checklistListClassName?: string;

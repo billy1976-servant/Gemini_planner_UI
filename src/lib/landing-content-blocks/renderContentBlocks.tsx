@@ -60,6 +60,18 @@ export function renderContentBlocks(
   const opts = options;
   return content.map((block, i) => {
     if (block.type === "badge") {
+      if (opts?.isEditor && opts.onBadgeChange) {
+        return (
+          <div key={i} className="hero-badge">
+            <InlineEditableText
+              value={block.text}
+              onChange={(v) => opts.onBadgeChange!(i, v)}
+              isEditing
+              as="span"
+            />
+          </div>
+        );
+      }
       return (
         <div key={i} className="hero-badge">
           {block.text}
@@ -68,7 +80,7 @@ export function renderContentBlocks(
     }
     if (block.type === "paragraph") {
       const style = getParagraphStyle(block.className);
-      if (opts?.isEditor && opts.screenId && opts.onParagraphChange) {
+      if (opts?.isEditor && opts.onParagraphChange) {
         return (
           <InlineEditableText
             key={i}
@@ -94,6 +106,19 @@ export function renderContentBlocks(
       const headingStyle: React.CSSProperties = level === 3 && opts?.checklistHeadingClassName
         ? { fontSize: "1.25rem", fontWeight: 600 }
         : { marginBottom: 12 };
+      if (opts?.isEditor && opts.onHeadingBlockChange) {
+        return (
+          <InlineEditableText
+            key={i}
+            value={block.text}
+            onChange={(v) => opts.onHeadingBlockChange!(i, v)}
+            isEditing
+            as={Tag}
+            className={headingClassName}
+            style={headingStyle}
+          />
+        );
+      }
       return (
         <Tag key={i} className={headingClassName} style={headingStyle}>
           {block.text}
@@ -187,15 +212,58 @@ export function renderContentBlocks(
       );
     }
     if (block.type === "testimonial") {
+      const te = opts?.isEditor && opts.onTestimonialFieldChange;
       return (
         <figure key={i} className="cc-block-testimonial">
           <blockquote className="cc-block-testimonial__quote">
-            <p>{block.quote}</p>
+            {te ? (
+              <InlineEditableText
+                value={block.quote}
+                onChange={(v) => opts.onTestimonialFieldChange!(i, "quote", v)}
+                isEditing
+                as="p"
+                multiline
+              />
+            ) : (
+              <p>{block.quote}</p>
+            )}
           </blockquote>
           <figcaption className="cc-block-testimonial__footer">
-            <span className="cc-block-testimonial__author">{block.author}</span>
-            {block.role != null && <span className="cc-block-testimonial__role">{block.role}</span>}
-            {block.location != null && <span className="cc-block-testimonial__location">{block.location}</span>}
+            {te ? (
+              <InlineEditableText
+                value={block.author}
+                onChange={(v) => opts.onTestimonialFieldChange!(i, "author", v)}
+                isEditing
+                as="span"
+                className="cc-block-testimonial__author"
+              />
+            ) : (
+              <span className="cc-block-testimonial__author">{block.author}</span>
+            )}
+            {(block.role != null || te) &&
+              (te ? (
+                <InlineEditableText
+                  value={block.role ?? ""}
+                  onChange={(v) => opts.onTestimonialFieldChange!(i, "role", v)}
+                  isEditing
+                  as="span"
+                  className="cc-block-testimonial__role"
+                />
+              ) : (
+                <span className="cc-block-testimonial__role">{block.role}</span>
+              ))}
+            {(block.location != null || te) &&
+              (te ? (
+                <InlineEditableText
+                  value={block.location ?? ""}
+                  onChange={(v) => opts.onTestimonialFieldChange!(i, "location", v)}
+                  isEditing
+                  as="span"
+                  className="cc-block-testimonial__location"
+                />
+              ) : (
+                <span className="cc-block-testimonial__location">{block.location}</span>
+              ))}
             {block.rating != null && (() => {
               const r = Math.min(5, Math.max(0, Math.round(block.rating)));
               return (
@@ -225,7 +293,18 @@ export function renderContentBlocks(
                   {iconChar}
                 </span>
               )}
-              <span className="cc-block-trust-strip__label">{item.label}</span>
+              <span className="cc-block-trust-strip__label">
+                {opts?.isEditor && opts.onTrustStripItemChange ? (
+                  <InlineEditableText
+                    value={item.label}
+                    onChange={(v) => opts.onTrustStripItemChange!(i, j, v)}
+                    isEditing
+                    as="span"
+                  />
+                ) : (
+                  item.label
+                )}
+              </span>
             </li>
             );
           })}
@@ -233,19 +312,56 @@ export function renderContentBlocks(
       );
     }
     if (block.type === "stats") {
+      const edit = opts?.isEditor && opts.onStatsItemChange;
       return (
         <div key={i} className="cc-block-stats">
           {block.items.map((row, j) => (
             <div key={j} className="cc-block-stats__item">
-              <div className="cc-block-stats__value">{row.value}</div>
-              <div className="cc-block-stats__label">{row.label}</div>
-              {row.hint != null && <div className="cc-block-stats__hint">{row.hint}</div>}
+              <div className="cc-block-stats__value">
+                {edit ? (
+                  <InlineEditableText
+                    value={row.value}
+                    onChange={(v) => opts.onStatsItemChange!(i, j, "value", v)}
+                    isEditing
+                    as="span"
+                  />
+                ) : (
+                  row.value
+                )}
+              </div>
+              <div className="cc-block-stats__label">
+                {edit ? (
+                  <InlineEditableText
+                    value={row.label}
+                    onChange={(v) => opts.onStatsItemChange!(i, j, "label", v)}
+                    isEditing
+                    as="span"
+                  />
+                ) : (
+                  row.label
+                )}
+              </div>
+              {(row.hint != null || edit) && (
+                <div className="cc-block-stats__hint">
+                  {edit ? (
+                    <InlineEditableText
+                      value={row.hint ?? ""}
+                      onChange={(v) => opts.onStatsItemChange!(i, j, "hint", v)}
+                      isEditing
+                      as="span"
+                    />
+                  ) : (
+                    row.hint
+                  )}
+                </div>
+              )}
             </div>
           ))}
         </div>
       );
     }
     if (block.type === "iconFeatures") {
+      const ie = opts?.isEditor && opts.onIconFeaturesItemChange;
       return (
         <ul key={i} className="cc-block-icon-features" role="list">
           {block.items.map((item, j) => (
@@ -254,8 +370,31 @@ export function renderContentBlocks(
                 {item.icon ?? "✓"}
               </span>
               <span className="cc-block-icon-features__text">
-                <strong className="cc-block-icon-features__title">{item.title}</strong>
-                {item.sub != null && <span className="cc-block-icon-features__sub">{item.sub}</span>}
+                {ie ? (
+                  <strong className="cc-block-icon-features__title">
+                    <InlineEditableText
+                      value={item.title}
+                      onChange={(v) => opts.onIconFeaturesItemChange!(i, j, "title", v)}
+                      isEditing
+                      as="span"
+                    />
+                  </strong>
+                ) : (
+                  <strong className="cc-block-icon-features__title">{item.title}</strong>
+                )}
+                {(item.sub != null || ie) &&
+                  (ie ? (
+                    <span className="cc-block-icon-features__sub">
+                      <InlineEditableText
+                        value={item.sub ?? ""}
+                        onChange={(v) => opts.onIconFeaturesItemChange!(i, j, "sub", v)}
+                        isEditing
+                        as="span"
+                      />
+                    </span>
+                  ) : (
+                    <span className="cc-block-icon-features__sub">{item.sub}</span>
+                  ))}
               </span>
             </li>
           ))}
@@ -266,24 +405,73 @@ export function renderContentBlocks(
       const col = block.columnLabels;
       const hasColLabels =
         col != null && ((col.left != null && col.left !== "") || (col.right != null && col.right !== ""));
+      const edit = opts?.isEditor;
+      const headingEl =
+        block.heading != null ? (
+          edit && opts.onComparisonHeadingChange ? (
+            <InlineEditableText
+              value={block.heading}
+              onChange={(v) => opts.onComparisonHeadingChange!(i, v)}
+              isEditing
+              as="h3"
+              className="cc-block-comparison__heading"
+            />
+          ) : (
+            <h3 className="cc-block-comparison__heading">{block.heading}</h3>
+          )
+        ) : null;
+      const cellText = (j: number, side: "left" | "right", text: string, role: "columnheader" | "cell") => {
+        if (edit && opts.onComparisonRowCellChange) {
+          return (
+            <div className={`cc-block-comparison__cell cc-block-comparison__cell--${side}`} role={role}>
+              <InlineEditableText
+                value={text}
+                onChange={(v) => opts.onComparisonRowCellChange!(i, j, side, v)}
+                isEditing
+                as="span"
+              />
+            </div>
+          );
+        }
+        return (
+          <div className={`cc-block-comparison__cell cc-block-comparison__cell--${side}`} role={role}>
+            {text}
+          </div>
+        );
+      };
+      const colHead = (side: "left" | "right", text: string) => {
+        if (edit && opts.onComparisonColumnLabelChange) {
+          return (
+            <div
+              className={`cc-block-comparison__cell cc-block-comparison__cell--${side} cc-block-comparison__cell--colhead`}
+              role="columnheader"
+            >
+              <InlineEditableText
+                value={text}
+                onChange={(v) => opts.onComparisonColumnLabelChange!(i, side, v)}
+                isEditing
+                as="span"
+              />
+            </div>
+          );
+        }
+        return (
+          <div
+            className={`cc-block-comparison__cell cc-block-comparison__cell--${side} cc-block-comparison__cell--colhead`}
+            role="columnheader"
+          >
+            {text}
+          </div>
+        );
+      };
       return (
         <div key={i} className="cc-block-comparison">
-          {block.heading != null && <h3 className="cc-block-comparison__heading">{block.heading}</h3>}
+          {headingEl}
           <div className="cc-block-comparison__table" role="table" aria-label={block.heading ?? "Comparison"}>
             {hasColLabels && col && (
               <div className="cc-block-comparison__row cc-block-comparison__row--columns" role="row">
-                <div
-                  className="cc-block-comparison__cell cc-block-comparison__cell--left cc-block-comparison__cell--colhead"
-                  role="columnheader"
-                >
-                  {col.left ?? ""}
-                </div>
-                <div
-                  className="cc-block-comparison__cell cc-block-comparison__cell--right cc-block-comparison__cell--colhead"
-                  role="columnheader"
-                >
-                  {col.right ?? ""}
-                </div>
+                {colHead("left", col.left ?? "")}
+                {colHead("right", col.right ?? "")}
               </div>
             )}
             {block.rows.map((row, j) => {
@@ -294,12 +482,8 @@ export function renderContentBlocks(
                   className={`cc-block-comparison__row${hl !== "none" ? ` cc-block-comparison__row--hl-${hl}` : ""}`}
                   role="row"
                 >
-                  <div className="cc-block-comparison__cell cc-block-comparison__cell--left" role="cell">
-                    {row.left}
-                  </div>
-                  <div className="cc-block-comparison__cell cc-block-comparison__cell--right" role="cell">
-                    {row.right}
-                  </div>
+                  {cellText(j, "left", row.left, "cell")}
+                  {cellText(j, "right", row.right, "cell")}
                 </div>
               );
             })}
@@ -308,13 +492,38 @@ export function renderContentBlocks(
       );
     }
     if (block.type === "ctaBand") {
+      const ce = opts?.isEditor && opts.onCtaBandFieldChange;
       return (
         <div
           key={i}
           className={`cc-block-cta-band${block.emphasis ? " cc-block-cta-band--emphasis" : ""}`}
         >
-          <p className="cc-block-cta-band__headline">{block.headline}</p>
-          {block.sub != null && <p className="cc-block-cta-band__sub">{block.sub}</p>}
+          <p className="cc-block-cta-band__headline">
+            {ce ? (
+              <InlineEditableText
+                value={block.headline}
+                onChange={(v) => opts.onCtaBandFieldChange!(i, "headline", v)}
+                isEditing
+                as="span"
+              />
+            ) : (
+              block.headline
+            )}
+          </p>
+          {(block.sub != null || ce) &&
+            (ce ? (
+              <p className="cc-block-cta-band__sub">
+                <InlineEditableText
+                  value={block.sub ?? ""}
+                  onChange={(v) => opts.onCtaBandFieldChange!(i, "sub", v)}
+                  isEditing
+                  as="span"
+                  multiline
+                />
+              </p>
+            ) : (
+              <p className="cc-block-cta-band__sub">{block.sub}</p>
+            ))}
         </div>
       );
     }

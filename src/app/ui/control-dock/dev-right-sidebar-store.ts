@@ -87,17 +87,26 @@ export function setDevLandingProps(
   const landingScreenOrder = Array.isArray(config.screens)
     ? config.screens.map((s) => s.id)
     : [];
+  const nextOnChange = onConfigChange ?? current?.onLandingConfigChange;
+  if (
+    current?.landingScreenPath === screenPath &&
+    current?.landingConfig === config &&
+    current?.onLandingConfigChange === nextOnChange
+  ) {
+    return;
+  }
   current = {
     ...(current ?? {}),
     landingScreenPath: screenPath,
     landingConfig: config,
     landingScreenOrder,
-    onLandingConfigChange: onConfigChange ?? current?.onLandingConfigChange,
+    onLandingConfigChange: nextOnChange,
   };
   listeners.forEach((fn) => fn());
 }
 
 export function setSelectedLandingNodeId(id: string | null): void {
+  if (current?.selectedLandingNodeId === id) return;
   current = { ...(current ?? {}), selectedLandingNodeId: id };
   listeners.forEach((fn) => fn());
 }

@@ -25,6 +25,44 @@
   container-name: landing;
 }
 
+/* Slide builder: three columns (outline | preview | inspector). Parent overflow-x: clip hid the inspector when content min-width exceeded the viewport. */
+.landing-container-creations[data-slide-builder="1"] {
+  height: 100vh;
+  min-height: 100vh;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* Prevent nested flex layouts from shrinking the row below min-width; width can exceed viewport → horizontal scroll on [data-slide-builder]. */
+.landing-slide-builder-columns {
+  flex-shrink: 0;
+  width: max(100%, 920px);
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.landing-container-creations > .landing-cc-main.landing-cc-main--slide-builder {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
+  overflow: hidden;
+}
+
+.landing-slide-builder-center {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.landing-slide-builder-center-scroll {
+  height: 100%;
+  min-height: 0;
+  overflow: auto;
+}
+
 .landing-container-creations > .landing-cc-main {
   flex: 1 1 auto;
   min-height: calc(100vh - 52px);
@@ -627,6 +665,16 @@
   font-size: var(--landing-heading-2);
   font-weight: 700;
   line-height: 1.2;
+}
+
+/* Inline editor: dashed affordance on titles (theme rules can visually overpower inline border on large type). */
+.landing-container-creations h1[data-inline-editable="true"],
+.landing-container-creations h2[data-inline-editable="true"],
+.landing-container-creations h3[data-inline-editable="true"] {
+  border-bottom: 1px dashed var(--color-text-secondary, #5f6368) !important;
+  width: fit-content;
+  max-width: 100%;
+  cursor: pointer;
 }
 
 .landing-container-creations .cc-two-col .cc-text p {

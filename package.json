@@ -53,6 +53,7 @@
     "test:csv-e2e": "ts-node -r tsconfig-paths/register src/05_Logic/logic/business/csv/e2e-csv-import.ts",
     "diag:csv": "ts-node -r tsconfig-paths/register scripts/diag-csv-pipeline.ts",
     "test:showcase-visual": "ts-node -r tsconfig-paths/register src/contracts/showcase-visual-quality.test.ts",
+    "test:slide-recipes": "ts-node -r tsconfig-paths/register src/lib/slide-builder-recipes.test.ts",
     "test:e2e": "playwright test",
     "screen": "playwright test runtime-pipeline-contract.spec.ts --reporter=html",
     "screen:headed": "playwright test runtime-pipeline-contract.spec.ts --headed --reporter=html",

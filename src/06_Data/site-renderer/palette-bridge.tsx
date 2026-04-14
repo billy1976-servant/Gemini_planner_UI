@@ -159,7 +159,6 @@ export function usePaletteCSS(containerRef?: RefObject<HTMLElement | null>) {
   useEffect(() => {
     const updateCSS = () => {
       const name = (getState()?.values?.paletteName ?? getPaletteName()) || "default";
-      if (process.env.NODE_ENV !== "production") console.log("[palette-root] applying palette", name);
       const palette = (palettes as Record<string, any>)[name] ?? getPalette();
       const root = containerRef?.current ?? document.documentElement;
       if (root) setPaletteVarsOnElement(root, (palette as Record<string, any>) ?? d);

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useSyncExternalStore } from "react";
 import { useSearchParams } from "next/navigation";
 import { getCanonicalScreenKey } from "@/07_Dev_Tools/navigation/getDevScreenKey";
@@ -19,11 +19,32 @@ import {
 } from "@/app/ui/control-dock/dev-right-sidebar-store";
 import { registerJsonScreen } from "@/app/ui/control-dock/editor/registerJsonScreen";
 import InlineEditableText from "@/app/ui/control-dock/editor/InlineEditableText";
-import { getOverride, subscribe } from "@/04_Presentation/components/organs/tsx/website/node-order-override-store";
+import { getOverride, setOverride, subscribe } from "@/04_Presentation/components/organs/tsx/website/node-order-override-store";
+import {
+  addScreenAtEnd,
+  deleteScreenById,
+  duplicateScreenById,
+  downloadLandingJson,
+  mergeScreenOrderIntoScreens,
+  moveIdInOrder,
+} from "@/lib/landing-deck-mutations";
+import { patchLandingScreen } from "@/lib/landing-screen-patch";
+import {
+  inferSlideTypeFromNode,
+  SLIDE_TYPE_LABELS,
+  type SlideBuilderMeta,
+} from "@/lib/slide-builder-recipes";
+import { getPaletteName } from "@/engine/core/palette-store";
+import { applyPaletteToElement } from "@/lib/site-renderer/palette-bridge";
+import { palettes } from "@/palettes";
+import type { EditableNode } from "@/app/ui/control-dock/editor/NodeInspector";
+import LandingSlideBuilderPanel from "./LandingSlideBuilderPanel";
+import LandingSlideBuilderInspector from "./LandingSlideBuilderInspector";
 import { useWizardConfig } from "@/lib/tsx-structure/engines/wizard";
 import {
   renderContentBlocks,
   type LandingContentBlock,
+  type LandingContentBlocksOptions,
   type MediaBlock,
 } from "@/lib/landing-content-blocks";
 import {
@@ -39,8 +60,92 @@ import {
   type TrackerResponseConfig,
 } from "@/lib/landing-tracker-responses";
 import "@/app/landing/landing-theme.css";
+import { isKeyboardEventFromEditableField } from "@/lib/editable-keyboard";
+import { slideBuilderFromUrlParam } from "@/lib/slide-builder-query";
 
 const CONFIG_URL = "/api/container-creations-landing-config";
+
+/**
+ * `<input>` inside `<button>` / `<a>` is invalid HTML; Space activates the parent instead of typing.
+ * Use this div[role=button] when the label is InlineEditableText (editor mode).
+ */
+function EditableNavButton({
+  className,
+  style,
+  dataNodeId,
+  onActivate,
+  children,
+}: {
+  className?: string;
+  style?: React.CSSProperties;
+  dataNodeId?: string;
+  onActivate: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      className={className}
+      style={style}
+      data-node-id={dataNodeId}
+      onClick={(e) => {
+        const t = e.target as HTMLElement;
+        if (t.closest("input, textarea, [aria-label='Click to edit']")) return;
+        e.stopPropagation();
+        onActivate();
+      }}
+      onKeyDown={(e) => {
+        if (e.key !== "Enter" && e.key !== " ") return;
+        if (isKeyboardEventFromEditableField(e)) return;
+        e.preventDefault();
+        onActivate();
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+/** Same as EditableNavButton but opens a URL (replaces `<a>` when label contains an editor field). */
+function EditableExternalLink({
+  href,
+  className,
+  style,
+  dataNodeId,
+  children,
+}: {
+  href: string;
+  className?: string;
+  style?: React.CSSProperties;
+  dataNodeId?: string;
+  children: React.ReactNode;
+}) {
+  const open = () => window.open(href, "_blank", "noopener,noreferrer");
+  return (
+    <span
+      role="link"
+      tabIndex={0}
+      className={className}
+      style={style}
+      data-node-id={dataNodeId}
+      onClick={(e) => {
+        const t = e.target as HTMLElement;
+        if (t.closest("input, textarea, [aria-label='Click to edit']")) return;
+        e.stopPropagation();
+        open();
+      }}
+      onKeyDown={(e) => {
+        if (e.key !== "Enter" && e.key !== " ") return;
+        if (isKeyboardEventFromEditableField(e)) return;
+        e.preventDefault();
+        open();
+      }}
+    >
+      {children}
+    </span>
+  );
+}
 
 export type ContainerCreationsLandingRendererProps = {
   /** Dev instrumentation id (e.g. `landing-2`). Defaults to `landing-2`. */
@@ -51,6 +156,17 @@ export type ContainerCreationsLandingRendererProps = {
    * Defaults to `"2"` for `/landing-2` parity; omit props only when using those defaults.
    */
   configVersion?: string;
+  /**
+   * When set by a Server Component page (e.g. `app/landing-2/page.tsx`), avoids relying on
+   * `useSearchParams()` for `slideBuilder` during SSR/hydration (mismatch caused broken trees).
+   * Omit when the renderer is mounted from TSX resolver / dev without app-router searchParams.
+   */
+  slideBuilderFlag?: boolean;
+  /**
+   * When set by a Server Component page, overrides `getCanonicalScreenKey(useSearchParams())`.
+   * Use `null` when `?screen=` is absent. Omit to keep hook-based canonical key (dev/TSX paths).
+   */
+  screenParam?: string | null;
 };
 
 /**
@@ -105,6 +221,8 @@ type Screen = {
   visualTone?: LandingVisualTone;
   /** Optional: tighter vertical rhythm (CSS only). */
   density?: LandingScreenDensity;
+  /** Slide builder only; ignored at render time. */
+  builderMeta?: SlideBuilderMeta;
 };
 
 type LandingConfig = {
@@ -112,6 +230,11 @@ type LandingConfig = {
   header: { logoSrc: string; logoAlt: string; shopNowLabel: string };
   stepTracker: StepTrackerResponseConfig;
   screens: Screen[];
+  /**
+   * Deck-wide HiSense palette (`@/palettes` keys). When set, variables are applied to this landing root so the
+   * whole deck preview matches export. Omitted = inherit app/document CSS variables.
+   */
+  deckPalette?: string;
 };
 
 /** Step verification inputs. roofRibHeight = roof rib height in inches (vertical corrugation). */
@@ -339,11 +462,17 @@ const stepNavButtonStyleSteel: React.CSSProperties = {
 export default function ContainerCreationsLandingRenderer({
   componentName = "landing-2",
   configVersion = "2",
+  slideBuilderFlag,
+  screenParam,
 }: ContainerCreationsLandingRendererProps = {}) {
   const wizardConfig = useWizardConfig();
   const containerRef = useRef<HTMLDivElement>(null);
   const editorMode = useSyncExternalStore(subscribeEditorMode, getEditorMode, getEditorMode);
   const isEditor = editorMode === "editor";
+  const searchParams = useSearchParams();
+  const slideBuilder =
+    slideBuilderFlag !== undefined ? slideBuilderFlag : slideBuilderFromUrlParam(searchParams.get("slideBuilder"));
+  const canEdit = isEditor || slideBuilder;
   const shellDevice = useSyncExternalStore(
     subscribeDevicePreviewMode,
     getDevicePreviewMode,
@@ -356,24 +485,33 @@ export default function ContainerCreationsLandingRenderer({
 
   const cfg = config;
   const screens = cfg?.screens ?? [];
-  const searchParams = useSearchParams();
-  const canonicalKey = getCanonicalScreenKey(searchParams);
+  const canonicalKey =
+    screenParam !== undefined ? screenParam : getCanonicalScreenKey(searchParams);
+  /** Stable key for registerJsonScreen + node-order overrides when `?screen=` is absent but slide builder is on. */
+  const registrationKey = canonicalKey ?? (slideBuilder ? `__slideBuilder__${componentName}` : null);
+  const orderStorageKey = registrationKey ?? "";
   const orderOverride = useSyncExternalStore(
     subscribe,
-    () => getOverride(canonicalKey ?? ""),
-    () => getOverride(canonicalKey ?? "")
+    () => getOverride(orderStorageKey),
+    () => getOverride(orderStorageKey)
   );
-  const orderedScreens =
+  let orderedScreens =
     orderOverride?.length && screens.length > 0
       ? orderOverride
           .map((id) => screens.find((s) => s.id === id))
           .filter((s): s is Screen => s != null)
       : screens;
+  if (screens.length > 0 && orderedScreens.length === 0) {
+    orderedScreens = screens;
+  }
+  const orderedScreenIdsStr = orderedScreens.map((s) => s.id).join("|");
   const [currentScreenId, setCurrentScreenId] = useState<string | null>(null);
   const [failedMedia, setFailedMedia] = useState<Set<string>>(new Set());
   const [stepInputs, setStepInputs] = useState<StepInputs>(INITIAL_STEP_INPUTS);
 
   useEffect(() => {
+    let cancelled = false;
+    setConfigError(null);
     const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
     const variant = params.get("variant");
     const urlVersion = params.get("version");
@@ -385,42 +523,91 @@ export default function ContainerCreationsLandingRenderer({
       if (v) qp.set("version", v);
     }
     qp.set("t", String(Date.now()));
-    const url = `${CONFIG_URL}?${qp.toString()}`;
+    const rel = `${CONFIG_URL}?${qp.toString()}`;
+    const url =
+      typeof window !== "undefined" ? new URL(rel, window.location.origin).href : rel;
     fetch(url, { cache: "no-store", headers: { Pragma: "no-cache" } })
       .then((res) => {
-        if (!res.ok) throw new Error(res.statusText);
+        if (cancelled) return null;
+        if (!res.ok) throw new Error(res.statusText || `HTTP ${res.status}`);
         return res.json();
       })
       .then((data) => {
+        if (cancelled || data == null) return;
         setConfig(data as LandingConfig);
         if (Array.isArray(data?.screens) && data.screens.length > 0) {
           setCurrentScreenId(data.screens[0].id);
         }
       })
-      .catch((err) => setConfigError(err?.message ?? "Failed to load config"));
+      .catch((err) => {
+        if (cancelled) return;
+        setConfigError(err?.message ?? "Failed to load config");
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [configVersion]);
 
   useEffect(() => {
     logContainerNodeIdsAfterRender(containerRef, componentName);
-  });
+  }, [componentName, orderedScreenIdsStr, currentScreenId]);
 
-  /** Register landing flow with dev node sidebar when config is loaded. Delay until canonical key exists (no fallback). */
+  /** Phase A: deck palette on landing root; omit deckPalette to inherit active app palette. */
   useEffect(() => {
-    if (!config?.screens?.length || canonicalKey == null) return;
-    registerJsonScreen(canonicalKey, config as Parameters<typeof registerJsonScreen>[1], (newConfig) => setConfig(newConfig as LandingConfig));
-  }, [config, canonicalKey]);
+    if (!cfg || !containerRef.current) return;
+    const name = cfg.deckPalette;
+    if (name == null || name === "") {
+      applyPaletteToElement(containerRef.current, getPaletteName());
+      return;
+    }
+    const resolved = palettes[name] ? name : "default";
+    applyPaletteToElement(containerRef.current, resolved);
+  }, [cfg?.shopUrl, cfg?.deckPalette]);
+
+  const onLandingConfigChangeFromSidebar = useCallback((newConfig: LandingConfig) => {
+    setConfig(newConfig);
+  }, []);
+
+  /** Register landing flow with dev sidebar store when config is loaded (canonical `?screen=` or slide builder fallback key). */
+  useEffect(() => {
+    if (!config?.screens?.length || registrationKey == null) return;
+    registerJsonScreen(
+      registrationKey,
+      config as Parameters<typeof registerJsonScreen>[1],
+      onLandingConfigChangeFromSidebar
+    );
+  }, [config, registrationKey, onLandingConfigChangeFromSidebar]);
 
   const devProps = useSyncExternalStore(subscribeDevSidebarProps, getDevSidebarProps, getDevSidebarProps);
   const selectedLandingNodeId = devProps?.selectedLandingNodeId ?? null;
 
-  // Scroll selected node into view when selection changes (editor mode)
   useEffect(() => {
-    if (!isEditor || !selectedLandingNodeId) return;
+    if (!slideBuilder || !orderedScreenIdsStr) return;
+    const ids = orderedScreenIdsStr.split("|");
+    const first = ids[0];
+    if (!first) return;
+    const sel = selectedLandingNodeId;
+    if (sel == null || !ids.includes(sel)) {
+      setSelectedLandingNodeId(first);
+    }
+  }, [slideBuilder, orderedScreenIdsStr, selectedLandingNodeId]);
+
+  useEffect(() => {
+    if (!slideBuilder || !orderedScreenIdsStr) return;
+    const ids = orderedScreenIdsStr.split("|");
+    if (selectedLandingNodeId && ids.includes(selectedLandingNodeId)) {
+      setCurrentScreenId(selectedLandingNodeId);
+    }
+  }, [slideBuilder, selectedLandingNodeId, orderedScreenIdsStr]);
+
+  // Scroll selected node into view when selection changes (editor mode). Skip slide builder: single preview + smooth scroll can steal focus from inputs.
+  useEffect(() => {
+    if (!canEdit || slideBuilder || !selectedLandingNodeId) return;
     const el = document.querySelector(`[data-screen-id="${selectedLandingNodeId}"]`) ?? document.getElementById(selectedLandingNodeId);
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "center" });
     }
-  }, [isEditor, selectedLandingNodeId]);
+  }, [canEdit, slideBuilder, selectedLandingNodeId]);
 
   function updateScreenField(
     screenId: string,
@@ -465,6 +652,238 @@ export default function ContainerCreationsLandingRenderer({
     });
   }
 
+  function updateBadgeBlock(screenId: string, blockIndex: number, text: string) {
+    if (!config) return;
+    setConfig({
+      ...config,
+      screens: config.screens.map((s) => {
+        if (s.id !== screenId || !s.content?.[blockIndex]) return s;
+        const content = [...s.content];
+        const block = content[blockIndex];
+        if (block && block.type === "badge") {
+          content[blockIndex] = { ...block, text };
+        }
+        return { ...s, content };
+      }),
+    });
+  }
+
+  function updateHeadingContentBlock(screenId: string, blockIndex: number, text: string) {
+    if (!config) return;
+    setConfig({
+      ...config,
+      screens: config.screens.map((s) => {
+        if (s.id !== screenId || !s.content?.[blockIndex]) return s;
+        const content = [...s.content];
+        const block = content[blockIndex];
+        if (block && block.type === "heading") {
+          content[blockIndex] = { ...block, text };
+        }
+        return { ...s, content };
+      }),
+    });
+  }
+
+  function updateComparisonHeading(screenId: string, blockIndex: number, heading: string) {
+    if (!config) return;
+    setConfig({
+      ...config,
+      screens: config.screens.map((s) => {
+        if (s.id !== screenId || !s.content?.[blockIndex]) return s;
+        const content = [...s.content];
+        const block = content[blockIndex];
+        if (block && block.type === "comparison") {
+          content[blockIndex] = { ...block, heading };
+        }
+        return { ...s, content };
+      }),
+    });
+  }
+
+  function updateComparisonColumnLabel(
+    screenId: string,
+    blockIndex: number,
+    side: "left" | "right",
+    text: string
+  ) {
+    if (!config) return;
+    setConfig({
+      ...config,
+      screens: config.screens.map((s) => {
+        if (s.id !== screenId || !s.content?.[blockIndex]) return s;
+        const content = [...s.content];
+        const block = content[blockIndex];
+        if (block && block.type === "comparison") {
+          content[blockIndex] = {
+            ...block,
+            columnLabels: { ...(block.columnLabels ?? {}), [side]: text },
+          };
+        }
+        return { ...s, content };
+      }),
+    });
+  }
+
+  function updateComparisonRowCell(
+    screenId: string,
+    blockIndex: number,
+    rowIndex: number,
+    side: "left" | "right",
+    text: string
+  ) {
+    if (!config) return;
+    setConfig({
+      ...config,
+      screens: config.screens.map((s) => {
+        if (s.id !== screenId || !s.content?.[blockIndex]) return s;
+        const content = [...s.content];
+        const block = content[blockIndex];
+        if (block && block.type === "comparison" && block.rows[rowIndex]) {
+          const rows = [...block.rows];
+          rows[rowIndex] = { ...rows[rowIndex], [side]: text };
+          content[blockIndex] = { ...block, rows };
+        }
+        return { ...s, content };
+      }),
+    });
+  }
+
+  function updateStatsItem(
+    screenId: string,
+    blockIndex: number,
+    itemIndex: number,
+    field: "label" | "value" | "hint",
+    text: string
+  ) {
+    if (!config) return;
+    setConfig({
+      ...config,
+      screens: config.screens.map((s) => {
+        if (s.id !== screenId || !s.content?.[blockIndex]) return s;
+        const content = [...s.content];
+        const block = content[blockIndex];
+        if (block && block.type === "stats" && block.items[itemIndex]) {
+          const items = [...block.items];
+          const item = items[itemIndex];
+          items[itemIndex] =
+            field === "hint"
+              ? { ...item, hint: text.trim() ? text : undefined }
+              : { ...item, [field]: text };
+          content[blockIndex] = { ...block, items };
+        }
+        return { ...s, content };
+      }),
+    });
+  }
+
+  function updateTrustStripItemLabel(
+    screenId: string,
+    blockIndex: number,
+    itemIndex: number,
+    label: string
+  ) {
+    if (!config) return;
+    setConfig({
+      ...config,
+      screens: config.screens.map((s) => {
+        if (s.id !== screenId || !s.content?.[blockIndex]) return s;
+        const content = [...s.content];
+        const block = content[blockIndex];
+        if (block && block.type === "trustStrip" && block.items[itemIndex]) {
+          const items = [...block.items];
+          items[itemIndex] = { ...items[itemIndex], label };
+          content[blockIndex] = { ...block, items };
+        }
+        return { ...s, content };
+      }),
+    });
+  }
+
+  function updateIconFeaturesItem(
+    screenId: string,
+    blockIndex: number,
+    itemIndex: number,
+    field: "title" | "sub",
+    text: string
+  ) {
+    if (!config) return;
+    setConfig({
+      ...config,
+      screens: config.screens.map((s) => {
+        if (s.id !== screenId || !s.content?.[blockIndex]) return s;
+        const content = [...s.content];
+        const block = content[blockIndex];
+        if (block && block.type === "iconFeatures" && block.items[itemIndex]) {
+          const items = [...block.items];
+          const item = items[itemIndex];
+          items[itemIndex] =
+            field === "sub"
+              ? { ...item, sub: text.trim() ? text : undefined }
+              : { ...item, title: text };
+          content[blockIndex] = { ...block, items };
+        }
+        return { ...s, content };
+      }),
+    });
+  }
+
+  function updateTestimonialField(
+    screenId: string,
+    blockIndex: number,
+    field: "quote" | "author" | "role" | "location",
+    text: string
+  ) {
+    if (!config) return;
+    setConfig({
+      ...config,
+      screens: config.screens.map((s) => {
+        if (s.id !== screenId || !s.content?.[blockIndex]) return s;
+        const content = [...s.content];
+        const block = content[blockIndex];
+        if (block && block.type === "testimonial") {
+          const v =
+            field === "role" || field === "location"
+              ? text.trim() || undefined
+              : text;
+          content[blockIndex] = { ...block, [field]: v };
+        }
+        return { ...s, content };
+      }),
+    });
+  }
+
+  function updateCtaBandField(
+    screenId: string,
+    blockIndex: number,
+    field: "headline" | "sub",
+    text: string
+  ) {
+    if (!config) return;
+    setConfig({
+      ...config,
+      screens: config.screens.map((s) => {
+        if (s.id !== screenId || !s.content?.[blockIndex]) return s;
+        const content = [...s.content];
+        const block = content[blockIndex];
+        if (block && block.type === "ctaBand") {
+          content[blockIndex] =
+            field === "sub"
+              ? { ...block, sub: text.trim() ? text : undefined }
+              : { ...block, headline: text };
+        }
+        return { ...s, content };
+      }),
+    });
+  }
+
+  function updateHeaderShopNowLabel(label: string) {
+    if (!config) return;
+    setConfig({
+      ...config,
+      header: { ...config.header, shopNowLabel: label },
+    });
+  }
+
   if (configError) {
     return (
       <div style={{ padding: "2rem", textAlign: "center", color: "#94a3b8" }}>
@@ -492,16 +911,19 @@ export default function ContainerCreationsLandingRenderer({
       currentScreen.layout === "splitProof") &&
     currentScreen.lightTheme === true;
 
-  const goToScreen = (id: string) => setCurrentScreenId(id);
+  const goToScreen = (id: string) => {
+    setCurrentScreenId(id);
+    if (slideBuilder) setSelectedLandingNodeId(id);
+  };
   const goNext = () => {
     if (currentScreen.nextScreenId) {
-      setCurrentScreenId(currentScreen.nextScreenId);
+      goToScreen(currentScreen.nextScreenId);
     } else if (currentIndex < orderedScreens.length - 1) {
-      setCurrentScreenId(orderedScreens[currentIndex + 1].id);
+      goToScreen(orderedScreens[currentIndex + 1].id);
     }
   };
   const goBack = () => {
-    if (currentIndex > 0) setCurrentScreenId(orderedScreens[currentIndex - 1].id);
+    if (currentIndex > 0) goToScreen(orderedScreens[currentIndex - 1].id);
   };
 
   /** Renders a single inline control by type. Driven by screen.inlineControls from config. */
@@ -641,6 +1063,19 @@ export default function ContainerCreationsLandingRenderer({
           const nodeId = "nodeId" in btn ? btn.nodeId : undefined;
           if (btn.type === "link") {
             const href = resolveHref(btn, cfg);
+            if (isEdit && onButtonLabelChange) {
+              return (
+                <EditableExternalLink
+                  key={i}
+                  href={href}
+                  className="hero-cta"
+                  style={{ display: "inline-block", textDecoration: "none", marginTop: 0, cursor: "pointer" }}
+                  dataNodeId={nodeId}
+                >
+                  {labelNode(btn, i)}
+                </EditableExternalLink>
+              );
+            }
             return (
               <a
                 key={i}
@@ -656,6 +1091,18 @@ export default function ContainerCreationsLandingRenderer({
             );
           }
           if (btn.type === "goto") {
+            if (isEdit && onButtonLabelChange) {
+              return (
+                <EditableNavButton
+                  key={i}
+                  className="hero-cta"
+                  dataNodeId={nodeId}
+                  onActivate={() => goToScreen(btn.target)}
+                >
+                  {labelNode(btn, i)}
+                </EditableNavButton>
+              );
+            }
             return (
               <button
                 key={i}
@@ -669,6 +1116,13 @@ export default function ContainerCreationsLandingRenderer({
             );
           }
           if (btn.type === "next") {
+            if (isEdit && onButtonLabelChange) {
+              return (
+                <EditableNavButton key={i} className="hero-cta" dataNodeId={nodeId} onActivate={goNext}>
+                  {labelNode(btn, i)}
+                </EditableNavButton>
+              );
+            }
             return (
               <button
                 key={i}
@@ -682,6 +1136,13 @@ export default function ContainerCreationsLandingRenderer({
             );
           }
           if (btn.type === "back") {
+            if (isEdit && onButtonLabelChange) {
+              return (
+                <EditableNavButton key={i} dataNodeId={nodeId} style={btnStyle} onActivate={goBack}>
+                  {labelNode(btn, i)}
+                </EditableNavButton>
+              );
+            }
             return (
               <button
                 key={i}
@@ -839,24 +1300,53 @@ export default function ContainerCreationsLandingRenderer({
 
   function renderScreen(screen: Screen) {
     // SAFETY: Every layout must use renderContentBlocks(screen.content, ...) only. No screen.content.map or block.type filtering.
-    const isSelected = isEditor && selectedLandingNodeId === screen.id;
+    const contentBlocksOpts: LandingContentBlocksOptions = canEdit
+      ? {
+          isEditor: true,
+          screenId: screen.id,
+          onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t),
+          onHeadingBlockChange: (i, t) => updateHeadingContentBlock(screen.id, i, t),
+          onBadgeChange: (i, t) => updateBadgeBlock(screen.id, i, t),
+          onTrustStripItemChange: (bi, ii, t) =>
+            updateTrustStripItemLabel(screen.id, bi, ii, t),
+          onComparisonHeadingChange: (i, h) => updateComparisonHeading(screen.id, i, h),
+          onComparisonColumnLabelChange: (i, side, t) =>
+            updateComparisonColumnLabel(screen.id, i, side, t),
+          onComparisonRowCellChange: (i, ri, side, t) =>
+            updateComparisonRowCell(screen.id, i, ri, side, t),
+          onStatsItemChange: (i, ii, field, t) => updateStatsItem(screen.id, i, ii, field, t),
+          onIconFeaturesItemChange: (i, ii, field, t) =>
+            updateIconFeaturesItem(screen.id, i, ii, field, t),
+          onTestimonialFieldChange: (i, field, t) =>
+            updateTestimonialField(screen.id, i, field, t),
+          onCtaBandFieldChange: (i, field, t) => updateCtaBandField(screen.id, i, field, t),
+          checklistHeadingClassName: "cc-stamped-checklist-heading",
+          checklistListClassName: "cc-stamped-checklist",
+        }
+      : {
+          checklistHeadingClassName: "cc-stamped-checklist-heading",
+          checklistListClassName: "cc-stamped-checklist",
+        };
+    const isSelected = canEdit && selectedLandingNodeId === screen.id;
     const outlineStyle: React.CSSProperties = isSelected
       ? { outline: "2px solid var(--color-accent, #1a73e8)", outlineOffset: 2 }
       : {};
-    const selectNodeProps = isEditor
+    const selectNodeProps = canEdit
       ? {
-          onClick: () => setSelectedLandingNodeId(screen.id),
-          role: "button" as const,
-          tabIndex: 0,
-          onKeyDown: (e: React.KeyboardEvent) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              setSelectedLandingNodeId(screen.id);
+          onClick: (e: React.MouseEvent) => {
+            const t = e.target as HTMLElement;
+            if (
+              t.closest(
+                "input, textarea, select, button, a[href], label, [role='link'], [role='button'], [aria-label='Click to edit']"
+              )
+            ) {
+              return;
             }
+            setSelectedLandingNodeId(screen.id);
           },
         }
       : {};
-    const containerStyle: React.CSSProperties = isEditor ? { ...outlineStyle, cursor: "pointer" } : outlineStyle;
+    const containerStyle: React.CSSProperties = canEdit ? { ...outlineStyle, cursor: "pointer" } : outlineStyle;
 
     switch (screen.layout) {
       case "hero": {
@@ -869,53 +1359,73 @@ export default function ContainerCreationsLandingRenderer({
               {videoBlock && videoBlock.type === "video"
                 ? renderMediaItem(videoBlock, screen.media.indexOf(videoBlock), { placement: "hero" })
                 : null}
-              {heroLinkButton && (
-                <a
-                  href={resolveHref(heroLinkButton, cfg)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="landing-hero-shop-link"
-                  data-node-id={"nodeId" in heroLinkButton ? heroLinkButton.nodeId : undefined}
-                >
-                  {isEditor ? (
+              {heroLinkButton &&
+                (canEdit ? (
+                  <EditableExternalLink
+                    href={resolveHref(heroLinkButton, cfg)}
+                    className="landing-hero-shop-link"
+                    style={{ cursor: "pointer" }}
+                    dataNodeId={"nodeId" in heroLinkButton ? heroLinkButton.nodeId : undefined}
+                  >
                     <InlineEditableText
                       value={heroLinkButton.label}
                       onChange={(v) => updateScreenButtonLabel(screen.id, heroLinkIndex, v)}
                       isEditing
                       as="span"
                     />
-                  ) : (
-                    heroLinkButton.label
-                  )}
-                </a>
-              )}
+                  </EditableExternalLink>
+                ) : (
+                  <a
+                    href={resolveHref(heroLinkButton, cfg)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="landing-hero-shop-link"
+                    data-node-id={"nodeId" in heroLinkButton ? heroLinkButton.nodeId : undefined}
+                  >
+                    {heroLinkButton.label}
+                  </a>
+                ))}
             </section>
             <section id="explore-container" className="hero-intro">
               <div style={{ minHeight: "1.2em" }}>
                 <InlineEditableText
                   value={screen.title}
                   onChange={(v) => updateScreenField(screen.id, "title", v)}
-                  isEditing={isEditor}
+                  isEditing={canEdit}
                   as="h1"
                   className="hero-title"
                 />
               </div>
-              {screen.subtitle != null || isEditor ? (
+              {screen.subtitle != null || canEdit ? (
                 <InlineEditableText
                   value={screen.subtitle ?? ""}
                   onChange={(v) => updateScreenField(screen.id, "subtitle", v || undefined)}
-                  isEditing={isEditor}
+                  isEditing={canEdit}
                   as="p"
                   className="hero-subtitle"
                   multiline
                 />
               ) : null}
-              {renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t), checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" } : { checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" })}
+              {renderContentBlocks(screen.content, contentBlocksOpts)}
               {screen.buttons.filter((b) => b.type === "goto").map((btn, j) => {
                 const idx = screen.buttons.indexOf(btn);
-                return (
+                return canEdit ? (
+                  <EditableNavButton
+                    key={j}
+                    className="hero-cta"
+                    dataNodeId={btn.nodeId}
+                    onActivate={() => goToScreen(btn.target)}
+                  >
+                    <InlineEditableText
+                      value={btn.label}
+                      onChange={(v) => updateScreenButtonLabel(screen.id, idx, v)}
+                      isEditing
+                      as="span"
+                    />
+                  </EditableNavButton>
+                ) : (
                   <button key={j} type="button" className="hero-cta" onClick={() => goToScreen(btn.target)} data-node-id={btn.nodeId}>
-                    {isEditor ? <InlineEditableText value={btn.label} onChange={(v) => updateScreenButtonLabel(screen.id, idx, v)} isEditing as="span" /> : btn.label}
+                    {btn.label}
                   </button>
                 );
               })}
@@ -932,19 +1442,19 @@ export default function ContainerCreationsLandingRenderer({
                 <InlineEditableText
                   value={screen.title}
                   onChange={(v) => updateScreenField(screen.id, "title", v)}
-                  isEditing={isEditor}
+                  isEditing={canEdit}
                   as="h2"
                   className="cc-stamped-heading"
                 />
               </div>
               <div className="cc-stamped-description">
-                {renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t), checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" } : { checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" })}
+                {renderContentBlocks(screen.content, contentBlocksOpts)}
               </div>
               <div className="landing-phone-video-wrap cc-stamped-media">
                 {screen.media.map((m, i) => renderMediaItem(m, i, { placement: "stamped" }))}
               </div>
               {renderInlineUI(screen, true)}
-              {renderButtons(screen, false, isEditor, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
+              {renderButtons(screen, false, canEdit, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
             </section>
           </section>
         );
@@ -963,15 +1473,15 @@ export default function ContainerCreationsLandingRenderer({
                 <InlineEditableText
                   value={screen.title}
                   onChange={(v) => updateScreenField(screen.id, "title", v)}
-                  isEditing={isEditor}
+                  isEditing={canEdit}
                   as="h2"
                 />
               </div>
               <div>
-                {renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t), checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" } : { checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" })}
+                {renderContentBlocks(screen.content, contentBlocksOpts)}
               </div>
               {renderInlineUI(screen, useLightCard)}
-              {!useLightCard && renderButtons(screen, true, isEditor, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
+              {!useLightCard && renderButtons(screen, true, canEdit, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
             </div>
           </div>
         );
@@ -980,7 +1490,7 @@ export default function ContainerCreationsLandingRenderer({
             <section id={screen.id} className="cc-step-section cc-step-section--light" style={containerStyle} {...selectNodeProps}>
               <div className="landing-content-block">
                 {twoColContent}
-                {renderButtons(screen, false, isEditor, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
+                {renderButtons(screen, false, canEdit, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
               </div>
             </section>
           );
@@ -1004,13 +1514,13 @@ export default function ContainerCreationsLandingRenderer({
                   <InlineEditableText
                     value={screen.title}
                     onChange={(v) => updateScreenField(screen.id, "title", v)}
-                    isEditing={isEditor}
+                    isEditing={canEdit}
                     as="h2"
                   />
                 </div>
-                {renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t), checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" } : { checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" })}
+                {renderContentBlocks(screen.content, contentBlocksOpts)}
                 {renderInlineUI(screen, false)}
-                {renderButtons(screen, true, isEditor, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
+                {renderButtons(screen, true, canEdit, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
               </div>
             </div>
           </div>
@@ -1031,7 +1541,7 @@ export default function ContainerCreationsLandingRenderer({
                   <InlineEditableText
                     value={screen.title}
                     onChange={(v) => updateScreenField(screen.id, "title", v)}
-                    isEditing={isEditor}
+                    isEditing={canEdit}
                     as="h2"
                     className="cc-proof-panel__title"
                   />
@@ -1039,12 +1549,12 @@ export default function ContainerCreationsLandingRenderer({
               </div>
               <div className="cc-proof-panel__main">
                 <div className="cc-proof-panel__content cc-onboarding-stack">
-                  {renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t), checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" } : { checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" })}
+                  {renderContentBlocks(screen.content, contentBlocksOpts)}
                 </div>
                 {renderInlineUI(screen, useLight)}
               </div>
               <div className="cc-proof-panel__cta" data-zone="cta">
-                {renderButtons(screen, !useLight, isEditor, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
+                {renderButtons(screen, !useLight, canEdit, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
               </div>
             </div>
           </div>
@@ -1079,18 +1589,18 @@ export default function ContainerCreationsLandingRenderer({
                     <InlineEditableText
                       value={screen.title}
                       onChange={(v) => updateScreenField(screen.id, "title", v)}
-                      isEditing={isEditor}
+                      isEditing={canEdit}
                       as="h2"
                       className="cc-split-proof__title"
                     />
                   </div>
                 </div>
                 <div className="cc-split-proof__stack cc-onboarding-stack">
-                  {renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t), checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" } : { checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" })}
+                  {renderContentBlocks(screen.content, contentBlocksOpts)}
                 </div>
                 {renderInlineUI(screen, useLight)}
                 <div className="cc-split-proof__cta" data-zone="cta">
-                  {renderButtons(screen, !useLight, isEditor, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
+                  {renderButtons(screen, !useLight, canEdit, (idx, label) => updateScreenButtonLabel(screen.id, idx, label))}
                 </div>
               </div>
             </div>
@@ -1119,28 +1629,44 @@ export default function ContainerCreationsLandingRenderer({
                   <InlineEditableText
                     value={screen.title}
                     onChange={(v) => updateScreenField(screen.id, "title", v)}
-                    isEditing={isEditor}
+                    isEditing={canEdit}
                     as="h2"
                   />
                 </div>
                 {screen.dynamicSummary ? (
                   <p style={{ marginBottom: 16 }}>{getFinalRecommendationSummary(screen)}</p>
                 ) : (
-                  renderContentBlocks(screen.content, isEditor ? { isEditor: true, screenId: screen.id, onParagraphChange: (i, t) => updateScreenContentBlock(screen.id, i, t), checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" } : { checklistHeadingClassName: "cc-stamped-checklist-heading", checklistListClassName: "cc-stamped-checklist" })
+                  renderContentBlocks(screen.content, contentBlocksOpts)
                 )}
                 {screen.buttons.map((btn, i) => {
                   if (btn.type === "link") {
-                    return (
+                    const href = resolveHref(btn, cfg);
+                    return canEdit ? (
+                      <EditableExternalLink
+                        key={i}
+                        href={href}
+                        className="hero-cta"
+                        style={{ display: "inline-block", textDecoration: "none", marginTop: 16, cursor: "pointer" }}
+                        dataNodeId={"nodeId" in btn ? btn.nodeId : undefined}
+                      >
+                        <InlineEditableText
+                          value={btn.label}
+                          onChange={(v) => updateScreenButtonLabel(screen.id, i, v)}
+                          isEditing
+                          as="span"
+                        />
+                      </EditableExternalLink>
+                    ) : (
                       <a
                         key={i}
-                        href={resolveHref(btn, cfg)}
+                        href={href}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="hero-cta"
                         style={{ display: "inline-block", textDecoration: "none", marginTop: 16 }}
                         data-node-id={"nodeId" in btn ? btn.nodeId : undefined}
                       >
-                        {isEditor ? <InlineEditableText value={btn.label} onChange={(v) => updateScreenButtonLabel(screen.id, i, v)} isEditing as="span" /> : btn.label}
+                        {btn.label}
                       </a>
                     );
                   }
@@ -1155,6 +1681,125 @@ export default function ContainerCreationsLandingRenderer({
     }
   }
 
+  const orderForMutations =
+    registrationKey != null && orderOverride?.length ? orderOverride : undefined;
+
+  /** Reorder `screens[]` to match `nextOrder`. Pass `baseConfig` after add/duplicate so the map includes new ids (closure `config` would be stale). */
+  function applySlideOrder(nextOrder: string[], baseConfig?: LandingConfig) {
+    const base = baseConfig ?? config;
+    if (!base) return;
+    if (registrationKey) {
+      setOverride(registrationKey, nextOrder);
+    } else {
+      const map = new Map(base.screens.map((s) => [s.id, s]));
+      const reordered = nextOrder.map((id) => map.get(id)).filter((s): s is Screen => s != null);
+      setConfig({ ...base, screens: reordered });
+    }
+  }
+
+  function handleSlideBuilderExport() {
+    if (!config) return;
+    const override = registrationKey != null ? getOverride(registrationKey) : undefined;
+    const merged = mergeScreenOrderIntoScreens(config.screens, override);
+    const out = { ...config, screens: merged };
+    downloadLandingJson("landing-export.json", JSON.stringify(out, null, 2));
+  }
+
+  function handleSlideBuilderAdd() {
+    if (!config) return;
+    const { config: next, newOrder, newId } = addScreenAtEnd(
+      config as unknown as { screens: Record<string, unknown>[] },
+      orderForMutations
+    );
+    const nextLanding = next as LandingConfig;
+    if (registrationKey) {
+      setConfig(nextLanding);
+      setOverride(registrationKey, newOrder);
+    } else {
+      applySlideOrder(newOrder, nextLanding);
+    }
+    setSelectedLandingNodeId(newId);
+  }
+
+  function handleSlideBuilderDuplicate() {
+    if (!config || !selectedLandingNodeId) return;
+    const res = duplicateScreenById(
+      config as unknown as { screens: Record<string, unknown>[] },
+      selectedLandingNodeId,
+      orderForMutations
+    );
+    if (!res) return;
+    const nextLanding = res.config as LandingConfig;
+    if (registrationKey) {
+      setConfig(nextLanding);
+      setOverride(registrationKey, res.newOrder);
+    } else {
+      applySlideOrder(res.newOrder, nextLanding);
+    }
+    setSelectedLandingNodeId(res.newId);
+  }
+
+  function handleSlideBuilderDelete() {
+    if (!config || !selectedLandingNodeId) return;
+    const res = deleteScreenById(
+      config as unknown as { screens: Record<string, unknown>[] },
+      selectedLandingNodeId,
+      orderForMutations
+    );
+    if (!res) return;
+    const nextLanding = res.config as LandingConfig;
+    if (registrationKey) {
+      setConfig(nextLanding);
+      setOverride(registrationKey, res.newOrder);
+    } else {
+      applySlideOrder(res.newOrder, nextLanding);
+    }
+    setSelectedLandingNodeId(res.newOrder[0] ?? null);
+  }
+
+  function handleSlideBuilderInspectorChange(patch: Partial<EditableNode>) {
+    if (!config || !selectedLandingNodeId) return;
+    setConfig(
+      patchLandingScreen(
+        config as unknown as Parameters<typeof patchLandingScreen>[0],
+        selectedLandingNodeId,
+        patch as Record<string, unknown>
+      ) as LandingConfig
+    );
+  }
+
+  function handleDeckPaletteChange(paletteName: string) {
+    if (!config) return;
+    if (paletteName === "") {
+      const { deckPalette: _drop, ...rest } = config;
+      setConfig(rest as LandingConfig);
+      return;
+    }
+    setConfig({ ...config, deckPalette: paletteName });
+  }
+
+  function handleSlideBuilderMoveUp() {
+    if (!selectedLandingNodeId || !orderedScreens.length) return;
+    const ids = orderedScreens.map((s) => s.id);
+    applySlideOrder(moveIdInOrder(ids, selectedLandingNodeId, "up"));
+  }
+
+  function handleSlideBuilderMoveDown() {
+    if (!selectedLandingNodeId || !orderedScreens.length) return;
+    const ids = orderedScreens.map((s) => s.id);
+    applySlideOrder(moveIdInOrder(ids, selectedLandingNodeId, "down"));
+  }
+
+  const slideBuilderScreen =
+    selectedLandingNodeId && orderedScreens.some((s) => s.id === selectedLandingNodeId)
+      ? (orderedScreens.find((s) => s.id === selectedLandingNodeId) ?? orderedScreens[0])
+      : orderedScreens[0];
+
+  const slideBuilderInspectorNode: EditableNode | null =
+    slideBuilder && selectedLandingNodeId
+      ? ((orderedScreens.find((s) => s.id === selectedLandingNodeId) ?? null) as unknown as EditableNode)
+      : null;
+
   const stepLabels = orderedScreens.map((s) => s.stepLabel);
   const showStepProgress = wizardConfig?.steps.showProgress ?? true;
   const progressStyle = wizardConfig?.steps.progressStyle ?? "stepper";
@@ -1165,6 +1810,7 @@ export default function ContainerCreationsLandingRenderer({
       ref={containerRef}
       className={`landing-container-creations${currentScreen.layout === "hero" ? " landing-step-hero" : ""}${currentScreen.layout === "stamped" ? " landing-step-stamped" : ""}${lightLayoutStep ? " measure-step-active" : ""}${currentScreen.layout === "proofPanel" || currentScreen.layout === "splitProof" ? " landing-step-proof" : ""}`}
       data-landing="container-creations"
+      data-slide-builder={slideBuilder ? "1" : undefined}
       data-structure-type="wizard"
       data-wizard-progress-style={progressStyle}
       data-wizard-nav-placement={navPlacement}
@@ -1180,21 +1826,99 @@ export default function ContainerCreationsLandingRenderer({
             className="landing-shop-logo"
           />
         </a>
-        <a
-          href={cfg.shopUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="landing-shop-cta"
-          data-node-id="shop-now-header"
-        >
-          {cfg.header.shopNowLabel}
-        </a>
+        {canEdit ? (
+          <EditableExternalLink
+            href={cfg.shopUrl}
+            className="landing-shop-cta"
+            style={{ cursor: "pointer" }}
+            dataNodeId="shop-now-header"
+          >
+            <InlineEditableText
+              value={cfg.header.shopNowLabel}
+              onChange={updateHeaderShopNowLabel}
+              isEditing
+              as="span"
+            />
+          </EditableExternalLink>
+        ) : (
+          <a
+            href={cfg.shopUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="landing-shop-cta"
+            data-node-id="shop-now-header"
+          >
+            {cfg.header.shopNowLabel}
+          </a>
+        )}
       </header>
 
       <main
-        className={`landing-cc-main${lightLayoutStep && !isEditor ? " landing-cc-main--fill" : ""}`}
+        className={`landing-cc-main${lightLayoutStep && !canEdit ? " landing-cc-main--fill" : ""}${slideBuilder ? " landing-cc-main--slide-builder" : ""}`}
       >
-        {isEditor ? (
+        {slideBuilder ? (
+          <div
+            className="landing-slide-builder-columns"
+            style={{
+              display: "flex",
+              flex: 1,
+              flexShrink: 0,
+              minHeight: 0,
+              alignItems: "stretch",
+              width: "100%",
+              minWidth: 920,
+            }}
+          >
+            <LandingSlideBuilderPanel
+              slides={orderedScreens.map((s) => ({
+                id: s.id,
+                stepLabel: s.stepLabel,
+                title: s.title,
+                layout: s.layout,
+                slideTypeLabel: SLIDE_TYPE_LABELS[inferSlideTypeFromNode(s)],
+              }))}
+              deckPalette={cfg?.deckPalette ?? ""}
+              paletteIds={Object.keys(palettes).sort()}
+              onDeckPaletteChange={handleDeckPaletteChange}
+              selectedId={selectedLandingNodeId}
+              onSelect={(id) => setSelectedLandingNodeId(id)}
+              onAdd={handleSlideBuilderAdd}
+              onDuplicate={handleSlideBuilderDuplicate}
+              onDelete={handleSlideBuilderDelete}
+              onMoveUp={handleSlideBuilderMoveUp}
+              onMoveDown={handleSlideBuilderMoveDown}
+              onExport={handleSlideBuilderExport}
+              canDelete={orderedScreens.length > 1}
+              mergeNote={null}
+            />
+            <div className="landing-slide-builder-center">
+              <div className="landing-slide-builder-center-scroll">
+                <div
+                  className={shellDevice === "phoneGrid" ? "dev-flow-grid editor-cards-phone" : "dev-flow-single"}
+                  data-card-device={cardDevice}
+                >
+                  {slideBuilderScreen ? (
+                    <div className="dev-step">
+                      <h3 style={{ padding: "0 12px" }}>
+                        Slide {orderedScreens.findIndex((s) => s.id === slideBuilderScreen.id) + 1} – {slideBuilderScreen.stepLabel}
+                      </h3>
+                      <div className="landing-screen-presentation" {...landingScreenPresentationAttrs(slideBuilderScreen)}>
+                        {renderScreen(slideBuilderScreen)}
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+            <LandingSlideBuilderInspector
+              node={slideBuilderInspectorNode}
+              screenIds={orderedScreens.map((s) => s.id)}
+              selectedNodeId={selectedLandingNodeId}
+              onSelectNode={(id) => setSelectedLandingNodeId(id)}
+              onChange={handleSlideBuilderInspectorChange}
+            />
+          </div>
+        ) : isEditor ? (
           <div
             className={shellDevice === "phoneGrid" ? "dev-flow-grid editor-cards-phone" : "dev-flow-single"}
             data-card-device={cardDevice}

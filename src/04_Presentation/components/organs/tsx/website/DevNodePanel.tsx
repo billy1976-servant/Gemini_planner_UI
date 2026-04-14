@@ -11,29 +11,8 @@ import {
 } from "@/app/ui/control-dock/dev-right-sidebar-store";
 import NodeInspector from "@/app/ui/control-dock/editor/NodeInspector";
 import { getEditorMode, subscribeEditorMode } from "@/07_Dev_Tools/editor/editor-mode-store";
+import { deepMergeRecord } from "@/lib/landing-screen-patch";
 import { getOverride, setOverride, subscribe } from "./node-order-override-store";
-
-/** Merge patch into target. Arrays in patch replace the existing value (no partial merge). */
-function deepMerge<T extends Record<string, unknown>>(target: T, patch: Partial<T>): T {
-  const merged = Object.keys(patch as Record<string, unknown>).reduce(
-    (acc: Record<string, unknown>, key) => {
-      const value = (patch as Record<string, unknown>)[key];
-      if (Array.isArray(value)) {
-        acc[key] = value;
-      } else if (value != null && typeof value === "object" && !Array.isArray(value)) {
-        acc[key] = deepMerge(
-          ((target as Record<string, unknown>)[key] as Record<string, unknown>) || {},
-          value as Record<string, unknown>
-        );
-      } else {
-        acc[key] = value;
-      }
-      return acc;
-    },
-    {} as Record<string, unknown>
-  );
-  return { ...target, ...merged } as T;
-}
 
 function moveItem(arr: string[], index: number, direction: "up" | "down"): string[] {
   const next = [...arr];
@@ -317,7 +296,7 @@ export function DevNodePanel({ screenPath }: { screenPath: string }) {
     const onChange = props?.onLandingConfigChange;
     if (!config || !onChange) return;
     const newScreens = config.screens.map((s) =>
-      s.id === nodeId ? deepMerge(s as Record<string, unknown>, patch as Record<string, unknown>) : s
+      s.id === nodeId ? deepMergeRecord(s as Record<string, unknown>, patch as Record<string, unknown>) : s
     ) as LandingConfig["screens"];
     onChange({ ...config, screens: newScreens });
   }

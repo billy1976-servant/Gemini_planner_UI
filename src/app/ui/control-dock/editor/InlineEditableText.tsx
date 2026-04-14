@@ -36,8 +36,9 @@ export default function InlineEditableText({
     setDraft(value);
   }, [value]);
 
-  const startEditing = useCallback(() => {
+  const startEditing = useCallback((e?: React.SyntheticEvent) => {
     if (!isEditing) return;
+    e?.stopPropagation();
     setDraft(value);
     setEditing(true);
   }, [isEditing, value]);
@@ -54,6 +55,7 @@ export default function InlineEditableText({
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
+      e.stopPropagation();
       if (e.key === "Enter" && !multiline) {
         e.preventDefault();
         commit();
@@ -134,18 +136,20 @@ export default function InlineEditableText({
   return (
     <As
       className={className}
+      data-inline-editable="true"
       style={{
         ...style,
         cursor: "pointer",
         borderBottom: "1px dashed var(--color-text-secondary, #5f6368)",
       }}
-      onClick={startEditing}
+      onClick={(e) => startEditing(e)}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          startEditing();
+          e.stopPropagation();
+          startEditing(e);
         }
       }}
       aria-label="Click to edit"
