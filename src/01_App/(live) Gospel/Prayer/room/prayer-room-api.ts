@@ -10,6 +10,19 @@ function getBase(): string {
   return "/api/prayer-room";
 }
 
+interface ApiErrorPayload {
+  message?: string;
+}
+
+async function parseApiError(res: Response, fallback: string): Promise<string> {
+  const payload = (await res.json().catch(() => ({}))) as ApiErrorPayload;
+  if (payload.message) return payload.message;
+  if (res.status === 401) return "Sign in is required.";
+  if (res.status === 403) return "You do not have access to this room.";
+  if (res.status === 404) return "Room not found.";
+  return fallback;
+}
+
 export interface CreateRoomPayload {
   title?: string;
   groupId?: string | null;
@@ -29,8 +42,7 @@ export async function createRoom(payload: CreateRoomPayload): Promise<CreateRoom
     body: JSON.stringify(payload),
   });
   if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error((err as { message?: string }).message ?? "Create room failed");
+    throw new Error(await parseApiError(res, "Create room failed"));
   }
   return res.json();
 }
@@ -54,8 +66,7 @@ export async function joinRoom(payload: JoinRoomPayload): Promise<JoinRoomRespon
     body: JSON.stringify(payload),
   });
   if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error((err as { message?: string }).message ?? "Join room failed");
+    throw new Error(await parseApiError(res, "Join room failed"));
   }
   return res.json();
 }
@@ -67,8 +78,7 @@ export async function endRoom(roomId: string): Promise<{ ok: boolean }> {
     body: JSON.stringify({ roomId }),
   });
   if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error((err as { message?: string }).message ?? "End room failed");
+    throw new Error(await parseApiError(res, "End room failed"));
   }
   return res.json();
 }
@@ -115,14 +125,14 @@ export async function setParticipantMute(
     body: JSON.stringify({ roomId, participantId, muted }),
   });
   if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error((err as { message?: string }).message ?? "Mute failed");
+    throw new Error(await parseApiError(res, "Mute failed"));
   }
 }
 
 export interface LiveKitTokenResponse {
   token: string;
   url: string;
+  role?: RoomRole;
 }
 
 export async function getLiveKitToken(
@@ -136,8 +146,30 @@ export async function getLiveKitToken(
     body: JSON.stringify({ roomId, role, displayName }),
   });
   if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error((err as { message?: string }).message ?? "Token failed");
+    throw new Error(await parseApiError(res, "Token failed"));
   }
   return res.json();
+}
+
+export async function heartbeatRoom(roomId: string): Promise<void> {
+  const res = await fetch(`${getBase()}/heartbeat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ roomId }),
+  });
+  if (!res.ok) {
+    throw new Error(await parseApiError(res, "Heartbeat failed"));
+  }
+}
+
+export async function leaveRoom(roomId: string): Promise<void> {
+  const res = await fetch(`${getBase()}/leave`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ roomId }),
+    keepalive: true,
+  });
+  if (!res.ok) {
+    throw new Error(await parseApiError(res, "Leave room failed"));
+  }
 }

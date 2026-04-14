@@ -10,6 +10,8 @@ import {
   getRoom,
   setParticipantMute,
   getLiveKitToken,
+  heartbeatRoom,
+  leaveRoom,
 } from "./room/prayer-room-api";
 import { usePrayerRoomWebRTC } from "./room/usePrayerRoomWebRTC";
 import { useRoomRecording } from "./room/useRoomRecording";
@@ -24,6 +26,7 @@ import type { PrayerRoom as PrayerRoomType, RoomRole } from "./PrayerRoomTypes";
 
 const ROOM_STORAGE_KEY = "prayer-room";
 const ROOM_POLL_MS = 3000;
+const HEARTBEAT_MS = 15_000;
 
 function ListenerAudio({ stream }: { stream: MediaStream | null }) {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -88,8 +91,10 @@ export function PrayerRoom({ roomId }: PrayerRoomProps) {
     getInitialStored(roomId)?.hostId ?? null
   );
   const [joining, setJoining] = useState(false);
-  const [joinChoice, setJoinChoice] = useState<RoomRole | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [roomLoading, setRoomLoading] = useState(true);
+  const [roomMissing, setRoomMissing] = useState(false);
+  const [tokenError, setTokenError] = useState<string | null>(null);
   const [liveKitToken, setLiveKitToken] = useState<string | null>(null);
   const [liveKitUrl, setLiveKitUrl] = useState<string | null>(null);
   const [annotationStrokes, setAnnotationStrokes] = useState<AnnotationStroke[]>([]);
@@ -104,8 +109,17 @@ export function PrayerRoom({ roomId }: PrayerRoomProps) {
   }, [roomId]);
 
   const fetchRoom = useCallback(async () => {
+    setRoomLoading(true);
     const r = await getRoom(roomId);
-    if (r) setRoom(r);
+    if (r) {
+      setRoom(r);
+      setRoomMissing(false);
+      setError(null);
+    } else {
+      setRoom(null);
+      setRoomMissing(true);
+    }
+    setRoomLoading(false);
     return r;
   }, [roomId]);
 
@@ -132,27 +146,66 @@ export function PrayerRoom({ roomId }: PrayerRoomProps) {
     if (!participantId || !role || !roomId) {
       setLiveKitToken(null);
       setLiveKitUrl(null);
+      setTokenError(null);
       return;
     }
     let cancelled = false;
     const displayName = session?.user?.name ?? undefined;
+    setTokenError(null);
     getLiveKitToken(roomId, role, displayName)
       .then(({ token, url }) => {
         if (!cancelled) {
           setLiveKitToken(token);
           setLiveKitUrl(url);
+          setTokenError(null);
         }
       })
-      .catch(() => {
+      .catch((e) => {
         if (!cancelled) {
           setLiveKitToken(null);
           setLiveKitUrl(null);
+          setTokenError(e instanceof Error ? e.message : "Room token failed");
         }
       });
     return () => {
       cancelled = true;
     };
   }, [roomId, participantId, role, session?.user?.name]);
+
+  useEffect(() => {
+    if (!participantId || !roomId) return;
+    let stopped = false;
+    const beat = () => {
+      heartbeatRoom(roomId).catch(() => {
+        // keep UI stable; token/connect panels surface actionable errors
+      });
+    };
+    beat();
+    const intervalId = setInterval(beat, HEARTBEAT_MS);
+
+    const sendLeave = () => {
+      if (stopped) return;
+      leaveRoom(roomId).catch(() => {
+        // keep navigation smooth; room cleanup is best-effort
+      });
+    };
+    const onUnload = () => sendLeave();
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") sendLeave();
+    };
+    window.addEventListener("beforeunload", onUnload);
+    document.addEventListener("visibilitychange", onVisibility);
+
+    return () => {
+      stopped = true;
+      clearInterval(intervalId);
+      window.removeEventListener("beforeunload", onUnload);
+      document.removeEventListener("visibilitychange", onVisibility);
+      leaveRoom(roomId).catch(() => {
+        // no-op
+      });
+    };
+  }, [roomId, participantId]);
 
   const handleJoin = useCallback(
     async (asRole: RoomRole) => {
@@ -163,6 +216,7 @@ export function PrayerRoom({ roomId }: PrayerRoomProps) {
       }
       setJoining(true);
       setError(null);
+      setTokenError(null);
       const displayName = session?.user?.name ?? undefined;
       try {
         const res = await joinRoom({
@@ -179,7 +233,6 @@ export function PrayerRoom({ roomId }: PrayerRoomProps) {
           role: res.role,
           hostId: res.room.hostId,
         });
-        setJoinChoice(null);
       } catch (e) {
         setError(e instanceof Error ? e.message : "Join failed");
       } finally {
@@ -324,7 +377,7 @@ export function PrayerRoom({ roomId }: PrayerRoomProps) {
     [recording.recordDurationSec]
   );
 
-  if (!room && !joinChoice && !participantId) {
+  if (roomLoading && !participantId) {
     return (
       <div className="prayer-platform" style={{ padding: "2rem 1rem 4rem" }}>
         <section className="prayer-hero-card">
@@ -333,6 +386,23 @@ export function PrayerRoom({ roomId }: PrayerRoomProps) {
           <div style={{ marginTop: "1rem" }}>
             <Link href="/prayer" className="prayer-share-link">
               ← Back to prayer
+            </Link>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
+  if (roomMissing && !participantId) {
+    return (
+      <div className="prayer-platform" style={{ padding: "2rem 1rem 4rem" }}>
+        <section className="prayer-hero-card">
+          <div className="prayer-brand">Live Prayer Room</div>
+          <h1 className="prayer-title">Room unavailable</h1>
+          <p className="prayer-subtitle">This room does not exist or has already ended.</p>
+          <div style={{ marginTop: "1.5rem" }}>
+            <Link href="/prayer/live" className="prayer-share-link">
+              ← Back to live rooms
             </Link>
           </div>
         </section>
@@ -352,11 +422,14 @@ export function PrayerRoom({ roomId }: PrayerRoomProps) {
           {error && (
             <p style={{ color: "#f87171", fontSize: "0.875rem", marginBottom: "1rem" }}>{error}</p>
           )}
+          {tokenError && (
+            <p style={{ color: "#f87171", fontSize: "0.8125rem", marginBottom: "1rem" }}>{tokenError}</p>
+          )}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "1rem" }}>
             <button
               type="button"
               className="prayer-room-join-btn"
-              disabled={joining || room?.status !== "active"}
+              disabled={joining || roomLoading || room?.status !== "active"}
               onClick={() => handleJoin("speaker")}
               style={{
                 padding: "0.75rem 1.25rem",
@@ -373,7 +446,7 @@ export function PrayerRoom({ roomId }: PrayerRoomProps) {
             <button
               type="button"
               className="prayer-room-join-btn"
-              disabled={joining || room?.status !== "active"}
+              disabled={joining || roomLoading || room?.status !== "active"}
               onClick={() => handleJoin("listener")}
               style={{
                 padding: "0.75rem 1.25rem",
@@ -435,6 +508,11 @@ export function PrayerRoom({ roomId }: PrayerRoomProps) {
         {webrtc.error && (
           <p style={{ color: "#f87171", fontSize: "0.875rem", marginBottom: "0.5rem" }}>
             {webrtc.error}
+          </p>
+        )}
+        {tokenError && (
+          <p style={{ color: "#f87171", fontSize: "0.8125rem", marginBottom: "0.5rem" }}>
+            {tokenError}
           </p>
         )}
 

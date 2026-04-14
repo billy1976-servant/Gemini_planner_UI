@@ -13,6 +13,7 @@ export interface RoomParticipant {
   displayName?: string;
   muted?: boolean;
   joinedAt: string;
+  lastSeenAt?: string;
 }
 
 export interface PrayerRoom {

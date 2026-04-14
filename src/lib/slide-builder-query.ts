@@ -1,4 +1,6 @@
 const TRUTHY = new Set(["1", "true", "yes", "on"]);
+const RUNTIME_MODES = new Set(["builder", "presenter", "walkthrough"] as const);
+export type LandingRuntimeMode = "builder" | "presenter" | "walkthrough";
 
 function isTruthyToken(v: string): boolean {
   return TRUTHY.has(v.trim().toLowerCase());
@@ -26,4 +28,30 @@ export function parseSlideBuilderFlagDefaultOn(
 ): boolean {
   if (raw === undefined) return true;
   return parseSlideBuilderFlag(raw);
+}
+
+function parseRuntimeModeToken(v: string): LandingRuntimeMode | null {
+  const normalized = v.trim().toLowerCase();
+  if (RUNTIME_MODES.has(normalized as LandingRuntimeMode)) {
+    return normalized as LandingRuntimeMode;
+  }
+  return null;
+}
+
+/** Server `searchParams.runtimeMode` (string or string[] from Next). */
+export function parseLandingRuntimeMode(
+  raw: string | string[] | undefined
+): LandingRuntimeMode | null {
+  if (raw === undefined) return null;
+  const v = Array.isArray(raw) ? raw[0] : raw;
+  if (typeof v !== "string" || v.length === 0) return null;
+  return parseRuntimeModeToken(v);
+}
+
+/** Client `useSearchParams().get("runtimeMode")`. */
+export function runtimeModeFromUrlParam(
+  value: string | null
+): LandingRuntimeMode | null {
+  if (value == null || value === "") return null;
+  return parseRuntimeModeToken(value);
 }

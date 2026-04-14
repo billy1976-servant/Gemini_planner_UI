@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth";
-import { getRooms, saveRooms } from "@/01_App/(live) Gospel/Prayer/data/store";
+import {
+  getRooms,
+  saveRooms,
+  pruneInactiveParticipantsFromRooms,
+} from "@/01_App/(live) Gospel/Prayer/data/store";
 import type { RoomRecord, RoomParticipantRecord } from "@/01_App/(live) Gospel/Prayer/data/store";
 
 export const dynamic = "force-dynamic";
@@ -36,8 +40,14 @@ export async function POST(request: Request) {
     if (!validRoles.includes(role)) {
       return NextResponse.json({ message: "Invalid role" }, { status: 400 });
     }
+    if (role === "host") {
+      return NextResponse.json(
+        { message: "Join as speaker or listener. Host is set when room is created." },
+        { status: 400 }
+      );
+    }
 
-    const rooms = await getRooms();
+    const rooms = pruneInactiveParticipantsFromRooms(await getRooms());
     const room = rooms.find((r) => r.roomId === roomId);
     if (!room) {
       return NextResponse.json({ message: "Room not found" }, { status: 404 });
@@ -50,6 +60,8 @@ export async function POST(request: Request) {
       (p) => p.participantId === userId || p.participantUserId === userId
     );
     if (existing) {
+      existing.lastSeenAt = new Date().toISOString();
+      await saveRooms(rooms);
       return NextResponse.json(
         { room, alreadyJoined: true, role: existing.role },
         { headers: { "Cache-Control": "no-store" } }
@@ -68,6 +80,7 @@ export async function POST(request: Request) {
       displayName,
       muted: false,
       joinedAt: new Date().toISOString(),
+      lastSeenAt: new Date().toISOString(),
     };
     room.participants.push(newParticipant);
     await saveRooms(rooms);

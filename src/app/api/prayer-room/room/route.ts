@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import { getRooms } from "@/01_App/(live) Gospel/Prayer/data/store";
+import {
+  getRooms,
+  saveRooms,
+  pruneInactiveParticipantsFromRooms,
+} from "@/01_App/(live) Gospel/Prayer/data/store";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -11,7 +15,8 @@ export async function GET(request: Request) {
     if (!roomId) {
       return NextResponse.json({ message: "roomId required" }, { status: 400 });
     }
-    const rooms = await getRooms();
+    const rooms = pruneInactiveParticipantsFromRooms(await getRooms());
+    await saveRooms(rooms);
     const room = rooms.find((r) => r.roomId === roomId);
     if (!room) {
       return NextResponse.json({ message: "Room not found" }, { status: 404 });

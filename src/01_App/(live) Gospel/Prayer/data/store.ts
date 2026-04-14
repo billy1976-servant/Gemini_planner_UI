@@ -138,6 +138,7 @@ export interface RoomParticipantRecord {
   displayName?: string;
   muted?: boolean;
   joinedAt: string;
+  lastSeenAt?: string;
 }
 
 export type RoomSessionType = "prayer" | "study" | "meeting" | "teaching";
@@ -155,6 +156,42 @@ export interface RoomRecord {
   status: string;
   participants: RoomParticipantRecord[];
   maxSpeakers?: number;
+}
+
+export const ROOM_PARTICIPANT_TTL_MS = 45_000;
+
+function getParticipantTimestampMs(participant: RoomParticipantRecord): number {
+  const stamp = participant.lastSeenAt ?? participant.joinedAt;
+  const ms = new Date(stamp).getTime();
+  return Number.isFinite(ms) ? ms : 0;
+}
+
+/**
+ * Remove stale non-host participants from a room based on last heartbeat.
+ * Host is kept to avoid accidental room takeover due transient network drops.
+ */
+export function pruneInactiveRoomParticipants(
+  room: RoomRecord,
+  nowMs = Date.now(),
+  ttlMs = ROOM_PARTICIPANT_TTL_MS
+): RoomRecord {
+  const minFreshMs = nowMs - ttlMs;
+  const nextParticipants = room.participants.filter((participant) => {
+    if (participant.participantId === room.hostId || participant.role === "host") {
+      return true;
+    }
+    return getParticipantTimestampMs(participant) >= minFreshMs;
+  });
+  if (nextParticipants.length === room.participants.length) return room;
+  return { ...room, participants: nextParticipants };
+}
+
+export function pruneInactiveParticipantsFromRooms(
+  rooms: RoomRecord[],
+  nowMs = Date.now(),
+  ttlMs = ROOM_PARTICIPANT_TTL_MS
+): RoomRecord[] {
+  return rooms.map((room) => pruneInactiveRoomParticipants(room, nowMs, ttlMs));
 }
 
 // --- Rooms ---

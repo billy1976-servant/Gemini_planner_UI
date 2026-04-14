@@ -19,18 +19,25 @@ export function LiveSection({ groupSlug, groupId, isAdmin }: LiveSectionProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
     const load = () =>
       getActiveRooms(groupId ?? null)
-        .then(setRooms)
-        .catch(() => setRooms([]));
+        .then((list) => {
+          if (!cancelled) setRooms(list);
+        })
+        .catch(() => {
+          if (!cancelled) setRooms([]);
+        })
+        .finally(() => {
+          if (!cancelled) setLoading(false);
+        });
     load();
     const id = setInterval(load, ACTIVE_POLL_MS);
-    return () => clearInterval(id);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
   }, [groupId]);
-
-  useEffect(() => {
-    setLoading(false);
-  }, []);
 
   const base = groupSlug ? `/prayer/${groupSlug}` : "/prayer";
 

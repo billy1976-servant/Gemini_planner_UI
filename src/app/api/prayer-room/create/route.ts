@@ -32,6 +32,7 @@ export async function POST(request: Request) {
       participantUserId: userId,
       role: "host",
       joinedAt: now,
+      lastSeenAt: now,
     };
     const room: RoomRecord = {
       roomId,

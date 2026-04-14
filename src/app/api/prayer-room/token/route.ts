@@ -2,7 +2,11 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth";
 import { AccessToken } from "livekit-server-sdk";
-import { getRooms } from "@/01_App/(live) Gospel/Prayer/data/store";
+import {
+  getRooms,
+  saveRooms,
+  pruneInactiveParticipantsFromRooms,
+} from "@/01_App/(live) Gospel/Prayer/data/store";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -33,7 +37,7 @@ export async function POST(request: Request) {
 
     const body = await request.json().catch(() => ({}));
     const roomId = (body?.roomId as string)?.trim();
-    const role = (body?.role as RoomRole)?.trim();
+    const requestedRole = (body?.role as RoomRole)?.trim();
     const displayName =
       (body?.displayName as string)?.trim() ||
       (session?.user?.name as string) ||
@@ -47,15 +51,19 @@ export async function POST(request: Request) {
     }
 
     const validRoles: RoomRole[] = ["host", "speaker", "listener"];
-    const resolvedRole = role && validRoles.includes(role as RoomRole) ? (role as RoomRole) : null;
-    if (!resolvedRole) {
+    const requestedValidRole =
+      requestedRole && validRoles.includes(requestedRole as RoomRole)
+        ? (requestedRole as RoomRole)
+        : null;
+    if (!requestedValidRole) {
       return NextResponse.json(
         { message: "role must be host, speaker, or listener" },
         { status: 400 }
       );
     }
 
-    const rooms = await getRooms();
+    const rooms = pruneInactiveParticipantsFromRooms(await getRooms());
+    await saveRooms(rooms);
     const room = rooms.find((r) => r.roomId === roomId);
     if (!room) {
       return NextResponse.json({ message: "Room not found" }, { status: 404 });
@@ -66,12 +74,19 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-    const inRoom = room.participants.some(
+    const membership = room.participants.find(
       (p) => p.participantId === userId || p.participantUserId === userId
     );
-    if (!inRoom) {
+    if (!membership) {
       return NextResponse.json(
         { message: "Participant not in room" },
+        { status: 403 }
+      );
+    }
+    const membershipRole = membership.role as RoomRole;
+    if (membershipRole !== requestedValidRole) {
+      return NextResponse.json(
+        { message: `Role mismatch. Join as ${membershipRole}.` },
         { status: 403 }
       );
     }
@@ -84,14 +99,14 @@ export async function POST(request: Request) {
     at.addGrant({
       roomJoin: true,
       room: roomId,
-      canPublish: resolvedRole === "host" || resolvedRole === "speaker",
+      canPublish: membershipRole === "host" || membershipRole === "speaker",
       canSubscribe: true,
     });
 
     const token = await at.toJwt();
 
     return NextResponse.json(
-      { token, url },
+      { token, url, role: membershipRole },
       { headers: { "Cache-Control": "no-store" } }
     );
   } catch (err) {

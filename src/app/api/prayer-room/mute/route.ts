@@ -2,7 +2,11 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth";
 import { RoomServiceClient, TrackSource } from "livekit-server-sdk";
-import { getRooms, saveRooms } from "@/01_App/(live) Gospel/Prayer/data/store";
+import {
+  getRooms,
+  saveRooms,
+  pruneInactiveParticipantsFromRooms,
+} from "@/01_App/(live) Gospel/Prayer/data/store";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -27,7 +31,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const rooms = await getRooms();
+    const rooms = pruneInactiveParticipantsFromRooms(await getRooms());
     const room = rooms.find((r) => r.roomId === roomId);
     if (!room) {
       return NextResponse.json({ message: "Room not found" }, { status: 404 });

@@ -1,5 +1,8 @@
 import ContainerCreationsLandingRenderer from "@/01_App/(live) Business/Container_Creations/ContainerCreationsLandingRenderer";
-import { parseSlideBuilderFlagDefaultOn } from "@/lib/slide-builder-query";
+import {
+  parseLandingRuntimeMode,
+  parseSlideBuilderFlagDefaultOn,
+} from "@/lib/slide-builder-query";
 
 type Landing2SearchParams = Record<string, string | string[] | undefined>;
 
@@ -14,6 +17,7 @@ export default function Landing2Page({ searchParams }: { searchParams: Landing2S
   return (
     <ContainerCreationsLandingRenderer
       slideBuilderFlag={parseSlideBuilderFlagDefaultOn(searchParams.slideBuilder)}
+      runtimeModeParam={parseLandingRuntimeMode(searchParams.runtimeMode) ?? undefined}
       screenParam={parseScreenParam(searchParams)}
     />
   );

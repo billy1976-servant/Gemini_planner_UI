@@ -28,6 +28,9 @@ export function LivePrayerCta({ groupId, isAdmin }: LivePrayerCtaProps) {
   const { data: session } = useSession();
   const [activeRooms, setActiveRooms] = useState<ActiveRoomSummary[]>([]);
   const [starting, setStarting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [inviteLink, setInviteLink] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const load = () =>
@@ -41,13 +44,19 @@ export function LivePrayerCta({ groupId, isAdmin }: LivePrayerCtaProps) {
 
   const handleStartRoom = async () => {
     const uid = (session?.user as { id?: string } | undefined)?.id;
-    if (!uid) return;
+    if (!uid) {
+      setError("Sign in to start a room.");
+      return;
+    }
     setStarting(true);
+    setError(null);
+    setCopied(false);
     try {
       const res = await createRoom({
         title: "Prayer Room",
         groupId: groupId ?? undefined,
       });
+      setInviteLink(res.inviteLink);
       const hostId = res.room.hostId;
       setStored(res.roomId, {
         participantId: hostId,
@@ -55,8 +64,22 @@ export function LivePrayerCta({ groupId, isAdmin }: LivePrayerCtaProps) {
         hostId,
       });
       router.push(`/prayer/room/${res.roomId}`);
-    } catch {
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not start room.");
+    } finally {
       setStarting(false);
+    }
+  };
+
+  const handleCopyInvite = async () => {
+    if (!inviteLink) return;
+    try {
+      await navigator.clipboard.writeText(inviteLink);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      setCopied(false);
+      setError("Could not copy invite link.");
     }
   };
 
@@ -123,6 +146,24 @@ export function LivePrayerCta({ groupId, isAdmin }: LivePrayerCtaProps) {
           </button>
         )}
       </div>
+      {inviteLink && (
+        <div style={{ marginTop: "0.75rem", display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
+          <span style={{ fontSize: "0.8rem", color: "var(--prayer-text-muted)", wordBreak: "break-all" }}>
+            Invite: {inviteLink}
+          </span>
+          <button
+            type="button"
+            onClick={handleCopyInvite}
+            className="prayer-share-link"
+            style={{ border: "none", background: "transparent", textDecoration: "underline", cursor: "pointer", fontSize: "0.8rem" }}
+          >
+            {copied ? "Copied" : "Copy"}
+          </button>
+        </div>
+      )}
+      {error && (
+        <p style={{ marginTop: "0.75rem", color: "#f87171", fontSize: "0.8rem" }}>{error}</p>
+      )}
     </div>
   );
 }

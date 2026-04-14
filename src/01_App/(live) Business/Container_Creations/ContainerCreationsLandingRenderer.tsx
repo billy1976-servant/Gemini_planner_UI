@@ -40,6 +40,7 @@ import { palettes } from "@/palettes";
 import type { EditableNode } from "@/app/ui/control-dock/editor/NodeInspector";
 import LandingSlideBuilderPanel from "./LandingSlideBuilderPanel";
 import LandingSlideBuilderInspector from "./LandingSlideBuilderInspector";
+import fallbackLandingConfig from "./landing-2.json";
 import { useWizardConfig } from "@/lib/tsx-structure/engines/wizard";
 import {
   renderContentBlocks,
@@ -61,7 +62,11 @@ import {
 } from "@/lib/landing-tracker-responses";
 import "@/app/landing/landing-theme.css";
 import { isKeyboardEventFromEditableField } from "@/lib/editable-keyboard";
-import { slideBuilderFromUrlParam } from "@/lib/slide-builder-query";
+import {
+  type LandingRuntimeMode,
+  runtimeModeFromUrlParam,
+  slideBuilderFromUrlParam,
+} from "@/lib/slide-builder-query";
 
 const CONFIG_URL = "/api/container-creations-landing-config";
 
@@ -162,6 +167,8 @@ export type ContainerCreationsLandingRendererProps = {
    * Omit when the renderer is mounted from TSX resolver / dev without app-router searchParams.
    */
   slideBuilderFlag?: boolean;
+  /** Optional mode override from server search params. */
+  runtimeModeParam?: LandingRuntimeMode | null;
   /**
    * When set by a Server Component page, overrides `getCanonicalScreenKey(useSearchParams())`.
    * Use `null` when `?screen=` is absent. Omit to keep hook-based canonical key (dev/TSX paths).
@@ -463,6 +470,7 @@ export default function ContainerCreationsLandingRenderer({
   componentName = "landing-2",
   configVersion = "2",
   slideBuilderFlag,
+  runtimeModeParam,
   screenParam,
 }: ContainerCreationsLandingRendererProps = {}) {
   const wizardConfig = useWizardConfig();
@@ -470,9 +478,17 @@ export default function ContainerCreationsLandingRenderer({
   const editorMode = useSyncExternalStore(subscribeEditorMode, getEditorMode, getEditorMode);
   const isEditor = editorMode === "editor";
   const searchParams = useSearchParams();
-  const slideBuilder =
-    slideBuilderFlag !== undefined ? slideBuilderFlag : slideBuilderFromUrlParam(searchParams.get("slideBuilder"));
-  const canEdit = isEditor || slideBuilder;
+  const clientRuntimeMode = runtimeModeFromUrlParam(searchParams.get("runtimeMode"));
+  const runtimeMode: LandingRuntimeMode | null = clientRuntimeMode ?? runtimeModeParam ?? null;
+  const hasExplicitRuntimeMode = runtimeMode != null;
+  const legacySlideBuilder =
+    slideBuilderFlag !== undefined
+      ? slideBuilderFlag
+      : slideBuilderFromUrlParam(searchParams.get("slideBuilder"));
+  const isBuilderMode = runtimeMode === "builder";
+  const isPresenterMode = runtimeMode === "presenter";
+  const slideBuilder = isBuilderMode || (!hasExplicitRuntimeMode && legacySlideBuilder);
+  const canEdit = slideBuilder || (!hasExplicitRuntimeMode && isEditor);
   const shellDevice = useSyncExternalStore(
     subscribeDevicePreviewMode,
     getDevicePreviewMode,
@@ -482,6 +498,7 @@ export default function ContainerCreationsLandingRenderer({
 
   const [config, setConfig] = useState<LandingConfig | null>(null);
   const [configError, setConfigError] = useState<string | null>(null);
+  const [logoLoadFailed, setLogoLoadFailed] = useState(false);
 
   const cfg = config;
   const screens = cfg?.screens ?? [];
@@ -509,6 +526,22 @@ export default function ContainerCreationsLandingRenderer({
   const [failedMedia, setFailedMedia] = useState<Set<string>>(new Set());
   const [stepInputs, setStepInputs] = useState<StepInputs>(INITIAL_STEP_INPUTS);
 
+  function applyFallbackConfig() {
+    const fallback = fallbackLandingConfig as unknown as LandingConfig;
+    if (!fallback || !Array.isArray(fallback.screens) || fallback.screens.length === 0) {
+      return false;
+    }
+    setConfig(fallback);
+    setCurrentScreenId(fallback.screens[0]?.id ?? null);
+    setFailedMedia(new Set());
+    setLogoLoadFailed(false);
+    setConfigError(null);
+    if (typeof console !== "undefined") {
+      console.warn("[ContainerCreations] Falling back to bundled landing-2.json");
+    }
+    return true;
+  }
+
   useEffect(() => {
     let cancelled = false;
     setConfigError(null);
@@ -535,13 +568,18 @@ export default function ContainerCreationsLandingRenderer({
       .then((data) => {
         if (cancelled || data == null) return;
         setConfig(data as LandingConfig);
+        setFailedMedia(new Set());
+        setLogoLoadFailed(false);
         if (Array.isArray(data?.screens) && data.screens.length > 0) {
           setCurrentScreenId(data.screens[0].id);
         }
       })
       .catch((err) => {
         if (cancelled) return;
-        setConfigError(err?.message ?? "Failed to load config");
+        const appliedFallback = applyFallbackConfig();
+        if (!appliedFallback) {
+          setConfigError(err?.message ?? "Failed to load config");
+        }
       });
     return () => {
       cancelled = true;
@@ -884,6 +922,52 @@ export default function ContainerCreationsLandingRenderer({
     });
   }
 
+  const currentIndex =
+    currentScreenId == null ? -1 : orderedScreens.findIndex((s) => s.id === currentScreenId);
+  const currentScreen =
+    currentIndex >= 0 ? orderedScreens[currentIndex] : (orderedScreens[0] ?? null);
+
+  const goToScreen = (id: string) => {
+    setCurrentScreenId(id);
+    if (slideBuilder) setSelectedLandingNodeId(id);
+  };
+  const goNext = () => {
+    if (!currentScreen) return;
+    if (currentScreen.nextScreenId) {
+      goToScreen(currentScreen.nextScreenId);
+      return;
+    }
+    if (currentIndex >= 0 && currentIndex < orderedScreens.length - 1) {
+      goToScreen(orderedScreens[currentIndex + 1].id);
+    }
+  };
+  const goBack = () => {
+    if (currentIndex > 0) goToScreen(orderedScreens[currentIndex - 1].id);
+  };
+
+  useEffect(() => {
+    if (!isPresenterMode || currentScreen == null) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.defaultPrevented) return;
+      if (isKeyboardEventFromEditableField(e)) return;
+      if (e.key === "ArrowRight" || e.key === " ") {
+        e.preventDefault();
+        goNext();
+        return;
+      }
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        goBack();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isPresenterMode, currentScreen, currentIndex, orderedScreens, slideBuilder]);
+
+  useEffect(() => {
+    setLogoLoadFailed(false);
+  }, [cfg?.header?.logoSrc]);
+
   if (configError) {
     return (
       <div style={{ padding: "2rem", textAlign: "center", color: "#94a3b8" }}>
@@ -892,16 +976,13 @@ export default function ContainerCreationsLandingRenderer({
     );
   }
 
-  if (!config || screens.length === 0 || currentScreenId == null) {
+  if (!config || screens.length === 0 || currentScreen == null) {
     return (
       <div style={{ padding: "2rem", textAlign: "center", color: "#94a3b8" }}>
         Loading…
       </div>
     );
   }
-
-  const currentIndex = orderedScreens.findIndex((s) => s.id === currentScreenId);
-  const currentScreen = orderedScreens[currentIndex] ?? orderedScreens[0];
 
   const isHero = currentScreen.layout === "hero";
   const isLightStep = currentScreen.lightTheme === true;
@@ -910,21 +991,6 @@ export default function ContainerCreationsLandingRenderer({
       currentScreen.layout === "proofPanel" ||
       currentScreen.layout === "splitProof") &&
     currentScreen.lightTheme === true;
-
-  const goToScreen = (id: string) => {
-    setCurrentScreenId(id);
-    if (slideBuilder) setSelectedLandingNodeId(id);
-  };
-  const goNext = () => {
-    if (currentScreen.nextScreenId) {
-      goToScreen(currentScreen.nextScreenId);
-    } else if (currentIndex < orderedScreens.length - 1) {
-      goToScreen(orderedScreens[currentIndex + 1].id);
-    }
-  };
-  const goBack = () => {
-    if (currentIndex > 0) goToScreen(orderedScreens[currentIndex - 1].id);
-  };
 
   /** Renders a single inline control by type. Driven by screen.inlineControls from config. */
   function renderInlineControl(type: InlineControlId, isLight: boolean): React.ReactNode {
@@ -1811,50 +1877,60 @@ export default function ContainerCreationsLandingRenderer({
       className={`landing-container-creations${currentScreen.layout === "hero" ? " landing-step-hero" : ""}${currentScreen.layout === "stamped" ? " landing-step-stamped" : ""}${lightLayoutStep ? " measure-step-active" : ""}${currentScreen.layout === "proofPanel" || currentScreen.layout === "splitProof" ? " landing-step-proof" : ""}`}
       data-landing="container-creations"
       data-slide-builder={slideBuilder ? "1" : undefined}
+      data-runtime-mode={runtimeMode}
       data-structure-type="wizard"
       data-wizard-progress-style={progressStyle}
       data-wizard-nav-placement={navPlacement}
       data-wizard-linear={wizardConfig?.linear ?? true}
     >
-      <header
-        className={`landing-shop-bar ${isLightStep ? "landing-shop-bar--theme-light" : "landing-shop-bar--theme-steel"}`}
-      >
-        <a href={cfg.shopUrl} target="_blank" rel="noopener noreferrer" className="landing-shop-logo-link" data-node-id="logo-link">
-          <img
-            src={cfg.header.logoSrc}
-            alt={cfg.header.logoAlt}
-            className="landing-shop-logo"
-          />
-        </a>
-        {canEdit ? (
-          <EditableExternalLink
-            href={cfg.shopUrl}
-            className="landing-shop-cta"
-            style={{ cursor: "pointer" }}
-            dataNodeId="shop-now-header"
-          >
-            <InlineEditableText
-              value={cfg.header.shopNowLabel}
-              onChange={updateHeaderShopNowLabel}
-              isEditing
-              as="span"
-            />
-          </EditableExternalLink>
-        ) : (
-          <a
-            href={cfg.shopUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="landing-shop-cta"
-            data-node-id="shop-now-header"
-          >
-            {cfg.header.shopNowLabel}
+      {!isPresenterMode && (
+        <header
+          className={`landing-shop-bar ${isLightStep ? "landing-shop-bar--theme-light" : "landing-shop-bar--theme-steel"}`}
+        >
+          <a href={cfg.shopUrl} target="_blank" rel="noopener noreferrer" className="landing-shop-logo-link" data-node-id="logo-link">
+            {!logoLoadFailed ? (
+              <img
+                src={cfg.header.logoSrc}
+                alt={cfg.header.logoAlt}
+                className="landing-shop-logo"
+                onError={() => setLogoLoadFailed(true)}
+              />
+            ) : (
+              <span style={{ fontWeight: 700, letterSpacing: "0.03em", fontSize: 14 }}>
+                {cfg.header.logoAlt || "Container Creations"}
+              </span>
+            )}
           </a>
-        )}
-      </header>
+          {canEdit ? (
+            <EditableExternalLink
+              href={cfg.shopUrl}
+              className="landing-shop-cta"
+              style={{ cursor: "pointer" }}
+              dataNodeId="shop-now-header"
+            >
+              <InlineEditableText
+                value={cfg.header.shopNowLabel}
+                onChange={updateHeaderShopNowLabel}
+                isEditing
+                as="span"
+              />
+            </EditableExternalLink>
+          ) : (
+            <a
+              href={cfg.shopUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="landing-shop-cta"
+              data-node-id="shop-now-header"
+            >
+              {cfg.header.shopNowLabel}
+            </a>
+          )}
+        </header>
+      )}
 
       <main
-        className={`landing-cc-main${lightLayoutStep && !canEdit ? " landing-cc-main--fill" : ""}${slideBuilder ? " landing-cc-main--slide-builder" : ""}`}
+        className={`landing-cc-main${lightLayoutStep && !canEdit ? " landing-cc-main--fill" : ""}${slideBuilder ? " landing-cc-main--slide-builder" : ""}${isPresenterMode ? " landing-cc-main--presenter" : ""}`}
       >
         {slideBuilder ? (
           <div
@@ -1917,6 +1993,41 @@ export default function ContainerCreationsLandingRenderer({
               onSelectNode={(id) => setSelectedLandingNodeId(id)}
               onChange={handleSlideBuilderInspectorChange}
             />
+          </div>
+        ) : isPresenterMode ? (
+          <div style={{ display: "grid", gap: 16, width: "100%" }}>
+            {orderedScreens.map((screen) =>
+              currentScreenId === screen.id ? (
+                <div key={screen.id} className="landing-screen-presentation" {...landingScreenPresentationAttrs(screen)}>
+                  {renderScreen(screen)}
+                </div>
+              ) : null
+            )}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 12,
+                padding: "0 0 12px",
+                flexWrap: "wrap",
+              }}
+            >
+              <button type="button" onClick={goBack} disabled={currentIndex <= 0} style={stepNavButtonStyleSteel}>
+                Prev
+              </button>
+              <span style={{ minWidth: 96, textAlign: "center", opacity: 0.9 }}>
+                {Math.max(currentIndex + 1, 1)} / {orderedScreens.length}
+              </span>
+              <button
+                type="button"
+                onClick={goNext}
+                disabled={currentIndex >= orderedScreens.length - 1 && !currentScreen.nextScreenId}
+                style={stepNavButtonStyleSteel}
+              >
+                Next
+              </button>
+            </div>
           </div>
         ) : isEditor ? (
           <div
