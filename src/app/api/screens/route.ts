@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { isLegacyRuntimeDisabledFromHeaders } from "@/lib/learn-public-host";
 
 function findRepoRoot(start: string): string {
   let dir = start;
@@ -225,7 +226,10 @@ function getDefensiveFallbackList(): ScreensIndexItem[] {
  * Returns categories with rootSection = displayName = dir.name (no renaming, no tsx: prefix).
  * On any failure (missing paths, fs errors), returns 200 with defensive fallback list so dev viewer always loads.
  */
-export async function GET() {
+export async function GET(request: Request) {
+  if (isLegacyRuntimeDisabledFromHeaders(request.headers)) {
+    return NextResponse.json({ error: "Not Found" }, { status: 404, headers: { "Cache-Control": "no-store" } });
+  }
   const safeFallback = (): Response =>
     NextResponse.json(getDefensiveFallbackList(), {
       status: 200,

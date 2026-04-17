@@ -78,6 +78,7 @@ import {
 } from "@/lib/landing-walkthrough";
 import { normalizeDeckAppKey } from "@/lib/deck-platform/legacy-app-keys";
 import { learnDeckVersionDisplayLabel, stripLearnVersionStemInput } from "@/lib/deck-platform/learn-launcher-utils";
+import { isLearnPublicHostClient, isLegacyRuntimeDisabledClient } from "@/lib/learn-public-host";
 
 /** Compatibility-only fallback for old non-learn pages. `/learn/*` never uses this endpoint. */
 const LEGACY_CC_CONFIG_URL = "/api/container-creations-landing-config";
@@ -574,6 +575,16 @@ function MediaPlaceholder({ label, className }: { label: string; className?: str
   );
 }
 
+function normalizeDeckMediaUrl(raw: string | null | undefined): string {
+  const src = String(raw ?? "").trim();
+  if (!src) return "";
+  if (/^\/videos\//.test(src)) {
+    // Linux hosts are case-sensitive and these media files currently live under /Videos.
+    return `/Videos/${src.slice("/videos/".length)}`;
+  }
+  return src;
+}
+
 const stepNavButtonStyle: React.CSSProperties = {
   padding: "10px 18px",
   borderRadius: 8,
@@ -614,12 +625,25 @@ export default function LandingDeckRenderer({
   /** When the app router passes learn props correctly, prefer them; if they are missing on the client, recover from `/learn/{app}/{flow}/{version}` (same tab URL). */
   const learnPathIdentity = useMemo((): { appKey: string; flowKey: string; versionKey: string } | null => {
     const m = /^\/learn\/([^/]+)\/([^/]+)\/([^/]+)/.exec(pathname);
-    if (!m) return null;
-    const appKey = normalizeDeckAppKey(decodeURIComponent(m[1]));
-    const flowKey = decodeURIComponent(m[2]).trim();
-    const versionKey = decodeURIComponent(m[3]).trim();
-    if (!appKey || !flowKey || !versionKey) return null;
-    return { appKey, flowKey, versionKey };
+    if (m) {
+      const appKey = normalizeDeckAppKey(decodeURIComponent(m[1]));
+      const flowKey = decodeURIComponent(m[2]).trim();
+      const versionKey = decodeURIComponent(m[3]).trim();
+      if (!appKey || !flowKey || !versionKey) return null;
+      return { appKey, flowKey, versionKey };
+    }
+    if (typeof window !== "undefined" && isLearnPublicHostClient()) {
+      const m2 = /^\/([^/]+)\/([^/]+)\/?$/.exec(pathname);
+      if (m2) {
+        const hostParts = window.location.hostname.split(":")[0].toLowerCase().split(".");
+        const rawApp = hostParts.length >= 3 && hostParts[0] === "learn" ? hostParts[1] ?? "" : "";
+        const appKey = normalizeDeckAppKey(rawApp);
+        const flowKey = decodeURIComponent(m2[1]).trim();
+        const versionKey = decodeURIComponent(m2[2]).trim();
+        if (appKey && flowKey && versionKey) return { appKey, flowKey, versionKey };
+      }
+    }
+    return null;
   }, [pathname]);
 
   const learnDeck = useMemo((): LearnDeckRef | null => {
@@ -822,6 +846,13 @@ export default function LandingDeckRenderer({
           if (cancelled) return;
           setConfigError(err?.message ?? "Failed to load learn deck");
         });
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    if (typeof window !== "undefined" && isLegacyRuntimeDisabledClient()) {
+      setConfigError("Legacy deck loader is disabled on this host.");
       return () => {
         cancelled = true;
       };
@@ -2003,7 +2034,9 @@ export default function LandingDeckRenderer({
     );
 
     if (m.type === "video") {
-      if (!isPreview && failedMedia.has(m.src)) {
+      const videoSrc = normalizeDeckMediaUrl(m.src);
+      const posterSrc = normalizeDeckMediaUrl(m.poster);
+      if (!isPreview && failedMedia.has(videoSrc)) {
         return wrapSlot(<MediaPlaceholder label={ctx.placement === "hero" ? "Intro video" : "Video"} />);
       }
       const fit = m.objectFit ?? defaultObjectFit;
@@ -2013,10 +2046,10 @@ export default function LandingDeckRenderer({
           muted
           loop
           playsInline
-          poster={m.poster}
+          poster={posterSrc || undefined}
           preload={isPreview ? "metadata" : undefined}
-          onError={() => markVideoFailed(m.src)}
-          src={m.src}
+          onError={() => markVideoFailed(videoSrc)}
+          src={videoSrc}
           className="cc-media-video"
           style={{
             width: "100%",
@@ -2046,10 +2079,11 @@ export default function LandingDeckRenderer({
     }
 
     if (m.type === "image") {
+      const imageSrc = normalizeDeckMediaUrl(m.src);
       const alt = m.decorative ? "" : m.alt;
       const img = (
         <img
-          src={m.src}
+          src={imageSrc}
           alt={alt}
           loading={isPreview ? "eager" : (m.loading ?? "lazy")}
           className="cc-media-img"
@@ -2075,10 +2109,12 @@ export default function LandingDeckRenderer({
     }
 
     if (m.type === "beforeAfter") {
+      const beforeSrc = normalizeDeckMediaUrl(m.before);
+      const afterSrc = normalizeDeckMediaUrl(m.after);
       const inner = (
         <BeforeAfterSlider
-          beforeSrc={m.before}
-          afterSrc={m.after}
+          beforeSrc={beforeSrc}
+          afterSrc={afterSrc}
           altBefore={m.altBefore}
           altAfter={m.altAfter}
           darkenBefore
@@ -2106,7 +2142,7 @@ export default function LandingDeckRenderer({
           {m.images.map((imgEl, j) => (
             <img
               key={j}
-              src={imgEl.src}
+              src={normalizeDeckMediaUrl(imgEl.src)}
               alt={imgEl.alt}
               loading={isPreview ? "eager" : "lazy"}
               className="cc-image-grid__img"
@@ -2720,7 +2756,7 @@ export default function LandingDeckRenderer({
           <a href={cfg.shopUrl} target="_blank" rel="noopener noreferrer" className="landing-shop-logo-link" data-node-id="logo-link">
             {!logoLoadFailed ? (
               <img
-                src={cfg.header.logoSrc}
+                src={normalizeDeckMediaUrl(cfg.header.logoSrc)}
                 alt={cfg.header.logoAlt}
                 className="landing-shop-logo"
                 onError={() => setLogoLoadFailed(true)}

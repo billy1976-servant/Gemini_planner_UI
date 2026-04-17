@@ -4,6 +4,8 @@
  * Uses fetch in browser (no static imports). Uses fs in Node (tests).
  */
 
+import { isLegacyRuntimeDisabledClient } from "@/lib/learn-public-host";
+
 const SCREEN_BASE = "/api/screens";
 
 function withJsonSuffix(p: string): string {
@@ -41,6 +43,13 @@ export type SafeImportJsonResult =
  * For Node-only tests, use the loader in contracts/load-app-offline-json.node.ts.
  */
 export async function safeImportJson(path: string): Promise<SafeImportJsonResult> {
+  if (typeof window !== "undefined" && isLegacyRuntimeDisabledClient()) {
+    return {
+      ok: false,
+      error: "Screen API disabled on learn.* hosts.",
+      code: "FILE_NOT_FOUND",
+    };
+  }
   const pathWithJson = withJsonSuffix(path.replace(/^\/+/, ""));
   const normalized = pathWithJson
     .replace(/^src\//, "")

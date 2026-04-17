@@ -6,7 +6,9 @@ import { useSearchParams } from "next/navigation";
 import { getScreenById, setScreenPaths, flattenIndexToPaths } from "@/07_Dev_Tools/nav/screen-registry";
 import { useSyncExternalStore } from "react";
 import ExperienceRenderer from "@/engine/core/ExperienceRenderer";
-import { loadScreen } from "@/engine/core/screen-loader";
+import { loadScreen, LEARN_HOST_LEGACY_RUNTIME_BLOCKED } from "@/engine/core/screen-loader";
+import LearnHostLegacyRedirect from "@/app/LearnHostLegacyRedirect";
+import { isLearnPublicHostClient, isLegacyRuntimeDisabledClient } from "@/lib/learn-public-host";
 import { getLayout, subscribeLayout } from "@/engine/core/layout-store";
 import { getState, subscribeState } from "@/state/state-store";
 import { setCurrentScreenTree } from "@/engine/core/current-screen-tree-store";
@@ -79,6 +81,10 @@ export default function Page() {
   const effectivePath = isValidPath ? rawPath : DEFAULT_SCREEN_PATH;
 
   useEffect(() => {
+    if (typeof window !== "undefined" && isLegacyRuntimeDisabledClient()) {
+      setScreensReady(true);
+      return;
+    }
     fetch("/api/screens")
       .then((res) => (res.ok ? res.json() : []))
       .then((list) => {
@@ -90,6 +96,7 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
+    if (typeof window !== "undefined" && isLegacyRuntimeDisabledClient()) return;
     loadScreen(effectivePath)
       .then((loaded) => {
         setError(null);
@@ -153,6 +160,14 @@ export default function Page() {
     },
     [experience, effectiveTemplateId, effectiveLayoutMode, experienceProfile, templateProfile]
   );
+
+  if (typeof window !== "undefined" && isLegacyRuntimeDisabledClient()) {
+    if (isLearnPublicHostClient()) return <LearnHostLegacyRedirect />;
+    return null;
+  }
+  if (data?.__type === LEARN_HOST_LEGACY_RUNTIME_BLOCKED) {
+    return <LearnHostLegacyRedirect />;
+  }
 
   if (error) return <div style={{ color: "red", padding: 16 }}>{error}</div>;
   if (!data) return <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>Loading…</div>;

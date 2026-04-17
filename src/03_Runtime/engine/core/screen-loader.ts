@@ -20,9 +20,15 @@ import { dispatchState, getState } from "@/state/state-store";
 import { safeImportJson } from "@/engine/core/safe-json-import";
 import { makeFallbackScreen } from "@/engine/core/fallback-screen";
 import containerCreationsLandingJson from "@/05_Logic/logic/content/landing/container-creations.landing.json";
+import { isLegacyRuntimeDisabledClient } from "@/lib/learn-public-host";
+
+export const LEARN_HOST_LEGACY_RUNTIME_BLOCKED = "learn-host-blocked" as const;
 
 export async function loadScreen(path: string): Promise<any> {
   try {
+    if (typeof window !== "undefined" && isLegacyRuntimeDisabledClient()) {
+      return { __type: LEARN_HOST_LEGACY_RUNTIME_BLOCKED };
+    }
     if (!path || typeof path !== "string") {
       return makeFallbackScreen({
         title: "Screen load error",

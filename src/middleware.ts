@@ -1,10 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { isLegacyRuntimeDisabledHostname } from "@/lib/learn-public-host";
 
 /**
  * Universal learn-host entry gate:
  * - marks `learn.*` host requests for minimal-shell rendering
  * - rewrites non-`/learn/*` public paths to canonical Learn routes before any legacy
  *   host/domain resolver can run
+ * - blocks legacy screen APIs for any host in the legacy-runtime-disabled policy (learn.* + product hosts)
  */
 export function middleware(request: NextRequest) {
   const forwardedHost =
@@ -15,6 +17,19 @@ export function middleware(request: NextRequest) {
     (forwardedHost || request.nextUrl.hostname || request.headers.get("host") || "")
       .split(":")[0]
       ?.toLowerCase() ?? "";
+
+  const pathname = request.nextUrl.pathname || "/";
+
+  /** Legacy screen/config APIs are disabled on all Learn-system / product hosts. */
+  const legacyApiBlocked =
+    pathname === "/api/screens" ||
+    pathname.startsWith("/api/screens/") ||
+    pathname === "/api/container-creations-landing-config" ||
+    pathname.startsWith("/api/container-creations-landing-config/");
+  if (legacyApiBlocked && isLegacyRuntimeDisabledHostname(host)) {
+    return NextResponse.json({ error: "Not Found" }, { status: 404, headers: { "Cache-Control": "no-store" } });
+  }
+
   if (!host.startsWith("learn.")) {
     return NextResponse.next();
   }
@@ -23,19 +38,25 @@ export function middleware(request: NextRequest) {
   requestHeaders.set("x-learn-public-host", "1");
   const nextResp = () => NextResponse.next({ request: { headers: requestHeaders } });
 
-  const pathname = request.nextUrl.pathname || "/";
   const bypassInfrastructurePath =
     pathname.startsWith("/learn/") ||
     pathname === "/learn" ||
     pathname.startsWith("/api/") ||
     pathname === "/api" ||
     pathname.startsWith("/_next/") ||
+    pathname.startsWith("/images/") ||
+    pathname.startsWith("/videos/") ||
+    pathname.startsWith("/Videos/") ||
+    pathname.startsWith("/audio/") ||
+    pathname.startsWith("/fonts/") ||
+    pathname.startsWith("/assets/") ||
     pathname === "/favicon.ico" ||
     pathname === "/manifest" ||
     pathname.startsWith("/icons/") ||
     pathname === "/robots.txt" ||
     pathname === "/sitemap.xml";
-  if (bypassInfrastructurePath) {
+  const hasLikelyStaticExtension = /\.[a-z0-9]{2,6}$/i.test(pathname);
+  if (bypassInfrastructurePath || hasLikelyStaticExtension) {
     return nextResp();
   }
 

@@ -15,6 +15,8 @@ import {
 } from "@/components/organs";
 import { applySkinBindings } from "@/logic/bridges/skinBindings.apply";
 import { collectSectionKeysAndNodes, collectSectionLabels } from "@/layout";
+import LearnHostLegacyRedirect from "@/app/LearnHostLegacyRedirect";
+import { isLearnPublicHostClient, isLegacyRuntimeDisabledClient } from "@/lib/learn-public-host";
 
 const SHOP_URL = "https://containercreations.com";
 
@@ -24,6 +26,7 @@ export default function ContainerCreationsPage() {
   const stateSnapshot = useSyncExternalStore(subscribeState, getState, getState);
 
   useEffect(() => {
+    if (typeof window !== "undefined" && isLegacyRuntimeDisabledClient()) return;
     loadScreen("container-creations-landing")
       .then((data) => {
         if (data?.__type === "tsx-screen" || data?.title === "Landing config unavailable") {
@@ -92,6 +95,11 @@ export default function ContainerCreationsPage() {
 
   const experienceProfile = getExperienceProfile("website");
   const screenKey = (json?.id as string) ?? "container-creations-landing";
+
+  if (typeof window !== "undefined" && isLegacyRuntimeDisabledClient()) {
+    if (isLearnPublicHostClient()) return <LearnHostLegacyRedirect />;
+    return null;
+  }
 
   if (error) {
     return (

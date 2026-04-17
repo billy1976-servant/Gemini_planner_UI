@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "validate:paths": "node scripts/validate-paths.js",
+    "verify:learn-media-paths": "node scripts/verify-learn-media-paths.js",
     "verify:deck-public-rewrites": "node -e \"require('./deck-public-rewrites.cjs').getHostRewritesBeforeFiles(); console.log('deck-public-rewrites ok')\"",
     "verify:atoms": "ts-node scripts/verify-atoms-manifest.ts",
     "verify:compounds": "ts-node scripts/verify-compounds-manifest.ts",

@@ -1,6 +1,7 @@
 "use client";
 
 import { loadScreen } from "@/engine/core/screen-loader";
+import { isLegacyRuntimeDisabledClient } from "@/lib/learn-public-host";
 
 /**
  * AppLoader
@@ -14,6 +15,7 @@ import { loadScreen } from "@/engine/core/screen-loader";
  */
 export function AppLoader({ screen }: { screen: string }) {
   async function handleClick() {
+    if (typeof window !== "undefined" && isLegacyRuntimeDisabledClient()) return;
     const loaded = await loadScreen(`apps/${screen}`);
     if (!loaded) {
       console.warn("AppLoader: screen not found:", screen);

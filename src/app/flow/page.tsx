@@ -6,6 +6,8 @@ import { dispatchState } from "@/state/state-store";
 import ContainerCreationsLanding from "@/01_App/(live) Business/Container_Creations/ContainerCreationsLanding";
 import { TSXScreenWithEnvelope } from "@/lib/tsx-structure/TSXScreenWithEnvelope";
 import "@/app/landing/landing-theme.css";
+import LearnHostLegacyRedirect from "@/app/LearnHostLegacyRedirect";
+import { isLearnPublicHostClient, isLegacyRuntimeDisabledClient } from "@/lib/learn-public-host";
 
 const SCREEN_PATH = "(live) Business/Container_Creations/ContainerCreationsLanding";
 
@@ -21,9 +23,15 @@ export default function FlowPage() {
   const step = searchParams.get("step") ?? "fit";
 
   useLayoutEffect(() => {
+    if (typeof window !== "undefined" && isLegacyRuntimeDisabledClient()) return;
     const landingStep = STEP_TO_LANDING[step] ?? 1;
     dispatchState("state.update", { key: "landingStep", value: landingStep });
   }, [step]);
+
+  if (typeof window !== "undefined" && isLegacyRuntimeDisabledClient()) {
+    if (isLearnPublicHostClient()) return <LearnHostLegacyRedirect />;
+    return null;
+  }
 
   return (
     <div className="landing-container-creations" data-landing="flow">

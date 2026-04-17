@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { isLegacyRuntimeDisabledClient } from "@/lib/learn-public-host";
 
 const REGISTRY_URL = "/api/screens/HiClarify/home/osb-home-registry.json";
 
@@ -15,6 +16,10 @@ type Registry = {
 function useRegistry() {
   const [registry, setRegistry] = useState<Registry | null>(null);
   useEffect(() => {
+    if (typeof window !== "undefined" && isLegacyRuntimeDisabledClient()) {
+      setRegistry(null);
+      return;
+    }
     (async () => {
       try {
         const res = await fetch(REGISTRY_URL, { cache: "no-store" });

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { isLegacyRuntimeDisabledFromHeaders } from "@/lib/learn-public-host";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -37,6 +38,9 @@ function filenameFromVersionParam(versionRaw: string): string | null {
 }
 
 export async function GET(request: Request) {
+  if (isLegacyRuntimeDisabledFromHeaders(request.headers)) {
+    return NextResponse.json({ error: "Not Found" }, { status: 404, headers: NO_CACHE });
+  }
   try {
     const { searchParams } = new URL(request.url);
     const variantParam = searchParams.get("variant");

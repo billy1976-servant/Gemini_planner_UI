@@ -10,6 +10,8 @@ import PreviewStage from "@/components/stage/PreviewStage";
 import { recordStage } from "@/engine/debug/pipelineStageTrace";
 import { PipelineDebugStore } from "@/devtools/pipeline-debug-store";
 import { loadScreen } from "@/engine/core/screen-loader";
+import LearnHostLegacyRedirect from "@/app/LearnHostLegacyRedirect";
+import { isLearnPublicHostClient, isLegacyRuntimeDisabledClient } from "@/lib/learn-public-host";
 import { resolveLandingPage } from "@/logic/runtime/landing-page-resolver";
 import { getLayout, subscribeLayout } from "@/engine/core/layout-store";
 import { getPaletteName, subscribePalette } from "@/engine/core/palette-store";
@@ -529,6 +531,15 @@ export default function DevPage() {
       timestamp: Date.now(),
     });
 
+    if (typeof window !== "undefined" && isLegacyRuntimeDisabledClient()) {
+      setJson(null);
+      setTsxMeta(null);
+      setTsxComponent(null);
+      setError(null);
+      setScreenError(null);
+      return;
+    }
+
     if (!screen) {
       const flowParam = searchParams.get("flow");
       if (flowParam) {
@@ -715,6 +726,10 @@ export default function DevPage() {
       });
   }, [screen, searchParams]);
 
+  if (typeof window !== "undefined" && isLegacyRuntimeDisabledClient()) {
+    if (isLearnPublicHostClient()) return <LearnHostLegacyRedirect />;
+    return null;
+  }
 
   if (screenError) {
     setDevSidebarProps(null);

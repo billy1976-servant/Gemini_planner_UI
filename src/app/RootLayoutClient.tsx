@@ -79,6 +79,7 @@ import MobileLayout from "@/mobile/MobileLayout";
 import OsbMinimalTopBar from "@/04_Presentation/shells/OsbMinimalTopBar";
 import { useDevMobileMode } from "@/app/dev/useDevMobileMode";
 import DevHome from "@/app/dev/DevHome";
+import { isLegacyRuntimeDisabledClient } from "@/lib/learn-public-host";
 
 /* ============================================================
    🔒 STATIC REGISTRIES
@@ -269,6 +270,10 @@ function RootLayoutBody({ children }: { children: React.ReactNode }) {
      📂 LOAD AVAILABLE SCREENS — never throw; empty index on failure so sidebar still renders
   ============================================================ */
   useEffect(() => {
+    if (typeof window !== "undefined" && isLegacyRuntimeDisabledClient()) {
+      setIndex([]);
+      return;
+    }
     fetch("/api/screens")
       .then(res => (res.ok ? res.json() : Promise.resolve([])))
       .then(data => {

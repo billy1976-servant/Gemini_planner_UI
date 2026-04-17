@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { isLegacyRuntimeDisabledFromHeaders } from "@/lib/learn-public-host";
 
 /**
  * 09_Integrations test screens (Integration Lab).
@@ -37,9 +38,12 @@ const TSX_ROOT = path.join(
 
 
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: { path?: string[] } }
 ) {
+  if (isLegacyRuntimeDisabledFromHeaders(req.headers)) {
+    return NextResponse.json({ error: "Not Found" }, { status: 404, headers: { "Cache-Control": "no-store" } });
+  }
   try {
     if (!params?.path?.length) {
       return NextResponse.json(
