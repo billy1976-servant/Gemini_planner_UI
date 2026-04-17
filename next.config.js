@@ -3,27 +3,6 @@ const { getHostRewritesBeforeFiles } = require("./deck-public-rewrites.cjs");
 
 /** Ensures Vercel/serverless traces include deck JSON discovered only via fs.readdir at runtime. */
 const LEARN_DECK_TRACE_GLOBS = ["./src/01_App/**/learn/**/*"];
-/**
- * Hard safety-net for live host canonicalization before any filesystem route matching.
- * Keep these rules explicit so learn.hiclarify.com never falls into legacy domain runtime paths.
- */
-const PINNED_LEARN_HICLARIFY_REWRITES = [
-  {
-    source: "/",
-    has: [{ type: "host", value: "learn.hiclarify.com" }],
-    destination: "/learn/hiclarify/track-1/v1",
-  },
-  {
-    source: "/track-1",
-    has: [{ type: "host", value: "learn.hiclarify.com" }],
-    destination: "/learn/hiclarify/track-1/v1",
-  },
-  {
-    source: "/track-1/v1",
-    has: [{ type: "host", value: "learn.hiclarify.com" }],
-    destination: "/learn/hiclarify/track-1/v1",
-  },
-];
 
 const nextConfig = {
   experimental: {
@@ -36,7 +15,7 @@ const nextConfig = {
   async rewrites() {
     // File-driven learn routes: `learn.<appKey>.com/<flow>` and `learn.<appKey>.com/<flow>/<version>`.
     return {
-      beforeFiles: [...PINNED_LEARN_HICLARIFY_REWRITES, ...getHostRewritesBeforeFiles()],
+      beforeFiles: getHostRewritesBeforeFiles(),
     };
   },
   async redirects() {

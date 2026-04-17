@@ -1,9 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server";
 
 /**
- * Marks requests to `learn.*` hosts so the root layout can use the minimal shell even when
- * `beforeFiles` rewrites keep the browser pathname as `/flow/version` (not `/learn/...`).
- * `Host` alone is not always the visitor hostname behind proxies; this runs on the edge with the real host.
+ * Universal learn-host entry gate:
+ * - marks `learn.*` host requests for minimal-shell rendering
+ * - rewrites non-`/learn/*` public paths to canonical Learn routes before any legacy
+ *   host/domain resolver can run
  */
 export function middleware(request: NextRequest) {
   const forwardedHost =
@@ -20,28 +21,53 @@ export function middleware(request: NextRequest) {
 
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-learn-public-host", "1");
-  requestHeaders.set("x-request-pathname", request.nextUrl.pathname);
+  const nextResp = () => NextResponse.next({ request: { headers: requestHeaders } });
 
-  /**
-   * Safety net: force learn host URLs into canonical /learn/... route before legacy
-   * domain-based catch-alls can handle /track-1 style public paths.
-   */
-  if (host === "learn.hiclarify.com") {
-    const pathname = request.nextUrl.pathname;
-    const toCanonicalLearn =
-      pathname === "/" ||
-      pathname === "/track-1" ||
-      pathname === "/track-1/v1" ||
-      pathname === "/track-/v1";
-    if (toCanonicalLearn) {
-      requestHeaders.set("x-force-learn-canonical", "/learn/hiclarify/track-1/v1");
-      const rewriteUrl = request.nextUrl.clone();
-      rewriteUrl.pathname = "/learn/hiclarify/track-1/v1";
-      return NextResponse.rewrite(rewriteUrl, { request: { headers: requestHeaders } });
-    }
+  const pathname = request.nextUrl.pathname || "/";
+  const bypassInfrastructurePath =
+    pathname.startsWith("/learn/") ||
+    pathname === "/learn" ||
+    pathname.startsWith("/api/") ||
+    pathname === "/api" ||
+    pathname.startsWith("/_next/") ||
+    pathname === "/favicon.ico" ||
+    pathname === "/manifest" ||
+    pathname.startsWith("/icons/") ||
+    pathname === "/robots.txt" ||
+    pathname === "/sitemap.xml";
+  if (bypassInfrastructurePath) {
+    return nextResp();
   }
 
-  return NextResponse.next({ request: { headers: requestHeaders } });
+  const parts = host.split(".");
+  const hostAppRaw = parts.length >= 3 && parts[0] === "learn" ? parts[1] ?? "" : "";
+  const hostApp = hostAppRaw.trim().toLowerCase();
+  if (!hostApp) {
+    return nextResp();
+  }
+
+  const routeSegments = pathname
+    .split("/")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const rewriteUrl = request.nextUrl.clone();
+
+  if (routeSegments.length === 0) {
+    rewriteUrl.pathname = `/learn/${encodeURIComponent(hostApp)}`;
+    return NextResponse.rewrite(rewriteUrl, { request: { headers: requestHeaders } });
+  }
+  if (routeSegments.length === 1) {
+    rewriteUrl.pathname = `/learn/${encodeURIComponent(hostApp)}/${encodeURIComponent(routeSegments[0])}`;
+    return NextResponse.rewrite(rewriteUrl, { request: { headers: requestHeaders } });
+  }
+  if (routeSegments.length === 2) {
+    rewriteUrl.pathname =
+      `/learn/${encodeURIComponent(hostApp)}/${encodeURIComponent(routeSegments[0])}/${encodeURIComponent(routeSegments[1])}`;
+    return NextResponse.rewrite(rewriteUrl, { request: { headers: requestHeaders } });
+  }
+
+  rewriteUrl.pathname = `/learn/${encodeURIComponent(hostApp)}`;
+  return NextResponse.rewrite(rewriteUrl, { request: { headers: requestHeaders } });
 }
 
 export const config = {

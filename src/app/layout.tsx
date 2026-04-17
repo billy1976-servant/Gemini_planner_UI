@@ -1,6 +1,5 @@
 import { type ReactNode } from "react";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import RootLayoutClient from "./RootLayoutClient";
 
 /** Public hostname for this request (custom domain), not the internal upstream host. */
@@ -22,11 +21,6 @@ function getPublicHostname(): string {
  */
 export default function RootLayout({ children }: { children: ReactNode }) {
   const h = headers();
-  const forcedCanonical = h.get("x-force-learn-canonical")?.trim() ?? "";
-  const requestPathname = h.get("x-request-pathname")?.trim() ?? "";
-  if (forcedCanonical && requestPathname && requestPathname !== forcedCanonical) {
-    redirect(forcedCanonical);
-  }
   const fromMiddleware = h.get("x-learn-public-host") === "1";
   const hostname = getPublicHostname();
   const learnPublicHost = fromMiddleware || hostname.startsWith("learn.");
