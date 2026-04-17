@@ -5,7 +5,7 @@ import { normalizeDeckAppKey } from "@/lib/deck-platform/legacy-app-keys";
 import { notFound } from "next/navigation";
 import {
   parseLandingRuntimeMode,
-  parseSlideBuilderFlagDefaultOn,
+  parseSlideBuilderFlagDefaultOff,
 } from "@/lib/slide-builder-query";
 
 export const dynamic = "force-dynamic";
@@ -94,8 +94,8 @@ export default function LearnDeckEditorPage({
         initialDeckVersion={initialDeckVersion}
         availableDeckVersions={entry.availableVersions}
         learnFlowCatalog={learnFlowCatalog}
-        slideBuilderFlag={parseSlideBuilderFlagDefaultOn(searchParams.slideBuilder)}
-        runtimeModeParam={parseLandingRuntimeMode(searchParams.runtimeMode) ?? "builder"}
+        slideBuilderFlag={parseSlideBuilderFlagDefaultOff(searchParams.slideBuilder)}
+        runtimeModeParam={parseLandingRuntimeMode(searchParams.runtimeMode) ?? null}
         screenParam={parseScreenParam(searchParams)}
       />
     </Suspense>
