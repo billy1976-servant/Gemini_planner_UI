@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { isLegacyRuntimeDisabledHostname } from "@/lib/learn-public-host";
+import { isLearnDeckScreensApiPathname, isLegacyRuntimeDisabledHostname } from "@/lib/learn-public-host";
 
 /**
  * Universal learn-host entry gate:
@@ -26,7 +26,11 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/api/screens/") ||
     pathname === "/api/container-creations-landing-config" ||
     pathname.startsWith("/api/container-creations-landing-config/");
-  if (legacyApiBlocked && isLegacyRuntimeDisabledHostname(host)) {
+  if (
+    legacyApiBlocked &&
+    isLegacyRuntimeDisabledHostname(host) &&
+    !(pathname.startsWith("/api/screens/") && isLearnDeckScreensApiPathname(pathname))
+  ) {
     return NextResponse.json({ error: "Not Found" }, { status: 404, headers: { "Cache-Control": "no-store" } });
   }
 

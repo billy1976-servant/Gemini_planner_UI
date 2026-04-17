@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
-import { isLegacyRuntimeDisabledFromHeaders } from "@/lib/learn-public-host";
+import {
+  isLearnDeckScreensRelativePath,
+  isLegacyRuntimeDisabledFromHeaders,
+} from "@/lib/learn-public-host";
+import { normalizeDeckAppKey } from "@/lib/deck-platform/legacy-app-keys";
+import { resolveDeck } from "@/lib/deck-platform/registry";
 
 /**
  * 09_Integrations test screens (Integration Lab).
@@ -36,14 +41,16 @@ const TSX_ROOT = path.join(
   "(dead) Tsx"
 );
 
+const NO_CACHE = {
+  "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+  Pragma: "no-cache",
+  Expires: "0",
+} as const;
 
 export async function GET(
   req: Request,
   { params }: { params: { path?: string[] } }
 ) {
-  if (isLegacyRuntimeDisabledFromHeaders(req.headers)) {
-    return NextResponse.json({ error: "Not Found" }, { status: 404, headers: { "Cache-Control": "no-store" } });
-  }
   try {
     if (!params?.path?.length) {
       return NextResponse.json(
@@ -53,6 +60,32 @@ export async function GET(
     }
 
     const requestedPath = params.path.join("/");
+
+    if (isLegacyRuntimeDisabledFromHeaders(req.headers)) {
+      if (isLearnDeckScreensRelativePath(requestedPath)) {
+        const segs = params.path as string[];
+        const appKey = normalizeDeckAppKey(decodeURIComponent(segs[0] ?? ""));
+        const flowKey = decodeURIComponent(segs[2] ?? "").trim();
+        let versionKey = decodeURIComponent(segs[3] ?? "").trim();
+        if (versionKey.toLowerCase().endsWith(".json")) {
+          versionKey = versionKey.slice(0, -".json".length).trim();
+        }
+        if (segs[1]?.toLowerCase() !== "learn" || !appKey || !flowKey || !versionKey) {
+          return NextResponse.json({ error: "Not Found" }, { status: 404, headers: NO_CACHE });
+        }
+        const result = resolveDeck({
+          appKey,
+          flowKey,
+          version: versionKey,
+          includeBody: true,
+        });
+        if (!result.ok) {
+          return NextResponse.json({ error: result.error }, { status: result.status, headers: NO_CACHE });
+        }
+        return NextResponse.json(result.deck, { headers: NO_CACHE });
+      }
+      return NextResponse.json({ error: "Not Found" }, { status: 404, headers: { "Cache-Control": "no-store" } });
+    }
 
     /* ===============================
        0️⃣ 09_INTEGRATIONS LAB (single path)

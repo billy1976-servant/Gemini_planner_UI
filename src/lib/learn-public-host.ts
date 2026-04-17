@@ -68,8 +68,54 @@ export function isLearnPublicHostClient(): boolean {
 }
 
 /**
- * Map browser URL on a learn host to a canonical `/learn/...` path (matches middleware segment rules).
+ * True when `pathname` is the compatibility URL for filesystem Learn decks:
+ * `GET /api/screens/<appKey>/learn/<flowKey>/<version>.json`
+ * (legacy callers use this shape; payload is served from deck-platform SSOT, not `(dead) Json`).
  */
+export function isLearnDeckScreensApiPathname(pathname: string): boolean {
+  if (!pathname.startsWith("/api/screens/")) return false;
+  const rest = pathname.slice("/api/screens/".length);
+  return isLearnDeckScreensRelativePath(rest);
+}
+
+/**
+ * Relative path after `/api/screens/` (e.g. `hiclarify/learn/track-1/v1.json`).
+ */
+export function isLearnDeckScreensRelativePath(path: string): boolean {
+  const p = path.replace(/^\/+/, "").toLowerCase();
+  const parts = p.split("/").filter(Boolean);
+  if (parts.length !== 4) return false;
+  if (parts[1] !== "learn") return false;
+  if (!parts[3].endsWith(".json")) return false;
+  const app = parts[0];
+  const flow = parts[2];
+  const ver = parts[3].slice(0, -".json".length);
+  if (!app || !flow || !ver) return false;
+  if (!/^[a-z0-9][a-z0-9._-]*$/i.test(app)) return false;
+  if (!/^[a-z0-9][a-z0-9._-]*$/i.test(flow)) return false;
+  if (!/^[a-z0-9][a-z0-9._-]*$/i.test(ver)) return false;
+  return true;
+}
+
+/** Same path normalization as `safeImportJson` / `loadScreen` before `/api/screens/...` fetch. */
+export function isLearnDeckJsonLoaderPath(rawPath: string): boolean {
+  let p = rawPath;
+  try {
+    p = decodeURIComponent(rawPath);
+  } catch {
+    p = rawPath;
+  }
+  const normalized = p
+    .replace(/^\/+/, "")
+    .replace(/^src\//, "")
+    .replace(/^apps-json\/apps\//, "")
+    .replace(/^apps-json\//, "")
+    .replace(/^apps\//, "");
+  const withJson = /\.json$/i.test(normalized) ? normalized : `${normalized}.json`;
+  return isLearnDeckScreensRelativePath(withJson);
+}
+
+/** Map browser URL on a `learn.*` host to canonical `/learn/...` (matches middleware segment rules). */
 export function buildLearnPublicRedirectPathFromWindow(): string | null {
   if (typeof window === "undefined") return null;
   const h = window.location.hostname.split(":")[0]?.toLowerCase() ?? "";

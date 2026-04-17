@@ -4,7 +4,7 @@
  * Uses fetch in browser (no static imports). Uses fs in Node (tests).
  */
 
-import { isLegacyRuntimeDisabledClient } from "@/lib/learn-public-host";
+import { isLearnDeckJsonLoaderPath, isLegacyRuntimeDisabledClient } from "@/lib/learn-public-host";
 
 const SCREEN_BASE = "/api/screens";
 
@@ -43,7 +43,7 @@ export type SafeImportJsonResult =
  * For Node-only tests, use the loader in contracts/load-app-offline-json.node.ts.
  */
 export async function safeImportJson(path: string): Promise<SafeImportJsonResult> {
-  if (typeof window !== "undefined" && isLegacyRuntimeDisabledClient()) {
+  if (typeof window !== "undefined" && isLegacyRuntimeDisabledClient() && !isLearnDeckJsonLoaderPath(path)) {
     return {
       ok: false,
       error: "Screen API disabled on learn.* hosts.",
