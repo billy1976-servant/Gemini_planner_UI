@@ -20,8 +20,10 @@ function getPublicHostname(): string {
  * `/learn/`, and the root layout must key off the public host to use the same minimal shell as `/learn/*`.
  */
 export default function RootLayout({ children }: { children: ReactNode }) {
+  const h = headers();
+  const fromMiddleware = h.get("x-learn-public-host") === "1";
   const hostname = getPublicHostname();
-  const learnPublicHost = hostname.startsWith("learn.");
+  const learnPublicHost = fromMiddleware || hostname.startsWith("learn.");
   return <RootLayoutClient learnPublicHost={learnPublicHost}>{children}</RootLayoutClient>;
 }
 

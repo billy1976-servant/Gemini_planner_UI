@@ -58,6 +58,21 @@ export default function LearnDeckEditorPage({
     entry.deckRef.defaultVersion;
 
   return (
+    <>
+      {/* Temporary: confirms this server tree ran (remove after live learn host is verified). */}
+      <div
+        data-learn-page-ssr="1"
+        style={{
+          fontSize: 12,
+          padding: "6px 10px",
+          background: "#fef9c3",
+          color: "#713f12",
+          borderBottom: "1px solid #eab308",
+          fontFamily: "system-ui, sans-serif",
+        }}
+      >
+        [learn SSR] {appKey}/{flowKey} · v={initialDeckVersion} · catalogFlows={catalog.length}
+      </div>
     <Suspense
       fallback={
         <div
@@ -84,5 +99,6 @@ export default function LearnDeckEditorPage({
         screenParam={parseScreenParam(searchParams)}
       />
     </Suspense>
+    </>
   );
 }

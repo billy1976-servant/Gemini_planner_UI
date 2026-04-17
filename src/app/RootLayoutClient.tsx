@@ -569,6 +569,26 @@ export default function RootLayoutClient({
         />
       </head>
       <body className="app-body">
+        {/* Temporary: confirms root layout chose minimal shell on learn.* (remove after live verify). */}
+        {learnPublicHost ? (
+          <div
+            data-root-learn-minimal-shell="1"
+            style={{
+              position: "fixed",
+              top: 0,
+              right: 0,
+              zIndex: 2147483646,
+              fontSize: 10,
+              padding: "2px 6px",
+              background: "#14532d",
+              color: "#bbf7d0",
+              fontFamily: "ui-monospace, monospace",
+              pointerEvents: "none",
+            }}
+          >
+            minimal shell
+          </div>
+        ) : null}
         <Suspense fallback={<div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>Loading...</div>}>
           {useMinimalPublicShell ? (
             children

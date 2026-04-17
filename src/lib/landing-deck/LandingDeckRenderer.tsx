@@ -1554,19 +1554,45 @@ export default function LandingDeckRenderer({
     });
   }
 
+  /** Temporary: proves client mount + resolve state (remove after live learn host is verified). */
+  const learnClientDebug =
+    learnDeck != null ? (
+      <div
+        data-learn-deck-debug="1"
+        style={{
+          fontSize: 12,
+          padding: "6px 10px",
+          background: "#e0e7ff",
+          color: "#312e81",
+          borderBottom: "1px solid #6366f1",
+          fontFamily: "system-ui, sans-serif",
+        }}
+      >
+        [learn client] {learnDeck.appKey}/{learnDeck.flowKey} · pathname={pathname || "—"} · v=
+        {selectedDeckVersion} · config={config ? `${screens.length} screens` : "null"} · current=
+        {currentScreen?.id ?? "null"} · err={configError ?? "—"}
+      </div>
+    ) : null;
+
   if (configError) {
     return (
-      <div style={{ padding: "2rem", textAlign: "center", color: "#94a3b8" }}>
-        Failed to load config: {configError}
-      </div>
+      <>
+        {learnClientDebug}
+        <div style={{ padding: "2rem", textAlign: "center", color: "#94a3b8" }}>
+          Failed to load config: {configError}
+        </div>
+      </>
     );
   }
 
   if (!config || screens.length === 0 || currentScreen == null) {
     return (
-      <div style={{ padding: "2rem", textAlign: "center", color: "#94a3b8" }}>
-        Loading…
-      </div>
+      <>
+        {learnClientDebug}
+        <div style={{ padding: "2rem", textAlign: "center", color: "#94a3b8" }}>
+          Loading…
+        </div>
+      </>
     );
   }
 
@@ -2673,6 +2699,8 @@ export default function LandingDeckRenderer({
   const navPlacement = wizardConfig?.navigation.placement ?? "bottom";
 
   return (
+    <>
+      {learnClientDebug}
     <div
       ref={containerRef}
       className={`landing-container-creations${currentScreen.layout === "hero" ? " landing-step-hero" : ""}${currentScreen.layout === "stamped" ? " landing-step-stamped" : ""}${lightLayoutStep ? " measure-step-active" : ""}${currentScreen.layout === "proofPanel" || currentScreen.layout === "splitProof" ? " landing-step-proof" : ""}`}
@@ -2982,5 +3010,6 @@ export default function LandingDeckRenderer({
         )}
       </main>
     </div>
+    </>
   );
 }
