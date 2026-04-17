@@ -1,5 +1,6 @@
 /**
  * Host-conditioned rewrites derived from flow folders and version `*.json` files.
+ * Includes `learn.<app>.com/` → default flow/version so the main app `/` page is not served on learn hosts.
  * Required by next.config.js (CommonJS, no TS).
  */
 const fs = require("fs");
@@ -81,6 +82,8 @@ function getHostRewritesBeforeFiles() {
 
   const rules = [];
   const seen = new Set();
+  /** One `/` → default deck per `learn.<app>.com` (otherwise `/` hits the main app `page.tsx`). */
+  const seenHostRootRewrite = new Set();
 
   for (const flowRoot of discoverLearnFlowRoots(o1)) {
     const learnDir = path.dirname(flowRoot);
@@ -95,6 +98,19 @@ function getHostRewritesBeforeFiles() {
     if (!flowFromPath || !appKey || availableVersions.length === 0) continue;
 
     const host = `learn.${appKey}.com`;
+    if (!seenHostRootRewrite.has(host)) {
+      seenHostRootRewrite.add(host);
+      const rootDest = `/learn/${encodeURIComponent(appKey)}/${encodeURIComponent(flowFromPath)}/${encodeURIComponent(defaultVersion)}`;
+      const rootKey = `${host}|/|${rootDest}`;
+      if (!seen.has(rootKey)) {
+        seen.add(rootKey);
+        rules.push({
+          source: "/",
+          has: [{ type: "host", value: host }],
+          destination: rootDest,
+        });
+      }
+    }
     const defaultSource = `/${flowFromPath}`;
     const defaultDestination = `/learn/${encodeURIComponent(appKey)}/${encodeURIComponent(flowFromPath)}/${encodeURIComponent(defaultVersion)}`;
     const defaultKey = `${host}|${defaultSource}|${defaultDestination}`;
