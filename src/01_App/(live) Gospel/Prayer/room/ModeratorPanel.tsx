@@ -18,9 +18,11 @@ export interface ModeratorPanelProps {
   onStopRecording: () => void;
   onPublishRecording: (title: string) => void;
   onMuteParticipant: (participantId: string, muted: boolean) => void;
+  onSetParticipantRole?: (participantId: string, role: "speaker" | "listener") => void;
   onEndRoom: () => void;
   isPublishing?: boolean;
   publishError?: string | null;
+  roleError?: string | null;
   /** LiveKit screen share controls (host only). */
   canScreenShare?: boolean;
   isScreenSharing?: boolean;
@@ -43,9 +45,11 @@ export function ModeratorPanel({
   onStopRecording,
   onPublishRecording,
   onMuteParticipant,
+  onSetParticipantRole,
   onEndRoom,
   isPublishing = false,
   publishError = null,
+  roleError = null,
   canScreenShare = false,
   isScreenSharing = false,
   onStartScreenShare,
@@ -259,7 +263,7 @@ export function ModeratorPanel({
         {speakersAndListeners.length > 0 && (
           <section>
             <div className="prayer-metrics-label" style={{ marginBottom: "0.5rem" }}>
-              Mute participants
+              Participant controls
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
               {speakersAndListeners.map((p) => (
@@ -275,24 +279,53 @@ export function ModeratorPanel({
                   <span className="prayer-subtitle" style={{ fontSize: "0.8rem" }}>
                     {p.displayName || p.participantId.slice(0, 8)} ({p.role})
                   </span>
-                  <button
-                    type="button"
-                    onClick={() => onMuteParticipant(p.participantId, !p.muted)}
-                    style={{
-                      padding: "0.25rem 0.5rem",
-                      fontSize: "0.75rem",
-                      borderRadius: 8,
-                      border: "1px solid var(--prayer-card-border)",
-                      background: p.muted ? "var(--prayer-play-bg)" : "transparent",
-                      color: "var(--prayer-text)",
-                      cursor: "pointer",
-                    }}
-                  >
-                    {p.muted ? "Unmute" : "Mute"}
-                  </button>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
+                    {onSetParticipantRole && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          onSetParticipantRole(
+                            p.participantId,
+                            p.role === "speaker" ? "listener" : "speaker"
+                          )
+                        }
+                        style={{
+                          padding: "0.25rem 0.5rem",
+                          fontSize: "0.75rem",
+                          borderRadius: 8,
+                          border: "1px solid var(--prayer-card-border)",
+                          background: "transparent",
+                          color: "var(--prayer-text)",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {p.role === "speaker" ? "Make listener" : "Make speaker"}
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => onMuteParticipant(p.participantId, !p.muted)}
+                      style={{
+                        padding: "0.25rem 0.5rem",
+                        fontSize: "0.75rem",
+                        borderRadius: 8,
+                        border: "1px solid var(--prayer-card-border)",
+                        background: p.muted ? "var(--prayer-play-bg)" : "transparent",
+                        color: "var(--prayer-text)",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {p.muted ? "Unmute" : "Mute"}
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
+            {roleError && (
+              <p style={{ fontSize: "0.8rem", color: "#f87171", margin: "0.5rem 0 0" }}>
+                {roleError}
+              </p>
+            )}
           </section>
         )}
 

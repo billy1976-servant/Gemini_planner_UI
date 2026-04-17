@@ -5,6 +5,12 @@ import path from "path";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+const NO_CACHE = {
+  "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+  Pragma: "no-cache",
+  Expires: "0",
+} as const;
+
 const CONFIG_DIR = path.join(
   process.cwd(),
   "src",
@@ -53,13 +59,7 @@ export async function GET(request: Request) {
       if (fs.existsSync(fallbackPath)) {
         const content = fs.readFileSync(fallbackPath, "utf8");
         const config = JSON.parse(content);
-        return NextResponse.json(config, {
-          headers: {
-            "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
-            Pragma: "no-cache",
-            Expires: "0",
-          },
-        });
+        return NextResponse.json(config, { headers: NO_CACHE });
       }
       return NextResponse.json(
         { error: "Config file not found" },
@@ -69,13 +69,7 @@ export async function GET(request: Request) {
 
     const content = fs.readFileSync(configPath, "utf8");
     const config = JSON.parse(content);
-    return NextResponse.json(config, {
-      headers: {
-        "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
-        Pragma: "no-cache",
-        Expires: "0",
-      },
-    });
+    return NextResponse.json(config, { headers: NO_CACHE });
   } catch (err) {
     console.error("[container-creations-landing-config]", err);
     return NextResponse.json(

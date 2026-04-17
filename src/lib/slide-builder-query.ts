@@ -26,7 +26,16 @@ export function slideBuilderFromUrlParam(value: string | null): boolean {
 export function parseSlideBuilderFlagDefaultOn(
   raw: string | string[] | undefined
 ): boolean {
-  if (raw === undefined) return true;
+  if (raw === undefined || raw === "") return true;
+  if (Array.isArray(raw) && (raw.length === 0 || raw[0] === "")) return true;
+  return parseSlideBuilderFlag(raw);
+}
+
+/** Public `/learn/...` pages: builder off unless explicitly enabled. */
+export function parseSlideBuilderFlagDefaultOff(
+  raw: string | string[] | undefined
+): boolean {
+  if (raw === undefined) return false;
   return parseSlideBuilderFlag(raw);
 }
 
@@ -54,4 +63,15 @@ export function runtimeModeFromUrlParam(
 ): LandingRuntimeMode | null {
   if (value == null || value === "") return null;
   return parseRuntimeModeToken(value);
+}
+
+/** Join catalog picker value; `appKey` and `flowKey` must not contain `/`. */
+export function encodeDeckFlowPickerValue(appKey: string, flowKey: string): string {
+  return `${appKey}/${flowKey}`;
+}
+
+export function decodeDeckFlowPickerValue(raw: string): { appKey: string; flowKey: string } | null {
+  const i = raw.indexOf("/");
+  if (i <= 0 || i >= raw.length - 1) return null;
+  return { appKey: raw.slice(0, i), flowKey: raw.slice(i + 1) };
 }

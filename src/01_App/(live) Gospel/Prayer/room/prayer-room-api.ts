@@ -173,3 +173,20 @@ export async function leaveRoom(roomId: string): Promise<void> {
     throw new Error(await parseApiError(res, "Leave room failed"));
   }
 }
+
+export async function setParticipantRole(
+  roomId: string,
+  participantId: string,
+  role: RoomRole
+): Promise<PrayerRoom> {
+  const res = await fetch(`${getBase()}/role`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ roomId, participantId, role }),
+  });
+  if (!res.ok) {
+    throw new Error(await parseApiError(res, "Role update failed"));
+  }
+  const data = (await res.json()) as { room: PrayerRoom };
+  return data.room;
+}

@@ -33,10 +33,16 @@
   overflow-y: hidden;
 }
 
-/* Prevent nested flex layouts from shrinking the row below min-width; width can exceed viewport → horizontal scroll on [data-slide-builder]. */
+/*
+ * Laptop / desktop: three columns need ~1024px before horizontal scroll feels avoidable
+ * (280 outline + 320 inspector + canvas). Narrower viewports use horizontal scroll on [data-slide-builder].
+ */
+
+/* Slide builder row: allow narrow viewports; outer [data-slide-builder] supplies horizontal scroll when needed. */
 .landing-slide-builder-columns {
   flex-shrink: 0;
-  width: max(100%, 920px);
+  width: 100%;
+  min-width: 0;
   height: 100%;
   max-height: 100%;
   overflow: hidden;
@@ -61,6 +67,7 @@
   height: 100%;
   min-height: 0;
   overflow: auto;
+  overscroll-behavior: contain;
 }
 
 .landing-container-creations > .landing-cc-main {

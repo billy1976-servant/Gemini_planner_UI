@@ -1,7 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import NodeInspector, { type EditableNode } from "@/app/ui/control-dock/editor/NodeInspector";
+import NodeInspector, {
+  type EditableNode,
+  type NodeInspectorSlideLayoutPreview,
+} from "@/app/ui/control-dock/editor/NodeInspector";
 import { stopSpaceEnterBubblingFromFormFields } from "@/lib/editable-keyboard";
 import {
   SLIDE_TYPES,
@@ -17,6 +20,8 @@ export type LandingSlideBuilderInspectorProps = {
   selectedNodeId: string | null;
   onSelectNode: (id: string | null) => void;
   onChange: (patch: Partial<EditableNode>) => void;
+  /** Live layout previews in Advanced mode (from landing renderer). */
+  slideLayoutPreview?: NodeInspectorSlideLayoutPreview | null;
 };
 
 const asideStyle: React.CSSProperties = {
@@ -67,6 +72,7 @@ export default function LandingSlideBuilderInspector({
   selectedNodeId,
   onSelectNode,
   onChange,
+  slideLayoutPreview = null,
 }: LandingSlideBuilderInspectorProps) {
   const [inspectorMode, setInspectorMode] = useState<"basic" | "advanced">("basic");
 
@@ -85,81 +91,103 @@ export default function LandingSlideBuilderInspector({
       >
         Inspector
       </div>
-      <div style={{ flex: 1, minHeight: 0, overflow: "auto", padding: "8px 10px 16px" }}>
+      <div
+        style={{
+          flex: 1,
+          minHeight: 0,
+          overflow: "auto",
+          overscrollBehavior: "contain",
+          padding: 0,
+        }}
+      >
         {!node || !selectedNodeId ? (
-          <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.45, margin: "8px 0 0" }}>
+          <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.45, margin: "8px 10px 16px" }}>
             Select a slide in the outline to edit layout, media, and copy fields.
           </p>
         ) : (
           <>
-            <div style={{ display: "flex", gap: 6, marginBottom: 12 }} role="group" aria-label="Inspector mode">
-              <button
-                type="button"
-                style={modeBtn(inspectorMode === "basic")}
-                onClick={() => setInspectorMode("basic")}
-              >
-                Basic
-              </button>
-              <button
-                type="button"
-                style={modeBtn(inspectorMode === "advanced")}
-                onClick={() => setInspectorMode("advanced")}
-              >
-                Advanced
-              </button>
-            </div>
-
             <div
               style={{
-                marginBottom: 12,
-                padding: 10,
-                background: "#f8fafc",
-                borderRadius: 8,
-                border: "1px solid #e2e8f0",
-                display: "flex",
-                flexDirection: "column",
-                gap: 10,
+                position: "sticky",
+                top: 0,
+                zIndex: 2,
+                padding: "8px 10px 10px",
+                background: "#fff",
+                borderBottom: "1px solid #e2e8f0",
               }}
             >
-              <div>
-                <label style={LABEL_STYLE}>Slide type</label>
-                <select
-                  value={inferSlideTypeFromNode(node)}
-                  onChange={(e) => {
-                    const type = e.target.value as SlideTypeId;
-                    onChange(
-                      applySlideRecipe(type, {
-                        content: node.content,
-                        builderMeta: node.builderMeta,
-                      }) as Partial<EditableNode>
-                    );
-                  }}
-                  style={SELECT_STYLE}
-                  aria-label="Slide type"
+              <div style={{ display: "flex", gap: 6 }} role="group" aria-label="Inspector mode">
+                <button
+                  type="button"
+                  style={modeBtn(inspectorMode === "basic")}
+                  onClick={() => setInspectorMode("basic")}
                 >
-                  {SLIDE_TYPES.map((id) => (
-                    <option key={id} value={id}>
-                      {SLIDE_TYPE_LABELS[id]}
-                    </option>
-                  ))}
-                </select>
+                  Basic
+                </button>
+                <button
+                  type="button"
+                  style={modeBtn(inspectorMode === "advanced")}
+                  onClick={() => setInspectorMode("advanced")}
+                >
+                  Advanced
+                </button>
               </div>
-              <p style={{ fontSize: 11, color: "#64748b", lineHeight: 1.4, margin: 0 }}>
-                Slide type sets layout and default &ldquo;step look&rdquo; for this slide. Empty slides get starter
-                content. Deck-wide colors and fonts use <strong>Deck theme</strong> in the outline. Exported JSON is the
-                source of truth.
-              </p>
             </div>
 
-            <NodeInspector
-              node={node}
-              screenIds={screenIds}
-              selectedNodeId={selectedNodeId}
-              onSelectNode={onSelectNode}
-              onChange={onChange}
-              hideNodePicker
-              inspectorMode={inspectorMode}
-            />
+            <div style={{ padding: "8px 10px 12px" }}>
+              <div
+                style={{
+                  marginBottom: 10,
+                  padding: 10,
+                  background: "#f8fafc",
+                  borderRadius: 8,
+                  border: "1px solid #e2e8f0",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 10,
+                }}
+              >
+                <div>
+                  <label style={LABEL_STYLE}>Slide type</label>
+                  <select
+                    value={inferSlideTypeFromNode(node)}
+                    onChange={(e) => {
+                      const type = e.target.value as SlideTypeId;
+                      onChange(
+                        applySlideRecipe(type, {
+                          content: node.content,
+                          builderMeta: node.builderMeta,
+                        }) as Partial<EditableNode>
+                      );
+                    }}
+                    style={SELECT_STYLE}
+                    aria-label="Slide type"
+                  >
+                    {SLIDE_TYPES.map((id) => (
+                      <option key={id} value={id}>
+                        {SLIDE_TYPE_LABELS[id]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <p style={{ fontSize: 11, color: "#64748b", lineHeight: 1.4, margin: 0 }}>
+                  Slide type sets layout and default &ldquo;step look&rdquo; for this slide. Deck-wide theme lives in the
+                  outline panel. Exported JSON is the source of truth.
+                </p>
+              </div>
+
+              <NodeInspector
+                node={node}
+                screenIds={screenIds}
+                selectedNodeId={selectedNodeId}
+                onSelectNode={onSelectNode}
+                onChange={onChange}
+                hideNodePicker
+                inspectorMode={inspectorMode}
+                slideLayoutPreview={slideLayoutPreview}
+                sectionGroups
+              />
+            </div>
           </>
         )}
       </div>

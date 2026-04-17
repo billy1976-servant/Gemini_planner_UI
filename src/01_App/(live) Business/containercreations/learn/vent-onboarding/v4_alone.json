@@ -1,0 +1,486 @@
+{
+  "shopUrl": "https://containercreations.com",
+  "header": {
+    "logoSrc": "/images/logo-container-creations.webp",
+    "logoAlt": "Container Creations",
+    "shopNowLabel": "Shop Now"
+  },
+  "stepTracker": {
+    "title": "Vent Installation Checklist (v2)",
+    "description": "Follow these steps before cutting your container roof.",
+    "showResponses": true,
+    "responsePlaceholder": "Not answered yet",
+    "completedOnly": false
+  },
+  "screens": [
+    {
+      "id": "intro",
+      "stepLabel": "Intro",
+      "layout": "hero",
+      "title": "Upgrade Your Shipping Container",
+      "subtitle": "Ventilation • Natural Light • Structural Fit",
+      "content": [
+        {
+          "type": "badge",
+          "text": "60-Minute DIY Install • No Welding Required"
+        },
+        {
+          "type": "trustStrip",
+          "items": [
+            {
+              "icon": "shield",
+              "label": "Patented design"
+            },
+            {
+              "icon": "check",
+              "label": "DIY-friendly"
+            },
+            {
+              "icon": "tool",
+              "label": "Built for containers"
+            }
+          ]
+        }
+      ],
+      "media": [
+        {
+          "type": "video",
+          "src": "/Videos/hero-install.mp4.mp4",
+          "aspectRatio": "16/9",
+          "poster": "/images/Container%20Images%20(8).jpg"
+        }
+      ],
+      "buttons": [
+        {
+          "type": "goto",
+          "label": "Start the Checklist",
+          "target": "structural-fit",
+          "nodeId": "start-checklist"
+        },
+        {
+          "type": "link",
+          "label": "Shop Now",
+          "hrefKey": "shopUrl",
+          "nodeId": "shop-now-hero"
+        }
+      ],
+      "nextScreenId": "structural-fit",
+      "lightTheme": true,
+      "visualTone": "soft",
+      "nodePosition": {
+        "x": 100,
+        "y": 80
+      }
+    },
+    {
+      "id": "structural-fit",
+      "stepLabel": "Verify Container Type",
+      "layout": "proofPanel",
+      "density": "compact",
+      "title": "Stamped Steel. Not Generic Roof Hardware.",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Designed specifically for corrugated container roofs."
+        },
+        {
+          "type": "comparison",
+          "heading": "Why it fits better",
+          "columnLabels": {
+            "left": "Container Creations",
+            "right": "Generic roof parts"
+          },
+          "rows": [
+            {
+              "left": "Single-piece stamped steel base",
+              "right": "Welded multi-part bases",
+              "highlight": "left"
+            },
+            {
+              "left": "Designed for container corrugation",
+              "right": "Flat-roof assumptions",
+              "highlight": "left"
+            },
+            {
+              "left": "Weather-tight seal surface",
+              "right": "Guess-and-modify installs",
+              "highlight": "left"
+            }
+          ]
+        },
+        {
+          "type": "trustStrip",
+          "items": [
+            {
+              "icon": "shield",
+              "label": "Patented design"
+            },
+            {
+              "icon": "check",
+              "label": "No welded seams"
+            },
+            {
+              "icon": "tool",
+              "label": "DIY install"
+            }
+          ]
+        }
+      ],
+      "media": [
+        {
+          "type": "video",
+          "src": "/Videos/pressed-steel.mp4.mp4",
+          "caption": "Each base is formed in a single industrial press.",
+          "aspectRatio": "16/9",
+          "poster": "/images/Container%20Images%20(8).jpg"
+        }
+      ],
+      "buttons": [
+        {
+          "type": "back",
+          "label": "Back",
+          "nodeId": "step1-back"
+        },
+        {
+          "type": "next",
+          "label": "Check My Container Fit",
+          "nodeId": "structural-fit"
+        }
+      ],
+      "nextScreenId": "ventilation",
+      "inlineControls": [
+        "containerLength"
+      ],
+      "trackerResponse": {
+        "enabled": true,
+        "rule": {
+          "type": "valueLabel",
+          "field": "containerLength",
+          "map": {
+            "20ft": "20 ft container",
+            "40ft": "40 ft container"
+          }
+        }
+      },
+      "lightTheme": true
+    },
+    {
+      "id": "ventilation",
+      "stepLabel": "Measure Roof Opening",
+      "layout": "twoCol",
+      "title": "Measure Your Roof Rib Height",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Measure your corrugation height so you get the correct adapter fit."
+        },
+        {
+          "type": "stats",
+          "items": [
+            {
+              "label": "Goal",
+              "value": "Correct fit"
+            },
+            {
+              "label": "Why",
+              "value": "Cleaner seal"
+            },
+            {
+              "label": "Result",
+              "value": "Less guesswork"
+            }
+          ]
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "/images/Measure-roof.jpg.jpg",
+          "alt": "Measure your container roof",
+          "aspectRatio": "4/3",
+          "objectFit": "cover"
+        }
+      ],
+      "buttons": [
+        {
+          "type": "back",
+          "label": "Back",
+          "nodeId": "step2-back"
+        },
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "ventilation"
+        }
+      ],
+      "nextScreenId": "continue",
+      "inlineControls": [
+        "roofRibHeight"
+      ],
+      "trackerResponse": {
+        "enabled": true,
+        "rule": {
+          "type": "range",
+          "field": "roofRibHeight",
+          "ranges": [
+            {
+              "min": 1.5,
+              "max": 2.5,
+              "text": "Within spec"
+            }
+          ],
+          "defaultText": "Outside typical range"
+        }
+      },
+      "lightTheme": true
+    },
+    {
+      "id": "continue",
+      "stepLabel": "Verify Vent Fit",
+      "layout": "twoCol",
+      "title": "Why a 12″ Vent Works Better",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "A 12-inch vent gives stronger airflow and better moisture control."
+        },
+        {
+          "type": "stats",
+          "items": [
+            {
+              "label": "Airflow",
+              "value": "Higher"
+            },
+            {
+              "label": "Moisture",
+              "value": "Better control"
+            },
+            {
+              "label": "Use case",
+              "value": "Container-ready"
+            }
+          ]
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "/images/12_%20vent.png",
+          "alt": "12 inch vent airflow and moisture control",
+          "aspectRatio": "4/3",
+          "objectFit": "contain"
+        }
+      ],
+      "buttons": [
+        {
+          "type": "back",
+          "label": "Back",
+          "nodeId": "step3-back"
+        },
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "continue"
+        }
+      ],
+      "nextScreenId": "why-we-lead",
+      "inlineControls": [
+        "ventFitVerified"
+      ],
+      "trackerResponse": {
+        "enabled": true,
+        "rule": {
+          "type": "boolean",
+          "field": "ventFitVerified",
+          "trueText": "Confirmed",
+          "falseText": "Not confirmed"
+        }
+      }
+    },
+    {
+      "id": "why-we-lead",
+      "stepLabel": "Upgrade Light",
+      "layout": "proofPanel",
+      "title": "If You’re Cutting the Roof, Add Natural Light",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "You are already doing the roof work. This is the easiest time to brighten the space permanently."
+        },
+        {
+          "type": "stats",
+          "items": [
+            {
+              "label": "One project",
+              "value": "Vent + light"
+            },
+            {
+              "label": "Better use",
+              "value": "Brighter interior"
+            },
+            {
+              "label": "Less hassle",
+              "value": "Upgrade once"
+            }
+          ]
+        },
+        {
+          "type": "ctaBand",
+          "headline": "Cut once. Upgrade fully.",
+          "sub": "Ventilation, daylight, and a cleaner finished system in the same project.",
+          "emphasis": true
+        }
+      ],
+      "media": [
+        {
+          "type": "beforeAfter",
+          "before": "/images/Container%20Images%20(1).jpg",
+          "after": "/images/Container%20Images%20(1).jpg",
+          "altBefore": "Container without skylight",
+          "altAfter": "Container with natural light"
+        }
+      ],
+      "buttons": [
+        {
+          "type": "back",
+          "label": "Back",
+          "nodeId": "step4-back"
+        },
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "why-we-lead"
+        }
+      ],
+      "nextScreenId": "choose-vent",
+      "inlineControls": [
+        "ventCount"
+      ],
+      "trackerResponse": {
+        "enabled": true,
+        "rule": {
+          "type": "numberTemplate",
+          "field": "ventCount",
+          "template": "{value} x 12-inch vents"
+        }
+      }
+    },
+    {
+      "id": "choose-vent",
+      "stepLabel": "Choose Vent Size",
+      "layout": "splitProof",
+      "title": "Built to Outlast the Container",
+      "content": [
+        {
+          "type": "rating",
+          "value": 5,
+          "max": 5,
+          "reviewCount": 300,
+          "source": "Verified buyers"
+        },
+        {
+          "type": "paragraph",
+          "text": "Stamped 20-gauge steel. No weld distortion. Designed specifically for container rib transfer."
+        },
+        {
+          "type": "stats",
+          "items": [
+            {
+              "label": "Material",
+              "value": "20-gauge steel"
+            },
+            {
+              "label": "Install",
+              "value": "DIY-friendly"
+            },
+            {
+              "label": "Design",
+              "value": "Patented"
+            }
+          ]
+        },
+        {
+          "type": "testimonial",
+          "quote": "I ordered a second set immediately after I opened the box.",
+          "author": "David S.",
+          "location": "Payson, AZ",
+          "rating": 5
+        },
+        {
+          "type": "ctaBand",
+          "headline": "Order the right system the first time",
+          "sub": "Match your roof correctly and finish the upgrade with confidence.",
+          "emphasis": true
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "/images/Container%20Images%20(8).jpg",
+          "alt": "Final install",
+          "aspectRatio": "4/3",
+          "objectFit": "cover"
+        }
+      ],
+      "buttons": [
+        {
+          "type": "back",
+          "label": "Back",
+          "nodeId": "step5-back"
+        },
+        {
+          "type": "link",
+          "label": "Build My Container System",
+          "hrefKey": "shopUrl",
+          "nodeId": "build-my-system"
+        }
+      ],
+      "nextScreenId": "final-recommendation",
+      "inlineControls": [
+        "orderSizeConfirmed"
+      ],
+      "trackerResponse": {
+        "enabled": true,
+        "rule": {
+          "type": "boolean",
+          "field": "orderSizeConfirmed",
+          "trueText": "Ready to order",
+          "falseText": "Not confirmed"
+        }
+      }
+    },
+    {
+      "id": "final-recommendation",
+      "stepLabel": "Final Recommendation",
+      "layout": "textOnly",
+      "title": "Final Recommendation",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Your recommended vent setup is based on the checklist choices you made."
+        },
+        {
+          "type": "ctaBand",
+          "headline": "Build your container system now",
+          "sub": "Move forward with the setup that fits your roof and your goals.",
+          "emphasis": true
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "link",
+          "label": "Build My Container System",
+          "hrefKey": "shopUrl",
+          "nodeId": "build-my-system-final"
+        }
+      ],
+      "dynamicSummary": true,
+      "dynamicSummaryConfig": {
+        "mode": "autoFromTrackerRules",
+        "heading": "Your responses:",
+        "includeUnanswered": true
+      }
+    }
+  ]
+}

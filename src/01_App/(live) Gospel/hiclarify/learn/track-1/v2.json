@@ -1,0 +1,31 @@
+{
+  "shopUrl": "https://hiclarify.com",
+  "header": {
+    "logoSrc": "/images/logo-container-creations.webp",
+    "logoAlt": "HiClarify",
+    "shopNowLabel": "Continue"
+  },
+  "stepTracker": {
+    "title": "Track 1",
+    "description": "Sample discipleship learning track (generic deck platform Phase 1).",
+    "showResponses": false,
+    "responsePlaceholder": "—",
+    "completedOnly": false
+  },
+  "screens": [
+    {
+      "id": "welcome",
+      "stepLabel": "Welcome",
+      "layout": "textOnly",
+      "title": "dsfsdgvawdfhetn",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "This is crazy - it works!!"
+        }
+      ],
+      "media": [],
+      "buttons": []
+    }
+  ]
+}

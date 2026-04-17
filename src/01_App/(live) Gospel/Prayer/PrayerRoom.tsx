@@ -9,6 +9,7 @@ import {
   endRoom,
   getRoom,
   setParticipantMute,
+  setParticipantRole,
   getLiveKitToken,
   heartbeatRoom,
   leaveRoom,
@@ -300,6 +301,7 @@ export function PrayerRoom({ roomId }: PrayerRoomProps) {
   }, [recording.stop]);
   const [moderatorPanelOpen, setModeratorPanelOpen] = useState(false);
   const [publishError, setPublishError] = useState<string | null>(null);
+  const [roleError, setRoleError] = useState<string | null>(null);
   const [isPublishing, setIsPublishing] = useState(false);
   const [studyPages, setStudyPages] = useState<StudyPage[]>([]);
   const annotationStrokesPrevLenRef = useRef(0);
@@ -362,6 +364,29 @@ export function PrayerRoom({ roomId }: PrayerRoomProps) {
       }
     },
     [recording.recordedBlob, recording.recordDurationSec, recording.clear, room?.groupId, session?.user?.email, session?.user?.name, roomId, webrtc.participants, studyPages]
+  );
+
+  useEffect(() => {
+    if (!room || !participantId) return;
+    const membership = room.participants.find((p) => p.participantId === participantId);
+    if (membership?.role && membership.role !== role) {
+      setRole(membership.role);
+      setTokenError(null);
+    }
+  }, [room, participantId, role]);
+
+  const handleSetParticipantRole = useCallback(
+    async (targetParticipantId: string, nextRole: "speaker" | "listener") => {
+      if (!isHost) return;
+      try {
+        setRoleError(null);
+        await setParticipantRole(roomId, targetParticipantId, nextRole);
+        await fetchRoom();
+      } catch (e) {
+        setRoleError(e instanceof Error ? e.message : "Role update failed");
+      }
+    },
+    [isHost, roomId, fetchRoom]
   );
 
   const handleSaveStudyPage = useCallback(
@@ -487,9 +512,11 @@ export function PrayerRoom({ roomId }: PrayerRoomProps) {
           onStopRecording={recording.stop}
           onPublishRecording={handlePublishRecording}
           onMuteParticipant={handleMuteParticipant}
+          onSetParticipantRole={handleSetParticipantRole}
           onEndRoom={handleEndRoom}
           isPublishing={isPublishing}
           publishError={publishError}
+          roleError={roleError}
           canScreenShare={true}
           isScreenSharing={!!webrtc.screenShareStream}
           onStartScreenShare={webrtc.startScreenShare}
