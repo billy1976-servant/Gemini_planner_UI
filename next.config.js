@@ -14,17 +14,8 @@ const nextConfig = {
   },
   async rewrites() {
     // File-driven learn routes: `learn.<appKey>.com/<flow>` and `learn.<appKey>.com/<flow>/<version>`.
-    // Explicit param rule first so new version keys work even if build-time discovery missed a file.
-    const hostCc = "learn.containercreations.com";
-    const ccVentFallback = [
-      {
-        source: "/vent-onboarding/:version",
-        has: [{ type: "host", value: hostCc }],
-        destination: "/learn/containercreations/vent-onboarding/:version",
-      },
-    ];
     return {
-      beforeFiles: [...ccVentFallback, ...getHostRewritesBeforeFiles()],
+      beforeFiles: getHostRewritesBeforeFiles(),
     };
   },
   async redirects() {
@@ -35,11 +26,13 @@ const nextConfig = {
         permanent: false,
       },
       {
+        // Compatibility-only: legacy appKey spelling.
         source: "/learn/container-creations/:flowKey/:versionKey",
         destination: "/learn/containercreations/:flowKey/:versionKey",
         permanent: false,
       },
       {
+        // Compatibility-only: legacy appKey spelling.
         source: "/learn/gospel-discipleship/:flowKey/:versionKey",
         destination: "/learn/hiclarify/:flowKey/:versionKey",
         permanent: false,

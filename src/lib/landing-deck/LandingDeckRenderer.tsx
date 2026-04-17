@@ -79,7 +79,8 @@ import {
 import { normalizeDeckAppKey } from "@/lib/deck-platform/legacy-app-keys";
 import { learnDeckVersionDisplayLabel, stripLearnVersionStemInput } from "@/lib/deck-platform/learn-launcher-utils";
 
-const LEGACY_CONFIG_URL = "/api/container-creations-landing-config";
+/** Compatibility-only fallback for old non-learn pages. `/learn/*` never uses this endpoint. */
+const LEGACY_CC_CONFIG_URL = "/api/container-creations-landing-config";
 
 const EMPTY_VERSION_LIST: string[] = [];
 
@@ -834,7 +835,7 @@ export default function LandingDeckRenderer({
       if (v) qp.set("version", v);
     }
     qp.set("t", String(Date.now()));
-    const rel = `${LEGACY_CONFIG_URL}?${qp.toString()}`;
+    const rel = `${LEGACY_CC_CONFIG_URL}?${qp.toString()}`;
     const url =
       typeof window !== "undefined" ? new URL(rel, window.location.origin).href : rel;
     fetch(url, { cache: "no-store", headers: { Pragma: "no-cache" } })

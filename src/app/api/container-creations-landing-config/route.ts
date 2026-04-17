@@ -4,6 +4,7 @@ import path from "path";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+/** Compatibility-only endpoint for old Container Creations pages; learn routes use `/api/learn/resolve`. */
 
 const NO_CACHE = {
   "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
