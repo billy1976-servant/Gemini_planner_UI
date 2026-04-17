@@ -1,6 +1,7 @@
 import { type ReactNode } from "react";
 import { headers } from "next/headers";
 import RootLayoutClient from "./RootLayoutClient";
+import { isLegacyRuntimeDisabledHostname } from "@/lib/learn-public-host";
 
 /** Public hostname for this request (custom domain), not the internal upstream host. */
 function getPublicHostname(): string {
@@ -21,10 +22,18 @@ function getPublicHostname(): string {
  */
 export default function RootLayout({ children }: { children: ReactNode }) {
   const h = headers();
-  const fromMiddleware = h.get("x-learn-public-host") === "1";
+  const fromMwLearn = h.get("x-learn-public-host") === "1";
+  const fromMwLegacy = h.get("x-legacy-runtime-disabled") === "1";
   const hostname = getPublicHostname();
-  const learnPublicHost = fromMiddleware || hostname.startsWith("learn.");
-  return <RootLayoutClient learnPublicHost={learnPublicHost}>{children}</RootLayoutClient>;
+  const learnPublicHost = fromMwLearn || hostname.startsWith("learn.");
+  const legacyRuntimeDisabledHost = fromMwLegacy || isLegacyRuntimeDisabledHostname(hostname);
+  /** Bypass `UserLayoutChrome` / dev chrome for any legacy-disabled host (learn.*, product hosts, env list). */
+  const minimalPublicEntryShell = learnPublicHost || legacyRuntimeDisabledHost;
+  return (
+    <RootLayoutClient learnPublicHost={learnPublicHost} minimalPublicEntryShell={minimalPublicEntryShell}>
+      {children}
+    </RootLayoutClient>
+  );
 }
 
 export const dynamic = "force-dynamic";

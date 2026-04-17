@@ -3,6 +3,7 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { NAV_STRIP_HEIGHT, SCREEN_UI_BREAKPOINT_PX } from "@/app/shell-ui-constants";
+import { isLegacyRuntimeDisabledClient } from "@/lib/learn-public-host";
 
 const LAUNCHER_DROPDOWN_GAP_PX = 8;
 
@@ -164,6 +165,7 @@ export function BottomNavOnly() {
   }, []);
 
   useEffect(() => {
+    if (typeof window !== "undefined" && isLegacyRuntimeDisabledClient()) return;
     const el = navRootRef.current;
     if (!el) return;
     const parent = el.parentElement;

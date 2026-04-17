@@ -34,11 +34,20 @@ export function middleware(request: NextRequest) {
     return NextResponse.json({ error: "Not Found" }, { status: 404, headers: { "Cache-Control": "no-store" } });
   }
 
-  if (!host.startsWith("learn.")) {
-    return NextResponse.next();
+  /**
+   * Request headers consumed by `src/app/layout.tsx` so the root layout never mounts
+   * `UserLayoutChrome` / legacy top bar on learn.* or other legacy-runtime-disabled hosts,
+   * even when `usePathname()` still shows the public URL (`/track-1/v1`) after rewrites.
+   */
+  const requestHeaders = new Headers(request.headers);
+  if (isLegacyRuntimeDisabledHostname(host)) {
+    requestHeaders.set("x-legacy-runtime-disabled", "1");
   }
 
-  const requestHeaders = new Headers(request.headers);
+  if (!host.startsWith("learn.")) {
+    return NextResponse.next({ request: { headers: requestHeaders } });
+  }
+
   requestHeaders.set("x-learn-public-host", "1");
   const nextResp = () => NextResponse.next({ request: { headers: requestHeaders } });
 

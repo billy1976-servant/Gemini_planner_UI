@@ -83,14 +83,19 @@ export async function loadScreen(path: string): Promise<any> {
       .replace(/^apps\//, "");
     const resolvedPath = normalized.match(/\.json$/i) ? normalized : `${normalized}.json`;
 
-    console.log("Resolving screen:", path);
-    console.log("Resolved path:", resolvedPath);
+    const quietLegacyHost = typeof window !== "undefined" && isLegacyRuntimeDisabledClient();
+    if (!quietLegacyHost) {
+      console.log("Resolving screen:", path);
+      console.log("Resolved path:", resolvedPath);
+    }
 
     const result = await safeImportJson(resolvedPath);
 
     const exists = result.ok ? true : (result as { ok: false; code?: string }).code === "FILE_NOT_FOUND" ? false : "unknown";
-    console.log("File exists:", exists);
-    if (result.ok) {
+    if (!quietLegacyHost) {
+      console.log("File exists:", exists);
+    }
+    if (result.ok && !quietLegacyHost) {
       const parsedJson = result.json;
       console.log("Parsed JSON keys:", Object.keys(parsedJson || {}));
     }
@@ -117,15 +122,17 @@ export async function loadScreen(path: string): Promise<any> {
 
     const json = result.json;
 
-    console.log("[screen-loader] 📥 LOADED", {
-      path: resolvedPath,
-      id: json?.id,
-      type: json?.type,
-      hasState: !!json?.state,
-      currentView: json?.state?.currentView,
-      childrenCount: json?.children?.length,
-      timestamp: Date.now(),
-    });
+    if (!quietLegacyHost) {
+      console.log("[screen-loader] 📥 LOADED", {
+        path: resolvedPath,
+        id: json?.id,
+        type: json?.type,
+        hasState: !!json?.state,
+        currentView: json?.state?.currentView,
+        childrenCount: json?.children?.length,
+        timestamp: Date.now(),
+      });
+    }
 
     /* ==================================================
        🧠 DEFAULT STATE (ALWAYS APPLY ON SCREEN LOAD)
@@ -133,13 +140,15 @@ export async function loadScreen(path: string): Promise<any> {
     if (json?.state?.currentView) {
       const currentState = getState().currentView;
       const jsonState = json.state.currentView;
-      console.log("[screen-loader] ✅ Applying default state", {
-        from: currentState,
-        to: jsonState,
-        screenPath: path,
-      });
+      if (!quietLegacyHost) {
+        console.log("[screen-loader] ✅ Applying default state", {
+          from: currentState,
+          to: jsonState,
+          screenPath: path,
+        });
+      }
       dispatchState("state:currentView", { value: jsonState });
-    } else {
+    } else if (!quietLegacyHost) {
       console.log("[screen-loader] ⚠️ No default state in JSON", {
         hasState: !!json?.state,
         stateKeys: json?.state ? Object.keys(json.state) : [],

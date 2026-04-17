@@ -540,16 +540,22 @@ function UserLayoutChrome({ children }: { children: React.ReactNode }) {
 export default function RootLayoutClient({
   children,
   learnPublicHost,
+  minimalPublicEntryShell,
 }: {
   children: ReactNode;
   /** True when Host is `learn.*` (public deck URLs rewrite to `/learn/...` but pathname stays `/flow/...`). */
   learnPublicHost: boolean;
+  /**
+   * True for learn.* and other legacy-runtime-disabled hosts (middleware + hostname fallback).
+   * Must not depend on `usePathname()` alone: browser URL can stay `/track-1/v1` while internally rewritten to `/learn/...`.
+   */
+  minimalPublicEntryShell: boolean;
 }) {
   const pathname = usePathname();
   const isUserMode = pathname === "/" || !pathname?.startsWith("/dev");
 
   const useMinimalPublicShell =
-    learnPublicHost ||
+    minimalPublicEntryShell ||
     pathname === "/landing" ||
     pathname === "/landing-2" ||
     pathname === "/learn" ||
