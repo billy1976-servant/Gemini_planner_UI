@@ -20,6 +20,7 @@ export function middleware(request: NextRequest) {
 
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-learn-public-host", "1");
+  requestHeaders.set("x-request-pathname", request.nextUrl.pathname);
 
   /**
    * Safety net: force learn host URLs into canonical /learn/... route before legacy
@@ -27,8 +28,13 @@ export function middleware(request: NextRequest) {
    */
   if (host === "learn.hiclarify.com") {
     const pathname = request.nextUrl.pathname;
-    const toCanonicalLearn = pathname === "/" || pathname === "/track-1" || pathname === "/track-1/v1";
+    const toCanonicalLearn =
+      pathname === "/" ||
+      pathname === "/track-1" ||
+      pathname === "/track-1/v1" ||
+      pathname === "/track-/v1";
     if (toCanonicalLearn) {
+      requestHeaders.set("x-force-learn-canonical", "/learn/hiclarify/track-1/v1");
       const rewriteUrl = request.nextUrl.clone();
       rewriteUrl.pathname = "/learn/hiclarify/track-1/v1";
       return NextResponse.rewrite(rewriteUrl, { request: { headers: requestHeaders } });
