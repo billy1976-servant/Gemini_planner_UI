@@ -33,7 +33,7 @@ function collectAllDescendants(node: any, acc: any[] = []): any[] {
 
 async function run() {
   const result = await loadAppOfflineJson("websites/showcase/showcase-home.json");
-  if (!result.ok) {
+  if (result.ok === false) {
     console.warn("Showcase visual quality test: screen file missing or invalid:", result.error);
     process.exit(0);
     return;

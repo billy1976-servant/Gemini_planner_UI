@@ -79,7 +79,7 @@ export async function GET(
           version: versionKey,
           includeBody: true,
         });
-        if (!result.ok) {
+        if (result.ok === false) {
           return NextResponse.json({ error: result.error }, { status: result.status, headers: NO_CACHE });
         }
         return NextResponse.json(result.deck, { headers: NO_CACHE });

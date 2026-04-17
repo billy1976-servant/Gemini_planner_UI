@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { persistContractArtifact } from "../src/07_Dev_Tools/debug/persistPipelineContractArtifact";
+import { persistContractArtifact } from "../../../src/07_Dev_Tools/debug/persistPipelineContractArtifact";
 
 test("Runtime pipeline contract: layout dropdown triggers full pipeline and all steps pass", async (
   { page },

@@ -128,7 +128,7 @@ assert(textRoleLabelSize != null, "resolveToken('textRole.label.size') must reso
 // --- 11. app-1.json structure: screens use valid molecule types (load at runtime, no static import)
 async function runApp1Assertions() {
   const result = await loadAppOfflineJson("journal_track/app-1.json");
-  if (!result.ok) {
+  if (result.ok === false) {
     console.warn("Param key mapping test: skipping app-1.json assertions (file missing or invalid):", result.error);
     return;
   }
