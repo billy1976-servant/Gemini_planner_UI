@@ -589,15 +589,20 @@ export default function RootLayoutClient({
             minimal shell
           </div>
         ) : null}
-        <Suspense fallback={<div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>Loading...</div>}>
-          {useMinimalPublicShell ? (
-            children
-          ) : isUserMode ? (
-            <UserLayoutChrome>{children}</UserLayoutChrome>
-          ) : (
-            <RootLayoutBody>{children}</RootLayoutBody>
-          )}
-        </Suspense>
+        {useMinimalPublicShell ? (
+          // Do not wrap public/minimal routes (learn.* rewrites, /learn, /landing) in root Suspense:
+          // a client-root Suspense around the RSC `children` slot can yield only the fallback in HTML
+          // ("Loading..." / blank) and block the learn page from streaming.
+          children
+        ) : (
+          <Suspense fallback={<div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>Loading...</div>}>
+            {isUserMode ? (
+              <UserLayoutChrome>{children}</UserLayoutChrome>
+            ) : (
+              <RootLayoutBody>{children}</RootLayoutBody>
+            )}
+          </Suspense>
+        )}
       </body>
     </html>
   );
