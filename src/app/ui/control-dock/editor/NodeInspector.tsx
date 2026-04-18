@@ -4,7 +4,10 @@ import React from "react";
 import { stopSpaceEnterBubblingFromFormFields } from "@/lib/editable-keyboard";
 import type { SlideBuilderMeta } from "@/lib/slide-builder-recipes";
 import type { LandingContentBlock } from "@/lib/landing-content-blocks/types";
+import type { WalkthroughScreenConfig } from "@/lib/landing-walkthrough";
+import type { TrackerResponseConfig } from "@/lib/landing-tracker-responses";
 import SlideContentBlocksEditor from "./SlideContentBlocksEditor";
+import WalkthroughTrackerInspector from "./WalkthroughTrackerInspector";
 import { landingLayoutSelectOptions } from "@/lib/landing-layout-catalog";
 import LayoutTilePicker from "@/app/ui/control-dock/layout/LayoutTilePicker";
 import type { LayoutTileOption } from "@/app/ui/control-dock/layout/LayoutTilePicker";
@@ -31,6 +34,8 @@ export type EditableNode = {
   content?: Array<{ type?: string; text?: string; heading?: string; [key: string]: unknown }>;
   /** Ignored by landing renderers; used by slide builder for type/preset UX. */
   builderMeta?: SlideBuilderMeta;
+  walkthrough?: WalkthroughScreenConfig;
+  trackerResponse?: TrackerResponseConfig;
   [key: string]: unknown;
 };
 
@@ -540,6 +545,14 @@ export default function NodeInspector({
           />
         </InspectorCollapsible>
 
+        <InspectorCollapsible title="Walkthrough &amp; tracker" defaultOpen={false}>
+          <WalkthroughTrackerInspector
+            walkthrough={node.walkthrough}
+            trackerResponse={node.trackerResponse}
+            onPatch={(patch) => onChange(patch as Partial<EditableNode>)}
+          />
+        </InspectorCollapsible>
+
         <InspectorCollapsible title="Advanced" defaultOpen={false}>
           {mediaPanel}
           {!isBasic ? (
@@ -742,6 +755,19 @@ export default function NodeInspector({
       ) : null}
 
       {isBasic ? primaryButtonBasic : buttonsAdvanced}
+
+      <div
+        style={{
+          paddingTop: 12,
+          borderTop: "1px solid var(--color-border, #dadce0)",
+        }}
+      >
+        <WalkthroughTrackerInspector
+          walkthrough={node.walkthrough}
+          trackerResponse={node.trackerResponse}
+          onPatch={(patch) => onChange(patch as Partial<EditableNode>)}
+        />
+      </div>
 
       <SlideContentBlocksEditor
         content={content}

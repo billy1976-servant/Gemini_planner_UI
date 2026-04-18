@@ -1,6 +1,14 @@
 /**
  * Converts landing-2 config (screens[] format) to json-skin tree
  * so it can be rendered via ExperienceRenderer → JsonRenderer → JsonSkinEngine.
+ *
+ * **Lossy export — not a full Learn bridge.** Only these content blocks are mapped:
+ * `paragraph`, `badge`, `checklist` (see `mapContentBlock`). All other
+ * `LandingContentBlock` types (heading, testimonial, comparison, ctaBand, etc.) are dropped.
+ * Walkthrough inputs, tracker rules, presenter `presentation`, `modes`, `extraLinkKeys`, and
+ * most media tuning are not represented in the output. For authoritative deck authoring use
+ * `LandingDeckV1` (`src/lib/landing-deck/schema.ts`) and `LandingDeckRenderer`; use this
+ * converter only when a reduced json-skin preview is acceptable.
  */
 
 export type LandingConfig = {

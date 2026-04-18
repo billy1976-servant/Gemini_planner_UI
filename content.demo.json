@@ -1,0 +1,64 @@
+{
+  "slide-hero": {
+    "title": "Deterministic Learn bridge",
+    "subtitle": "Structure declares order and kind; content fills each slide id.",
+    "badge": "Demo",
+    "paragraphs": [
+      "This deck was generated with npm run learn from structure.demo.json and content.demo.json."
+    ],
+    "stepLabel": "Start",
+    "mediaKeys": ["heroShot"],
+    "modes": ["long"]
+  },
+  "slide-teach": {
+    "title": "Teaching slide",
+    "subtitle": "Paragraphs, bullets, optional reveal",
+    "paragraphs": [
+      "The compiler maps each kind to an outline template, then expands to LandingDeckV1 screens."
+    ],
+    "bullets": [
+      "Hero → heroHook layout",
+      "Quiz → stamped + walkthrough gate",
+      "Summary → textOnly layout"
+    ],
+    "stepLabel": "Lesson",
+    "presentation": {
+      "reveal": "byBlock"
+    }
+  },
+  "slide-quiz": {
+    "title": "Pick the best fit",
+    "subtitle": "Walkthrough + tracker labels (optional)",
+    "paragraphs": ["Choose the option that best matches how you want to use the generator next."],
+    "stepLabel": "Check",
+    "quizSelect": {
+      "inputId": "demoPick",
+      "label": "Your answer",
+      "options": [
+        { "value": "a", "label": "Linear flow is enough for v1" },
+        { "value": "b", "label": "I need branching arrows next" }
+      ],
+      "gateMessage": "Choose an option to continue."
+    },
+    "trackerValueLabels": {
+      "a": "Linear v1",
+      "b": "Needs branching"
+    },
+    "trackerEnabled": true
+  },
+  "slide-summary": {
+    "title": "Summary",
+    "paragraphs": [
+      "You now have hero, teach, quiz, summary, and CTA kinds in one generated deck.",
+      "Open v1.demo.json in the Learn editor or renderer to review layout and walkthrough wiring."
+    ],
+    "bullets": ["Validation runs after compile", "Output is deterministic for the same inputs"],
+    "stepLabel": "Recap"
+  },
+  "slide-cta": {
+    "title": "Next step",
+    "subtitle": "Continue exploring or ship a real deck",
+    "paragraphs": ["Replace example copy and media keys with your flow’s assets."],
+    "stepLabel": "CTA"
+  }
+}

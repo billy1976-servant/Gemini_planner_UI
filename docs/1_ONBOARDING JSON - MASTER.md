@@ -1,8 +1,12 @@
-# Container Creations JSON onboarding — reference
+# Landing / Learn deck JSON — reference
 
-**Scope:** This document describes the **landing-2 style** JSON consumed by `ContainerCreationsLandingRenderer` (fetched from `/api/container-creations-landing-config`). It is **repo-grounded** in the files listed in [Sources](#sources).
+**Scope:** This document describes the **landing-2 style** JSON consumed by **`LandingDeckRenderer`** (`src/lib/landing-deck/LandingDeckRenderer.tsx`). The canonical TypeScript contract is **`LandingDeckV1`** in `src/lib/landing-deck/schema.ts`.
 
-**Not in scope:** The separate **json-skin** pipeline (`convertLandingConfigToJsonSkin`) maps a smaller subset of blocks and does **not** implement tracker responses or inline controls the same way. If you use that path, treat this doc as **partially applicable** only where the converter explicitly maps fields.
+**Legacy Container Creations:** The same shape is still loaded via `GET /api/container-creations-landing-config` with the defaults below.
+
+**Learn platform:** Decks live under `src/01_App/**/learn/<flowKey>/<version>.json` and are resolved with `GET /api/learn/resolve` (see [Learn routes](#learn-routes-url-query-params)).
+
+**Not in scope:** The **json-skin** pipeline (`convertLandingConfigToJsonSkin` in `src/05_Logic/logic/landing/convert-landing-config-to-json-skin.ts`) is a **lossy, partial** mapping: it only converts a subset of content blocks (paragraph, badge, checklist) and does not preserve walkthrough, tracker rules, presenter reveal, or full media options. Use it only when you accept that reduced output.
 
 ---
 
@@ -10,12 +14,24 @@
 
 | Mechanism | Behavior |
 |-----------|----------|
-| **URL** | Client fetches `GET /api/container-creations-landing-config` with query params (see below). |
+| **URL (Container Creations)** | Client fetches `GET /api/container-creations-landing-config` with query params (see below). |
 | **Default file** | `landing-2.json` under `src/01_App/(live) Business/Container_Creations/`. |
 | **`variant`** | `?variant=default|v1|v2|v3` selects a filename from the route’s map; invalid/missing falls through. |
 | **`version`** | `?version=2` loads `landing-2.json` (digits only; prevents path traversal). |
+| **Learn** | Flow JSON from disk via `/learn/...` pages or `GET /api/learn/resolve?app=&flow=&version=&schema=&includeBody=1`. |
 | **Cache** | API returns `Cache-Control: no-store`. Client adds `t=<timestamp>` to bust cache. |
-| **Validation** | **None** at runtime: the client casts JSON to `LandingConfig`. Missing fields can cause runtime errors or blank UI. |
+| **Validation** | **None** at runtime: the client treats JSON as `LandingDeckV1`. Missing fields can cause runtime errors or blank UI. Use `npm run deck:check` to validate repo decks. |
+
+### Learn routes (URL query params)
+
+On `/learn/...`, `LandingDeckRenderer` also reads:
+
+| Param | Purpose |
+|-------|---------|
+| `slideBuilder` | When truthy (`1`, `true`, …), enables slide builder UI. Learn defaults to **off** unless set. |
+| `runtimeMode` | `builder` \| `presenter` \| `walkthrough` — presenter mode enables per-block **reveal** stepping; walkthrough mode persists gated inputs. |
+| `deckMode` | `short` \| `long` (default `long`) — filters screens that declare `screen.modes`; screens with no `modes` show in both. |
+| `screen` | Initial screen id override from the server page. |
 
 ---
 
@@ -35,6 +51,8 @@
 | `stepTracker.responsePlaceholder` | No | `string` | Shown in tracker when a rule yields no value and no `fallbackText` (and in summary “unanswered” lines). |
 | `stepTracker.completedOnly` | No | `boolean` | If **`true`**, response text is hidden for steps with status `todo` (not yet reached). |
 | `screens` | **Yes** | `array` | Ordered list of steps. First screen’s `id` becomes initial `currentScreenId` after load. |
+| `extraLinkKeys` | No | `object` | Map of string → URL. For `link` buttons, `hrefKey` may reference a key here; if missing, URL falls back to `shopUrl`. |
+| `deckPalette` | No | `string` | Id from `@/palettes`; applies deck-wide CSS variables in the renderer. |
 
 **Dev-only (not JSON):** Screen order can be overridden in the editor via `node-order-override-store` when a canonical key exists; tracker and navigation use `orderedScreens`, not always raw JSON order.
 
@@ -42,7 +60,7 @@
 
 ## 2. Screen structure
 
-All screens share the following **as used by** `ContainerCreationsLandingRenderer`:
+All screens share the following **as used by** `LandingDeckRenderer`:
 
 | Field | Required | Type | Notes |
 |-------|----------|------|--------|
@@ -63,12 +81,16 @@ All screens share the following **as used by** `ContainerCreationsLandingRendere
 | `visualTone` | No | `"default"` \| `"soft"` \| `"bold"` | Passed as `data-visual-tone` on wrapper (CSS only). |
 | `density` | No | `"comfortable"` \| `"compact"` | Passed as `data-density` on wrapper (CSS only). |
 | `nodePosition` | No | `{ x: number, y: number }` | For **dev graph editor** positioning; no effect on end-user flow. |
+| `builderMeta` | No | `object` | Slide builder only: `slideType` / `stylePreset` (`slide-builder-recipes.ts`); ignored at render. |
+| `presentation` | No | `object` | Presenter mode: `reveal`: `none` \| `byBlock` \| `custom`; `revealSequence`: `block:0`, `block:1`, … for `custom`. |
+| `walkthrough` | No | `object` | `inputs[]` (`select`, `number`, `boolean`, `text`) and optional `gate.required[]` / `gate.message` (`landing-walkthrough.ts`). |
+| `modes` | No | `string[]` | Subset of `short`, `long`. When set, screen is shown only in those deck modes (`?deckMode=`). Omitted = all modes. |
 
 ---
 
 ## 3. Supported layout types
 
-Implementation: `renderScreen` switch in `ContainerCreationsLandingRenderer.tsx`.
+Implementation: `renderScreen` switch in `LandingDeckRenderer.tsx`.
 
 | `layout` | Purpose / structure | Best content & media | Limitations |
 |----------|---------------------|----------------------|-------------|
@@ -303,7 +325,7 @@ If `icon` is omitted, the renderer uses `item.icon ?? "\u2713"` in `renderConten
 
 ## 5. Media types (`screen.media[]`)
 
-Typed as `MediaBlock` in `types.ts`; rendered in `renderMediaItem` in `ContainerCreationsLandingRenderer.tsx`.
+Typed as `MediaBlock` in `types.ts`; rendered in `renderMediaItem` in `LandingDeckRenderer.tsx`.
 
 ### Shared tuning (`LandingMediaTuning`)
 
@@ -427,9 +449,21 @@ Optional on all: **`nodeId`** (`string`) — exposed as `data-node-id` for dev t
 
 ### URL resolution for `link`
 
-**Implemented special case:** only `hrefKey === "shopUrl"` maps to `cfg.shopUrl`.
+`resolveHref` in `LandingDeckRenderer.tsx`:
 
-**Important limitation:** For any other `hrefKey`, `resolveHref` **still returns `cfg.shopUrl`** today. Do not assume arbitrary keys work unless you extend the code.
+1. If `hrefKey === "shopUrl"` → `cfg.shopUrl`.
+2. Else if `cfg.extraLinkKeys?.[hrefKey]` is a non-empty string → that URL.
+3. Else → fallback `cfg.shopUrl`.
+
+Define named URLs on the deck root, for example:
+
+```json
+{
+  "extraLinkKeys": {
+    "helpCenter": "https://example.com/help"
+  }
+}
+```
 
 ```json
 { "type": "link", "label": "Shop Now", "hrefKey": "shopUrl", "nodeId": "shop-cta" }
@@ -447,7 +481,7 @@ Optional on all: **`nodeId`** (`string`) — exposed as `data-node-id` for dev t
 
 ## 7. Inline controls (`screen.inlineControls[]`)
 
-**Storage:** React state `stepInputs` in `ContainerCreationsLandingRenderer` (not persisted, not sent to API). **Field names** in tracker/summary rules must match these keys.
+**Storage:** React state `stepInputs` in `LandingDeckRenderer` (not persisted, not sent to API). **Field names** in tracker/summary rules must match these keys.
 
 | `inlineControls` id | UI | Stored value | Notes |
 |---------------------|----|--------------|--------|
@@ -468,7 +502,7 @@ Optional on all: **`nodeId`** (`string`) — exposed as `data-node-id` for dev t
 
 ## 8. Tracker response system
 
-Implemented in `src/lib/landing-tracker-responses.ts` and wired in the sidebar list in `ContainerCreationsLandingRenderer`.
+Implemented in `src/lib/landing-tracker-responses.ts` and wired in the sidebar list in `LandingDeckRenderer`.
 
 ### Global (`stepTracker`)
 
@@ -760,12 +794,17 @@ When `dynamicSummaryConfig` is **absent** or produces **no lines**, the renderer
 
 | Topic | Path |
 |-------|------|
-| Renderer, layouts, media, buttons, inline controls | `src/01_App/(live) Business/Container_Creations/ContainerCreationsLandingRenderer.tsx` |
+| Canonical deck types | `src/lib/landing-deck/schema.ts` |
+| Renderer, layouts, media, buttons, inline controls, walkthrough, modes | `src/lib/landing-deck/LandingDeckRenderer.tsx` |
+| Layout id list | `src/lib/landing-layout-catalog.ts` |
 | Content block types | `src/lib/landing-content-blocks/types.ts` |
 | Content rendering | `src/lib/landing-content-blocks/renderContentBlocks.tsx` |
 | Tracker + summary rules | `src/lib/landing-tracker-responses.ts` |
+| Walkthrough inputs + gates | `src/lib/landing-walkthrough.ts` |
+| Deck length modes | `src/lib/deck-platform/deck-slide-modes.ts` |
 | Presentation `data-*` | `src/lib/landing-screen-presentation.ts` |
-| Config API | `src/app/api/container-creations-landing-config/route.ts` |
+| Learn resolve / catalog | `src/lib/deck-platform/registry.ts`, `src/app/api/learn/resolve/route.ts` |
+| Config API (legacy path) | `src/app/api/container-creations-landing-config/route.ts` |
 | Wizard shell attributes hook | `src/lib/tsx-structure/engines/wizard.ts` |
 
 ---
@@ -776,7 +815,7 @@ When `dynamicSummaryConfig` is **absent** or produces **no lines**, the renderer
 |------|--------|
 | **`hero` + `next`/`back`** | Not rendered; use `goto` / first `link`. |
 | **`textOnly` + `next`/`back`/`goto`** | Not rendered; only `link`. |
-| **`link.hrefKey` other than `shopUrl`** | Still resolves to `shopUrl` in `resolveHref`. |
+| **`link.hrefKey` other than `shopUrl`** | Uses `extraLinkKeys[key]` if set; otherwise falls back to `shopUrl`. |
 | **Unknown `layout`** | Renders **nothing** for that screen. |
 | **Unknown content `type`** | Renders **null** (dev warning). |
 | **`stepInputs` persistence** | In-memory only; refresh loses answers. |

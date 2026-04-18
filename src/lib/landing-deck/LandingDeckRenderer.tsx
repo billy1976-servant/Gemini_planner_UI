@@ -29,11 +29,8 @@ import {
   moveIdInOrder,
 } from "@/lib/landing-deck-mutations";
 import { patchLandingScreen } from "@/lib/landing-screen-patch";
-import {
-  inferSlideTypeFromNode,
-  SLIDE_TYPE_LABELS,
-  type SlideBuilderMeta,
-} from "@/lib/slide-builder-recipes";
+import { inferSlideTypeFromNode, SLIDE_TYPE_LABELS } from "@/lib/slide-builder-recipes";
+import type { SlideBuilderMeta } from "@/lib/landing-deck/schema";
 import { getPaletteName } from "@/engine/core/palette-store";
 import { applyPaletteToElement } from "@/lib/site-renderer/palette-bridge";
 import { palettes } from "@/palettes";
@@ -48,18 +45,18 @@ import {
   type LandingContentBlocksOptions,
   type MediaBlock,
 } from "@/lib/landing-content-blocks";
-import {
-  landingScreenPresentationAttrs,
-  type LandingScreenDensity,
-  type LandingVisualTone,
-} from "@/lib/landing-screen-presentation";
-import {
-  buildSummaryFromConfig,
-  getScreenTrackerResponse,
-  type DynamicSummaryConfig,
-  type StepTrackerResponseConfig,
-  type TrackerResponseConfig,
-} from "@/lib/landing-tracker-responses";
+import { landingScreenPresentationAttrs } from "@/lib/landing-screen-presentation";
+import type { LandingScreenDensity, LandingVisualTone } from "@/lib/landing-deck/schema";
+import { buildSummaryFromConfig, getScreenTrackerResponse } from "@/lib/landing-tracker-responses";
+import type {
+  LandingDeckButtonBlock as ButtonBlock,
+  LandingDeckInlineControlId as InlineControlId,
+  LandingDeckScreen as Screen,
+  LandingDeckV1 as LandingConfig,
+  DynamicSummaryConfig,
+  StepTrackerResponseConfig,
+  TrackerResponseConfig,
+} from "@/lib/landing-deck/schema";
 import "@/app/landing/landing-theme.css";
 import { isKeyboardEventFromEditableField } from "@/lib/editable-keyboard";
 import {
@@ -71,12 +68,11 @@ import {
   getSlideBuilderCanvasMaxWidthPx,
   getSlideBuilderLayoutPreviewLogicalWidthPx,
 } from "@/lib/slide-builder-viewport";
-import {
-  canAdvanceWalkthroughScreen,
-  mergeLandingWalkthroughValues,
-  type WalkthroughScreenConfig,
-} from "@/lib/landing-walkthrough";
+import { canAdvanceWalkthroughScreen, mergeLandingWalkthroughValues } from "@/lib/landing-walkthrough";
+import type { WalkthroughScreenConfig } from "@/lib/landing-deck/schema";
 import { normalizeDeckAppKey } from "@/lib/deck-platform/legacy-app-keys";
+import { filterScreensByDeckMode, parseDeckSlideMode } from "@/lib/deck-platform/deck-slide-modes";
+import type { DeckSlideMode } from "@/lib/landing-deck/schema";
 import { learnDeckVersionDisplayLabel, stripLearnVersionStemInput } from "@/lib/deck-platform/learn-launcher-utils";
 import { isLearnPublicHostClient, isLegacyRuntimeDisabledClient } from "@/lib/learn-public-host";
 
@@ -269,67 +265,6 @@ export type ContainerCreationsLandingRendererProps = LandingDeckRendererProps;
  * Result: Any JSON screen can include checklist, paragraph, video, images, future blocks
  * and they will always render in both editor and preview.
  */
-
-type ButtonBlock =
-  | { type: "link"; label: string; hrefKey: string; nodeId?: string }
-  | { type: "goto"; label: string; target: string; nodeId?: string }
-  | { type: "next"; label: string; nodeId?: string }
-  | { type: "back"; label: string; nodeId?: string };
-
-type InlineControlId =
-  | "containerLength"
-  | "roofRibHeight"
-  | "ventFitVerified"
-  | "ventCount"
-  | "orderSizeConfirmed";
-
-type Screen = {
-  id: string;
-  stepLabel: string;
-  layout: string;
-  title: string;
-  subtitle?: string;
-  content: LandingContentBlock[];
-  media: MediaBlock[];
-  buttons: ButtonBlock[];
-  nextScreenId?: string;
-  inlineControls?: InlineControlId[];
-  /** When true, textOnly layout shows getFinalRecommendationSummary() instead of content. */
-  dynamicSummary?: boolean;
-  /** Optional JSON-driven summary behavior for dynamicSummary screens. */
-  dynamicSummaryConfig?: DynamicSummaryConfig;
-  /** Optional tracker response rule for this step. */
-  trackerResponse?: TrackerResponseConfig;
-  /** When true, header and step use light theme (e.g. white background). */
-  lightTheme?: boolean;
-  /** Optional position for node graph editor. */
-  nodePosition?: { x: number; y: number };
-  /** Optional: softer or stronger visual weight for cards/headlines (CSS only). */
-  visualTone?: LandingVisualTone;
-  /** Optional: tighter vertical rhythm (CSS only). */
-  density?: LandingScreenDensity;
-  /** Slide builder only; ignored at render time. */
-  builderMeta?: SlideBuilderMeta;
-  /** Optional presenter behavior. */
-  presentation?: {
-    reveal?: "none" | "byBlock" | "custom";
-    revealSequence?: string[];
-  };
-  /** Walkthrough: JSON-driven inputs, gates, and resume (runtimeMode=walkthrough). */
-  walkthrough?: WalkthroughScreenConfig;
-};
-
-type LandingConfig = {
-  shopUrl: string;
-  header: { logoSrc: string; logoAlt: string; shopNowLabel: string };
-  stepTracker: StepTrackerResponseConfig;
-  screens: Screen[];
-  /**
-   * Deck-wide HiSense palette (`@/palettes` keys). When set, variables are applied to this landing root so the
-   * whole deck preview matches export. Omitted = inherit app/document CSS variables.
-   */
-  deckPalette?: string;
-};
 
 /** Step verification inputs. roofRibHeight = roof rib height in inches (vertical corrugation). */
 type StepInputs = {
@@ -545,9 +480,11 @@ function InlineTextInput({
 }
 
 function resolveHref(btn: ButtonBlock, cfg: LandingConfig): string {
-  if (btn.type === "link" && "hrefKey" in btn && btn.hrefKey === "shopUrl") {
-    return cfg.shopUrl;
-  }
+  if (btn.type !== "link" || !("hrefKey" in btn)) return cfg.shopUrl;
+  const key = btn.hrefKey;
+  if (key === "shopUrl") return cfg.shopUrl;
+  const fromExtras = cfg.extraLinkKeys?.[key];
+  if (typeof fromExtras === "string" && fromExtras.trim() !== "") return fromExtras;
   return cfg.shopUrl;
 }
 
@@ -646,15 +583,18 @@ export default function LandingDeckRenderer({
     return null;
   }, [pathname]);
 
+  /** Primitive deps only — avoids new `learnDeck` identity every render when parent passes inline `{ appKey, flowKey }`. */
+  const learnDeckAppKeyResolved = normalizeDeckAppKey(
+    String(deckAppKey ?? learnDeckFromProp?.appKey ?? learnPathIdentity?.appKey ?? "").trim()
+  );
+  const learnDeckFlowKeyResolved = String(
+    deckFlowKey ?? learnDeckFromProp?.flowKey ?? learnPathIdentity?.flowKey ?? ""
+  ).trim();
+
   const learnDeck = useMemo((): LearnDeckRef | null => {
-    const appRaw = deckAppKey ?? learnDeckFromProp?.appKey ?? learnPathIdentity?.appKey;
-    const flowRaw = deckFlowKey ?? learnDeckFromProp?.flowKey ?? learnPathIdentity?.flowKey;
-    if (typeof appRaw !== "string" || typeof flowRaw !== "string") return null;
-    const app = normalizeDeckAppKey(appRaw);
-    const flow = flowRaw.trim();
-    if (!app || !flow) return null;
-    return { appKey: app, flowKey: flow };
-  }, [deckAppKey, deckFlowKey, learnDeckFromProp, learnPathIdentity]);
+    if (!learnDeckAppKeyResolved || !learnDeckFlowKeyResolved) return null;
+    return { appKey: learnDeckAppKeyResolved, flowKey: learnDeckFlowKeyResolved };
+  }, [learnDeckAppKeyResolved, learnDeckFlowKeyResolved]);
 
   const resolvedInitialVersion =
     initialDeckVersion ?? initialLearnVersion ?? learnPathIdentity?.versionKey;
@@ -685,8 +625,11 @@ export default function LandingDeckRenderer({
     return searchParams.get("version") ?? configVersion;
   })();
   const deckInstanceKey = useMemo(
-    () => (learnDeck ? `${learnDeck.appKey}-${learnDeck.flowKey}` : componentName),
-    [learnDeck, componentName]
+    () =>
+      learnDeckAppKeyResolved && learnDeckFlowKeyResolved
+        ? `${learnDeckAppKeyResolved}-${learnDeckFlowKeyResolved}`
+        : componentName,
+    [learnDeckAppKeyResolved, learnDeckFlowKeyResolved, componentName]
   );
   const runtimeModeToken = (() => {
     const fromSearchParams = searchParams.get("runtimeMode");
@@ -706,6 +649,9 @@ export default function LandingDeckRenderer({
   const isWalkthroughMode = runtimeMode === "walkthrough";
   const slideBuilder = isBuilderMode || (!hasExplicitRuntimeMode && legacySlideBuilder);
   const canEdit = slideBuilder || (!hasExplicitRuntimeMode && isEditor);
+  const deckModeQueryRaw = searchParams.get("deckMode");
+  /** Client `searchParams` only — avoids stale server props when `?deckMode=` changes without a full navigation. */
+  const deckMode = useMemo((): DeckSlideMode => parseDeckSlideMode(deckModeQueryRaw), [deckModeQueryRaw]);
   /** Require inputs before Next on consumer checklist and walkthrough; off in presenter and slide builder. */
   const isInteractiveGatedFlow =
     isWalkthroughMode || (!slideBuilder && !isPresenterMode);
@@ -732,7 +678,11 @@ export default function LandingDeckRenderer({
   const [diskPersistBusy, setDiskPersistBusy] = useState(false);
 
   const cfg = config;
-  const screens = cfg?.screens ?? [];
+  const screensAll = cfg?.screens ?? [];
+  const screens = useMemo(() => {
+    if (slideBuilder) return screensAll;
+    return filterScreensByDeckMode(screensAll, deckMode);
+  }, [screensAll, slideBuilder, deckMode]);
   const canonicalKey =
     screenParam !== undefined ? screenParam : getCanonicalScreenKey(searchParams);
   /** Stable key for registerJsonScreen + node-order overrides when `?screen=` is absent but slide builder is on. */
@@ -743,9 +693,15 @@ export default function LandingDeckRenderer({
     () => getOverride(orderStorageKey),
     () => getOverride(orderStorageKey)
   );
+  const visibleScreenIdSet = useMemo(() => new Set(screens.map((s) => s.id)), [screens]);
+  const orderOverrideFiltered = useMemo(() => {
+    if (!orderOverride?.length) return orderOverride;
+    const next = orderOverride.filter((id) => visibleScreenIdSet.has(id));
+    return next.length ? next : undefined;
+  }, [orderOverride, visibleScreenIdSet]);
   let orderedScreens =
-    orderOverride?.length && screens.length > 0
-      ? orderOverride
+    orderOverrideFiltered?.length && screens.length > 0
+      ? orderOverrideFiltered
           .map((id) => screens.find((s) => s.id === id))
           .filter((s): s is Screen => s != null)
       : screens;
@@ -764,8 +720,8 @@ export default function LandingDeckRenderer({
 
   const walkthroughStorageKey = useMemo(
     () =>
-      `hisense-walkthrough:${deckInstanceKey}:${learnManualSchema || selectedDeckVariant || `ver:${selectedDeckVersion}`}`,
-    [deckInstanceKey, learnManualSchema, selectedDeckVariant, selectedDeckVersion]
+      `hisense-walkthrough:${deckInstanceKey}:${deckMode}:${learnManualSchema || selectedDeckVariant || `ver:${selectedDeckVersion}`}`,
+    [deckInstanceKey, deckMode, learnManualSchema, selectedDeckVariant, selectedDeckVersion]
   );
 
   const mergedWalkthroughFormValues = useMemo(
@@ -896,9 +852,8 @@ export default function LandingDeckRenderer({
       cancelled = true;
     };
   }, [
-    learnDeck,
-    learnDeck?.appKey,
-    learnDeck?.flowKey,
+    learnDeckAppKeyResolved,
+    learnDeckFlowKeyResolved,
     learnManualSchema,
     configVersion,
     selectedDeckVersion,
@@ -1194,7 +1149,7 @@ export default function LandingDeckRenderer({
     return v
       ? [{ value: v, label: learnDeckVersionDisplayLabel(v) }]
       : [{ value: "v1", label: learnDeckVersionDisplayLabel("v1") }];
-  }, [learnDeck, learnVersionOptions, resolvedAvailableSeed, selectedDeckVersion]);
+  }, [learnDeck?.appKey, learnDeck?.flowKey, learnVersionOptions, resolvedAvailableSeed, selectedDeckVersion]);
 
   const learnSchemaSelectOptions = useMemo(() => {
     if (!learnAllowedSchemas || learnAllowedSchemas.length <= 1) return [];
@@ -1234,7 +1189,7 @@ export default function LandingDeckRenderer({
     } finally {
       setDiskPersistBusy(false);
     }
-  }, [learnDeck, config, selectedDeckVersion, buildMergedDeckForPersist, router]);
+  }, [learnDeck?.appKey, learnDeck?.flowKey, config, selectedDeckVersion, buildMergedDeckForPersist, router]);
 
   const handleCreateVersion = useCallback(async () => {
     if (!learnDeck || !config) return;
@@ -1301,7 +1256,8 @@ export default function LandingDeckRenderer({
       setDiskPersistBusy(false);
     }
   }, [
-    learnDeck,
+    learnDeck?.appKey,
+    learnDeck?.flowKey,
     config,
     learnAvailableVersions,
     resolvedAvailableSeed,

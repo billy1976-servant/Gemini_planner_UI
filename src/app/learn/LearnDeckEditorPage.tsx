@@ -5,7 +5,7 @@ import { normalizeDeckAppKey } from "@/lib/deck-platform/legacy-app-keys";
 import { notFound } from "next/navigation";
 import {
   parseLandingRuntimeMode,
-  parseSlideBuilderFlagDefaultOff,
+  parseSlideBuilderFlagDefaultOn,
 } from "@/lib/slide-builder-query";
 
 export const dynamic = "force-dynamic";
@@ -59,20 +59,6 @@ export default function LearnDeckEditorPage({
 
   return (
     <>
-      {/* Temporary: confirms this server tree ran (remove after live learn host is verified). */}
-      <div
-        data-learn-page-ssr="1"
-        style={{
-          fontSize: 12,
-          padding: "6px 10px",
-          background: "#fef9c3",
-          color: "#713f12",
-          borderBottom: "1px solid #eab308",
-          fontFamily: "system-ui, sans-serif",
-        }}
-      >
-        [learn SSR] {appKey}/{flowKey} · v={initialDeckVersion} · catalogFlows={catalog.length}
-      </div>
     <Suspense
       fallback={
         <div
@@ -94,7 +80,7 @@ export default function LearnDeckEditorPage({
         initialDeckVersion={initialDeckVersion}
         availableDeckVersions={entry.availableVersions}
         learnFlowCatalog={learnFlowCatalog}
-        slideBuilderFlag={parseSlideBuilderFlagDefaultOff(searchParams.slideBuilder)}
+        slideBuilderFlag={parseSlideBuilderFlagDefaultOn(searchParams.slideBuilder)}
         runtimeModeParam={parseLandingRuntimeMode(searchParams.runtimeMode) ?? null}
         screenParam={parseScreenParam(searchParams)}
       />

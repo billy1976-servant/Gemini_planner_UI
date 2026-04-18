@@ -554,12 +554,15 @@ export default function RootLayoutClient({
   const pathname = usePathname();
   const isUserMode = pathname === "/" || !pathname?.startsWith("/dev");
 
+  /** Learn URLs on `learn.*` hosts stay minimal (public decks). Same paths on localhost keep full chrome for authoring. */
+  const learnPathMinimal =
+    learnPublicHost && (pathname === "/learn" || pathname?.startsWith("/learn/"));
+
   const useMinimalPublicShell =
     minimalPublicEntryShell ||
+    learnPathMinimal ||
     pathname === "/landing" ||
     pathname === "/landing-2" ||
-    pathname === "/learn" ||
-    pathname?.startsWith("/learn/") ||
     pathname === "/flow" ||
     pathname === "/onboarding" ||
     pathname === "/container-creations" ||

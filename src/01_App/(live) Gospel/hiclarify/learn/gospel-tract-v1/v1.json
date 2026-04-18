@@ -1,0 +1,1138 @@
+{
+  "shopUrl": "https://hiclarify.com",
+  "header": {
+    "logoSrc": "/images/logo-container-creations.webp",
+    "logoAlt": "HiClarify",
+    "shopNowLabel": "Continue"
+  },
+  "extraLinkKeys": {
+    "coldCaseChristianityUrl": "https://www.youtube.com/results?search_query=Cold+Case+Christianity+other+religions+point+to+jesus"
+  },
+  "stepTracker": {
+    "title": "Gospel tract",
+    "description": "Full teaching. Add ?deckMode=short for a shorter path.",
+    "showResponses": true,
+    "responsePlaceholder": "—",
+    "completedOnly": false
+  },
+  "screens": [
+    {
+      "id": "intro-tract",
+      "stepLabel": "Welcome",
+      "layout": "stamped",
+      "title": "Gospel tract",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "This learning path follows a printed gospel tract: hook, explanation, and invitation. Use Continue for each step."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "intro-tract-next"
+        }
+      ],
+      "modes": [
+        "long"
+      ]
+    },
+    {
+      "id": "quiz-intro",
+      "stepLabel": "Spiritual Quiz",
+      "layout": "stamped",
+      "title": "SPIRITUAL Quiz",
+      "content": [
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "According to the Bible..."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "quiz-intro-next"
+        }
+      ]
+    },
+    {
+      "id": "quiz-q01",
+      "stepLabel": "Quiz 01",
+      "layout": "stamped",
+      "title": "01 IS GOD A NARCISSIST? (Extremely self-centered)",
+      "content": [],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "quiz-q01-next"
+        }
+      ],
+      "walkthrough": {
+        "inputs": [
+          {
+            "id": "sq01",
+            "type": "select",
+            "label": "Your answer",
+            "options": [
+              {
+                "value": "yes",
+                "label": "Yes"
+              },
+              {
+                "value": "no",
+                "label": "Of course not"
+              },
+              {
+                "value": "dont_know",
+                "label": "I don't know"
+              }
+            ]
+          }
+        ],
+        "gate": {
+          "required": [
+            "sq01"
+          ],
+          "message": "Choose an answer to continue."
+        }
+      }
+    },
+    {
+      "id": "quiz-q02",
+      "stepLabel": "Quiz 02",
+      "layout": "stamped",
+      "title": "02 WHY DID GOD GIVE US THE LAW?",
+      "content": [],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "quiz-q02-next"
+        }
+      ],
+      "walkthrough": {
+        "inputs": [
+          {
+            "id": "sq02",
+            "type": "select",
+            "label": "Your answer",
+            "options": [
+              {
+                "value": "sinners",
+                "label": "To show us we are sinners"
+              },
+              {
+                "value": "right_wrong",
+                "label": "To know right from wrong"
+              },
+              {
+                "value": "dont_know",
+                "label": "I don't know"
+              }
+            ]
+          }
+        ],
+        "gate": {
+          "required": [
+            "sq02"
+          ],
+          "message": "Choose an answer to continue."
+        }
+      }
+    },
+    {
+      "id": "quiz-q03",
+      "stepLabel": "Quiz 03",
+      "layout": "stamped",
+      "title": "03 WHAT IS THE GOSPEL? (Explain with your own words)",
+      "content": [],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "quiz-q03-next"
+        }
+      ],
+      "walkthrough": {
+        "inputs": [
+          {
+            "id": "sq03",
+            "type": "select",
+            "label": "Your answer",
+            "options": [
+              {
+                "value": "dont_know",
+                "label": "I don't know"
+              }
+            ]
+          }
+        ],
+        "gate": {
+          "required": [
+            "sq03"
+          ],
+          "message": "Choose an answer to continue."
+        }
+      }
+    },
+    {
+      "id": "quiz-q04",
+      "stepLabel": "Quiz 04",
+      "layout": "stamped",
+      "title": "04 ARE YOU GOOD ENOUGH TO GET TO HEAVEN?",
+      "content": [],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "quiz-q04-next"
+        }
+      ],
+      "walkthrough": {
+        "inputs": [
+          {
+            "id": "sq04",
+            "type": "select",
+            "label": "Your answer",
+            "options": [
+              {
+                "value": "yes",
+                "label": "Yes"
+              },
+              {
+                "value": "no",
+                "label": "No"
+              },
+              {
+                "value": "dont_know",
+                "label": "I don't know"
+              }
+            ]
+          }
+        ],
+        "gate": {
+          "required": [
+            "sq04"
+          ],
+          "message": "Choose an answer to continue."
+        }
+      }
+    },
+    {
+      "id": "quiz-q05",
+      "stepLabel": "Quiz 05",
+      "layout": "stamped",
+      "title": "05 WHAT IS A CHRISTIAN?",
+      "content": [],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "quiz-q05-next"
+        }
+      ],
+      "walkthrough": {
+        "inputs": [
+          {
+            "id": "sq05",
+            "type": "select",
+            "label": "Your answer",
+            "options": [
+              {
+                "value": "believes",
+                "label": "One who believes in Jesus"
+              },
+              {
+                "value": "follows",
+                "label": "One who follows Jesus"
+              },
+              {
+                "value": "dont_know",
+                "label": "I don't know"
+              }
+            ]
+          }
+        ],
+        "gate": {
+          "required": [
+            "sq05"
+          ],
+          "message": "Choose an answer to continue."
+        }
+      }
+    },
+    {
+      "id": "gold-01-title",
+      "stepLabel": "01 GOLD — Title",
+      "layout": "stamped",
+      "title": "01 God is perfect (THE TRUTH)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GOLD >>"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "gold-01-title-next"
+        }
+      ]
+    },
+    {
+      "id": "gold-02-pleasure",
+      "stepLabel": "01 GOLD — Part 1",
+      "layout": "stamped",
+      "title": "God’s pleasure and purpose",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Just as artists express themselves through their talents, God takes pleasure in His creation. The Bible reveals that God created everything for Himself, choosing humanity to express His love. Although God is perfect and reveals Himself through His creation, He cannot dwell with sin, and no sin is allowed in heaven."
+        },
+        {
+          "type": "paragraph",
+          "text": "Everything belongs to Him, but He created us not out of narcissism, but for an intimate relationship that blesses us beyond our imagination."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "gold-02-pleasure-next"
+        }
+      ]
+    },
+    {
+      "id": "gold-03-holiness",
+      "stepLabel": "01 GOLD — Part 2",
+      "layout": "stamped",
+      "title": "Holiness and obedience",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Although He created mankind in His image and loves us more than anything else He made, He demands our obedience."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "gold-03-holiness-next"
+        }
+      ]
+    },
+    {
+      "id": "gold-scripture-1jn416",
+      "stepLabel": "01 GOLD — Scripture",
+      "layout": "stamped",
+      "title": "1 John 4:16",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "And we have known and believed the love that God has for us. God is love, and he who abides in love abides in God, and God in him. [1 John 4:16]"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "gold-scripture-1jn416-next"
+        }
+      ]
+    },
+    {
+      "id": "gold-scripture-rev411",
+      "stepLabel": "01 GOLD — Scripture",
+      "layout": "stamped",
+      "title": "Revelation 4:11",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Thou art worthy, O Lord, to receive glory and honour and power: for thou hast created all things, and for thy pleasure they are and were created. [Revelation 4:11]"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "gold-scripture-rev411-next"
+        }
+      ]
+    },
+    {
+      "id": "dark-01-title",
+      "stepLabel": "02 DARK — Title",
+      "layout": "stamped",
+      "title": "02 We are Sinners (THE PROBLEM)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "DARK >>"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "dark-01-title-next"
+        }
+      ]
+    },
+    {
+      "id": "dark-02-fall",
+      "stepLabel": "02 DARK — Part 1",
+      "layout": "stamped",
+      "title": "Sin separates us from God",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Humanity is inherently sinful, and our actions oppose God's nature. Sinful thoughts and behaviors—such as hatred, lust, anger, selfishness, and rebellion—separate us from God and hinder our fellowship with Him. Just as Satan was cast out of heaven for his sin, our sin also prevents fellowship with God and keeps us from His presence after death."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "dark-02-fall-next"
+        }
+      ]
+    },
+    {
+      "id": "dark-03-law",
+      "stepLabel": "02 DARK — Part 2",
+      "layout": "stamped",
+      "title": "The law",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "God gave us His law to help us understand right from wrong and to convict us of our sins and our need for forgiveness. The Bible states, \"All have sinned and fall short of the glory of God\" (Romans 3:23). To be in His presence, we must be perfect as He is. However, God cannot overlook sin; His justice demands accountability, and the penalty is death and separation from Him."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "dark-03-law-next"
+        }
+      ]
+    },
+    {
+      "id": "dark-scripture-rom319",
+      "stepLabel": "02 DARK — Scripture",
+      "layout": "stamped",
+      "title": "Romans 3:19",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Now we know that whatever the law says, it says to those who are under the law, that every mouth may be stopped, and all the world may become guilty before God. [Romans 3:19]"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "dark-scripture-rom319-next"
+        }
+      ]
+    },
+    {
+      "id": "red-01-title",
+      "stepLabel": "03 RED — Title",
+      "layout": "stamped",
+      "title": "03 Saved by Jesus (THE SOLUTION)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "RED >>"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "red-01-title-next"
+        }
+      ]
+    },
+    {
+      "id": "red-02-cross",
+      "stepLabel": "03 RED — Part 1",
+      "layout": "stamped",
+      "title": "God’s plan in Christ",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Before creation, God had a plan to save us. To fulfill His justice, He sent His Son, Jesus, to become a man and live a sinless life. Rather than convicting Him of sin as it does for us, the law revealed His righteousness, declaring Him a perfect man and God's perfect sacrifice for sin. He didn't die for His sins; instead, He took on ours and suffered the punishment we deserved, becoming a sacrifice for the world's sins."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "red-02-cross-next"
+        }
+      ]
+    },
+    {
+      "id": "red-03-finished",
+      "stepLabel": "03 RED — Part 2",
+      "layout": "stamped",
+      "title": "Finished",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Jesus endured the wrath of God, died, and was forsaken by the Father. God raised Him from the dead, and now, through faith, we can be forgiven because Jesus paid our debts. Before His last breath on the cross, Jesus declared, 'It is finished,' signifying that God reconciled the world to Himself through His Son."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "red-03-finished-next"
+        }
+      ]
+    },
+    {
+      "id": "red-scripture-1cor1534",
+      "stepLabel": "03 RED — Scripture",
+      "layout": "stamped",
+      "title": "1 Corinthians 15:3–4",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "The Gospel (Good News)...that Christ died for our sins according to the Scriptures, and that He was buried, and that He rose again the third day according to the Scriptures. [1 Corinthians 15:3-4]"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "red-scripture-1cor1534-next"
+        }
+      ]
+    },
+    {
+      "id": "light-01-title",
+      "stepLabel": "04 LIGHT — Title",
+      "layout": "stamped",
+      "title": "04 Kept by Jesus (THE RESPONSE)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "LIGHT >>"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "light-01-title-next"
+        }
+      ]
+    },
+    {
+      "id": "light-02-righteousness",
+      "stepLabel": "04 LIGHT — Teaching",
+      "layout": "stamped",
+      "title": "Only Jesus is good enough",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "We often deceive ourselves into thinking we are 'good enough' for heaven, but that isn't true. Only Jesus is good enough to reach heaven. He taught that our righteousness must exceed that of the religious leaders, who also fell short. Unlike other religions, Christians depend on Jesus for salvation. God promises that if we believe in His Son and accept salvation through Jesus' sacrifice and resurrection, we will be regarded as His children, with His righteousness credited to us by faith. Though we don't deserve heaven, we can enter because Jesus forgives and cleanses us from our unrighteousness when we trust in Him. Salvation is a free gift that cannot be earned."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "light-02-righteousness-next"
+        }
+      ]
+    },
+    {
+      "id": "light-scripture-acts412",
+      "stepLabel": "04 LIGHT — Scripture",
+      "layout": "stamped",
+      "title": "Acts 4:12",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Nor is there salvation in any other, for there is no other name under heaven given among men by which we must be saved. [Acts 4:12]"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "light-scripture-acts412-next"
+        }
+      ]
+    },
+    {
+      "id": "green-01-title",
+      "stepLabel": "05 GREEN — Title",
+      "layout": "stamped",
+      "title": "05 Grow in Jesus (THE RESULT)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GREEN >>"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "green-01-title-next"
+        }
+      ]
+    },
+    {
+      "id": "green-02-new-creation",
+      "stepLabel": "05 GREEN — Part 1",
+      "layout": "stamped",
+      "title": "New creation",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Those who are saved will be transformed by God's power, and the evidence of salvation is a changed life: 'Therefore, if anyone is in Christ, he is a new creation; old things have passed away; behold, all things have become new' (2 Corinthians 5:17). While we won't be perfect until Jesus returns, those who trust God will seek to honor His Word and live according to His will."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "green-02-new-creation-next"
+        }
+      ]
+    },
+    {
+      "id": "green-03-fruit",
+      "stepLabel": "05 GREEN — Part 2",
+      "layout": "stamped",
+      "title": "Good works God prepared",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Believing in Jesus is just the beginning of the Christian life; we must allow God to remove worldly influences and prepare our lives for the good works He has for us. We demonstrate our love for God by loving others and sharing the good news about Jesus. We are not saved by our good works, but we are saved to do the good works that God has prepared for us! [Ephesians 2:10]"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "green-03-fruit-next"
+        }
+      ]
+    },
+    {
+      "id": "green-scripture-john152",
+      "stepLabel": "05 GREEN — Scripture",
+      "layout": "stamped",
+      "title": "John 15:2",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "'Every branch in Me that does not bear fruit He takes away; and every [branch] that bears fruit He prunes, that it may bear more fruit. [John 15:2]"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "green-scripture-john152-next"
+        }
+      ]
+    },
+    {
+      "id": "goodness-intro",
+      "stepLabel": "Goodness test",
+      "layout": "stamped",
+      "title": "God's 'goodness' test.",
+      "content": [
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "A few of the 10 Commandments"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "goodness-intro-next"
+        }
+      ]
+    },
+    {
+      "id": "goodness-cmds-1",
+      "stepLabel": "Goodness test — I, III, V",
+      "layout": "stamped",
+      "title": "A few of the commandments (1)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "I No other gods (Idolater) — Has God always come first in your life?"
+        },
+        {
+          "type": "paragraph",
+          "text": "III Take God's name in vain (blasphemer) — Ever used God's name without reverence?"
+        },
+        {
+          "type": "paragraph",
+          "text": "V Honor your Parents (rebellious) — Have you always honored your parents?"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "goodness-cmds-1-next"
+        }
+      ],
+      "modes": [
+        "long"
+      ]
+    },
+    {
+      "id": "goodness-cmds-2",
+      "stepLabel": "Goodness test — VI–VIII",
+      "layout": "stamped",
+      "title": "A few of the commandments (2)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "VI You shall not Murder (murderer) — Jesus said hatred is murder. Ever hated anyone?"
+        },
+        {
+          "type": "paragraph",
+          "text": "VII Do not commit adultery (adulterer) — Have you ever looked at someone with lust?"
+        },
+        {
+          "type": "paragraph",
+          "text": "VIII You shall not steal (thief) — Have you ever taken anything that's not yours?"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "goodness-cmds-2-next"
+        }
+      ],
+      "modes": [
+        "long"
+      ]
+    },
+    {
+      "id": "goodness-cmds-3",
+      "stepLabel": "Goodness test — IX–X",
+      "layout": "stamped",
+      "title": "A few of the commandments (3)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "IX Not bear false witness (liar) — Have you ever told a lie? (Tell the truth)"
+        },
+        {
+          "type": "paragraph",
+          "text": "X Shall not Covet (greedy) — Ever desired your neighbor's possessions?"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "goodness-cmds-3-next"
+        }
+      ],
+      "modes": [
+        "long"
+      ]
+    },
+    {
+      "id": "goodness-guilty",
+      "stepLabel": "Goodness test — Guilty",
+      "layout": "stamped",
+      "title": "GUILTY",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "If you've committed these actions even once, you would be an idolatrous, blasphemous, rebellious, murderous, adulterous, thieving, greedy liar. (That's not good!)"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "goodness-guilty-next"
+        }
+      ]
+    },
+    {
+      "id": "way-intro",
+      "stepLabel": "Way of salvation — intro",
+      "layout": "stamped",
+      "title": "The way of salvation",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "The way of salvation is simple, but not easy. (ONE WAY — as on the tract.)"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "way-intro-next"
+        }
+      ],
+      "modes": [
+        "long"
+      ]
+    },
+    {
+      "id": "way-rom109",
+      "stepLabel": "Romans 10:9",
+      "layout": "stamped",
+      "title": "The Bible says...",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "\"If you confess with your mouth the Lord Jesus and believe in your heart that God has raised Him from the dead, you will be saved.\" [Romans 10:9]"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "way-rom109-next"
+        }
+      ]
+    },
+    {
+      "id": "way-final-exam-title",
+      "stepLabel": "Final exam",
+      "layout": "stamped",
+      "title": "FINAL EXAM",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "(Letter blocks — as on the tract.)"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "way-final-exam-title-next"
+        }
+      ],
+      "modes": [
+        "long"
+      ]
+    },
+    {
+      "id": "way-fe-01",
+      "stepLabel": "Final exam 01",
+      "layout": "stamped",
+      "title": "01 Do you believe Jesus died for your sins and rose from the dead? (the Gospel)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Most believe Jesus existed and even died on the cross, but God requires us to believe that He raised His Son from the grave for salvation. If you struggle to believe in Jesus, watch the YouTube link below!"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "way-fe-01-next"
+        }
+      ]
+    },
+    {
+      "id": "way-fe-02",
+      "stepLabel": "Final exam 02",
+      "layout": "stamped",
+      "title": "02 Will you turn from your sins, confess Jesus is LORD, and surrender?",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Of those who believe in Jesus, few are willing to surrender to Him—and that's the hard part. God offers you the incredible gift of eternal life through His Son, Jesus, if you're willing to give up your life in exchange. There is nothing you can do to earn salvation but to receive it by faith. This is when we are born into God's kingdom or born-again."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "way-fe-02-next"
+        }
+      ]
+    },
+    {
+      "id": "way-jesus-quote",
+      "stepLabel": "Jesus",
+      "layout": "stamped",
+      "title": "Jesus said: \"Repent, and believe in the gospel.\"",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "\"Repent, and believe in the gospel.\" — Jesus"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "way-jesus-quote-next"
+        }
+      ]
+    },
+    {
+      "id": "way-repentance-01",
+      "stepLabel": "Repentance — definition",
+      "layout": "stamped",
+      "title": "Repentance is key!",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Repentance is a change of heart and mind that aligns with God, turning from our ways to His. We must acknowledge our sins and recognize our need for forgiveness. If we humble ourselves and call on the Lord, He will save us!"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "way-repentance-01-next"
+        }
+      ]
+    },
+    {
+      "id": "way-repentance-02",
+      "stepLabel": "Repentance — urgency",
+      "layout": "stamped",
+      "title": "Do not wait",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Don't wait until it's too late—hardening your heart risks your soul, and God is not obligated to wait for you to decide to follow Him. Believe in Jesus and be saved today; He is coming soon to judge the world and receive His bride!"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "way-repentance-02-next"
+        }
+      ],
+      "modes": [
+        "long"
+      ]
+    },
+    {
+      "id": "way-link-coldcase",
+      "stepLabel": "Watch — Cold-Case Christianity",
+      "layout": "stamped",
+      "title": "Other religions point to Jesus",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Tap below for the video resource (Cold-Case Christianity — replace URL in JSON when you have the exact link)."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "link",
+          "label": "WATCH NOW — Other Religions Point to Jesus (Cold-Case Christianity)",
+          "hrefKey": "coldCaseChristianityUrl",
+          "nodeId": "way-link-coldcase-btn"
+        },
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "way-link-coldcase-next"
+        }
+      ],
+      "modes": [
+        "long"
+      ]
+    },
+    {
+      "id": "real-title",
+      "stepLabel": "The real question",
+      "layout": "stamped",
+      "title": "THE REAL QUESTION",
+      "content": [
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "What are you going to do about it?"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "real-title-next"
+        }
+      ]
+    },
+    {
+      "id": "real-intro",
+      "stepLabel": "Real question — intro",
+      "layout": "stamped",
+      "title": "Understanding what God requires",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Now that you understand what God requires for salvation, what's holding you back? Many believe that simply acknowledging Jesus and being baptized is enough, leading some to think they can still live for themselves and neglect God. But true salvation requires leaving our old lives behind to follow Him fully."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "real-intro-next"
+        }
+      ],
+      "modes": [
+        "long"
+      ]
+    },
+    {
+      "id": "married-01",
+      "stepLabel": "Married to God — part 1",
+      "layout": "stamped",
+      "title": "Married to God.",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Christianity is a covenant with God, where we commit to belong to Him alone. It's a lifelong devotion to renounce our old life, love God fully, and serve Him. Jesus invites all to join as His 'bride' and promises to return, having prepared a place to dwell together forever. This is the commitment God requires—a love that responds to His own."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "married-01-next"
+        }
+      ]
+    },
+    {
+      "id": "married-02",
+      "stepLabel": "Married to God — part 2",
+      "layout": "stamped",
+      "title": "Honor and consequence",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Though belief isn't forced, we were all created to honor Him, and rejecting His call bears the grave consequence of being denied entry to His kingdom."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "married-02-next"
+        }
+      ],
+      "modes": [
+        "long"
+      ]
+    },
+    {
+      "id": "employed-01",
+      "stepLabel": "Employed by God — part 1",
+      "layout": "stamped",
+      "title": "Employed by God.",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "When you work for a company, they expect you to follow their protocols—setting the schedule, dress code, client relations, and operating procedures. To keep your job, you need to respect these guidelines and follow your boss's direction."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "employed-01-next"
+        }
+      ]
+    },
+    {
+      "id": "employed-02",
+      "stepLabel": "Employed by God — part 2",
+      "layout": "stamped",
+      "title": "His kingdom",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "In the same way, serving God means doing things His way. As Christians, we seek to understand His will and honor Him through our choices. We represent His kingdom when we follow His ways and misrepresent Him when we don't. Just as there are earthly rewards and consequences for following or breaking rules, there are eternal ones based on how we respond to God's authority by obeying the Scriptures in the Bible."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "employed-02-next"
+        }
+      ],
+      "modes": [
+        "long"
+      ]
+    }
+  ]
+}

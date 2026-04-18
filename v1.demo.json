@@ -1,0 +1,210 @@
+{
+  "shopUrl": "https://example.com",
+  "header": {
+    "logoSrc": "/favicon.ico",
+    "logoAlt": "Demo",
+    "shopNowLabel": "Continue"
+  },
+  "stepTracker": {
+    "title": "Demo path",
+    "description": "Structure + content → v1.json smoke test",
+    "showResponses": true,
+    "responsePlaceholder": "—",
+    "completedOnly": false
+  },
+  "screens": [
+    {
+      "id": "slide-hero",
+      "stepLabel": "Start",
+      "layout": "hero",
+      "title": "Deterministic Learn bridge",
+      "subtitle": "Structure declares order and kind; content fills each slide id.",
+      "content": [
+        {
+          "type": "badge",
+          "text": "Demo"
+        },
+        {
+          "type": "paragraph",
+          "text": "This deck was generated with npm run learn from structure.demo.json and content.demo.json."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "/images/demo/translator-hero.jpg",
+          "alt": "Demo hero image"
+        }
+      ],
+      "buttons": [],
+      "modes": [
+        "long"
+      ],
+      "nextScreenId": "slide-teach"
+    },
+    {
+      "id": "slide-teach",
+      "stepLabel": "Lesson",
+      "layout": "stamped",
+      "title": "Teaching slide",
+      "subtitle": "Paragraphs, bullets, optional reveal",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "The compiler maps each kind to an outline template, then expands to LandingDeckV1 screens."
+        },
+        {
+          "type": "checklist",
+          "heading": "Key points",
+          "items": [
+            {
+              "title": "Hero → heroHook layout",
+              "sub": ""
+            },
+            {
+              "title": "Quiz → stamped + walkthrough gate",
+              "sub": ""
+            },
+            {
+              "title": "Summary → textOnly layout",
+              "sub": ""
+            }
+          ]
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "slide-teach-next"
+        }
+      ],
+      "presentation": {
+        "reveal": "byBlock"
+      },
+      "nextScreenId": "slide-quiz"
+    },
+    {
+      "id": "slide-quiz",
+      "stepLabel": "Check",
+      "layout": "stamped",
+      "title": "Pick the best fit",
+      "subtitle": "Walkthrough + tracker labels (optional)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Choose the option that best matches how you want to use the generator next."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "slide-quiz-next"
+        }
+      ],
+      "walkthrough": {
+        "inputs": [
+          {
+            "id": "demoPick",
+            "type": "select",
+            "label": "Your answer",
+            "options": [
+              {
+                "value": "a",
+                "label": "Linear flow is enough for v1"
+              },
+              {
+                "value": "b",
+                "label": "I need branching arrows next"
+              }
+            ]
+          }
+        ],
+        "gate": {
+          "required": [
+            "demoPick"
+          ],
+          "message": "Choose an option to continue."
+        }
+      },
+      "trackerResponse": {
+        "rule": {
+          "type": "valueLabel",
+          "field": "demoPick",
+          "map": {
+            "a": "Linear v1",
+            "b": "Needs branching"
+          }
+        }
+      },
+      "nextScreenId": "slide-summary"
+    },
+    {
+      "id": "slide-summary",
+      "stepLabel": "Recap",
+      "layout": "textOnly",
+      "title": "Summary",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "You now have hero, teach, quiz, summary, and CTA kinds in one generated deck."
+        },
+        {
+          "type": "paragraph",
+          "text": "Open v1.demo.json in the Learn editor or renderer to review layout and walkthrough wiring."
+        },
+        {
+          "type": "checklist",
+          "heading": "Key points",
+          "items": [
+            {
+              "title": "Validation runs after compile",
+              "sub": ""
+            },
+            {
+              "title": "Output is deterministic for the same inputs",
+              "sub": ""
+            }
+          ]
+        }
+      ],
+      "media": [],
+      "buttons": [],
+      "nextScreenId": "slide-cta"
+    },
+    {
+      "id": "slide-cta",
+      "stepLabel": "CTA",
+      "layout": "stamped",
+      "title": "Next step",
+      "subtitle": "Continue exploring or ship a real deck",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Replace example copy and media keys with your flow’s assets."
+        },
+        {
+          "type": "ctaBand",
+          "headline": "Next step",
+          "sub": "Continue exploring or ship a real deck",
+          "emphasis": true
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "slide-cta-next"
+        }
+      ]
+    }
+  ],
+  "extraLinkKeys": {
+    "learnMoreUrl": "https://example.com/learn-more"
+  },
+  "deckPalette": "cleanLight"
+}

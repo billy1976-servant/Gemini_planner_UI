@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "title": "Translator demo deck",
+    "shopUrl": "https://example.com",
+    "logoSrc": "/favicon.ico",
+    "logoAlt": "Demo",
+    "shopNowLabel": "Continue",
+    "stepTrackerTitle": "Demo path",
+    "stepTrackerDescription": "Structure + content → v1.json smoke test",
+    "showResponses": true,
+    "responsePlaceholder": "—",
+    "deckPalette": "cleanLight",
+    "extraLinkKeys": {
+      "learnMoreUrl": "https://example.com/learn-more"
+    }
+  },
+  "media": {
+    "heroShot": {
+      "type": "image",
+      "src": "/images/demo/translator-hero.jpg",
+      "alt": "Demo hero image"
+    }
+  },
+  "slides": [
+    { "id": "slide-hero", "kind": "hero" },
+    { "id": "slide-teach", "kind": "teach" },
+    { "id": "slide-quiz", "kind": "quiz" },
+    { "id": "slide-summary", "kind": "summary" },
+    { "id": "slide-cta", "kind": "cta" }
+  ]
+}
