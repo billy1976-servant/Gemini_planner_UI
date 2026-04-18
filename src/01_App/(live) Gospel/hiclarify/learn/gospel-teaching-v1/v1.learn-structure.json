@@ -1,0 +1,62 @@
+{
+  "meta": {
+    "outlineFormatVersion": 3,
+    "title": "Gospel teaching",
+    "shopUrl": "https://hiclarify.com",
+    "logoSrc": "/images/logo-container-creations.webp",
+    "logoAlt": "HiClarify",
+    "shopNowLabel": "Continue",
+    "stepTrackerTitle": "Gospel teaching",
+    "stepTrackerDescription": "A calm, guided path from welcome to response.",
+    "showResponses": true,
+    "responsePlaceholder": "—",
+    "deckPalette": "container-creations"
+  },
+  "slides": [
+    {
+      "id": "s1",
+      "kind": "intro",
+      "presentation": {
+        "reveal": "byBlock"
+      }
+    },
+    {
+      "id": "s2",
+      "kind": "hero",
+      "presentation": {
+        "reveal": "byBlock"
+      }
+    },
+    {
+      "id": "s3",
+      "kind": "teach",
+      "presentation": {
+        "reveal": "byBlock"
+      },
+      "modes": [
+        "short"
+      ]
+    },
+    {
+      "id": "s4",
+      "kind": "comparison",
+      "presentation": {
+        "reveal": "byBlock"
+      }
+    },
+    {
+      "id": "s5",
+      "kind": "quiz",
+      "presentation": {
+        "reveal": "none"
+      }
+    },
+    {
+      "id": "s6",
+      "kind": "cta",
+      "presentation": {
+        "reveal": "byBlock"
+      }
+    }
+  ]
+}

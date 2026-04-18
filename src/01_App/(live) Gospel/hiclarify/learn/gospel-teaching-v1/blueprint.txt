@@ -1,0 +1,26 @@
+S1.0 | GospelTeachingRoot | Section [title]
+
+SEQUENCE:
+IntroSec, HeroSec, CoreTeach, GraceCompare, ResponseQuiz, NextCta
+
+1.1 | TeachNav | Stepper [steps]
+     steps: Welcome | Message | Reality | Response | Next
+
+1.2 | IntroSec | Section [title]
+    1.2.1 | IntroLead | Card [body]
+    1.2.2 | IntroPace | Card [body]
+
+1.3 | HeroSec | Section [title]
+    1.3.1 | HeroHook | Card [body]
+
+1.4 | CoreTeach | Section [title]
+    1.4.1 | CoreParagraph | Card [body]
+
+1.7 | GraceCompare | Section [title]
+    1.7.1 | CompareLead | Card [body]
+
+1.5 | ResponseQuiz | Section [title]
+    1.5.1 | QuizSetup | Card [body]
+
+1.6 | NextCta | Section [title]
+    1.6.1 | CtaClosing | Card [body]

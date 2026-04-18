@@ -1,4 +1,7 @@
+/** Field split for authors: `STRUCTURE_VS_CONTENT.md` (same directory). */
 import type { DeckSlideMode } from "@/lib/deck-platform/deck-slide-modes";
+import type { LandingContentBlock, MediaBlock } from "@/lib/landing-content-blocks";
+import { compileLearnAuthoringToDeck } from "@/lib/landing-deck/authoring/compile-learn-authoring";
 import { compileOutlineToLandingDeck } from "@/lib/landing-deck/outline/compile-outline-to-deck";
 import type {
   DeckOutline,
@@ -6,32 +9,40 @@ import type {
   OutlineMediaRef,
   OutlineQuizSelect,
   OutlineSlide,
+  SlideBlueprint,
 } from "@/lib/landing-deck/outline/types";
-import type { LandingDeckScreen, LandingDeckV1 } from "@/lib/landing-deck/schema";
+import type { LandingDeckButtonBlock, LandingDeckScreen, LandingDeckV1 } from "@/lib/landing-deck/schema";
+import type { LandingScreenDensity, LandingVisualTone } from "@/lib/landing-screen-presentation";
 import { formatValidationReport, validateLandingDeck } from "@/lib/landing-deck/validate-landing-deck";
 import { KIND_MAP, type SlideKind } from "./kind-map";
 import { KIND_RULES, type KindRule } from "./kind-rules";
 
-export type StructureSlide = { id: string; kind: SlideKind };
+/** One row in the structure file: order, kind, and structural presentation fields. */
+export type StructureSlide = {
+  id: string;
+  kind: SlideKind;
+  presentation?: LandingDeckScreen["presentation"];
+  modes?: DeckSlideMode[];
+  blueprint?: SlideBlueprint;
+};
 
-/** Structure-only input: meta + ordered slides (`kind` is translated to `templateId`). */
+/** Structure-only input: meta + ordered slides (`kind` → `templateId` in merge). */
 export type LearnStructureInput = {
   meta: DeckOutlineMeta;
   media?: Record<string, OutlineMediaRef>;
   slides: StructureSlide[];
 };
 
-/** Content keyed by slide `id` — values are partial outline fields (no `id` / `templateId`). */
+/** Content keyed by slide `id` — values are partial outline fields (no `id` / `templateId` / `presentation` / `modes` / `blueprint`). */
 export type LearnContentMap = Record<string, Record<string, unknown>>;
 
-const SHARED_OPTIONAL_KEYS = [
+/** Keys allowed on the content side only (not on structure rows). */
+const SHARED_CONTENT_OPTIONAL_KEYS = [
   "stepLabel",
   "mediaKeys",
   "trackerValueLabels",
   "trackerEnabled",
-  "modes",
   "layoutOverride",
-  "presentation",
 ] as const;
 
 const ALL_KNOWN_CONTENT_KEYS = new Set<string>([
@@ -41,7 +52,14 @@ const ALL_KNOWN_CONTENT_KEYS = new Set<string>([
   "bullets",
   "badge",
   "quizSelect",
-  ...SHARED_OPTIONAL_KEYS,
+  "richContent",
+  "buttons",
+  "inlineMedia",
+  "nextButtonLabel",
+  "visualTone",
+  "density",
+  "lightTheme",
+  ...SHARED_CONTENT_OPTIONAL_KEYS,
 ]);
 
 function assert(cond: unknown, message: string): asserts cond {
@@ -59,6 +77,14 @@ function isStringArray(v: unknown): v is string[] {
 function isDeckSlideModes(v: unknown): v is DeckSlideMode[] {
   if (!Array.isArray(v) || v.length === 0) return false;
   return v.every((m) => m === "short" || m === "long");
+}
+
+function isVisualTone(v: unknown): v is LandingVisualTone {
+  return v === "default" || v === "soft" || v === "bold";
+}
+
+function isDensityValue(v: unknown): v is LandingScreenDensity {
+  return v === "comfortable" || v === "compact";
 }
 
 function isPresentationConfig(v: unknown): v is NonNullable<LandingDeckScreen["presentation"]> {
@@ -79,6 +105,17 @@ function isStringRecord(v: unknown): v is Record<string, string> {
   return Object.entries(v as Record<string, unknown>).every(
     ([k, val]) => typeof k === "string" && typeof val === "string"
   );
+}
+
+function isBlueprint(v: unknown): v is SlideBlueprint {
+  if (v == null || typeof v !== "object" || Array.isArray(v)) return false;
+  const o = v as Record<string, unknown>;
+  if (o.mode !== undefined && o.mode !== "auto" && o.mode !== "explicit") return false;
+  if (o.activeRegions !== undefined) {
+    if (!Array.isArray(o.activeRegions)) return false;
+    if (!o.activeRegions.every((x) => typeof x === "string")) return false;
+  }
+  return true;
 }
 
 function parseQuizSelect(raw: unknown, slideId: string): OutlineQuizSelect {
@@ -114,7 +151,7 @@ function permittedKeysForRule(rule: KindRule): Set<string> {
   for (const k of rule.optional) {
     if (!forbidden.has(k)) out.add(k);
   }
-  for (const k of SHARED_OPTIONAL_KEYS) {
+  for (const k of SHARED_CONTENT_OPTIONAL_KEYS) {
     if (!forbidden.has(k)) out.add(k);
   }
   for (const k of forbidden) out.delete(k);
@@ -126,8 +163,8 @@ function normalizeContentFields(
   slideId: string,
   raw: Record<string, unknown>,
   permitted: Set<string>
-): Omit<OutlineSlide, "id" | "templateId"> {
-  const pick: Omit<OutlineSlide, "id" | "templateId"> = {};
+): Omit<OutlineSlide, "id" | "templateId" | "learnSlideType" | "presentation" | "modes" | "blueprint"> {
+  const pick: Omit<OutlineSlide, "id" | "templateId" | "learnSlideType" | "presentation" | "modes" | "blueprint"> = {};
 
   if (raw.title !== undefined) {
     assert(typeof raw.title === "string", `title must be a string (slide "${slideId}")`);
@@ -169,13 +206,33 @@ function normalizeContentFields(
     assert(typeof raw.trackerEnabled === "boolean", `trackerEnabled must be boolean (slide "${slideId}")`);
     pick.trackerEnabled = raw.trackerEnabled;
   }
-  if (raw.modes !== undefined) {
-    assert(isDeckSlideModes(raw.modes), `modes must be non-empty DeckSlideMode[] ("short" | "long") (slide "${slideId}")`);
-    pick.modes = raw.modes;
+  if (raw.richContent !== undefined) {
+    assert(Array.isArray(raw.richContent), `richContent must be an array (slide "${slideId}")`);
+    pick.richContent = raw.richContent as LandingContentBlock[];
   }
-  if (raw.presentation !== undefined) {
-    assert(isPresentationConfig(raw.presentation), `presentation must be a valid reveal config (slide "${slideId}")`);
-    pick.presentation = raw.presentation;
+  if (raw.buttons !== undefined) {
+    assert(Array.isArray(raw.buttons), `buttons must be an array (slide "${slideId}")`);
+    pick.buttons = raw.buttons as LandingDeckButtonBlock[];
+  }
+  if (raw.inlineMedia !== undefined) {
+    assert(Array.isArray(raw.inlineMedia), `inlineMedia must be an array (slide "${slideId}")`);
+    pick.inlineMedia = raw.inlineMedia as MediaBlock[];
+  }
+  if (raw.nextButtonLabel !== undefined) {
+    assert(typeof raw.nextButtonLabel === "string", `nextButtonLabel must be a string (slide "${slideId}")`);
+    pick.nextButtonLabel = raw.nextButtonLabel;
+  }
+  if (raw.visualTone !== undefined) {
+    assert(isVisualTone(raw.visualTone), `visualTone must be default|soft|bold (slide "${slideId}")`);
+    pick.visualTone = raw.visualTone as LandingVisualTone;
+  }
+  if (raw.density !== undefined) {
+    assert(isDensityValue(raw.density), `density must be comfortable|compact (slide "${slideId}")`);
+    pick.density = raw.density as LandingScreenDensity;
+  }
+  if (raw.lightTheme !== undefined) {
+    assert(typeof raw.lightTheme === "boolean", `lightTheme must be boolean (slide "${slideId}")`);
+    pick.lightTheme = raw.lightTheme;
   }
   if (raw.quizSelect !== undefined) {
     pick.quizSelect = parseQuizSelect(raw.quizSelect, slideId);
@@ -193,7 +250,7 @@ function normalizeContentFields(
  * Merge ordered structure with per-id content using strict kind rules.
  * - Every structure slide must have a content entry (may be `{}` if no required fields).
  * - Every content id must match a structure slide id.
- * - No branching: order is `structure.slides[]` only.
+ * - `presentation` / `modes` / `blueprint` come from the **structure** row only.
  */
 export function mergeStructureAndContent(
   structure: LearnStructureInput,
@@ -205,6 +262,18 @@ export function mergeStructureAndContent(
   const structureIds = structure.slides.map((s) => s.id);
   const idSet = new Set(structureIds);
   assert(idSet.size === structureIds.length, "Duplicate structure slide id");
+
+  for (const row of structure.slides) {
+    if (row.presentation !== undefined) {
+      assert(isPresentationConfig(row.presentation), `Invalid presentation on structure row "${row.id}"`);
+    }
+    if (row.modes !== undefined) {
+      assert(isDeckSlideModes(row.modes), `Invalid modes on structure row "${row.id}"`);
+    }
+    if (row.blueprint !== undefined) {
+      assert(isBlueprint(row.blueprint), `Invalid blueprint on structure row "${row.id}"`);
+    }
+  }
 
   for (const cid of Object.keys(content)) {
     assert(idSet.has(cid), `Unknown content id "${cid}" (no matching structure slide)`);
@@ -242,11 +311,16 @@ export function mergeStructureAndContent(
       assert(normalized.quizSelect != null, `quizSelect required (slide "${row.id}")`);
     }
 
-    slides.push({
+    const slide: OutlineSlide = {
       id: row.id,
       templateId: KIND_MAP[row.kind],
+      learnSlideType: row.kind,
       ...normalized,
-    });
+    };
+    if (row.presentation !== undefined) slide.presentation = row.presentation;
+    if (row.modes !== undefined) slide.modes = row.modes;
+    if (row.blueprint !== undefined) slide.blueprint = row.blueprint;
+    slides.push(slide);
   }
 
   return {
@@ -267,14 +341,17 @@ export function assertLandingDeckValid(deck: unknown, pathLabel?: string): void 
   }
 }
 
-/** Merge → compile → validate. Throws on any structural, rule, or deck validation error. */
+/** Merge → compile (with learn authoring validation + schema stamp) → validate deck. Throws on error. */
 export function translateStructureAndContentToLandingDeck(
   structure: LearnStructureInput,
   content: LearnContentMap,
   rules: Record<SlideKind, KindRule> = KIND_RULES
 ): LandingDeckV1 {
   const outline = mergeStructureAndContent(structure, content, rules);
-  const deck = compileMergedOutlineToLandingDeck(outline);
-  assertLandingDeckValid(deck, "translated-deck");
-  return deck;
+  const r = compileLearnAuthoringToDeck(outline);
+  if (r.ok === false) {
+    throw new Error(r.errors.join("\n"));
+  }
+  assertLandingDeckValid(r.deck, "translated-deck");
+  return r.deck;
 }

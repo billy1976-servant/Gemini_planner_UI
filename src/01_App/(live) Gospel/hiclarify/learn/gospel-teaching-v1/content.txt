@@ -1,0 +1,120 @@
+1.0 GospelTeachingRoot (Section)
+- title: "Gospel teaching"
+- learn.logoSrc: "/images/logo-container-creations.webp"
+- learn.logoAlt: "HiClarify"
+- learn.deckPalette: "container-creations"
+- learn.showResponses: "1"
+- learn.responsePlaceholder: "—"
+- learn.stepTrackerTitle: "Gospel teaching"
+- learn.stepTrackerDescription: "A calm, guided path from welcome to response."
+
+1.1 TeachNav (Stepper)
+- steps: "Welcome | Message | Reality | Response | Next"
+
+1.2 IntroSec (Section)
+- title: "Welcome"
+- learn.kind: intro
+- learn.slideId: s1
+- learn.visualTone: soft
+- learn.density: comfortable
+- learn.badge: "5-minute path"
+- learn.stepLabel: "Welcome"
+- learn.iconFeatures.rows: Clear steps :: No jargon walls | Honest pacing :: Stop anytime | Respectful tone :: Your journey matters
+- learn.stats.rows: Time :: ~5 min | Screens :: 6 | Pressure :: Zero
+- learn.trustStrip.items: gospel:Clarity | grace:Kindness | truth:Scripture
+
+1.2.1 IntroLead (Card)
+- body: "This is a guided tour of the gospel—short, visual, and designed for real life."
+
+1.2.2 IntroPace (Card)
+- body: "Use Continue to move forward. Linger where you need to. Nothing here is timed."
+
+1.3 HeroSec (Section)
+- title: "Good news"
+- learn.kind: hero
+- learn.slideId: s2
+- learn.hero.skipLink: "1"
+- learn.visualTone: bold
+- learn.density: compact
+- subtitle: "God has made a way for you to know him"
+- learn.stepLabel: "Good news"
+- learn.stats.rows: Core claim :: Grace | Center :: Jesus | Invitation :: Come
+- learn.media.image: "/images/logo-container-creations.webp"
+- learn.media.imageAlt: "HiClarify brand"
+- learn.media.fullBleed: "1"
+
+1.3.1 HeroHook (Card)
+- body: "Christianity is not a performance review. It's an invitation—God loves you and meets you through Jesus, not your résumé."
+
+1.4 CoreTeach (Section)
+- title: "The core message"
+- learn.kind: teach
+- learn.slideId: s3
+- learn.stepLabel: "The message"
+- learn.modes: short
+- learn.visualTone: soft
+- learn.heading.level: "3"
+- learn.heading.text: "What Christians believe"
+- learn.proofGrid.heading: "Three anchors"
+- learn.proofGrid.rows: Jesus lived for us :: A life we could not live | Jesus died for us :: Justice and mercy met | Jesus rose for us :: New life is real
+- learn.divider.beforeExpandable: md
+- learn.scripture.text: "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life."
+- learn.scripture.reference: "John 3:16 (NIV)"
+- learn.expandable.title: "Why the resurrection matters"
+- learn.expandable.body: "The resurrection isn't a metaphor—it's God's proof that Jesus is who he claimed to be, and that new life is possible for everyone who trusts him."
+
+1.4.1 CoreParagraph (Card)
+- body: "Jesus lived a sinless life, died in our place for our wrongdoing, and rose again—showing God's power to forgive and make all things new."
+
+1.7 GraceCompare (Section)
+- title: "Grace vs performance"
+- learn.kind: comparison
+- learn.slideId: s4
+- learn.stepLabel: "Reality check"
+- learn.visualTone: soft
+- learn.heading.text: "Two ways to relate to God"
+- learn.heading.level: "3"
+- learn.compare.layoutStyle: cards
+- learn.compare.columnLeft: "Performance"
+- learn.compare.columnRight: "Grace (the gospel)"
+- learn.compare.rows: Earning acceptance :: Received as a gift | Hiding weakness :: Honest repentance | Endless striving :: Rest in Christ
+
+1.7.1 CompareLead (Card)
+- body: "If you feel exhausted by 'being good enough,' that tension is exactly why grace is good news."
+
+1.5 ResponseQuiz (Section)
+- title: "A honest moment"
+- learn.kind: quiz
+- learn.slideId: s5
+- learn.stepLabel: "Response"
+- learn.reveal: none
+- learn.visualTone: soft
+- learn.quiz.inputId: trust
+- learn.quiz.fieldLabel: "Where are you today?"
+- learn.quiz.gateMessage: "Choose an option to continue."
+- learn.quiz.options: I'm ready to trust Jesus | I want to keep exploring | Not yet—thanks for respecting that
+- learn.quiz.values: yes | explore | not_yet
+- learn.rating.value: "5"
+- learn.rating.max: "5"
+- learn.rating.reviewCount: "1200"
+- learn.rating.source: "community reflections"
+- learn.testimonial.quote: "I didn't have all the answers—but I finally felt safe to be honest."
+- learn.testimonial.author: "A reader like you"
+- learn.testimonial.role: "anonymous note"
+
+1.5.1 QuizSetup (Card)
+- body: "There's no pressure here—just an honest checkpoint. Your answer helps the guide on the side reflect what mattered to you."
+
+1.6 NextCta (Section)
+- title: "Next steps"
+- learn.kind: cta
+- learn.slideId: s6
+- learn.stepLabel: "Next steps"
+- learn.visualTone: bold
+- learn.checklist.heading: "Simple ways to grow"
+- learn.checklist.rows: Pray in your own words :: Thank God, ask for help, talk like a child to a parent. | Read the Gospel of John :: A clear eyewitness account of Jesus' life. | Connect with a local church :: Community and teaching help faith take root.
+- learn.faq.heading: "Quick answers"
+- learn.faq.rows: Is this trying to convert me? :: No pressure—this is an invitation to understand Jesus on your own terms. | What if I'm not ready? :: That's okay. Honesty is better than performance.
+
+1.6.1 CtaClosing (Card)
+- body: "If you prayed or made a decision, tell someone you trust—it helps joy stick."

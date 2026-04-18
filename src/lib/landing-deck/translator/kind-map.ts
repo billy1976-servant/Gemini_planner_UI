@@ -1,12 +1,15 @@
-import type { OutlineTemplateId } from "@/lib/landing-deck/outline/types";
+import type { LearnSlideTypeV1, OutlineTemplateId } from "@/lib/landing-deck/outline/types";
 
-/** Minimal legacy “kind” → existing outline `templateId` (deterministic, no inference). */
+/** Learn slide kind → outline `templateId` (deterministic, no inference). */
 export const KIND_MAP = {
+  intro: "introStamped",
   hero: "heroHook",
   teach: "teachingStamped",
+  proof: "proofStamped",
+  comparison: "comparisonTwoCol",
   quiz: "quizSelectStamped",
   summary: "summaryTextOnly",
   cta: "ctaStamped",
-} as const satisfies Record<string, OutlineTemplateId>;
+} as const satisfies Record<LearnSlideTypeV1, OutlineTemplateId>;
 
-export type SlideKind = keyof typeof KIND_MAP;
+export type SlideKind = LearnSlideTypeV1;

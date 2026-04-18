@@ -4,6 +4,7 @@
 import assert from "assert";
 import { mergeStructureAndContent, translateStructureAndContentToLandingDeck } from "./merge-structure-and-content";
 import type { LearnContentMap, LearnStructureInput } from "./merge-structure-and-content";
+import { deckOutlineToLearnSplit } from "./outline-to-learn-split";
 import { validateLandingDeck } from "@/lib/landing-deck/validate-landing-deck";
 
 function formatIssues(issues: { path: string; message: string; severity: string }[]): string {
@@ -19,7 +20,7 @@ const baseStructure: LearnStructureInput = {
   },
   slides: [
     { id: "s1", kind: "hero" },
-    { id: "s2", kind: "teach" },
+    { id: "s2", kind: "teach", presentation: { reveal: "none" } },
     { id: "s3", kind: "quiz" },
     { id: "s4", kind: "summary" },
   ],
@@ -27,7 +28,7 @@ const baseStructure: LearnStructureInput = {
 
 const baseContent: LearnContentMap = {
   s1: { title: "Hello", paragraphs: ["Hook line."] },
-  s2: { title: "Teach", bullets: ["A", "B"], presentation: { reveal: "none" } },
+  s2: { title: "Teach", bullets: ["A", "B"] },
   s3: {
     title: "Pick one",
     quizSelect: {
@@ -49,6 +50,7 @@ function run() {
   assert.strictEqual(outline.slides[2].templateId, "quizSelectStamped");
   assert.strictEqual(outline.slides[2].quizSelect?.inputId, "q1");
   assert.strictEqual(outline.slides[3].templateId, "summaryTextOnly");
+  assert.strictEqual(outline.slides[1].learnSlideType, "teach");
 
   const deck = translateStructureAndContentToLandingDeck(baseStructure, baseContent);
   assert.strictEqual(deck.screens.length, 4);
@@ -85,6 +87,11 @@ function run() {
       }),
     /bullets/
   );
+
+  const { structure: rs, content: rc } = deckOutlineToLearnSplit(outline);
+  const round = mergeStructureAndContent(rs, rc);
+  assert.strictEqual(round.slides.length, outline.slides.length);
+  assert.strictEqual(round.slides[1].presentation?.reveal, "none");
 
   console.log("merge-structure-and-content.test.ts OK");
 }

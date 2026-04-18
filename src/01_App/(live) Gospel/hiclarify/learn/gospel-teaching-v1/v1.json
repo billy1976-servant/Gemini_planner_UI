@@ -1,0 +1,381 @@
+{
+  "shopUrl": "https://hiclarify.com",
+  "header": {
+    "logoSrc": "/images/logo-container-creations.webp",
+    "logoAlt": "HiClarify",
+    "shopNowLabel": "Continue"
+  },
+  "stepTracker": {
+    "title": "Gospel teaching",
+    "description": "A calm, guided path from welcome to response.",
+    "showResponses": true,
+    "responsePlaceholder": "—",
+    "completedOnly": false
+  },
+  "screens": [
+    {
+      "id": "s1",
+      "stepLabel": "Welcome",
+      "layout": "stamped",
+      "title": "Welcome",
+      "content": [
+        {
+          "type": "badge",
+          "text": "5-minute path"
+        },
+        {
+          "type": "trustStrip",
+          "items": [
+            {
+              "icon": "gospel",
+              "label": "Clarity"
+            },
+            {
+              "icon": "grace",
+              "label": "Kindness"
+            },
+            {
+              "icon": "truth",
+              "label": "Scripture"
+            }
+          ]
+        },
+        {
+          "type": "stats",
+          "items": [
+            {
+              "label": "Time",
+              "value": "~5 min"
+            },
+            {
+              "label": "Screens",
+              "value": "6"
+            },
+            {
+              "label": "Pressure",
+              "value": "Zero"
+            }
+          ]
+        },
+        {
+          "type": "iconFeatures",
+          "items": [
+            {
+              "title": "Clear steps",
+              "sub": "No jargon walls"
+            },
+            {
+              "title": "Honest pacing",
+              "sub": "Stop anytime"
+            },
+            {
+              "title": "Respectful tone",
+              "sub": "Your journey matters"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "This is a guided tour of the gospel—short, visual, and designed for real life."
+        },
+        {
+          "type": "paragraph",
+          "text": "Use Continue to move forward. Linger where you need to. Nothing here is timed."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "s1-next"
+        }
+      ],
+      "presentation": {
+        "reveal": "byBlock"
+      },
+      "visualTone": "soft",
+      "density": "comfortable",
+      "nextScreenId": "s2"
+    },
+    {
+      "id": "s2",
+      "stepLabel": "Good news",
+      "layout": "hero",
+      "title": "Good news",
+      "subtitle": "God has made a way for you to know him",
+      "content": [
+        {
+          "type": "stats",
+          "items": [
+            {
+              "label": "Core claim",
+              "value": "Grace"
+            },
+            {
+              "label": "Center",
+              "value": "Jesus"
+            },
+            {
+              "label": "Invitation",
+              "value": "Come"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Christianity is not a performance review. It's an invitation—God loves you and meets you through Jesus, not your résumé."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "/images/logo-container-creations.webp",
+          "alt": "HiClarify brand",
+          "fullBleed": true
+        }
+      ],
+      "buttons": [],
+      "presentation": {
+        "reveal": "byBlock"
+      },
+      "visualTone": "bold",
+      "density": "compact",
+      "nextScreenId": "s3"
+    },
+    {
+      "id": "s3",
+      "stepLabel": "The message",
+      "layout": "stamped",
+      "title": "The core message",
+      "content": [
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "What Christians believe"
+        },
+        {
+          "type": "proofGrid",
+          "heading": "Three anchors",
+          "items": [
+            {
+              "title": "Jesus lived for us",
+              "sub": "A life we could not live"
+            },
+            {
+              "title": "Jesus died for us",
+              "sub": "Justice and mercy met"
+            },
+            {
+              "title": "Jesus rose for us",
+              "sub": "New life is real"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Jesus lived a sinless life, died in our place for our wrongdoing, and rose again—showing God's power to forgive and make all things new."
+        },
+        {
+          "type": "scripture",
+          "text": "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.",
+          "reference": "John 3:16 (NIV)"
+        },
+        {
+          "type": "divider",
+          "spacing": "md"
+        },
+        {
+          "type": "expandable",
+          "title": "Why the resurrection matters",
+          "body": "The resurrection isn't a metaphor—it's God's proof that Jesus is who he claimed to be, and that new life is possible for everyone who trusts him."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "s3-next"
+        }
+      ],
+      "modes": [
+        "short"
+      ],
+      "presentation": {
+        "reveal": "byBlock"
+      },
+      "visualTone": "soft",
+      "nextScreenId": "s4"
+    },
+    {
+      "id": "s4",
+      "stepLabel": "Reality check",
+      "layout": "twoCol",
+      "title": "Grace vs performance",
+      "content": [
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "Two ways to relate to God"
+        },
+        {
+          "type": "paragraph",
+          "text": "If you feel exhausted by 'being good enough,' that tension is exactly why grace is good news."
+        },
+        {
+          "type": "comparison",
+          "columnLabels": {
+            "left": "Performance",
+            "right": "Grace (the gospel)"
+          },
+          "rows": [
+            {
+              "left": "Earning acceptance :: Received as a gift | Hiding weakness :: Honest repentance | Endless striving :: Rest in Christ",
+              "right": ""
+            }
+          ],
+          "layoutStyle": "cards"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "s4-next"
+        }
+      ],
+      "presentation": {
+        "reveal": "byBlock"
+      },
+      "visualTone": "soft",
+      "nextScreenId": "s5"
+    },
+    {
+      "id": "s5",
+      "stepLabel": "Response",
+      "layout": "stamped",
+      "title": "A honest moment",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "There's no pressure here—just an honest checkpoint. Your answer helps the guide on the side reflect what mattered to you."
+        },
+        {
+          "type": "rating",
+          "value": 5,
+          "max": 5,
+          "reviewCount": 1200,
+          "source": "community reflections"
+        },
+        {
+          "type": "testimonial",
+          "quote": "I didn't have all the answers—but I finally felt safe to be honest.",
+          "author": "A reader like you",
+          "role": "anonymous note"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "s5-next"
+        }
+      ],
+      "walkthrough": {
+        "inputs": [
+          {
+            "id": "trust",
+            "type": "select",
+            "label": "Where are you today?",
+            "options": [
+              {
+                "value": "yes",
+                "label": "I'm ready to trust Jesus"
+              },
+              {
+                "value": "explore",
+                "label": "I want to keep exploring"
+              },
+              {
+                "value": "not_yet",
+                "label": "Not yet—thanks for respecting that"
+              }
+            ]
+          }
+        ],
+        "gate": {
+          "required": [
+            "trust"
+          ],
+          "message": "Choose an option to continue."
+        }
+      },
+      "presentation": {
+        "reveal": "none"
+      },
+      "visualTone": "soft",
+      "nextScreenId": "s6"
+    },
+    {
+      "id": "s6",
+      "stepLabel": "Next steps",
+      "layout": "stamped",
+      "title": "Next steps",
+      "content": [
+        {
+          "type": "checklist",
+          "heading": "Simple ways to grow",
+          "items": [
+            {
+              "title": "Pray in your own words",
+              "sub": "Thank God, ask for help, talk like a child to a parent."
+            },
+            {
+              "title": "Read the Gospel of John",
+              "sub": "A clear eyewitness account of Jesus' life."
+            },
+            {
+              "title": "Connect with a local church",
+              "sub": "Community and teaching help faith take root."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "If you prayed or made a decision, tell someone you trust—it helps joy stick."
+        },
+        {
+          "type": "faq",
+          "heading": "Quick answers",
+          "items": [
+            {
+              "question": "Is this trying to convert me?",
+              "answer": "No pressure—this is an invitation to understand Jesus on your own terms."
+            },
+            {
+              "question": "What if I'm not ready?",
+              "answer": "That's okay. Honesty is better than performance."
+            }
+          ]
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "s6-next"
+        }
+      ],
+      "presentation": {
+        "reveal": "byBlock"
+      },
+      "visualTone": "bold"
+    }
+  ],
+  "deckPalette": "container-creations",
+  "learnDeckSchemaVersion": 3
+}
