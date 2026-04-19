@@ -8,3 +8,4 @@ export { validateLandingDeck, formatValidationReport } from "./validate-landing-
 export type { DeckValidationIssue } from "./validate-landing-deck";
 export * from "./outline";
 export * from "./translator";
+export * from "./authoring";

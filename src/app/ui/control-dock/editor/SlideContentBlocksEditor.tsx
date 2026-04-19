@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import type { LandingContentBlock } from "@/lib/landing-content-blocks/types";
+import { ADD_BLOCK_TYPE_OPTIONS, defaultLandingContentBlock } from "@/lib/landing-content-blocks/blockDefaults";
 
 const LABEL_STYLE: React.CSSProperties = {
   fontSize: 11,
@@ -45,63 +46,6 @@ const BTN: React.CSSProperties = {
   color: "var(--color-text-primary, #202124)",
 };
 
-const ADD_TYPES: Array<{ value: string; label: string }> = [
-  { value: "paragraph", label: "Paragraph" },
-  { value: "heading", label: "Heading" },
-  { value: "checklist", label: "Checklist" },
-  { value: "badge", label: "Badge" },
-  { value: "divider", label: "Divider" },
-  { value: "ctaBand", label: "CTA band" },
-  { value: "testimonial", label: "Testimonial" },
-  { value: "comparison", label: "Comparison" },
-  { value: "iconFeatures", label: "Icon features" },
-  { value: "stats", label: "Stats" },
-  { value: "trustStrip", label: "Trust strip" },
-  { value: "rating", label: "Rating" },
-  { value: "audio", label: "Audio" },
-];
-
-function defaultBlock(type: string): LandingContentBlock {
-  switch (type) {
-    case "paragraph":
-      return { type: "paragraph", text: "" };
-    case "heading":
-      return { type: "heading", level: 2, text: "Heading" };
-    case "checklist":
-      return { type: "checklist", heading: "Key points", items: ["First point", "Second point"] };
-    case "badge":
-      return { type: "badge", text: "Badge" };
-    case "divider":
-      return { type: "divider", spacing: "md" };
-    case "ctaBand":
-      return { type: "ctaBand", headline: "Headline", sub: "", emphasis: false };
-    case "testimonial":
-      return { type: "testimonial", quote: "Quote", author: "Name", role: "", location: "" };
-    case "comparison":
-      return {
-        type: "comparison",
-        heading: "Compare",
-        columnLabels: { left: "Us", right: "Them" },
-        rows: [
-          { left: "Our approach", right: "Alternative", highlight: "left" },
-          { left: "Quality", right: "Varies", highlight: "none" },
-        ],
-      };
-    case "iconFeatures":
-      return { type: "iconFeatures", items: [{ title: "Feature", sub: "Description" }] };
-    case "stats":
-      return { type: "stats", items: [{ label: "Metric", value: "0", hint: "" }] };
-    case "trustStrip":
-      return { type: "trustStrip", items: [{ label: "Trust point" }] };
-    case "rating":
-      return { type: "rating", value: 5, max: 5, reviewCount: 0, source: "" };
-    case "audio":
-      return { type: "audio", src: "", label: "Audio" };
-    default:
-      return { type: "paragraph", text: "" };
-  }
-}
-
 function moveIndex<T>(arr: T[], i: number, dir: "up" | "down"): T[] {
   const j = dir === "up" ? i - 1 : i + 1;
   if (j < 0 || j >= arr.length) return arr;
@@ -118,9 +62,11 @@ function normalizeContent(raw: unknown): LandingContentBlock[] {
 export type SlideContentBlocksEditorProps = {
   content: unknown;
   onChange: (next: LandingContentBlock[]) => void;
+  /** Learn authoring: hide raw JSON paste (main path stays in forms). */
+  hideRawJson?: boolean;
 };
 
-export default function SlideContentBlocksEditor({ content, onChange }: SlideContentBlocksEditorProps) {
+export default function SlideContentBlocksEditor({ content, onChange, hideRawJson = false }: SlideContentBlocksEditorProps) {
   const blocks = normalizeContent(content);
   const [jsonError, setJsonError] = useState<string | null>(null);
 
@@ -134,7 +80,7 @@ export default function SlideContentBlocksEditor({ content, onChange }: SlideCon
   }
 
   function addBlock(type: string) {
-    onChange([...blocks, defaultBlock(type)]);
+    onChange([...blocks, defaultLandingContentBlock(type)]);
   }
 
   function move(i: number, dir: "up" | "down") {
@@ -163,7 +109,7 @@ export default function SlideContentBlocksEditor({ content, onChange }: SlideCon
           }}
         >
           <option value="">Choose type…</option>
-          {ADD_TYPES.map((t) => (
+          {ADD_BLOCK_TYPE_OPTIONS.map((t) => (
             <option key={t.value} value={t.value}>
               {t.label}
             </option>
@@ -211,40 +157,42 @@ export default function SlideContentBlocksEditor({ content, onChange }: SlideCon
         <p style={{ fontSize: 12, color: "var(--color-text-secondary, #5f6368)", margin: 0 }}>No content blocks yet.</p>
       ) : null}
 
-      <div style={{ marginTop: 4 }}>
-        <label style={LABEL_STYLE}>Raw JSON (optional)</label>
-        <textarea
-          aria-label="Content array JSON"
-          style={{ ...TEXTAREA_STYLE, minHeight: 100, fontFamily: "monospace", fontSize: 11 }}
-          defaultValue=""
-          placeholder='Paste full "content" array to replace all blocks…'
-          onBlur={(e) => {
-            const t = e.target.value.trim();
-            if (!t) {
-              setJsonError(null);
-              return;
-            }
-            try {
-              const parsed = JSON.parse(t);
-              if (!Array.isArray(parsed)) {
-                setJsonError("Root must be an array");
+      {hideRawJson ? null : (
+        <div style={{ marginTop: 4 }}>
+          <label style={LABEL_STYLE}>Raw JSON (optional)</label>
+          <textarea
+            aria-label="Content array JSON"
+            style={{ ...TEXTAREA_STYLE, minHeight: 100, fontFamily: "monospace", fontSize: 11 }}
+            defaultValue=""
+            placeholder='Paste full "content" array to replace all blocks…'
+            onBlur={(e) => {
+              const t = e.target.value.trim();
+              if (!t) {
+                setJsonError(null);
                 return;
               }
-              const norm = normalizeContent(parsed);
-              if (norm.length !== parsed.length) {
-                setJsonError("Each item must be an object with a type field");
-                return;
+              try {
+                const parsed = JSON.parse(t);
+                if (!Array.isArray(parsed)) {
+                  setJsonError("Root must be an array");
+                  return;
+                }
+                const norm = normalizeContent(parsed);
+                if (norm.length !== parsed.length) {
+                  setJsonError("Each item must be an object with a type field");
+                  return;
+                }
+                onChange(norm);
+                setJsonError(null);
+                e.target.value = "";
+              } catch {
+                setJsonError("Invalid JSON");
               }
-              onChange(norm);
-              setJsonError(null);
-              e.target.value = "";
-            } catch {
-              setJsonError("Invalid JSON");
-            }
-          }}
-        />
-        {jsonError ? <p style={{ fontSize: 11, color: "#b91c1c", margin: "4px 0 0" }}>{jsonError}</p> : null}
-      </div>
+            }}
+          />
+          {jsonError ? <p style={{ fontSize: 11, color: "#b91c1c", margin: "4px 0 0" }}>{jsonError}</p> : null}
+        </div>
+      )}
     </div>
   );
 }
@@ -460,6 +408,67 @@ function BlockFields({
           />
         </div>
       );
+    case "scripture":
+      return (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <textarea
+            value={block.text}
+            onChange={(e) => onReplace({ ...block, text: e.target.value })}
+            style={TEXTAREA_STYLE}
+            rows={3}
+            placeholder="Verse text"
+          />
+          <input
+            type="text"
+            value={block.reference ?? ""}
+            onChange={(e) => onReplace({ ...block, reference: e.target.value || undefined })}
+            style={INPUT_STYLE}
+            placeholder="Reference (optional)"
+          />
+        </div>
+      );
+    case "objectionAnswer":
+      return (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <textarea
+            value={block.objection}
+            onChange={(e) => onReplace({ ...block, objection: e.target.value })}
+            style={TEXTAREA_STYLE}
+            rows={2}
+            placeholder="Objection"
+          />
+          <textarea
+            value={block.response}
+            onChange={(e) => onReplace({ ...block, response: e.target.value })}
+            style={TEXTAREA_STYLE}
+            rows={3}
+            placeholder="Response"
+          />
+        </div>
+      );
+    case "faq":
+      return <FaqEditor block={block} onReplace={onReplace} />;
+    case "proofGrid":
+      return <ProofGridEditor block={block} onReplace={onReplace} />;
+    case "expandable":
+      return (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <input
+            type="text"
+            value={block.title}
+            onChange={(e) => onReplace({ ...block, title: e.target.value })}
+            style={INPUT_STYLE}
+            placeholder="Summary line"
+          />
+          <textarea
+            value={block.body}
+            onChange={(e) => onReplace({ ...block, body: e.target.value })}
+            style={TEXTAREA_STYLE}
+            rows={4}
+            placeholder="Hidden body"
+          />
+        </div>
+      );
     default:
       return (
         <p style={{ fontSize: 11, color: "var(--color-text-secondary, #5f6368)", margin: 0 }}>
@@ -569,6 +578,20 @@ function ComparisonEditor({
         style={INPUT_STYLE}
         placeholder="Table heading"
       />
+      <div>
+        <label style={LABEL_STYLE}>Layout</label>
+        <select
+          value={block.layoutStyle ?? "table"}
+          onChange={(e) =>
+            onReplace({ ...block, layoutStyle: e.target.value as "table" | "cards" })
+          }
+          style={SELECT_STYLE}
+          aria-label="Comparison layout"
+        >
+          <option value="table">Table</option>
+          <option value="cards">Cards</option>
+        </select>
+      </div>
       <div style={{ display: "flex", gap: 8 }}>
         <input
           type="text"
@@ -744,6 +767,118 @@ function StatsEditor({
         onClick={() => onReplace({ ...block, items: [...items, { label: "", value: "" }] })}
       >
         + Add stat
+      </button>
+    </div>
+  );
+}
+
+function FaqEditor({
+  block,
+  onReplace,
+}: {
+  block: Extract<LandingContentBlock, { type: "faq" }>;
+  onReplace: (b: LandingContentBlock) => void;
+}) {
+  const items = block.items ?? [];
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <input
+        type="text"
+        value={block.heading ?? ""}
+        onChange={(e) => onReplace({ ...block, heading: e.target.value || undefined })}
+        style={INPUT_STYLE}
+        placeholder="Section heading (optional)"
+      />
+      {items.map((item, j) => (
+        <div key={j} style={{ display: "flex", flexDirection: "column", gap: 4, padding: 8, background: "var(--color-surface-1, #f8fafc)", borderRadius: 6 }}>
+          <input
+            type="text"
+            value={item.question}
+            onChange={(e) => {
+              const next = items.map((it, k) => (k === j ? { ...it, question: e.target.value } : it));
+              onReplace({ ...block, items: next });
+            }}
+            style={INPUT_STYLE}
+            placeholder="Question"
+          />
+          <textarea
+            value={item.answer}
+            onChange={(e) => {
+              const next = items.map((it, k) => (k === j ? { ...it, answer: e.target.value } : it));
+              onReplace({ ...block, items: next });
+            }}
+            style={TEXTAREA_STYLE}
+            rows={2}
+            placeholder="Answer"
+          />
+          <button type="button" style={BTN} onClick={() => onReplace({ ...block, items: items.filter((_, k) => k !== j) })}>
+            Remove pair
+          </button>
+        </div>
+      ))}
+      <button type="button" style={BTN} onClick={() => onReplace({ ...block, items: [...items, { question: "", answer: "" }] })}>
+        + Add Q&amp;A
+      </button>
+    </div>
+  );
+}
+
+function ProofGridEditor({
+  block,
+  onReplace,
+}: {
+  block: Extract<LandingContentBlock, { type: "proofGrid" }>;
+  onReplace: (b: LandingContentBlock) => void;
+}) {
+  const items = block.items ?? [];
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <input
+        type="text"
+        value={block.heading ?? ""}
+        onChange={(e) => onReplace({ ...block, heading: e.target.value || undefined })}
+        style={INPUT_STYLE}
+        placeholder="Heading (optional)"
+      />
+      {items.map((item, j) => (
+        <div key={j} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          <input
+            type="text"
+            value={item.icon ?? ""}
+            onChange={(e) => {
+              const next = items.map((it, k) => (k === j ? { ...it, icon: e.target.value || undefined } : it));
+              onReplace({ ...block, items: next });
+            }}
+            style={INPUT_STYLE}
+            placeholder="Icon (emoji)"
+          />
+          <input
+            type="text"
+            value={item.title}
+            onChange={(e) => {
+              const next = items.map((it, k) => (k === j ? { ...it, title: e.target.value } : it));
+              onReplace({ ...block, items: next });
+            }}
+            style={INPUT_STYLE}
+            placeholder="Title"
+          />
+          <input
+            type="text"
+            value={item.sub ?? ""}
+            onChange={(e) => {
+              const next = items.map((it, k) => (k === j ? { ...it, sub: e.target.value || undefined } : it));
+              onReplace({ ...block, items: next });
+            }}
+            style={INPUT_STYLE}
+            placeholder="Sub (optional)"
+          />
+          <button type="button" style={BTN} onClick={() => onReplace({ ...block, items: items.filter((_, k) => k !== j) })}>
+            Remove cell
+          </button>
+        </div>
+      ))}
+      <button type="button" style={BTN} onClick={() => onReplace({ ...block, items: [...items, { title: "New", sub: "" }] })}>
+        + Add cell
       </button>
     </div>
   );

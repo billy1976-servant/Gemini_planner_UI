@@ -12,6 +12,7 @@ import path from "path";
 import { deckOutlineToLearnSplit } from "../src/lib/landing-deck/translator/outline-to-learn-split";
 import { compileLearnSplitToDeck } from "../src/lib/landing-deck/translator/compile-learn-split";
 import { validateLandingDeck, formatValidationReport } from "../src/lib/landing-deck/validate-landing-deck";
+import { loadLearnCompileOptions } from "../src/lib/txt-authoring/load-learn-compile-options";
 import {
   compileTxtAuthoringToLandingDeckLearnProfileV1,
   txtAuthoringToDeckOutlineLearnProfileV1,
@@ -53,9 +54,11 @@ const contentPath = path.join(folder, "content.txt");
 const blueprintText = fs.readFileSync(blueprintPath, "utf8");
 const contentText = fs.existsSync(contentPath) ? fs.readFileSync(contentPath, "utf8") : "";
 
+/** Baseline CLI defaults; optional `learn.compile-options.json` in the folder merges on top (file wins). */
 const compileOpts = {
   shopUrl: "https://hiclarify.com",
   logoAlt: "HiClarify",
+  ...loadLearnCompileOptions(folder),
 };
 
 const compiled =

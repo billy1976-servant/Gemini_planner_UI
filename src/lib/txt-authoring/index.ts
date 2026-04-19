@@ -21,3 +21,7 @@ export {
   type TxtProfileLearnV1Options,
   type TxtProfileLearnV2Options,
 } from "./profiles/learn";
+export {
+  loadLearnCompileOptions,
+  LEARN_COMPILE_OPTIONS_FILENAME,
+} from "./load-learn-compile-options";

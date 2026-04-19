@@ -1,0 +1,167 @@
+/**
+ * Learn deterministic authoring — editor chrome only (outline / preview / inspector).
+ * Runtime deck presentation stays in landing-theme.css.
+ */
+
+.learn-authoring-layout {
+  --learn-chrome-bg: #f6f7f9;
+  --learn-chrome-surface: #ffffff;
+  --learn-chrome-border: #e5e7eb;
+  --learn-chrome-text: #0f172a;
+  --learn-chrome-muted: #64748b;
+  --learn-chrome-accent: #2563eb;
+  --learn-chrome-accent-soft: #eff6ff;
+  --learn-radius: 10px;
+  --learn-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --learn-shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+.learn-authoring-layout .learn-slide-builder-panel {
+  background: var(--learn-chrome-surface);
+  border-right-color: var(--learn-chrome-border);
+  width: 288px;
+}
+
+.learn-authoring-layout .learn-slide-builder-panel__header {
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--learn-chrome-border);
+  background: linear-gradient(180deg, var(--learn-chrome-surface) 0%, var(--learn-chrome-bg) 100%);
+}
+
+.learn-authoring-layout .learn-slide-builder-panel__kicker {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--learn-chrome-muted);
+  margin: 0 0 4px;
+}
+
+.learn-authoring-layout .learn-slide-builder-panel__title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--learn-chrome-text);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.learn-authoring-layout .learn-slide-builder-panel__sub {
+  font-size: 12px;
+  color: var(--learn-chrome-muted);
+  margin: 8px 0 0;
+  line-height: 1.45;
+}
+
+.learn-authoring-layout .learn-slide-builder-panel__toolbar {
+  padding: 10px 12px;
+  gap: 8px;
+  border-bottom: 1px solid var(--learn-chrome-border);
+  background: var(--learn-chrome-bg);
+}
+
+.learn-authoring-layout .learn-btn {
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid var(--learn-chrome-border);
+  background: var(--learn-chrome-surface);
+  color: var(--learn-chrome-text);
+  cursor: pointer;
+  box-shadow: var(--learn-shadow-sm);
+}
+
+.learn-authoring-layout .learn-btn:hover:not(:disabled) {
+  border-color: #cbd5e1;
+  background: #fafafa;
+}
+
+.learn-authoring-layout .learn-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.learn-authoring-layout .learn-btn--primary {
+  background: var(--learn-chrome-accent);
+  color: #fff;
+  border-color: var(--learn-chrome-accent);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+
+.learn-authoring-layout .learn-btn--primary:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.learn-authoring-layout .learn-btn--ghost {
+  background: transparent;
+  box-shadow: none;
+}
+
+.learn-authoring-layout .learn-slide-builder-panel__save-row {
+  background: var(--learn-chrome-accent-soft);
+  border-bottom-color: #bfdbfe;
+}
+
+.learn-authoring-layout .learn-slide-list__item {
+  border-radius: var(--learn-radius);
+  border: 1px solid var(--learn-chrome-border);
+  background: var(--learn-chrome-surface);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.learn-authoring-layout .learn-slide-list__item--selected {
+  border-color: var(--learn-chrome-accent);
+  background: var(--learn-chrome-accent-soft);
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2);
+}
+
+.learn-authoring-layout .learn-preview-surface {
+  background: var(--learn-chrome-bg);
+}
+
+.learn-authoring-layout .learn-preview-card {
+  border-radius: var(--learn-radius);
+  border: 1px solid var(--learn-chrome-border);
+  background: var(--learn-chrome-surface);
+  box-shadow: var(--learn-shadow-md);
+  overflow: auto;
+}
+
+.learn-authoring-layout .learn-preview-card__title {
+  margin: 0;
+  padding: 12px 16px 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--learn-chrome-muted);
+  letter-spacing: 0.02em;
+}
+
+/* Inspector (right rail) — class applied via wrapper in LandingSlideBuilderInspector */
+.learn-inspector-shell {
+  background: var(--learn-chrome-surface, #fff);
+  border-left: 1px solid var(--learn-chrome-border, #e5e7eb);
+}
+
+.learn-inspector-shell .learn-inspector-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--learn-chrome-border, #e5e7eb);
+  background: linear-gradient(180deg, #fff 0%, #f8fafc 100%);
+}
+
+.learn-inspector-shell .learn-inspector-header__title {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--learn-chrome-muted, #64748b);
+  margin: 0 0 4px;
+}
+
+.learn-inspector-shell .learn-inspector-header__sub {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--learn-chrome-text, #0f172a);
+  margin: 0;
+}

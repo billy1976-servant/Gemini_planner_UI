@@ -4,6 +4,20 @@ Authoritative field split for catalog Learn flows that persist **split SSOT** ne
 
 **Universal TXT authoring:** human source can be **`blueprint.txt` + `content.txt`**; the **Learn profile** (`src/lib/txt-authoring/profiles/learn/`) compiles that through **`DeckOutline`** into this split + **`vN.json`**. When present, treat split JSON as **derived** from TXT unless you explicitly maintain JSON-only flows.
 
+Optional **`learn.compile-options.json`** next to **`blueprint.txt`** supplies **compile-only defaults** (URLs, tracker labels, palette id, slide presentation defaults). It merges into CLI compile options (`npm run learn:from-txt`). It is **not** a Learn runtime artifact — see [`profiles/learn/README.md`](../../txt-authoring/profiles/learn/README.md).
+
+**Reference flow:** [`learn-system-showcase`](../../../01_App/(live)%20Gospel/hiclarify/learn/learn-system-showcase/README.md) — canonical TXT → Learn duplication template with full slide-kind coverage (intro through CTA), optional `learn.layoutOverride`, and keyed vs inline media examples.
+
+## Layers (how palette / profile / authoring / runtime relate)
+
+| Concern | Where it lives |
+|---------|----------------|
+| **Palette (tokens)** | Files under `@/04_Presentation/palettes`; deck picks one via **`deckPalette`** on compiled **`LandingDeckV1`**. |
+| **Profile / compile defaults** | **`TxtProfileLearnV2Options`** + optional **`learn.compile-options.json`** + CLI baseline in [`scripts/compile-txt-to-learn.ts`](../../../../scripts/compile-txt-to-learn.ts). Reduces repetition in **`content.txt`**. |
+| **Human structure** | **`blueprint.txt`** — tree + ordering constraints (**not** slide “blueprint regions”; see glossary in profiles README). |
+| **Human copy + `learn.*`** | **`content.txt`**. |
+| **Machine split + compiled deck** | This doc’s three artifacts below. |
+
 ## Three artifacts
 
 | | **vN.learn-structure.json** | **vN.learn-content.json** | **vN.json** |

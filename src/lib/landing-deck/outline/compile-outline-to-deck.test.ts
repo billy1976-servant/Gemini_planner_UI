@@ -118,6 +118,25 @@ function run() {
     formatIssues(ventIssues)
   );
 
+  const comparisonOutline: DeckOutline = {
+    meta: {
+      title: "Compare flow",
+      shopUrl: "https://example.com",
+      stepTrackerTitle: "Compare",
+      stepTrackerDescription: "",
+    },
+    slides: [
+      {
+        id: "cmp",
+        templateId: "comparisonTwoCol",
+        title: "Versus",
+        paragraphs: ["Pick a side."],
+      },
+    ],
+  };
+  const cmpDeck = compileOutlineToLandingDeck(comparisonOutline);
+  assert.strictEqual(cmpDeck.screens[0].layout, "twoCol");
+
   console.log("compile-outline-to-deck.test.ts: OK");
 }
 

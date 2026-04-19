@@ -1,0 +1,84 @@
+{
+  "meta": {
+    "outlineFormatVersion": 3,
+    "title": "Learn System Showcase",
+    "shopUrl": "https://hiclarify.com",
+    "logoSrc": "/images/logo-container-creations.webp",
+    "logoAlt": "HiClarify",
+    "shopNowLabel": "Continue",
+    "stepTrackerTitle": "Learn showcase",
+    "stepTrackerDescription": "Guided pass: hook, teach canvas, proof, comparison, quiz, recap, CTA—one thread.",
+    "showResponses": false,
+    "responsePlaceholder": "",
+    "deckPalette": "container-creations"
+  },
+  "media": {
+    "showcaseBrand": {
+      "type": "image",
+      "src": "/images/logo-container-creations.webp",
+      "alt": "Keyed catalog image — referenced via outline.media (`showcaseBrand`) and mediaKeys (not duplicated as untagged inline)"
+    }
+  },
+  "slides": [
+    {
+      "id": "slide-intro-root",
+      "kind": "intro",
+      "presentation": {
+        "reveal": "byBlock"
+      }
+    },
+    {
+      "id": "showcase-hero",
+      "kind": "hero",
+      "presentation": {
+        "reveal": "byBlock"
+      }
+    },
+    {
+      "id": "showcase-main",
+      "kind": "teach",
+      "presentation": {
+        "reveal": "byBlock"
+      }
+    },
+    {
+      "id": "showcase-split-proof",
+      "kind": "teach",
+      "presentation": {
+        "reveal": "none"
+      }
+    },
+    {
+      "id": "showcase-proof",
+      "kind": "proof",
+      "presentation": {
+        "reveal": "byBlock"
+      }
+    },
+    {
+      "id": "showcase-compare",
+      "kind": "comparison",
+      "presentation": {
+        "reveal": "byBlock"
+      }
+    },
+    {
+      "id": "showcase-quiz",
+      "kind": "quiz",
+      "presentation": {
+        "reveal": "byBlock"
+      }
+    },
+    {
+      "id": "showcase-summary",
+      "kind": "summary"
+    },
+    {
+      "id": "showcase-cta",
+      "kind": "cta",
+      "presentation": {
+        "reveal": "byBlock"
+      }
+    }
+  ]
+}

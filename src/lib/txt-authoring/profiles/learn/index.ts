@@ -11,4 +11,5 @@ export {
   compileTxtAuthoringToLandingDeckLearnProfileV2,
   txtAuthoringToDeckOutlineLearnProfileV2,
   type TxtProfileLearnV2Options,
+  type TxtProfileSlidePresentationDefaults,
 } from "./txt-profile-learn-v2";

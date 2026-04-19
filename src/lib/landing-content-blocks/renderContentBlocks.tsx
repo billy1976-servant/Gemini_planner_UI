@@ -464,31 +464,111 @@ export function renderContentBlocks(
           </div>
         );
       };
-      return (
-        <div key={i} className="cc-block-comparison">
-          {headingEl}
-          <div className="cc-block-comparison__table" role="table" aria-label={block.heading ?? "Comparison"}>
-            {hasColLabels && col && (
-              <div className="cc-block-comparison__row cc-block-comparison__row--columns" role="row">
-                {colHead("left", col.left ?? "")}
-                {colHead("right", col.right ?? "")}
+      const layoutStyle = block.layoutStyle ?? "table";
+      const tableBody = (
+        <>
+          {hasColLabels && col && (
+            <div className="cc-block-comparison__row cc-block-comparison__row--columns" role="row">
+              {colHead("left", col.left ?? "")}
+              {colHead("right", col.right ?? "")}
+            </div>
+          )}
+          {block.rows.map((row, j) => {
+            const hl = row.highlight ?? "none";
+            const rowEl = (
+              <div
+                key={j}
+                className={`cc-block-comparison__row${hl !== "none" ? ` cc-block-comparison__row--hl-${hl}` : ""}`}
+                role="row"
+              >
+                {cellText(j, "left", row.left, "cell")}
+                {cellText(j, "right", row.right, "cell")}
               </div>
-            )}
-            {block.rows.map((row, j) => {
-              const hl = row.highlight ?? "none";
+            );
+            if (layoutStyle === "cards") {
               return (
-                <div
-                  key={j}
-                  className={`cc-block-comparison__row${hl !== "none" ? ` cc-block-comparison__row--hl-${hl}` : ""}`}
-                  role="row"
-                >
-                  {cellText(j, "left", row.left, "cell")}
-                  {cellText(j, "right", row.right, "cell")}
+                <div key={j} className="cc-block-comparison__card">
+                  {rowEl}
                 </div>
               );
-            })}
+            }
+            return rowEl;
+          })}
+        </>
+      );
+      return (
+        <div
+          key={i}
+          className={`cc-block-comparison${layoutStyle === "cards" ? " cc-block-comparison--layout-cards" : ""}`}
+        >
+          {headingEl}
+          <div className="cc-block-comparison__table" role="table" aria-label={block.heading ?? "Comparison"}>
+            {tableBody}
           </div>
         </div>
+      );
+    }
+    if (block.type === "scripture") {
+      return (
+        <blockquote key={i} className="cc-block-scripture">
+          <p className="cc-block-scripture__text">{block.text}</p>
+          {block.reference ? <footer className="cc-block-scripture__ref">— {block.reference}</footer> : null}
+        </blockquote>
+      );
+    }
+    if (block.type === "objectionAnswer") {
+      return (
+        <div key={i} className="cc-block-objection">
+          <div className="cc-block-objection__col">
+            <div className="cc-block-objection__label">Objection</div>
+            <p className="cc-block-objection__body">{block.objection}</p>
+          </div>
+          <div className="cc-block-objection__col">
+            <div className="cc-block-objection__label">Response</div>
+            <p className="cc-block-objection__body">{block.response}</p>
+          </div>
+        </div>
+      );
+    }
+    if (block.type === "faq") {
+      return (
+        <div key={i} className="cc-block-faq">
+          {block.heading ? <h3 className="cc-block-faq__heading">{block.heading}</h3> : null}
+          <dl className="cc-block-faq__list">
+            {block.items.map((item, j) => (
+              <div key={j} className="cc-block-faq__item">
+                <dt className="cc-block-faq__q">{item.question}</dt>
+                <dd className="cc-block-faq__a">{item.answer}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      );
+    }
+    if (block.type === "proofGrid") {
+      return (
+        <div key={i} className="cc-block-proof-grid">
+          {block.heading ? <h3 className="cc-block-proof-grid__heading">{block.heading}</h3> : null}
+          <ul className="cc-block-proof-grid__list">
+            {block.items.map((item, j) => (
+              <li key={j} className="cc-block-proof-grid__cell">
+                <div className="cc-block-proof-grid__icon" aria-hidden>
+                  {item.icon ?? "✓"}
+                </div>
+                <strong className="cc-block-proof-grid__title">{item.title}</strong>
+                {item.sub ? <span className="cc-block-proof-grid__sub">{item.sub}</span> : null}
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+    if (block.type === "expandable") {
+      return (
+        <details key={i} className="cc-block-expandable">
+          <summary className="cc-block-expandable__summary">{block.title}</summary>
+          <div className="cc-block-expandable__body">{block.body}</div>
+        </details>
       );
     }
     if (block.type === "ctaBand") {

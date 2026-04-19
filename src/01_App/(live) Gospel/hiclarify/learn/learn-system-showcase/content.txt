@@ -1,0 +1,317 @@
+1.0 ShowcaseRoot (Section)
+
+- title: "Learn System Showcase"
+
+- learn.kind: intro
+
+- learn.intro.body: "Welcome to the guided tour of TXT → Learn. You will move through the eight slide kinds—intro, hero, teach, proof, comparison, quiz, summary, and CTA—with one continuous idea running underneath. The teach slide is our component museum: every block and media pattern stacked on purpose. The hero, proof, comparison, and summary stops reuse that same idea so you can see layout differences, not different stories."
+
+
+
+1.2 HeroGlance (Section)
+
+- title: "One calm arc for every lesson"
+
+- subtitle: "Hook your reader first—the hero layout, not the teach canvas."
+
+- learn.kind: hero
+
+- learn.slideId: showcase-hero
+
+- learn.stepLabel: "Hook"
+
+
+
+1.2.1 HeroBeat (Card)
+
+- body: "We keep returning to one claim: build lessons with credibility up front, truth in the middle, tension named honestly, and a clear response. Colossians 4:6 will be our anchor verse again on the proof slide. Here you only see the hook: headline, subtitle, and the hero screen layout (layout: hero) before we pile blocks on the teach slide."
+
+
+
+1.3 UnifiedCanvas (Section)
+
+- title: "The component museum (teach layout)"
+
+- subtitle: "Everything you can place on a stamped teach slide—composed in one pass so rhythm stays readable."
+
+- learn.kind: teach
+
+- learn.slideId: showcase-main
+
+- learn.stepLabel: "Canvas"
+
+- learn.badge: "Interactive reference"
+
+- learn.trustStrip.items: shield:Grounded teaching | check:Honest pacing | bolt:Composable blocks | leaf:Calm tone
+
+- learn.stats.rows: Blocks shown :: 15+ | Flow :: Guided demo | Purpose :: Copy this folder
+
+- learn.iconFeatures.rows: Hook & proof slides :: Same thread, different layouts | This slide :: All blocks in teach order | Up next :: Isolated proof & comparison screens
+
+- learn.heading.level: "2"
+
+- learn.heading.text: "How this canvas is organized"
+
+- learn.proofGrid.heading: "Three beats in the body"
+
+- learn.proofGrid.rows: Opening :: Set context and intent | Narrative :: Carry the main idea | Bridge :: Move toward response
+
+- learn.rating.value: "4.9"
+
+- learn.rating.max: "5"
+
+- learn.rating.reviewCount: "1820"
+
+- learn.rating.source: "reader satisfaction (illustrative)"
+
+- learn.testimonial.quote: "I finally saw how the pieces fit—trust signals up front, scripture anchoring the middle, objections handled without feeling sold to."
+
+- learn.testimonial.author: "Pilot reader"
+
+- learn.testimonial.role: "internal notes"
+
+- learn.testimonial.rating: "5"
+
+- learn.scripture.text: "Let your conversation be always full of grace, seasoned with salt, so that you may know how to answer everyone."
+
+- learn.scripture.reference: "Colossians 4:6 (NIV)"
+
+- learn.objectionAnswer.objection: "Why repeat this verse on the proof slide?"
+
+- learn.objectionAnswer.response: "On purpose: here it sits beside every other teach block. On the proof slide it stands alone in proofPanel so you can compare layouts apples-to-apples."
+
+- learn.compare.heading: "Two ways to build a lesson"
+
+- learn.compare.columnLeft: "Dumped UI"
+
+- learn.compare.columnRight: "Curated Learn"
+
+- learn.compare.layoutStyle: cards
+
+- learn.compare.rows: Widget soup || Intentional composition ; Reader fatigue || Guided cadence ; Noise || Signal
+
+- learn.faq.heading: "Quick questions"
+
+- learn.faq.rows: Why rating before scripture? :: It mirrors social proof then authority; both stay short. | Can I reorder blocks? :: In TXT you steer copy and keys; layout follows the Learn profile contract. | Is this production copy? :: No—it's reference prose for the duplication template.
+
+- learn.ctaBand.headline: "Pause here—same block as “CTA band” in Add block → Choose type"
+
+- learn.ctaBand.sub: "Inline CTA bands can punctuate a long teach slide without jumping to the closing CTA template."
+
+- learn.ctaBand.emphasis: "1"
+
+- learn.divider.beforeExpandable: lg
+
+- learn.expandable.title: "What to notice while you scroll"
+
+- learn.expandable.body: "Watch how the stamped layout holds density: headings establish hierarchy, scripture gives weight, comparison clarifies contrast, FAQ handles hesitation, and expandable keeps depth optional—then compare this buffet to the dedicated proof, comparison, and summary screens ahead."
+
+- learn.divider.afterExpandable: sm
+
+- learn.audio.src: "https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3"
+
+- learn.audio.label: "Sample audio (MDN CC0 demo)"
+
+- learn.media.key: showcaseBrand
+
+- learn.media.image: "/images/logo-container-creations.webp"
+
+- learn.media.imageAlt: "Keyed catalog image — referenced via outline.media (`showcaseBrand`) and mediaKeys (not duplicated as untagged inline)"
+
+- learn.media.video: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm"
+
+- learn.media.videoCaption: "Inline video sample"
+
+- learn.media.beforeAfter.before: "https://picsum.photos/id/1015/640/360"
+
+- learn.media.beforeAfter.after: "https://picsum.photos/id/1043/640/360"
+
+- learn.media.beforeAfter.altBefore: "Scene A — cool tones"
+
+- learn.media.beforeAfter.altAfter: "Scene B — warm tones"
+
+- learn.media.imageGrid.images: "https://picsum.photos/id/1015/320/180|Lake ; https://picsum.photos/id/1043/320/180|Forest ; https://picsum.photos/id/1062/320/180|Macro"
+
+- learn.media.imageGrid.columns: "3"
+
+
+
+1.3.1 JourneyStepper (Stepper)
+
+- steps: "Hero already set the hook | This stampede of blocks is teach | Proof isolates verse next | Compare uses two columns | Then quiz, recap, CTA"
+
+
+
+1.3.2 OpeningBeat (Card)
+
+- body: "This opening band is deliberate: badge and trust strip establish credibility before anyone reads a paragraph. Stats give a quick scan of scope; icon features telegraph structure—so the eye knows where to land."
+
+
+
+1.3.3 NarrativeBeat (Card)
+
+- body: "The proof grid previews the three body beats. Scripture below repeats Colossians 4:6—you will see it again on the proof-only slide with a different screen layout. Objection / answer names the worry in the room; the comparison block here is embedded in teach—the next comparison section uses the full comparison template."
+
+
+
+1.3.4 BridgeBeat (Card)
+
+- body: "Below FAQ you will see an inline CTA band, expandable depth, then audio. The media rail stacks image, video, before/after slider, and image grid—every media pattern beside the content column. After this museum we isolate proof, comparison, summary so each layout is visible."
+
+
+
+1.35 SplitProofLane (Section)
+
+- title: "Layout override (splitProof)"
+
+- subtitle: "Advanced: teach spine + learn.layoutOverride"
+
+- learn.kind: teach
+
+- learn.slideId: showcase-split-proof
+
+- learn.stepLabel: "Split proof"
+
+- learn.layoutOverride: splitProof
+
+- learn.reveal: none
+
+- learn.heading.level: "3"
+
+- learn.heading.text: "Same teach template, non-default shell"
+
+
+
+1.35.1 SplitNote (Card)
+
+- body: "This slide exists only to show learn.layoutOverride on a teach section—the compiler maps it to OutlineSlide.layoutOverride, then composeScreen prefers it over the stamped default. Duplicate authors can hide this section or swap the ID for another LANDING_LAYOUT_IDS entry when content fits."
+
+
+
+1.4 ProofAnchor (Section)
+
+- title: "Authority, centered"
+
+- subtitle: "Same anchor verse—proofPanel layout only."
+
+- learn.kind: proof
+
+- learn.slideId: showcase-proof
+
+- learn.stepLabel: "Proof"
+
+- learn.scripture.text: "Let your conversation be always full of grace, seasoned with salt, so that you may know how to answer everyone."
+
+- learn.scripture.reference: "Colossians 4:6 (NIV)"
+
+
+
+1.4.1 ProofFraming (Card)
+
+- body: "You already passed the hero hook and the teach canvas. This slide exists so you can see proofStamped → proofPanel without distraction—same message thread, different shell."
+
+
+
+1.5 TradeoffsSlide (Section)
+
+- title: "Name the tradeoffs"
+
+- subtitle: "comparisonTwoCol layout—the whole screen is for contrast."
+
+- learn.kind: comparison
+
+- learn.slideId: showcase-compare
+
+- learn.stepLabel: "Compare"
+
+- learn.compare.heading: "Same lesson, two build styles"
+
+- learn.compare.columnLeft: "Dumped UI"
+
+- learn.compare.columnRight: "Curated Learn"
+
+- learn.compare.layoutStyle: cards
+
+- learn.compare.rows: Widget soup || Intentional composition ; Reader fatigue || Guided cadence ; Noise || Signal
+
+
+
+1.5.1 CompareFraming (Card)
+
+- body: "On teach you saw comparison as a block inside stamped content. Here learn.kind: comparison maps to twoCol—columns carry the whole argument. Same rows use ; between lines and || between sides (see README in this folder)."
+
+
+
+1.6 QuizMoment (Section)
+
+- title: "A reflective beat"
+
+- subtitle: "Walkthrough-style select—same quiz machinery as production flows."
+
+- learn.kind: quiz
+
+- learn.slideId: showcase-quiz
+
+- learn.stepLabel: "Reflect"
+
+- learn.quiz.inputId: showcase-focus
+
+- learn.quiz.fieldLabel: "What do you want to tune next?"
+
+- learn.quiz.question: "Where should we tighten this stack next—this choice only steers the sidebar label in the demo."
+
+- learn.quiz.options: Accessibility & contrast | Story pacing | Media & proof | Calls to action
+
+- learn.quiz.values: a11y | pacing | media | cta
+
+- learn.quiz.gateMessage: "Choose one option to continue."
+
+- learn.quiz.trackerMap: "a11y:Accessibility focus;pacing:Story pacing;media:Media & proof;cta:Calls to action"
+
+
+
+1.6.1 QuizContext (Card)
+
+- body: "Gate + select + optional tracker labels: mirror what gated quizzes do in shipped decks."
+
+
+
+1.7 SummaryBeat (Section)
+
+- title: "What you just saw"
+
+- subtitle: "summaryTextOnly layout—bullets only, calm density."
+
+- learn.kind: summary
+
+- learn.slideId: showcase-summary
+
+- learn.stepLabel: "Recap"
+
+- learn.summary.bullets: One thread from hero through CTA | Hero → splitProof override → proofPanel → twoCol → stamped teach shows layout differences | TXT + learn.compile-options.json drive v1.json | Duplicate this folder to start a new flow
+
+
+
+1.8 ClosingCta (Section)
+
+- title: "Keep building with clarity"
+
+- learn.kind: cta
+
+- learn.slideId: showcase-cta
+
+- learn.stepLabel: "Next"
+
+- subtitle: "Ship lessons that feel calm, honest, and complete—without inventing a new stack."
+
+- learn.checklist.heading: "Take this folder with you"
+
+- learn.checklist.rows: Copy learn-system-showcase :: Rename the flow root and titles | Keep blueprint + content + compile-options :: Regenerate v1.json | Let SEQUENCE order your sections :: Flow hints stay in TXT
+
+
+
+1.8.1 CtaNote (Card)
+
+- body: "This flow is the canonical master reference: block museum on teach, one hero, one proof, one comparison screen, summary bullets, quiz, and CTA—same narrative spine throughout. Hand-edit v1.json only in emergencies; compile from source."
+
+

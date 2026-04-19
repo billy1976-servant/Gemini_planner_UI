@@ -67,6 +67,11 @@ export type LandingDeckV1 = {
   extraLinkKeys?: Record<string, string>;
   /** Deck-wide palette id from `@/palettes`. */
   deckPalette?: string;
+  /**
+   * Learn authoring V3+: compiler stamp (`LEARN_DECK_SCHEMA_VERSION`). Runtime ignores;
+   * useful for migrations and “written by current pipeline” detection.
+   */
+  learnDeckSchemaVersion?: number;
 };
 
 export type {

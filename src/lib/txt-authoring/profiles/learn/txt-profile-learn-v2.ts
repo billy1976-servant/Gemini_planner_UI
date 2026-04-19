@@ -7,8 +7,23 @@ import type { DeckSlideMode } from "@/lib/deck-platform/deck-slide-modes";
 import { compileLearnAuthoringToDeck } from "@/lib/landing-deck/authoring/compile-learn-authoring";
 import { learnSlideTypeToTemplateId } from "@/lib/landing-deck/authoring/learn-slide-type-map";
 import type { DeckOutline, LearnSlideTypeV1, OutlineMediaRef, OutlineSlide } from "@/lib/landing-deck/outline/types";
+import { LANDING_LAYOUT_IDS } from "@/lib/landing-layout-catalog";
+
+const LANDING_LAYOUT_SET = new Set<string>(LANDING_LAYOUT_IDS as readonly string[]);
+
+function parseLayoutOverride(raw: string | undefined, warn: (m: string) => void): string | undefined {
+  const v = raw?.trim();
+  if (!v) return undefined;
+  if (!LANDING_LAYOUT_SET.has(v)) {
+    warn(
+      `[txt-profile/learn-v2] Invalid learn.layoutOverride "${v}" — must be one of: ${LANDING_LAYOUT_IDS.join(", ")}. Ignoring.`
+    );
+    return undefined;
+  }
+  return v;
+}
 import type { LandingDeckV1 } from "@/lib/landing-deck/schema";
-import type { LandingContentBlock } from "@/lib/landing-content-blocks";
+import type { LandingContentBlock, MediaBlock } from "@/lib/landing-content-blocks";
 import type { LandingScreenDensity, LandingVisualTone } from "@/lib/landing-screen-presentation";
 import {
   buildIdMaps,
@@ -19,6 +34,13 @@ import {
   type RawNode,
 } from "@/lib/txt-authoring/parse-blueprint-content";
 
+export type TxtProfileSlidePresentationDefaults = {
+  visualTone?: LandingVisualTone;
+  density?: LandingScreenDensity;
+  /** When true, slides omitting `learn.lightTheme` get light theme unless overridden per slide. */
+  lightTheme?: boolean;
+};
+
 export type TxtProfileLearnV2Options = {
   shopUrl?: string;
   logoSrc?: string;
@@ -26,6 +48,16 @@ export type TxtProfileLearnV2Options = {
   shopNowLabel?: string;
   stepTrackerTitle?: string;
   stepTrackerDescription?: string;
+  /** Deck palette id (`LandingDeckV1.deckPalette`); overridden by `learn.deckPalette` on `1.0` when set. */
+  deckPalette?: string;
+  /** Sidebar tracker: show response lines when true; overridden by `learn.showResponses` on `1.0`. */
+  showResponses?: boolean;
+  responsePlaceholder?: string;
+  /**
+   * Applied per section slide when corresponding `learn.*` keys are omitted in `content.txt`.
+   * Per-slide keys always win (override-only).
+   */
+  slidePresentationDefaults?: TxtProfileSlidePresentationDefaults;
   /** When true, organ nodes are skipped instead of failing the compile. */
   allowOrgans?: boolean;
   /** Collect non-fatal profile warnings (flow ordering, etc.). */
@@ -103,6 +135,31 @@ function presentationFromLearnReveal(raw: string | undefined): OutlineSlide["pre
   if (r === "none") return { reveal: "none" };
   if (r === "byblock" || r === "by_block") return { reveal: "byBlock" };
   return undefined;
+}
+
+function resolveVisualTone(
+  raw: string | undefined,
+  fallback?: LandingVisualTone
+): LandingVisualTone | undefined {
+  const vt = raw?.trim().toLowerCase();
+  if (vt === "soft" || vt === "bold" || vt === "default") return vt as LandingVisualTone;
+  return fallback;
+}
+
+function resolveDensity(raw: string | undefined, fallback?: LandingScreenDensity): LandingScreenDensity | undefined {
+  const d = raw?.trim().toLowerCase();
+  if (d === "comfortable" || d === "compact") return d as LandingScreenDensity;
+  return fallback;
+}
+
+function resolveLightThemeFlag(
+  raw: string | undefined,
+  fallback?: boolean
+): boolean | undefined {
+  const t = (raw ?? "").trim();
+  if (t === "1") return true;
+  if (t === "0") return false;
+  return fallback;
 }
 
 function parseSlideModes(raw: string | undefined): DeckSlideMode[] | undefined {
@@ -238,6 +295,51 @@ function pushFaqBlock(sec: Record<string, string>, into: LandingContentBlock[]):
     heading: sec["learn.faq.heading"]?.trim() || undefined,
     items,
   });
+}
+
+/** Matches editor “CTA band” block (`SlideContentBlocksEditor` ADD_TYPES). */
+function pushCtaBandBlock(sec: Record<string, string>, into: LandingContentBlock[]): void {
+  const headline = sec["learn.ctaBand.headline"]?.trim();
+  if (!headline) return;
+  into.push({
+    type: "ctaBand",
+    headline,
+    sub: sec["learn.ctaBand.sub"]?.trim() || undefined,
+    emphasis: (sec["learn.ctaBand.emphasis"] || "").trim() === "1",
+  });
+}
+
+function pushAudioBlock(sec: Record<string, string>, into: LandingContentBlock[]): void {
+  const src = sec["learn.audio.src"]?.trim();
+  if (!src) return;
+  into.push({
+    type: "audio",
+    src,
+    label: sec["learn.audio.label"]?.trim() || undefined,
+  });
+}
+
+/** `learn.media.imageGrid.images`: `src|alt ; src2|alt2` (semicolon separates images). Optional `learn.media.imageGrid.columns`: `2` \| `3`. */
+function parseImageGridMedia(sec: Record<string, string>): MediaBlock | null {
+  const raw = sec["learn.media.imageGrid.images"]?.trim();
+  if (!raw) return null;
+  const images = raw
+    .split(";")
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .map((seg) => {
+      const pipe = seg.indexOf("|");
+      if (pipe < 0) return null;
+      const src = seg.slice(0, pipe).trim();
+      const alt = seg.slice(pipe + 1).trim();
+      if (!src) return null;
+      return { src, alt };
+    })
+    .filter((x): x is { src: string; alt: string } => x != null);
+  if (images.length < 2) return null;
+  const c = sec["learn.media.imageGrid.columns"]?.trim();
+  const columns = c === "3" ? 3 : 2;
+  return { type: "imageGrid", images, columns };
 }
 
 function resolveFlowToken(
@@ -604,6 +706,7 @@ export function txtAuthoringToDeckOutlineLearnProfileV2(
     }
 
     pushFaqBlock(secContent, tail);
+    pushCtaBandBlock(secContent, tail);
     pushDividerFromKey(secContent, "learn.divider.beforeExpandable", tail);
 
     const exTitle = secContent["learn.expandable.title"]?.trim();
@@ -612,6 +715,7 @@ export function txtAuthoringToDeckOutlineLearnProfileV2(
       tail.push({ type: "expandable", title: exTitle, body: exBody || " " });
     }
     pushDividerFromKey(secContent, "learn.divider.afterExpandable", tail);
+    pushAudioBlock(secContent, tail);
 
     const richContent: LandingContentBlock[] = [...head, ...body, ...tail];
 
@@ -654,16 +758,30 @@ export function txtAuthoringToDeckOutlineLearnProfileV2(
       inlineMedia.push({ type: "video", src: vidSrc, caption: secContent["learn.media.videoCaption"]?.trim() || undefined });
     }
 
+    const baBefore = secContent["learn.media.beforeAfter.before"]?.trim();
+    const baAfter = secContent["learn.media.beforeAfter.after"]?.trim();
+    const baAltB = secContent["learn.media.beforeAfter.altBefore"]?.trim();
+    const baAltA = secContent["learn.media.beforeAfter.altAfter"]?.trim();
+    if (baBefore && baAfter && baAltB && baAltA) {
+      inlineMedia.push({
+        type: "beforeAfter",
+        before: baBefore,
+        after: baAfter,
+        altBefore: baAltB,
+        altAfter: baAltA,
+      });
+    }
+
+    const gridMedia = parseImageGridMedia(secContent);
+    if (gridMedia) inlineMedia.push(gridMedia);
+
     const pres = presentationFromLearnReveal(secContent["learn.reveal"]);
     const nextButtonLabel = secContent["learn.nextLabel"]?.trim() || undefined;
     const modes = parseSlideModes(secContent["learn.modes"]);
-    const vtRaw = secContent["learn.visualTone"]?.trim();
-    const visualTone: LandingVisualTone | undefined =
-      vtRaw === "soft" || vtRaw === "bold" || vtRaw === "default" ? (vtRaw as LandingVisualTone) : undefined;
-    const dRaw = secContent["learn.density"]?.trim();
-    const density: LandingScreenDensity | undefined =
-      dRaw === "comfortable" || dRaw === "compact" ? (dRaw as LandingScreenDensity) : undefined;
-    const lightTheme = (secContent["learn.lightTheme"] || "").trim() === "1";
+    const presDefaults = options.slidePresentationDefaults;
+    const visualTone = resolveVisualTone(secContent["learn.visualTone"], presDefaults?.visualTone);
+    const density = resolveDensity(secContent["learn.density"], presDefaults?.density);
+    const lightResolved = resolveLightThemeFlag(secContent["learn.lightTheme"], presDefaults?.lightTheme);
 
     let bullets: string[] | undefined;
     if (kind === "summary") {
@@ -684,6 +802,7 @@ export function txtAuthoringToDeckOutlineLearnProfileV2(
     }
 
     const templateId = learnSlideTypeToTemplateId(kind);
+    const layoutOverride = parseLayoutOverride(secContent["learn.layoutOverride"], warn);
     const slide: OutlineSlide = {
       id: slideId,
       learnSlideType: kind,
@@ -695,6 +814,7 @@ export function txtAuthoringToDeckOutlineLearnProfileV2(
         pres ?? (kind === "summary" ? undefined : { reveal: "byBlock" }),
       richContent: richOut,
       inlineMedia,
+      ...(layoutOverride ? { layoutOverride } : {}),
       ...(mediaKey && imgSrc ? { mediaKeys: [mediaKey] } : {}),
       ...(quizSelect ? { quizSelect } : {}),
       ...(nextButtonLabel ? { nextButtonLabel } : {}),
@@ -702,7 +822,7 @@ export function txtAuthoringToDeckOutlineLearnProfileV2(
       ...(modes ? { modes } : {}),
       ...(visualTone ? { visualTone } : {}),
       ...(density ? { density } : {}),
-      ...(lightTheme ? { lightTheme: true } : {}),
+      ...(lightResolved === true ? { lightTheme: true } : {}),
     };
 
     const trackerRaw = secContent["learn.quiz.trackerMap"]?.trim();
@@ -757,9 +877,15 @@ export function txtAuthoringToDeckOutlineLearnProfileV2(
       stepTrackerTitle: rootMeta["learn.stepTrackerTitle"]?.trim() || options.stepTrackerTitle || deckTitle,
       stepTrackerDescription:
         rootMeta["learn.stepTrackerDescription"]?.trim() || options.stepTrackerDescription || "",
-      showResponses: (rootMeta["learn.showResponses"] || "").trim() === "1",
-      responsePlaceholder: rootMeta["learn.responsePlaceholder"]?.trim() || "",
-      ...(rootMeta["learn.deckPalette"]?.trim() ? { deckPalette: rootMeta["learn.deckPalette"].trim() } : {}),
+      showResponses:
+        (rootMeta["learn.showResponses"] || "").trim() === "1" ? true : Boolean(options.showResponses),
+      responsePlaceholder:
+        rootMeta["learn.responsePlaceholder"]?.trim() || options.responsePlaceholder || "",
+      ...(rootMeta["learn.deckPalette"]?.trim()
+        ? { deckPalette: rootMeta["learn.deckPalette"].trim() }
+        : options.deckPalette?.trim()
+          ? { deckPalette: options.deckPalette.trim() }
+          : {}),
     },
     ...(Object.keys(deckMedia).length ? { media: deckMedia } : {}),
     slides,

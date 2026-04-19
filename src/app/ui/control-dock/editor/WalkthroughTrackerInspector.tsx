@@ -85,6 +85,8 @@ export type WalkthroughTrackerInspectorProps = {
     walkthrough?: WalkthroughScreenConfig | undefined;
     trackerResponse?: TrackerResponseConfig | undefined;
   }) => void;
+  /** Learn authoring: friendlier intro; hides the legacy runtimeMode jargon line. */
+  learnWalkthroughIntro?: string;
 };
 
 /**
@@ -180,10 +182,16 @@ export default function WalkthroughTrackerInspector({
       <div style={{ fontSize: 11, fontWeight: 700, color: "#475569", textTransform: "uppercase", letterSpacing: "0.04em" }}>
         Walkthrough &amp; tracker
       </div>
-      <p style={{ fontSize: 11, color: "var(--color-text-secondary, #5f6368)", margin: 0, lineHeight: 1.45 }}>
-        Quiz-style gating uses <code style={{ fontSize: 10 }}>runtimeMode=walkthrough</code>. Tracker lines need{" "}
-        <code style={{ fontSize: 10 }}>stepTracker.showResponses</code> on the deck.
-      </p>
+      {learnWalkthroughIntro ? (
+        <p style={{ fontSize: 11, color: "var(--color-text-secondary, #5f6368)", margin: 0, lineHeight: 1.45 }}>
+          {learnWalkthroughIntro}
+        </p>
+      ) : (
+        <p style={{ fontSize: 11, color: "var(--color-text-secondary, #5f6368)", margin: 0, lineHeight: 1.45 }}>
+          Quiz-style gating uses <code style={{ fontSize: 10 }}>runtimeMode=walkthrough</code>. Tracker lines need{" "}
+          <code style={{ fontSize: 10 }}>stepTracker.showResponses</code> on the deck.
+        </p>
+      )}
 
       {!walkthrough?.inputs?.length ? (
         <button type="button" style={BTN} onClick={seedQuizSelect}>

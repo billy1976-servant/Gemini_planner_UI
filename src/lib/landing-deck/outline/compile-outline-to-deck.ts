@@ -1,5 +1,6 @@
 import type { LandingContentBlock, MediaBlock } from "@/lib/landing-content-blocks";
 import type { LandingDeckScreen, LandingDeckV1 } from "@/lib/landing-deck/schema";
+import { buildContentWithBlueprint, filterContentByBlueprint } from "./blueprint";
 import { OUTLINE_TEMPLATE_IDS, type DeckOutline, type OutlineMediaRef, type OutlineSlide } from "./types";
 
 function isKnownTemplate(id: string): boolean {
@@ -26,28 +27,12 @@ function resolveMediaKeys(
         type: "video",
         src: ref.src,
         ...(ref.caption ? { caption: ref.caption } : {}),
+        ...(ref.poster ? { poster: ref.poster } : {}),
+        ...(ref.aspectRatio ? { aspectRatio: ref.aspectRatio } : {}),
       });
     }
   }
   return out;
-}
-
-function buildContent(slide: OutlineSlide): LandingContentBlock[] {
-  const blocks: LandingContentBlock[] = [];
-  if (slide.badge) {
-    blocks.push({ type: "badge", text: slide.badge });
-  }
-  for (const text of slide.paragraphs ?? []) {
-    blocks.push({ type: "paragraph", text });
-  }
-  if (slide.bullets?.length) {
-    blocks.push({
-      type: "checklist",
-      heading: "Key points",
-      items: slide.bullets.map((b) => ({ title: b, sub: "" })),
-    });
-  }
-  return blocks;
 }
 
 function templatePartial(slide: OutlineSlide): Partial<LandingDeckScreen> {
@@ -60,20 +45,20 @@ function templatePartial(slide: OutlineSlide): Partial<LandingDeckScreen> {
     case "introStamped":
       return {
         layout: "stamped",
-        content: buildContent(slide),
+        content: buildContentWithBlueprint(slide),
         buttons: defaultButtons,
       };
     case "teachingStamped":
       return {
         layout: "stamped",
-        content: buildContent(slide),
+        content: buildContentWithBlueprint(slide),
         buttons: defaultButtons,
       };
     case "heroHook":
       return {
         layout: "hero",
         subtitle: slide.subtitle,
-        content: buildContent(slide),
+        content: buildContentWithBlueprint(slide),
         buttons: [],
       };
     case "quizSelectStamped": {
@@ -81,7 +66,7 @@ function templatePartial(slide: OutlineSlide): Partial<LandingDeckScreen> {
       if (!q) {
         return {
           layout: "stamped",
-          content: buildContent(slide),
+          content: buildContentWithBlueprint(slide),
           buttons: defaultButtons,
         };
       }
@@ -111,7 +96,7 @@ function templatePartial(slide: OutlineSlide): Partial<LandingDeckScreen> {
           : undefined;
       return {
         layout: "stamped",
-        content: buildContent(slide),
+        content: buildContentWithBlueprint(slide),
         buttons: defaultButtons,
         walkthrough,
         ...(trackerResponse ? { trackerResponse } : {}),
@@ -120,29 +105,41 @@ function templatePartial(slide: OutlineSlide): Partial<LandingDeckScreen> {
     case "ctaStamped": {
       const cta: LandingContentBlock[] = [];
       if (slide.title) {
-        cta.push({
-          type: "ctaBand",
-          headline: slide.title,
-          sub: slide.subtitle ?? "",
-          emphasis: true,
-        });
+        const bp = slide.blueprint;
+        const explicit = bp?.mode === "explicit" && bp.activeRegions?.length;
+        const active = explicit ? new Set(bp.activeRegions) : null;
+        const allowCta = !active || active.has("cta");
+        if (allowCta) {
+          cta.push({
+            type: "ctaBand",
+            headline: slide.title,
+            sub: slide.subtitle ?? "",
+            emphasis: true,
+          });
+        }
       }
       return {
         layout: "stamped",
-        content: [...buildContent(slide), ...cta],
+        content: [...buildContentWithBlueprint(slide), ...cta],
         buttons: defaultButtons,
       };
     }
     case "summaryTextOnly":
       return {
         layout: "textOnly",
-        content: buildContent(slide),
+        content: buildContentWithBlueprint(slide),
         buttons: [],
       };
     case "proofStamped":
       return {
         layout: "proofPanel",
-        content: buildContent(slide),
+        content: buildContentWithBlueprint(slide),
+        buttons: defaultButtons,
+      };
+    case "comparisonTwoCol":
+      return {
+        layout: "twoCol",
+        content: buildContentWithBlueprint(slide),
         buttons: defaultButtons,
       };
     default:
@@ -151,7 +148,7 @@ function templatePartial(slide: OutlineSlide): Partial<LandingDeckScreen> {
       }
       return {
         layout: slide.layoutOverride ?? "stamped",
-        content: buildContent(slide),
+        content: buildContentWithBlueprint(slide),
         buttons: defaultButtons,
       };
   }
@@ -164,26 +161,47 @@ function composeScreen(
 ): LandingDeckScreen {
   const title = slide.title ?? slide.id;
   const stepLabel = slide.stepLabel ?? title;
-  const resolvedMedia = resolveMediaKeys(mediaMap, slide.mediaKeys);
-  const content: LandingContentBlock[] =
+  const inline = slide.inlineMedia ?? [];
+  const keyed = resolveMediaKeys(mediaMap, slide.mediaKeys);
+  /** Prefer keyed outline media first, then inline-only blocks (profile may pass `[]` for keyed-only slides). */
+  const resolvedMedia = [...keyed, ...inline];
+
+  const fromPartialContent =
     partial.content && partial.content.length > 0
       ? partial.content
       : [{ type: "paragraph" as const, text: title }];
+  const content: LandingContentBlock[] = filterContentByBlueprint(
+    slide,
+    slide.richContent !== undefined ? slide.richContent : fromPartialContent
+  );
+
+  let buttons: LandingDeckScreen["buttons"] = partial.buttons ?? [];
+  if (slide.buttons != null && slide.buttons.length > 0) {
+    buttons = slide.buttons;
+  } else if (slide.nextButtonLabel && buttons.length > 0) {
+    buttons = buttons.map((b, i) =>
+      i === 0 && b.type === "next" ? { ...b, label: slide.nextButtonLabel! } : b
+    );
+  }
 
   return {
     id: slide.id,
     stepLabel,
-    layout: partial.layout ?? "stamped",
+    /** TXT / outline `layoutOverride` wins over template default (e.g. teach → splitProof). */
+    layout: slide.layoutOverride ?? partial.layout ?? "stamped",
     title,
     ...(partial.subtitle !== undefined ? { subtitle: partial.subtitle } : slide.subtitle ? { subtitle: slide.subtitle } : {}),
     content,
     media: resolvedMedia,
-    buttons: partial.buttons ?? [],
+    buttons,
     ...(partial.nextScreenId !== undefined ? { nextScreenId: partial.nextScreenId } : {}),
     ...(partial.walkthrough ? { walkthrough: partial.walkthrough } : {}),
     ...(partial.trackerResponse ? { trackerResponse: partial.trackerResponse } : {}),
     ...(slide.modes?.length ? { modes: slide.modes } : {}),
     ...(slide.presentation ? { presentation: slide.presentation } : {}),
+    ...(slide.lightTheme !== undefined ? { lightTheme: slide.lightTheme } : {}),
+    ...(slide.visualTone ? { visualTone: slide.visualTone } : {}),
+    ...(slide.density ? { density: slide.density } : {}),
   };
 }
 

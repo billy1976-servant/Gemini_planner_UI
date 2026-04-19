@@ -1,5 +1,6 @@
 "use client";
 
+import "@/app/landing/learn-authoring-chrome.css";
 import React, { useState, useRef, useEffect, useLayoutEffect, useCallback, useMemo } from "react";
 import { useSyncExternalStore } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -19,7 +20,34 @@ import {
 } from "@/app/ui/control-dock/dev-right-sidebar-store";
 import { registerJsonScreen } from "@/app/ui/control-dock/editor/registerJsonScreen";
 import InlineEditableText from "@/app/ui/control-dock/editor/InlineEditableText";
-import { getOverride, setOverride, subscribe } from "@/04_Presentation/components/organs/tsx/website/node-order-override-store";
+import {
+  getOverride,
+  setOverride,
+  subscribe,
+  clearOverride,
+} from "@/04_Presentation/components/organs/tsx/website/node-order-override-store";
+import {
+  addOutlineSlideAtEnd,
+  addOutlineSlideWithKind,
+  applyLearnSlideTypeChange,
+  compileLearnAuthoringToDeck,
+  deleteOutlineSlideById,
+  duplicateOutlineSlideById,
+  landingDeckV1ToDeckOutline,
+  mergeOutlineFromScreenSnapshot,
+  reorderOutlineSlides,
+  inferLearnSlideTypeFromScreen,
+  clearOutlineSlideRichContent,
+  resetOutlineSlideStructuredBody,
+  LEARN_SLIDE_TYPE_PANEL_LABELS,
+} from "@/lib/landing-deck/authoring";
+import {
+  deckOutlineToLearnSplit,
+  isLearnContentMap,
+  isLearnStructureInput,
+  mergeStructureAndContent,
+} from "@/lib/landing-deck/translator";
+import type { DeckOutline, LearnSlideTypeV1 } from "@/lib/landing-deck/outline/types";
 import {
   addScreenAtEnd,
   deleteScreenById,
@@ -675,7 +703,14 @@ export default function LandingDeckRenderer({
   );
   const [learnAllowedSchemas, setLearnAllowedSchemas] = useState<string[] | null>(null);
   const [learnManualSchema, setLearnManualSchema] = useState("");
+  /** Sync for `/api/learn/resolve` — schema auto-bootstrap must not sit in fetch effect deps (would abort in-flight). */
+  const learnManualSchemaRef = useRef(learnManualSchema);
+  learnManualSchemaRef.current = learnManualSchema;
+  /** Increment in `handleLearnSchemaChange` so a user schema pick refetches without relying on `learnManualSchema` in effect deps. */
+  const [learnSchemaRefetchNonce, setLearnSchemaRefetchNonce] = useState(0);
   const [diskPersistBusy, setDiskPersistBusy] = useState(false);
+  const [learnAuthoringOutline, setLearnAuthoringOutline] = useState<DeckOutline | null>(null);
+  const learnAuthoringMode = Boolean(learnDeck && slideBuilder);
 
   const cfg = config;
   const screensAll = cfg?.screens ?? [];
@@ -709,6 +744,31 @@ export default function LandingDeckRenderer({
     orderedScreens = screens;
   }
   const orderedScreenIdsStr = orderedScreens.map((s) => s.id).join("|");
+
+  useEffect(() => {
+    if (!learnAuthoringMode || !registrationKey) return;
+    clearOverride(registrationKey);
+  }, [learnAuthoringMode, registrationKey, learnDeckAppKeyResolved, learnDeckFlowKeyResolved, selectedDeckVersion]);
+
+  useEffect(() => {
+    if (!learnAuthoringMode || !learnAuthoringOutline) return;
+    const r = compileLearnAuthoringToDeck(learnAuthoringOutline);
+    if (!r.ok) {
+      if (typeof console !== "undefined") {
+        console.warn("[learn-authoring] compile failed:", r.errors.join("; "));
+      }
+      return;
+    }
+    const ord = registrationKey != null ? getOverride(registrationKey) : undefined;
+    const screens = mergeScreenOrderIntoScreens(r.deck.screens, ord);
+    setConfig({ ...r.deck, screens } as LandingConfig);
+  }, [learnAuthoringMode, learnAuthoringOutline, registrationKey, orderOverride]);
+
+  useEffect(() => {
+    if (!learnDeck || !slideBuilder || learnAuthoringOutline || !config) return;
+    setLearnAuthoringOutline(landingDeckV1ToDeckOutline(config));
+  }, [learnDeck, slideBuilder, learnAuthoringOutline, config]);
+
   const [currentScreenId, setCurrentScreenId] = useState<string | null>(null);
   const [failedMedia, setFailedMedia] = useState<Set<string>>(new Set());
   const [stepInputs, setStepInputs] = useState<StepInputs>(INITIAL_STEP_INPUTS);
@@ -748,62 +808,115 @@ export default function LandingDeckRenderer({
 
   useEffect(() => {
     let cancelled = false;
+    const abortLearn = typeof AbortController !== "undefined" ? new AbortController() : null;
+    const signal = abortLearn?.signal;
     setConfigError(null);
 
     if (learnDeck) {
-      const qp = new URLSearchParams();
-      qp.set("app", learnDeck.appKey);
-      qp.set("flow", learnDeck.flowKey);
-      qp.set("version", selectedDeckVersion);
-      if (learnManualSchema) qp.set("schema", learnManualSchema);
-      qp.set("includeBody", "1");
-      qp.set("t", String(Date.now()));
-      const rel = `/api/learn/resolve?${qp.toString()}`;
-      const url =
-        typeof window !== "undefined" ? new URL(rel, window.location.origin).href : rel;
-      fetch(url, { cache: "no-store", headers: { Pragma: "no-cache" } })
-        .then((res) => {
+      type ResolvePayload = {
+        deck?: unknown;
+        learnStructure?: unknown;
+        learnContent?: unknown;
+        availableVersions?: string[];
+        allowedSchemas?: string[];
+        deckRef?: { schemaKey?: string };
+      };
+
+      const fetchResolve = (schemaParam: string): Promise<ResolvePayload> => {
+        const qp = new URLSearchParams();
+        qp.set("app", learnDeck.appKey);
+        qp.set("flow", learnDeck.flowKey);
+        qp.set("version", selectedDeckVersion);
+        if (schemaParam) qp.set("schema", schemaParam);
+        qp.set("includeBody", "1");
+        const rel = `/api/learn/resolve?${qp.toString()}`;
+        const url =
+          typeof window !== "undefined" ? new URL(rel, window.location.origin).href : rel;
+        return fetch(url, {
+          cache: "no-store",
+          headers: { Pragma: "no-cache" },
+          ...(signal ? { signal } : {}),
+        }).then((res) => {
           if (cancelled) return null;
           if (!res.ok) throw new Error(res.statusText || `HTTP ${res.status}`);
-          return res.json() as Promise<{
-            deck?: unknown;
-            availableVersions?: string[];
-            allowedSchemas?: string[];
-            deckRef?: { schemaKey?: string };
-          }>;
-        })
-        .then((data) => {
-          if (cancelled || data == null) return;
-          if (Array.isArray(data.availableVersions) && data.availableVersions.length > 0) {
-            setLearnAvailableVersions(data.availableVersions);
-          }
-          if (Array.isArray(data.allowedSchemas) && data.allowedSchemas.length > 0) {
-            setLearnAllowedSchemas(data.allowedSchemas);
-          } else {
-            setLearnAllowedSchemas(null);
-          }
-          const allowed = data.allowedSchemas;
-          if (Array.isArray(allowed) && allowed.length > 1 && data.deckRef?.schemaKey) {
-            setLearnManualSchema((prev) => prev || data.deckRef!.schemaKey!);
-          }
-          const deck = data.deck;
-          if (deck != null && typeof deck === "object") {
-            setConfig(deck as LandingConfig);
-            setPresenterRevealStep(0);
-            setFailedMedia(new Set());
-            setLogoLoadFailed(false);
-            const screens = (deck as LandingConfig).screens;
-            if (Array.isArray(screens) && screens.length > 0) {
-              setCurrentScreenId(screens[0].id);
-            }
-          }
-        })
-        .catch((err) => {
-          if (cancelled) return;
-          setConfigError(err?.message ?? "Failed to load learn deck");
+          return res.json() as Promise<ResolvePayload>;
         });
+      };
+
+      const applyResolvePayload = (data: ResolvePayload | null) => {
+        if (cancelled || data == null) return;
+        if (Array.isArray(data.availableVersions) && data.availableVersions.length > 0) {
+          setLearnAvailableVersions(data.availableVersions);
+        }
+        if (Array.isArray(data.allowedSchemas) && data.allowedSchemas.length > 0) {
+          setLearnAllowedSchemas(data.allowedSchemas);
+        } else {
+          setLearnAllowedSchemas(null);
+        }
+        const allowed = data.allowedSchemas;
+        if (Array.isArray(allowed) && allowed.length > 1 && data.deckRef?.schemaKey) {
+          setLearnManualSchema((prev) => prev || String(data.deckRef!.schemaKey));
+        }
+        const deck = data.deck;
+        if (deck != null && typeof deck === "object") {
+          const landingDeck = deck as LandingConfig;
+          if (slideBuilder) {
+            const rawStructure = data.learnStructure;
+            const rawContent = data.learnContent;
+            const outline =
+              isLearnStructureInput(rawStructure) && isLearnContentMap(rawContent)
+                ? mergeStructureAndContent(rawStructure, rawContent)
+                : landingDeckV1ToDeckOutline(landingDeck);
+            setLearnAuthoringOutline(outline);
+            const compiled = compileLearnAuthoringToDeck(outline);
+            if (compiled.ok) {
+              setConfig(compiled.deck as LandingConfig);
+            } else {
+              setConfig(landingDeck);
+            }
+          } else {
+            setLearnAuthoringOutline(null);
+            setConfig(landingDeck);
+          }
+          setPresenterRevealStep(0);
+          setFailedMedia(new Set());
+          setLogoLoadFailed(false);
+          const screens = landingDeck.screens;
+          if (Array.isArray(screens) && screens.length > 0) {
+            setCurrentScreenId(screens[0].id);
+          }
+        }
+      };
+
+      void (async () => {
+        try {
+          const initialSchema = learnManualSchemaRef.current.trim();
+          let data = await fetchResolve(initialSchema);
+          if (cancelled || data == null) return;
+          const allowed = data.allowedSchemas;
+          if (
+            !initialSchema &&
+            Array.isArray(allowed) &&
+            allowed.length > 1 &&
+            data.deckRef?.schemaKey
+          ) {
+            const autoSchema = String(data.deckRef.schemaKey).trim();
+            data = await fetchResolve(autoSchema);
+            if (cancelled || data == null) return;
+            setLearnManualSchema(autoSchema);
+          }
+          applyResolvePayload(data);
+        } catch (err: unknown) {
+          if (cancelled) return;
+          const e = err as { name?: string };
+          if (e?.name === "AbortError") return;
+          setConfigError(err instanceof Error ? err.message : "Failed to load learn deck");
+        }
+      })();
+
       return () => {
         cancelled = true;
+        abortLearn?.abort();
       };
     }
 
@@ -813,6 +926,9 @@ export default function LandingDeckRenderer({
         cancelled = true;
       };
     }
+
+    const abortLegacy = typeof AbortController !== "undefined" ? new AbortController() : null;
+    const legacySignal = abortLegacy?.signal;
 
     const qp = new URLSearchParams();
     if (selectedDeckVariant) {
@@ -825,7 +941,11 @@ export default function LandingDeckRenderer({
     const rel = `${LEGACY_CC_CONFIG_URL}?${qp.toString()}`;
     const url =
       typeof window !== "undefined" ? new URL(rel, window.location.origin).href : rel;
-    fetch(url, { cache: "no-store", headers: { Pragma: "no-cache" } })
+    fetch(url, {
+      cache: "no-store",
+      headers: { Pragma: "no-cache" },
+      ...(legacySignal ? { signal: legacySignal } : {}),
+    })
       .then((res) => {
         if (cancelled) return null;
         if (!res.ok) throw new Error(res.statusText || `HTTP ${res.status}`);
@@ -843,26 +963,31 @@ export default function LandingDeckRenderer({
       })
       .catch((err) => {
         if (cancelled) return;
+        const e = err as { name?: string };
+        if (e?.name === "AbortError") return;
         const appliedFallback = applyFallbackConfig();
         if (!appliedFallback) {
-          setConfigError(err?.message ?? "Failed to load config");
+          setConfigError(err instanceof Error ? err.message : "Failed to load config");
         }
       });
     return () => {
       cancelled = true;
+      abortLegacy?.abort();
     };
   }, [
     learnDeckAppKeyResolved,
     learnDeckFlowKeyResolved,
-    learnManualSchema,
+    learnSchemaRefetchNonce,
     configVersion,
     selectedDeckVersion,
     selectedDeckVariant,
+    slideBuilder,
   ]);
 
   useEffect(() => {
+    if (learnDeck) return;
     logContainerNodeIdsAfterRender(containerRef, deckInstanceKey);
-  }, [deckInstanceKey, orderedScreenIdsStr, currentScreenId]);
+  }, [learnDeck, deckInstanceKey, orderedScreenIdsStr, currentScreenId]);
 
   useEffect(() => {
     if (!learnDeck) return;
@@ -889,9 +1014,15 @@ export default function LandingDeckRenderer({
     applyPaletteToElement(containerRef.current, resolved);
   }, [cfg?.shopUrl, cfg?.deckPalette]);
 
-  const onLandingConfigChangeFromSidebar = useCallback((newConfig: LandingConfig) => {
-    setConfig(newConfig);
-  }, []);
+  const onLandingConfigChangeFromSidebar = useCallback(
+    (newConfig: LandingConfig) => {
+      if (learnAuthoringMode) {
+        setLearnAuthoringOutline(landingDeckV1ToDeckOutline(newConfig));
+      }
+      setConfig(newConfig);
+    },
+    [learnAuthoringMode]
+  );
 
   /** Register landing flow with dev sidebar store when config is loaded (canonical `?screen=` or slide builder fallback key). */
   useEffect(() => {
@@ -905,6 +1036,14 @@ export default function LandingDeckRenderer({
 
   const devProps = useSyncExternalStore(subscribeDevSidebarProps, getDevSidebarProps, getDevSidebarProps);
   const selectedLandingNodeId = devProps?.selectedLandingNodeId ?? null;
+
+  const selectedLearnSlideType = useMemo((): LearnSlideTypeV1 | undefined => {
+    if (!learnAuthoringMode || !learnAuthoringOutline || !selectedLandingNodeId) return undefined;
+    const fromOutline = learnAuthoringOutline.slides.find((s) => s.id === selectedLandingNodeId)?.learnSlideType;
+    if (fromOutline) return fromOutline;
+    const scr = config?.screens.find((s) => s.id === selectedLandingNodeId);
+    return scr ? inferLearnSlideTypeFromScreen(scr) : undefined;
+  }, [learnAuthoringMode, learnAuthoringOutline, selectedLandingNodeId, config?.screens]);
 
   useEffect(() => {
     if (!slideBuilder || !orderedScreenIdsStr) return;
@@ -1157,11 +1296,21 @@ export default function LandingDeckRenderer({
   }, [learnAllowedSchemas]);
 
   const buildMergedDeckForPersist = useCallback((): LandingConfig | null => {
+    if (learnAuthoringMode && learnAuthoringOutline) {
+      const r = compileLearnAuthoringToDeck(learnAuthoringOutline);
+      if (!r.ok) {
+        window.alert(`Cannot save:\n${r.errors.join("\n")}`);
+        return null;
+      }
+      const override = registrationKey != null ? getOverride(registrationKey) : undefined;
+      const mergedScreens = mergeScreenOrderIntoScreens(r.deck.screens, override);
+      return { ...r.deck, screens: mergedScreens } as LandingConfig;
+    }
     if (!config) return null;
     const override = registrationKey != null ? getOverride(registrationKey) : undefined;
     const mergedScreens = mergeScreenOrderIntoScreens(config.screens, override);
     return { ...config, screens: mergedScreens };
-  }, [config, registrationKey]);
+  }, [learnAuthoringMode, learnAuthoringOutline, config, registrationKey]);
 
   const handleSaveDraft = useCallback(async () => {
     if (!learnDeck || !config) return;
@@ -1169,6 +1318,13 @@ export default function LandingDeckRenderer({
     if (!deck) return;
     setDiskPersistBusy(true);
     try {
+      const splitPayload =
+        learnAuthoringMode && learnAuthoringOutline
+          ? (() => {
+              const { structure, content } = deckOutlineToLearnSplit(learnAuthoringOutline);
+              return { structure, content };
+            })()
+          : null;
       const res = await fetch("/api/learn/save-draft", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1176,7 +1332,7 @@ export default function LandingDeckRenderer({
           appKey: learnDeck.appKey,
           flowKey: learnDeck.flowKey,
           versionKey: selectedDeckVersion,
-          deck,
+          ...(splitPayload ? splitPayload : { deck }),
         }),
       });
       const data = (await res.json().catch(() => ({}))) as { error?: string };
@@ -1189,7 +1345,16 @@ export default function LandingDeckRenderer({
     } finally {
       setDiskPersistBusy(false);
     }
-  }, [learnDeck?.appKey, learnDeck?.flowKey, config, selectedDeckVersion, buildMergedDeckForPersist, router]);
+  }, [
+    learnDeck?.appKey,
+    learnDeck?.flowKey,
+    config,
+    selectedDeckVersion,
+    buildMergedDeckForPersist,
+    router,
+    learnAuthoringMode,
+    learnAuthoringOutline,
+  ]);
 
   const handleCreateVersion = useCallback(async () => {
     if (!learnDeck || !config) return;
@@ -1211,6 +1376,10 @@ export default function LandingDeckRenderer({
     }
     setDiskPersistBusy(true);
     try {
+      const splitBefore =
+        learnAuthoringMode && learnAuthoringOutline
+          ? deckOutlineToLearnSplit(learnAuthoringOutline)
+          : null;
       const saveRes = await fetch("/api/learn/save-draft", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1218,7 +1387,7 @@ export default function LandingDeckRenderer({
           appKey: learnDeck.appKey,
           flowKey: learnDeck.flowKey,
           versionKey: selectedDeckVersion,
-          deck,
+          ...(splitBefore ? splitBefore : { deck }),
         }),
       });
       const saveData = (await saveRes.json().catch(() => ({}))) as { error?: string };
@@ -1265,25 +1434,35 @@ export default function LandingDeckRenderer({
     router,
     searchParams,
     buildMergedDeckForPersist,
+    learnAuthoringMode,
+    learnAuthoringOutline,
   ]);
 
-  function updateScreenField(
-    screenId: string,
-    field: keyof Screen,
-    value: string | undefined
-  ) {
+  function applyScreenMutation(next: LandingConfig, mutatedScreenId: string | null) {
+    if (learnAuthoringMode && mutatedScreenId) {
+      setLearnAuthoringOutline((prev) => {
+        if (!prev) return prev;
+        const screen = next.screens.find((s) => s.id === mutatedScreenId);
+        if (!screen) return prev;
+        return mergeOutlineFromScreenSnapshot(prev, mutatedScreenId, screen);
+      });
+      return;
+    }
+    setConfig(next);
+  }
+
+  function updateScreenField(screenId: string, field: keyof Screen, value: string | undefined) {
     if (!config) return;
-    setConfig({
+    const next: LandingConfig = {
       ...config,
-      screens: config.screens.map((s) =>
-        s.id === screenId ? { ...s, [field]: value } : s
-      ),
-    });
+      screens: config.screens.map((s) => (s.id === screenId ? { ...s, [field]: value } : s)),
+    };
+    applyScreenMutation(next, screenId);
   }
 
   function updateScreenContentBlock(screenId: string, blockIndex: number, text: string) {
     if (!config) return;
-    setConfig({
+    const next: LandingConfig = {
       ...config,
       screens: config.screens.map((s) => {
         if (s.id !== screenId || !s.content?.[blockIndex]) return s;
@@ -1294,12 +1473,13 @@ export default function LandingDeckRenderer({
         }
         return { ...s, content };
       }),
-    });
+    };
+    applyScreenMutation(next, screenId);
   }
 
   function updateScreenButtonLabel(screenId: string, buttonIndex: number, label: string) {
     if (!config) return;
-    setConfig({
+    const next: LandingConfig = {
       ...config,
       screens: config.screens.map((s) => {
         if (s.id !== screenId || !s.buttons?.[buttonIndex]) return s;
@@ -1307,12 +1487,13 @@ export default function LandingDeckRenderer({
         buttons[buttonIndex] = { ...buttons[buttonIndex], label };
         return { ...s, buttons };
       }),
-    });
+    };
+    applyScreenMutation(next, screenId);
   }
 
   function updateBadgeBlock(screenId: string, blockIndex: number, text: string) {
     if (!config) return;
-    setConfig({
+    const next: LandingConfig = {
       ...config,
       screens: config.screens.map((s) => {
         if (s.id !== screenId || !s.content?.[blockIndex]) return s;
@@ -1323,12 +1504,13 @@ export default function LandingDeckRenderer({
         }
         return { ...s, content };
       }),
-    });
+    };
+    applyScreenMutation(next, screenId);
   }
 
   function updateHeadingContentBlock(screenId: string, blockIndex: number, text: string) {
     if (!config) return;
-    setConfig({
+    const next: LandingConfig = {
       ...config,
       screens: config.screens.map((s) => {
         if (s.id !== screenId || !s.content?.[blockIndex]) return s;
@@ -1339,12 +1521,13 @@ export default function LandingDeckRenderer({
         }
         return { ...s, content };
       }),
-    });
+    };
+    applyScreenMutation(next, screenId);
   }
 
   function updateComparisonHeading(screenId: string, blockIndex: number, heading: string) {
     if (!config) return;
-    setConfig({
+    const next: LandingConfig = {
       ...config,
       screens: config.screens.map((s) => {
         if (s.id !== screenId || !s.content?.[blockIndex]) return s;
@@ -1355,7 +1538,8 @@ export default function LandingDeckRenderer({
         }
         return { ...s, content };
       }),
-    });
+    };
+    applyScreenMutation(next, screenId);
   }
 
   function updateComparisonColumnLabel(
@@ -1365,7 +1549,7 @@ export default function LandingDeckRenderer({
     text: string
   ) {
     if (!config) return;
-    setConfig({
+    const next: LandingConfig = {
       ...config,
       screens: config.screens.map((s) => {
         if (s.id !== screenId || !s.content?.[blockIndex]) return s;
@@ -1379,7 +1563,8 @@ export default function LandingDeckRenderer({
         }
         return { ...s, content };
       }),
-    });
+    };
+    applyScreenMutation(next, screenId);
   }
 
   function updateComparisonRowCell(
@@ -1390,7 +1575,7 @@ export default function LandingDeckRenderer({
     text: string
   ) {
     if (!config) return;
-    setConfig({
+    const next: LandingConfig = {
       ...config,
       screens: config.screens.map((s) => {
         if (s.id !== screenId || !s.content?.[blockIndex]) return s;
@@ -1403,7 +1588,8 @@ export default function LandingDeckRenderer({
         }
         return { ...s, content };
       }),
-    });
+    };
+    applyScreenMutation(next, screenId);
   }
 
   function updateStatsItem(
@@ -1414,7 +1600,7 @@ export default function LandingDeckRenderer({
     text: string
   ) {
     if (!config) return;
-    setConfig({
+    const next: LandingConfig = {
       ...config,
       screens: config.screens.map((s) => {
         if (s.id !== screenId || !s.content?.[blockIndex]) return s;
@@ -1431,7 +1617,8 @@ export default function LandingDeckRenderer({
         }
         return { ...s, content };
       }),
-    });
+    };
+    applyScreenMutation(next, screenId);
   }
 
   function updateTrustStripItemLabel(
@@ -1441,7 +1628,7 @@ export default function LandingDeckRenderer({
     label: string
   ) {
     if (!config) return;
-    setConfig({
+    const next: LandingConfig = {
       ...config,
       screens: config.screens.map((s) => {
         if (s.id !== screenId || !s.content?.[blockIndex]) return s;
@@ -1454,7 +1641,8 @@ export default function LandingDeckRenderer({
         }
         return { ...s, content };
       }),
-    });
+    };
+    applyScreenMutation(next, screenId);
   }
 
   function updateIconFeaturesItem(
@@ -1465,7 +1653,7 @@ export default function LandingDeckRenderer({
     text: string
   ) {
     if (!config) return;
-    setConfig({
+    const next: LandingConfig = {
       ...config,
       screens: config.screens.map((s) => {
         if (s.id !== screenId || !s.content?.[blockIndex]) return s;
@@ -1482,7 +1670,8 @@ export default function LandingDeckRenderer({
         }
         return { ...s, content };
       }),
-    });
+    };
+    applyScreenMutation(next, screenId);
   }
 
   function updateTestimonialField(
@@ -1492,7 +1681,7 @@ export default function LandingDeckRenderer({
     text: string
   ) {
     if (!config) return;
-    setConfig({
+    const next: LandingConfig = {
       ...config,
       screens: config.screens.map((s) => {
         if (s.id !== screenId || !s.content?.[blockIndex]) return s;
@@ -1500,14 +1689,13 @@ export default function LandingDeckRenderer({
         const block = content[blockIndex];
         if (block && block.type === "testimonial") {
           const v =
-            field === "role" || field === "location"
-              ? text.trim() || undefined
-              : text;
+            field === "role" || field === "location" ? text.trim() || undefined : text;
           content[blockIndex] = { ...block, [field]: v };
         }
         return { ...s, content };
       }),
-    });
+    };
+    applyScreenMutation(next, screenId);
   }
 
   function updateCtaBandField(
@@ -1517,7 +1705,7 @@ export default function LandingDeckRenderer({
     text: string
   ) {
     if (!config) return;
-    setConfig({
+    const next: LandingConfig = {
       ...config,
       screens: config.screens.map((s) => {
         if (s.id !== screenId || !s.content?.[blockIndex]) return s;
@@ -1531,20 +1719,27 @@ export default function LandingDeckRenderer({
         }
         return { ...s, content };
       }),
-    });
+    };
+    applyScreenMutation(next, screenId);
   }
 
   function updateHeaderShopNowLabel(label: string) {
     if (!config) return;
+    if (learnAuthoringMode) {
+      setLearnAuthoringOutline((prev) =>
+        prev ? { ...prev, meta: { ...prev.meta, shopNowLabel: label } } : prev
+      );
+      return;
+    }
     setConfig({
       ...config,
       header: { ...config.header, shopNowLabel: label },
     });
   }
 
-  /** Temporary: proves client mount + resolve state (remove after live learn host is verified). */
+  /** Dev-only: resolves `/api/learn/resolve` wiring without cluttering prod UI. */
   const learnClientDebug =
-    learnDeck != null ? (
+    learnDeck != null && process.env.NODE_ENV === "development" ? (
       <div
         data-learn-deck-debug="1"
         style={{
@@ -1556,8 +1751,8 @@ export default function LandingDeckRenderer({
           fontFamily: "system-ui, sans-serif",
         }}
       >
-        [learn client] {learnDeck.appKey}/{learnDeck.flowKey} · pathname={pathname || "—"} · v=
-        {selectedDeckVersion} · config={config ? `${screens.length} screens` : "null"} · current=
+        [learn] {learnDeck.appKey}/{learnDeck.flowKey} · urlPath={pathname || "—"} · deckVersion=
+        {selectedDeckVersion} · config={config ? `${screens.length} screens` : "null"} · screen=
         {currentScreen?.id ?? "null"} · err={configError ?? "—"}
       </div>
     ) : null;
@@ -2515,6 +2710,10 @@ export default function LandingDeckRenderer({
 
   /** Reorder `screens[]` to match `nextOrder`. Pass `baseConfig` after add/duplicate so the map includes new ids (closure `config` would be stale). */
   function applySlideOrder(nextOrder: string[], baseConfig?: LandingConfig) {
+    if (learnAuthoringMode && learnAuthoringOutline) {
+      setLearnAuthoringOutline(reorderOutlineSlides(learnAuthoringOutline, nextOrder));
+      return;
+    }
     const base = baseConfig ?? config;
     if (!base) return;
     if (registrationKey) {
@@ -2535,6 +2734,12 @@ export default function LandingDeckRenderer({
   }
 
   function handleSlideBuilderAdd() {
+    if (learnAuthoringMode && learnAuthoringOutline) {
+      const { outline, newId } = addOutlineSlideAtEnd(learnAuthoringOutline);
+      setLearnAuthoringOutline(outline);
+      setSelectedLandingNodeId(newId);
+      return;
+    }
     if (!config) return;
     const { config: next, newOrder, newId } = addScreenAtEnd(
       config as unknown as { screens: Record<string, unknown>[] },
@@ -2550,7 +2755,21 @@ export default function LandingDeckRenderer({
     setSelectedLandingNodeId(newId);
   }
 
+  function handleLearnAddSlide(kind: LearnSlideTypeV1) {
+    if (!learnAuthoringOutline) return;
+    const { outline, newId } = addOutlineSlideWithKind(learnAuthoringOutline, kind);
+    setLearnAuthoringOutline(outline);
+    setSelectedLandingNodeId(newId);
+  }
+
   function handleSlideBuilderDuplicate() {
+    if (learnAuthoringMode && learnAuthoringOutline && selectedLandingNodeId) {
+      const res = duplicateOutlineSlideById(learnAuthoringOutline, selectedLandingNodeId);
+      if (!res) return;
+      setLearnAuthoringOutline(res.outline);
+      setSelectedLandingNodeId(res.newId);
+      return;
+    }
     if (!config || !selectedLandingNodeId) return;
     const res = duplicateScreenById(
       config as unknown as { screens: Record<string, unknown>[] },
@@ -2569,6 +2788,14 @@ export default function LandingDeckRenderer({
   }
 
   function handleSlideBuilderDelete() {
+    if (learnAuthoringMode && learnAuthoringOutline && selectedLandingNodeId) {
+      const nextOutline = deleteOutlineSlideById(learnAuthoringOutline, selectedLandingNodeId);
+      if (!nextOutline) return;
+      setLearnAuthoringOutline(nextOutline);
+      const firstId = nextOutline.slides[0]?.id ?? null;
+      setSelectedLandingNodeId(firstId);
+      return;
+    }
     if (!config || !selectedLandingNodeId) return;
     const res = deleteScreenById(
       config as unknown as { screens: Record<string, unknown>[] },
@@ -2588,17 +2815,36 @@ export default function LandingDeckRenderer({
 
   function handleSlideBuilderInspectorChange(patch: Partial<EditableNode>) {
     if (!config || !selectedLandingNodeId) return;
-    setConfig(
-      patchLandingScreen(
-        config as unknown as Parameters<typeof patchLandingScreen>[0],
-        selectedLandingNodeId,
-        patch as Record<string, unknown>
-      ) as LandingConfig
-    );
+    const next = patchLandingScreen(
+      config as unknown as Parameters<typeof patchLandingScreen>[0],
+      selectedLandingNodeId,
+      patch as Record<string, unknown>
+    ) as LandingConfig;
+    if (learnAuthoringMode) {
+      setLearnAuthoringOutline((prev) => {
+        if (!prev) return prev;
+        const screen = next.screens.find((s) => s.id === selectedLandingNodeId);
+        if (!screen) return prev;
+        return mergeOutlineFromScreenSnapshot(prev, selectedLandingNodeId, screen);
+      });
+      return;
+    }
+    setConfig(next);
   }
 
   function handleDeckPaletteChange(paletteName: string) {
     if (!config) return;
+    if (learnAuthoringMode) {
+      setLearnAuthoringOutline((prev) => {
+        if (!prev) return prev;
+        if (paletteName === "") {
+          const { deckPalette: _drop, ...metaRest } = prev.meta as Record<string, unknown>;
+          return { ...prev, meta: metaRest as typeof prev.meta };
+        }
+        return { ...prev, meta: { ...prev.meta, deckPalette: paletteName } };
+      });
+      return;
+    }
     if (paletteName === "") {
       const { deckPalette: _drop, ...rest } = config;
       setConfig(rest as LandingConfig);
@@ -2655,6 +2901,7 @@ export default function LandingDeckRenderer({
 
   function handleLearnSchemaChange(schema: string) {
     setLearnManualSchema(schema);
+    setLearnSchemaRefetchNonce((n) => n + 1);
   }
 
   function handleSlideBuilderMoveUp() {
@@ -2676,7 +2923,17 @@ export default function LandingDeckRenderer({
 
   const slideBuilderInspectorNode: EditableNode | null =
     slideBuilder && selectedLandingNodeId
-      ? ((orderedScreens.find((s) => s.id === selectedLandingNodeId) ?? null) as unknown as EditableNode)
+      ? (() => {
+          const screen = orderedScreens.find((s) => s.id === selectedLandingNodeId) ?? null;
+          if (!screen) return null;
+          const os = learnAuthoringOutline?.slides.find((s) => s.id === selectedLandingNodeId);
+          return {
+            ...(screen as unknown as EditableNode),
+            ...(os?.templateId ? { templateId: os.templateId } : {}),
+            ...(os?.blueprint ? { blueprint: os.blueprint } : {}),
+            ...(os?.modes !== undefined ? { modes: os.modes } : {}),
+          };
+        })()
       : null;
 
   const slideBuilderCanvasMaxPx = slideBuilder
@@ -2756,7 +3013,7 @@ export default function LandingDeckRenderer({
       >
         {slideBuilder ? (
           <div
-            className="landing-slide-builder-columns"
+            className={`landing-slide-builder-columns${learnDeck ? " learn-authoring-layout" : ""}`}
             style={{
               display: "flex",
               flex: 1,
@@ -2768,13 +3025,20 @@ export default function LandingDeckRenderer({
             }}
           >
             <LandingSlideBuilderPanel
-              slides={orderedScreens.map((s) => ({
-                id: s.id,
-                stepLabel: s.stepLabel,
-                title: s.title,
-                layout: s.layout,
-                slideTypeLabel: SLIDE_TYPE_LABELS[inferSlideTypeFromNode(s)],
-              }))}
+              slides={orderedScreens.map((s) => {
+                const kind =
+                  learnDeck && learnAuthoringOutline
+                    ? (learnAuthoringOutline.slides.find((o) => o.id === s.id)?.learnSlideType ?? "teach")
+                    : null;
+                return {
+                  id: s.id,
+                  stepLabel: s.stepLabel,
+                  title: s.title,
+                  layout: s.layout,
+                  slideTypeLabel:
+                    kind != null ? LEARN_SLIDE_TYPE_PANEL_LABELS[kind] : SLIDE_TYPE_LABELS[inferSlideTypeFromNode(s)],
+                };
+              })}
               catalogFlowOptions={learnDeck ? learnFlowSelectOptions : null}
               catalogFlowValue={selectedCatalogFlowValue}
               showCatalogFlowSelect={Boolean(learnDeck && learnFlowSelectOptions.length > 0)}
@@ -2795,6 +3059,7 @@ export default function LandingDeckRenderer({
               selectedId={selectedLandingNodeId}
               onSelect={(id) => setSelectedLandingNodeId(id)}
               onAdd={handleSlideBuilderAdd}
+              onLearnAddSlide={learnDeck ? handleLearnAddSlide : undefined}
               onDuplicate={handleSlideBuilderDuplicate}
               onDelete={handleSlideBuilderDelete}
               onMoveUp={handleSlideBuilderMoveUp}
@@ -2807,17 +3072,20 @@ export default function LandingDeckRenderer({
               mergeNote={null}
               canvasFullWidth={slideBuilderCanvasFullWidth}
               onCanvasFullWidthChange={setSlideBuilderCanvasFullWidth}
+              learnProductChrome={Boolean(learnDeck)}
+              showExportJson={!learnDeck}
             />
             <div className="landing-slide-builder-center">
               <div className="landing-slide-builder-center-scroll">
                 <div
+                  className={learnDeck ? "learn-preview-surface" : undefined}
                   style={{
                     display: "flex",
                     justifyContent: "center",
                     width: "100%",
                     minWidth: 0,
                     boxSizing: "border-box",
-                    padding: "8px 12px",
+                    padding: learnDeck ? "12px 14px 20px" : "8px 12px",
                   }}
                 >
                   <div
@@ -2830,8 +3098,11 @@ export default function LandingDeckRenderer({
                     {/* Single-column builder canvas; device modes cap width via parent + data-card-device. */}
                     <div className="dev-flow-single" data-card-device={cardDevice}>
                       {slideBuilderScreen ? (
-                        <div className="dev-step">
-                          <h3 style={{ padding: "0 12px" }}>
+                        <div className={learnDeck ? "dev-step learn-preview-card" : "dev-step"}>
+                          <h3
+                            className={learnDeck ? "learn-preview-card__title" : undefined}
+                            style={learnDeck ? { padding: "4px 16px 0" } : { padding: "0 12px" }}
+                          >
                             Slide {orderedScreens.findIndex((s) => s.id === slideBuilderScreen.id) + 1} –{" "}
                             {slideBuilderScreen.stepLabel}
                           </h3>
@@ -2854,6 +3125,35 @@ export default function LandingDeckRenderer({
               selectedNodeId={selectedLandingNodeId}
               onSelectNode={(id) => setSelectedLandingNodeId(id)}
               onChange={handleSlideBuilderInspectorChange}
+              learnDeterministicAuthoring={learnAuthoringMode}
+              learnSlideType={selectedLearnSlideType}
+              onLearnSlideTypeChange={(kind) => {
+                if (!selectedLandingNodeId) return;
+                setLearnAuthoringOutline((prev) => {
+                  if (!prev) return prev;
+                  return applyLearnSlideTypeChange(prev, selectedLandingNodeId, kind);
+                });
+              }}
+              onClearRichContent={
+                learnAuthoringMode && selectedLandingNodeId
+                  ? () =>
+                      setLearnAuthoringOutline((prev) =>
+                        prev && selectedLandingNodeId
+                          ? clearOutlineSlideRichContent(prev, selectedLandingNodeId)
+                          : prev
+                      )
+                  : undefined
+              }
+              onResetStructuredBody={
+                learnAuthoringMode && selectedLandingNodeId
+                  ? () =>
+                      setLearnAuthoringOutline((prev) =>
+                        prev && selectedLandingNodeId
+                          ? resetOutlineSlideStructuredBody(prev, selectedLandingNodeId)
+                          : prev
+                      )
+                  : undefined
+              }
               slideLayoutPreview={
                 slideBuilderScreen
                   ? {

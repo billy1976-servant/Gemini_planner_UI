@@ -1,0 +1,50 @@
+[
+  {
+    "id": "logo-container-creations",
+    "src": "/images/logo-container-creations.webp",
+    "kind": "image",
+    "note": "First-party logo; also referenced as keyed catalog entry `showcaseBrand` on the teach slide and in learn.compile-options.json header."
+  },
+  {
+    "id": "mdn-audio-trex",
+    "src": "https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3",
+    "kind": "audio",
+    "note": "External CC0 sample used for learn.audio.src demo."
+  },
+  {
+    "id": "mdn-video-flower",
+    "src": "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm",
+    "kind": "video",
+    "note": "External CC0 sample used for learn.media.video demo."
+  },
+  {
+    "id": "picsum-before-after-a",
+    "src": "https://picsum.photos/id/1015/640/360",
+    "kind": "image",
+    "note": "External placeholder for before/after slider (before)."
+  },
+  {
+    "id": "picsum-before-after-b",
+    "src": "https://picsum.photos/id/1043/640/360",
+    "kind": "image",
+    "note": "External placeholder for before/after slider (after)."
+  },
+  {
+    "id": "picsum-grid-lake",
+    "src": "https://picsum.photos/id/1015/320/180",
+    "kind": "image",
+    "note": "External placeholder in imageGrid row (Lake)."
+  },
+  {
+    "id": "picsum-grid-forest",
+    "src": "https://picsum.photos/id/1043/320/180",
+    "kind": "image",
+    "note": "External placeholder in imageGrid row (Forest)."
+  },
+  {
+    "id": "picsum-grid-macro",
+    "src": "https://picsum.photos/id/1062/320/180",
+    "kind": "image",
+    "note": "External placeholder in imageGrid row (Macro)."
+  }
+]

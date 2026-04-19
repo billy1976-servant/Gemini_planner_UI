@@ -73,7 +73,18 @@ export type LandingContentBlock =
       /** Optional column titles (e.g. "Us" / "Typical"). Omitted in existing JSON = no header row. */
       columnLabels?: { left?: string; right?: string };
       rows: Array<{ left: string; right: string; highlight?: "left" | "right" | "none" }>;
+      /** V2: `"table"` (default) or stacked card rows. */
+      layoutStyle?: "table" | "cards";
     }
+  | { type: "scripture"; text: string; reference?: string }
+  | { type: "objectionAnswer"; objection: string; response: string }
+  | { type: "faq"; heading?: string; items: Array<{ question: string; answer: string }> }
+  | {
+      type: "proofGrid";
+      heading?: string;
+      items: Array<{ title: string; sub?: string; icon?: string }>;
+    }
+  | { type: "expandable"; title: string; body: string }
   | {
       type: "ctaBand";
       headline: string;

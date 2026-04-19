@@ -1,0 +1,13 @@
+{
+  "shopUrl": "https://hiclarify.com",
+  "logoSrc": "/images/logo-container-creations.webp",
+  "logoAlt": "HiClarify",
+  "deckPalette": "container-creations",
+  "showResponses": false,
+  "stepTrackerTitle": "Learn showcase",
+  "stepTrackerDescription": "Guided pass: hook, teach canvas, proof, comparison, quiz, recap, CTA—one thread.",
+  "slidePresentationDefaults": {
+    "visualTone": "soft",
+    "density": "comfortable"
+  }
+}

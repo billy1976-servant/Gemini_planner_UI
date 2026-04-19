@@ -1,0 +1,61 @@
+S1.0 | ShowcaseRoot | Section [title]
+
+
+
+SEQUENCE:
+
+HeroGlance, UnifiedCanvas, SplitProofLane, ProofAnchor, TradeoffsSlide, QuizMoment, SummaryBeat, ClosingCta
+
+
+
+1.2 | HeroGlance | Section [title]
+
+    1.2.1 | HeroBeat | Card [body]
+
+
+
+1.3 | UnifiedCanvas | Section [title]
+
+    1.3.1 | JourneyStepper | Stepper [steps]
+
+    1.3.2 | OpeningBeat | Card [body]
+
+    1.3.3 | NarrativeBeat | Card [body]
+
+    1.3.4 | BridgeBeat | Card [body]
+
+
+
+1.35 | SplitProofLane | Section [title]
+
+    1.35.1 | SplitNote | Card [body]
+
+
+
+1.4 | ProofAnchor | Section [title]
+
+    1.4.1 | ProofFraming | Card [body]
+
+
+
+1.5 | TradeoffsSlide | Section [title]
+
+    1.5.1 | CompareFraming | Card [body]
+
+
+
+1.6 | QuizMoment | Section [title]
+
+    1.6.1 | QuizContext | Card [body]
+
+
+
+1.7 | SummaryBeat | Section [title]
+
+
+
+1.8 | ClosingCta | Section [title]
+
+    1.8.1 | CtaNote | Card [body]
+
+

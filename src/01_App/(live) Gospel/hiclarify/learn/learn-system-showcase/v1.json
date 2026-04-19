@@ -1,0 +1,609 @@
+{
+  "shopUrl": "https://hiclarify.com",
+  "header": {
+    "logoSrc": "/images/logo-container-creations.webp",
+    "logoAlt": "HiClarify",
+    "shopNowLabel": "Continue"
+  },
+  "stepTracker": {
+    "title": "Learn showcase",
+    "description": "Guided pass: hook, teach canvas, proof, comparison, quiz, recap, CTA—one thread.",
+    "showResponses": false,
+    "responsePlaceholder": "",
+    "completedOnly": false
+  },
+  "screens": [
+    {
+      "id": "slide-intro-root",
+      "stepLabel": "Learn System Showcase",
+      "layout": "stamped",
+      "title": "Learn System Showcase",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Welcome to the guided tour of TXT → Learn. You will move through the eight slide kinds—intro, hero, teach, proof, comparison, quiz, summary, and CTA—with one continuous idea running underneath. The teach slide is our component museum: every block and media pattern stacked on purpose. The hero, proof, comparison, and summary stops reuse that same idea so you can see layout differences, not different stories."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "slide-intro-root-next"
+        }
+      ],
+      "presentation": {
+        "reveal": "byBlock"
+      },
+      "nextScreenId": "showcase-hero"
+    },
+    {
+      "id": "showcase-hero",
+      "stepLabel": "Hook",
+      "layout": "hero",
+      "title": "One calm arc for every lesson",
+      "subtitle": "Hook your reader first—the hero layout, not the teach canvas.",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "We keep returning to one claim: build lessons with credibility up front, truth in the middle, tension named honestly, and a clear response. Colossians 4:6 will be our anchor verse again on the proof slide. Here you only see the hook: headline, subtitle, and the hero screen layout (layout: hero) before we pile blocks on the teach slide."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "link",
+          "label": "Continue",
+          "hrefKey": "shopUrl",
+          "nodeId": "showcase-hero-hero-link"
+        }
+      ],
+      "presentation": {
+        "reveal": "byBlock"
+      },
+      "visualTone": "soft",
+      "density": "comfortable",
+      "nextScreenId": "showcase-main"
+    },
+    {
+      "id": "showcase-main",
+      "stepLabel": "Canvas",
+      "layout": "stamped",
+      "title": "The component museum (teach layout)",
+      "subtitle": "Everything you can place on a stamped teach slide—composed in one pass so rhythm stays readable.",
+      "content": [
+        {
+          "type": "badge",
+          "text": "Interactive reference"
+        },
+        {
+          "type": "trustStrip",
+          "items": [
+            {
+              "icon": "shield",
+              "label": "Grounded teaching"
+            },
+            {
+              "icon": "check",
+              "label": "Honest pacing"
+            },
+            {
+              "icon": "bolt",
+              "label": "Composable blocks"
+            },
+            {
+              "icon": "leaf",
+              "label": "Calm tone"
+            }
+          ]
+        },
+        {
+          "type": "stats",
+          "items": [
+            {
+              "label": "Blocks shown",
+              "value": "15+"
+            },
+            {
+              "label": "Flow",
+              "value": "Guided demo"
+            },
+            {
+              "label": "Purpose",
+              "value": "Copy this folder"
+            }
+          ]
+        },
+        {
+          "type": "iconFeatures",
+          "items": [
+            {
+              "title": "Hook & proof slides",
+              "sub": "Same thread, different layouts"
+            },
+            {
+              "title": "This slide",
+              "sub": "All blocks in teach order"
+            },
+            {
+              "title": "Up next",
+              "sub": "Isolated proof & comparison screens"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "How this canvas is organized"
+        },
+        {
+          "type": "proofGrid",
+          "heading": "Three beats in the body",
+          "items": [
+            {
+              "title": "Opening",
+              "sub": "Set context and intent"
+            },
+            {
+              "title": "Narrative",
+              "sub": "Carry the main idea"
+            },
+            {
+              "title": "Bridge",
+              "sub": "Move toward response"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "This opening band is deliberate: badge and trust strip establish credibility before anyone reads a paragraph. Stats give a quick scan of scope; icon features telegraph structure—so the eye knows where to land."
+        },
+        {
+          "type": "paragraph",
+          "text": "The proof grid previews the three body beats. Scripture below repeats Colossians 4:6—you will see it again on the proof-only slide with a different screen layout. Objection / answer names the worry in the room; the comparison block here is embedded in teach—the next comparison section uses the full comparison template."
+        },
+        {
+          "type": "paragraph",
+          "text": "Below FAQ you will see an inline CTA band, expandable depth, then audio. The media rail stacks image, video, before/after slider, and image grid—every media pattern beside the content column. After this museum we isolate proof, comparison, summary so each layout is visible."
+        },
+        {
+          "type": "checklist",
+          "heading": "Steps",
+          "items": [
+            {
+              "title": "Hero already set the hook",
+              "sub": ""
+            },
+            {
+              "title": "This stampede of blocks is teach",
+              "sub": ""
+            },
+            {
+              "title": "Proof isolates verse next",
+              "sub": ""
+            },
+            {
+              "title": "Compare uses two columns",
+              "sub": ""
+            },
+            {
+              "title": "Then quiz, recap, CTA",
+              "sub": ""
+            }
+          ]
+        },
+        {
+          "type": "rating",
+          "value": 4.9,
+          "max": 5,
+          "reviewCount": 1820,
+          "source": "reader satisfaction (illustrative)"
+        },
+        {
+          "type": "testimonial",
+          "quote": "I finally saw how the pieces fit—trust signals up front, scripture anchoring the middle, objections handled without feeling sold to.",
+          "author": "Pilot reader",
+          "role": "internal notes",
+          "rating": 5
+        },
+        {
+          "type": "scripture",
+          "text": "Let your conversation be always full of grace, seasoned with salt, so that you may know how to answer everyone.",
+          "reference": "Colossians 4:6 (NIV)"
+        },
+        {
+          "type": "objectionAnswer",
+          "objection": "Why repeat this verse on the proof slide?",
+          "response": "On purpose: here it sits beside every other teach block. On the proof slide it stands alone in proofPanel so you can compare layouts apples-to-apples."
+        },
+        {
+          "type": "comparison",
+          "heading": "Two ways to build a lesson",
+          "columnLabels": {
+            "left": "Dumped UI",
+            "right": "Curated Learn"
+          },
+          "rows": [
+            {
+              "left": "Widget soup",
+              "right": "Intentional composition"
+            },
+            {
+              "left": "Reader fatigue",
+              "right": "Guided cadence"
+            },
+            {
+              "left": "Noise",
+              "right": "Signal"
+            }
+          ],
+          "layoutStyle": "cards"
+        },
+        {
+          "type": "faq",
+          "heading": "Quick questions",
+          "items": [
+            {
+              "question": "Why rating before scripture?",
+              "answer": "It mirrors social proof then authority; both stay short."
+            },
+            {
+              "question": "Can I reorder blocks?",
+              "answer": "In TXT you steer copy and keys; layout follows the Learn profile contract."
+            },
+            {
+              "question": "Is this production copy?",
+              "answer": "No—it's reference prose for the duplication template."
+            }
+          ]
+        },
+        {
+          "type": "ctaBand",
+          "headline": "Pause here—same block as “CTA band” in Add block → Choose type",
+          "sub": "Inline CTA bands can punctuate a long teach slide without jumping to the closing CTA template.",
+          "emphasis": true
+        },
+        {
+          "type": "divider",
+          "spacing": "lg"
+        },
+        {
+          "type": "expandable",
+          "title": "What to notice while you scroll",
+          "body": "Watch how the stamped layout holds density: headings establish hierarchy, scripture gives weight, comparison clarifies contrast, FAQ handles hesitation, and expandable keeps depth optional—then compare this buffet to the dedicated proof, comparison, and summary screens ahead."
+        },
+        {
+          "type": "divider",
+          "spacing": "sm"
+        },
+        {
+          "type": "audio",
+          "src": "https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3",
+          "label": "Sample audio (MDN CC0 demo)"
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "/images/logo-container-creations.webp",
+          "alt": "Keyed catalog image — referenced via outline.media (`showcaseBrand`) and mediaKeys (not duplicated as untagged inline)"
+        },
+        {
+          "type": "video",
+          "src": "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm",
+          "caption": "Inline video sample"
+        },
+        {
+          "type": "beforeAfter",
+          "before": "https://picsum.photos/id/1015/640/360",
+          "after": "https://picsum.photos/id/1043/640/360",
+          "altBefore": "Scene A — cool tones",
+          "altAfter": "Scene B — warm tones"
+        },
+        {
+          "type": "imageGrid",
+          "images": [
+            {
+              "src": "https://picsum.photos/id/1015/320/180",
+              "alt": "Lake"
+            },
+            {
+              "src": "https://picsum.photos/id/1043/320/180",
+              "alt": "Forest"
+            },
+            {
+              "src": "https://picsum.photos/id/1062/320/180",
+              "alt": "Macro"
+            }
+          ],
+          "columns": 3
+        }
+      ],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "showcase-main-next"
+        }
+      ],
+      "presentation": {
+        "reveal": "byBlock"
+      },
+      "visualTone": "soft",
+      "density": "comfortable",
+      "nextScreenId": "showcase-split-proof"
+    },
+    {
+      "id": "showcase-split-proof",
+      "stepLabel": "Split proof",
+      "layout": "splitProof",
+      "title": "Layout override (splitProof)",
+      "subtitle": "Advanced: teach spine + learn.layoutOverride",
+      "content": [
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "Same teach template, non-default shell"
+        },
+        {
+          "type": "paragraph",
+          "text": "This slide exists only to show learn.layoutOverride on a teach section—the compiler maps it to OutlineSlide.layoutOverride, then composeScreen prefers it over the stamped default. Duplicate authors can hide this section or swap the ID for another LANDING_LAYOUT_IDS entry when content fits."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "showcase-split-proof-next"
+        }
+      ],
+      "presentation": {
+        "reveal": "none"
+      },
+      "visualTone": "soft",
+      "density": "comfortable",
+      "nextScreenId": "showcase-proof"
+    },
+    {
+      "id": "showcase-proof",
+      "stepLabel": "Proof",
+      "layout": "proofPanel",
+      "title": "Authority, centered",
+      "subtitle": "Same anchor verse—proofPanel layout only.",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "You already passed the hero hook and the teach canvas. This slide exists so you can see proofStamped → proofPanel without distraction—same message thread, different shell."
+        },
+        {
+          "type": "scripture",
+          "text": "Let your conversation be always full of grace, seasoned with salt, so that you may know how to answer everyone.",
+          "reference": "Colossians 4:6 (NIV)"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "showcase-proof-next"
+        }
+      ],
+      "presentation": {
+        "reveal": "byBlock"
+      },
+      "visualTone": "soft",
+      "density": "comfortable",
+      "nextScreenId": "showcase-compare"
+    },
+    {
+      "id": "showcase-compare",
+      "stepLabel": "Compare",
+      "layout": "twoCol",
+      "title": "Name the tradeoffs",
+      "subtitle": "comparisonTwoCol layout—the whole screen is for contrast.",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "On teach you saw comparison as a block inside stamped content. Here learn.kind: comparison maps to twoCol—columns carry the whole argument. Same rows use ; between lines and || between sides (see README in this folder)."
+        },
+        {
+          "type": "comparison",
+          "heading": "Same lesson, two build styles",
+          "columnLabels": {
+            "left": "Dumped UI",
+            "right": "Curated Learn"
+          },
+          "rows": [
+            {
+              "left": "Widget soup",
+              "right": "Intentional composition"
+            },
+            {
+              "left": "Reader fatigue",
+              "right": "Guided cadence"
+            },
+            {
+              "left": "Noise",
+              "right": "Signal"
+            }
+          ],
+          "layoutStyle": "cards"
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "showcase-compare-next"
+        }
+      ],
+      "presentation": {
+        "reveal": "byBlock"
+      },
+      "visualTone": "soft",
+      "density": "comfortable",
+      "nextScreenId": "showcase-quiz"
+    },
+    {
+      "id": "showcase-quiz",
+      "stepLabel": "Reflect",
+      "layout": "stamped",
+      "title": "A reflective beat",
+      "subtitle": "Walkthrough-style select—same quiz machinery as production flows.",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Where should we tighten this stack next—this choice only steers the sidebar label in the demo."
+        },
+        {
+          "type": "paragraph",
+          "text": "Gate + select + optional tracker labels: mirror what gated quizzes do in shipped decks."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "showcase-quiz-next"
+        }
+      ],
+      "walkthrough": {
+        "inputs": [
+          {
+            "id": "showcase-focus",
+            "type": "select",
+            "label": "What do you want to tune next?",
+            "options": [
+              {
+                "value": "a11y",
+                "label": "Accessibility & contrast"
+              },
+              {
+                "value": "pacing",
+                "label": "Story pacing"
+              },
+              {
+                "value": "media",
+                "label": "Media & proof"
+              },
+              {
+                "value": "cta",
+                "label": "Calls to action"
+              }
+            ]
+          }
+        ],
+        "gate": {
+          "required": [
+            "showcase-focus"
+          ],
+          "message": "Choose one option to continue."
+        }
+      },
+      "trackerResponse": {
+        "rule": {
+          "type": "valueLabel",
+          "field": "showcase-focus",
+          "map": {
+            "a11y": "Accessibility focus",
+            "pacing": "Story pacing",
+            "media": "Media & proof",
+            "cta": "Calls to action"
+          }
+        }
+      },
+      "presentation": {
+        "reveal": "byBlock"
+      },
+      "visualTone": "soft",
+      "density": "comfortable",
+      "nextScreenId": "showcase-summary"
+    },
+    {
+      "id": "showcase-summary",
+      "stepLabel": "Recap",
+      "layout": "textOnly",
+      "title": "What you just saw",
+      "subtitle": "summaryTextOnly layout—bullets only, calm density.",
+      "content": [
+        {
+          "type": "checklist",
+          "heading": "Key points",
+          "items": [
+            {
+              "title": "One thread from hero through CTA",
+              "sub": ""
+            },
+            {
+              "title": "Hero → splitProof override → proofPanel → twoCol → stamped teach shows layout differences",
+              "sub": ""
+            },
+            {
+              "title": "TXT + learn.compile-options.json drive v1.json",
+              "sub": ""
+            },
+            {
+              "title": "Duplicate this folder to start a new flow",
+              "sub": ""
+            }
+          ]
+        }
+      ],
+      "media": [],
+      "buttons": [],
+      "visualTone": "soft",
+      "density": "comfortable",
+      "nextScreenId": "showcase-cta"
+    },
+    {
+      "id": "showcase-cta",
+      "stepLabel": "Next",
+      "layout": "stamped",
+      "title": "Keep building with clarity",
+      "subtitle": "Ship lessons that feel calm, honest, and complete—without inventing a new stack.",
+      "content": [
+        {
+          "type": "checklist",
+          "heading": "Take this folder with you",
+          "items": [
+            {
+              "title": "Copy learn-system-showcase",
+              "sub": "Rename the flow root and titles"
+            },
+            {
+              "title": "Keep blueprint + content + compile-options",
+              "sub": "Regenerate v1.json"
+            },
+            {
+              "title": "Let SEQUENCE order your sections",
+              "sub": "Flow hints stay in TXT"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "This flow is the canonical master reference: block museum on teach, one hero, one proof, one comparison screen, summary bullets, quiz, and CTA—same narrative spine throughout. Hand-edit v1.json only in emergencies; compile from source."
+        }
+      ],
+      "media": [],
+      "buttons": [
+        {
+          "type": "next",
+          "label": "Continue",
+          "nodeId": "showcase-cta-next"
+        }
+      ],
+      "presentation": {
+        "reveal": "byBlock"
+      },
+      "visualTone": "soft",
+      "density": "comfortable"
+    }
+  ],
+  "deckPalette": "container-creations",
+  "learnDeckSchemaVersion": 3
+}

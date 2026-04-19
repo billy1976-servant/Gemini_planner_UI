@@ -15,10 +15,21 @@ import LandingSlideLayoutPreview, {
   SlideLayoutPreviewErrorBoundary,
 } from "@/01_App/(live) Business/Container_Creations/LandingSlideLayoutPreview";
 import InspectorCollapsible from "./InspectorCollapsible";
+import type { DeckSlideMode } from "@/lib/deck-platform/deck-slide-modes";
+import type { LearnSlideTypeV1, SlideBlueprint } from "@/lib/landing-deck/outline/types";
+import { BLUEPRINT_REGION_OPTIONS } from "@/lib/landing-deck/outline/blueprint";
+import { allowedLearnButtonTypes } from "@/lib/landing-deck/authoring/learn-authoring-contracts";
+import {
+  LEARN_MEDIA_SECTION_INTRO,
+  LEARN_REVEAL_SECTION_INTRO,
+  LEARN_WALKTHROUGH_SECTION_INTRO,
+} from "@/lib/landing-deck/authoring/learn-authoring-ui-hints";
 
 /** Editable node shape (subset of landing screen). */
 export type EditableNode = {
   id: string;
+  /** Learn authoring: outline `templateId` (blueprint region list only; not persisted on deck JSON). */
+  templateId?: string;
   title?: string;
   subtitle?: string;
   stepLabel?: string;
@@ -36,6 +47,10 @@ export type EditableNode = {
   builderMeta?: SlideBuilderMeta;
   walkthrough?: WalkthroughScreenConfig;
   trackerResponse?: TrackerResponseConfig;
+  /** Learn V2: region activation for compile (outline-only; merged via `mergeOutlineFromScreenSnapshot`). */
+  blueprint?: SlideBlueprint;
+  /** When set (including `[]`), filters this slide in short vs long deck previews. */
+  modes?: DeckSlideMode[];
   [key: string]: unknown;
 };
 
@@ -109,6 +124,22 @@ export type NodeInspectorProps = {
    * The dev control dock keeps the flat single-panel layout by default.
    */
   sectionGroups?: boolean;
+  /** Learn deterministic authoring: layout comes from slide type / compiler. */
+  layoutAuthoringLocked?: boolean;
+  /** When set with `layoutAuthoringLocked`, filters legal button types per slide kind. */
+  learnSlideType?: LearnSlideTypeV1;
+};
+
+const MINI_BTN: React.CSSProperties = {
+  padding: "4px 8px",
+  fontSize: 11,
+  fontWeight: 600,
+  borderRadius: 4,
+  border: "1px solid var(--color-border, #dadce0)",
+  background: "var(--color-surface-1, #f1f3f4)",
+  cursor: "pointer",
+  color: "var(--color-text-primary, #202124)",
+  marginTop: 8,
 };
 
 export default function NodeInspector({
@@ -121,6 +152,8 @@ export default function NodeInspector({
   inspectorMode = "advanced",
   slideLayoutPreview = null,
   sectionGroups = false,
+  layoutAuthoringLocked = false,
+  learnSlideType,
 }: NodeInspectorProps) {
   const isBasic = inspectorMode === "basic";
   const buttons = Array.isArray(node.buttons) ? node.buttons : [];
@@ -156,9 +189,187 @@ export default function NodeInspector({
   const canToggleFullBleed =
     firstMediaType === "image" || firstMediaType === "video" || firstMediaType === "beforeAfter";
 
-  function patchFirstMedia(partial: Record<string, unknown>) {
-    const next = media.map((item, idx) => (idx === 0 ? { ...item, ...partial } : item));
+  function patchMediaAt(slotIndex: number, partial: Record<string, unknown>) {
+    const next = media.map((item, idx) => (idx === slotIndex ? { ...item, ...partial } : item));
     onChange({ media: next });
+  }
+
+  function patchFirstMedia(partial: Record<string, unknown>) {
+    patchMediaAt(0, partial);
+  }
+
+  function removeMediaAt(slotIndex: number) {
+    onChange({ media: media.filter((_, idx) => idx !== slotIndex) });
+  }
+
+  const learnButtonTypeOptions =
+    layoutAuthoringLocked && learnSlideType ? allowedLearnButtonTypes(learnSlideType) : null;
+
+  function renderLearnMediaSlot(slotIndex: number) {
+    const raw = media[slotIndex] as Record<string, unknown> | undefined;
+    const t = raw?.type;
+    const canBleed = t === "image" || t === "video" || t === "beforeAfter";
+    return (
+      <div
+        key={slotIndex}
+        style={{
+          marginTop: slotIndex === 0 ? 0 : 14,
+          paddingTop: slotIndex === 0 ? 0 : 12,
+          borderTop: slotIndex === 0 ? undefined : "1px solid var(--color-border, #dadce0)",
+        }}
+      >
+        <div style={LABEL_STYLE}>
+          Media slot {slotIndex + 1} ({String(t ?? "empty")})
+        </div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 8 }}>
+          <label style={{ fontSize: 12, display: "flex", alignItems: "center", gap: 6 }}>
+            Type
+            <select
+              value={String(t ?? "image")}
+              onChange={(e) => {
+                const v = e.target.value;
+                const next = [...media];
+                if (v === "image") next[slotIndex] = { type: "image", src: "", alt: "" };
+                else if (v === "video") next[slotIndex] = { type: "video", src: "" };
+                else if (v === "beforeAfter") {
+                  next[slotIndex] = { type: "beforeAfter", before: "", after: "", altBefore: "", altAfter: "" };
+                } else next[slotIndex] = { type: "image", src: "", alt: "" };
+                onChange({ media: next });
+              }}
+              style={SELECT_STYLE}
+              aria-label={`Media slot ${slotIndex + 1} type`}
+            >
+              <option value="image">image</option>
+              <option value="video">video</option>
+              <option value="beforeAfter">before/after</option>
+            </select>
+          </label>
+          <button type="button" style={MINI_BTN} onClick={() => removeMediaAt(slotIndex)}>
+            Remove slot
+          </button>
+        </div>
+        {(t === "image" || t === "video") && (
+          <>
+            <label style={LABEL_STYLE}>Source URL</label>
+            <input
+              type="text"
+              value={String(raw?.src ?? "")}
+              onChange={(e) => patchMediaAt(slotIndex, { src: e.target.value })}
+              style={{ ...INPUT_STYLE, marginBottom: 8 }}
+            />
+            {t === "image" && (
+              <>
+                <label style={LABEL_STYLE}>Alt</label>
+                <input
+                  type="text"
+                  value={String(raw?.alt ?? "")}
+                  onChange={(e) => patchMediaAt(slotIndex, { alt: e.target.value })}
+                  style={{ ...INPUT_STYLE, marginBottom: 8 }}
+                />
+              </>
+            )}
+            {!isBasic && t === "video" ? (
+              <>
+                <label style={LABEL_STYLE}>Poster URL</label>
+                <input
+                  type="text"
+                  value={String(raw?.poster ?? "")}
+                  onChange={(e) => patchMediaAt(slotIndex, { poster: e.target.value || undefined })}
+                  style={{ ...INPUT_STYLE, marginBottom: 8 }}
+                />
+                <label style={LABEL_STYLE}>Caption</label>
+                <input
+                  type="text"
+                  value={String(raw?.caption ?? "")}
+                  onChange={(e) => patchMediaAt(slotIndex, { caption: e.target.value || undefined })}
+                  style={{ ...INPUT_STYLE, marginBottom: 8 }}
+                />
+              </>
+            ) : null}
+            {!isBasic ? (
+              <>
+                <label style={LABEL_STYLE}>Aspect ratio (CSS)</label>
+                <input
+                  type="text"
+                  placeholder="16/9"
+                  value={String(raw?.aspectRatio ?? "")}
+                  onChange={(e) => patchMediaAt(slotIndex, { aspectRatio: e.target.value || undefined })}
+                  style={{ ...INPUT_STYLE, marginBottom: 8 }}
+                />
+                <label style={LABEL_STYLE}>Object fit</label>
+                <select
+                  value={String(raw?.objectFit ?? "cover")}
+                  onChange={(e) => patchMediaAt(slotIndex, { objectFit: e.target.value })}
+                  style={{ ...SELECT_STYLE, marginBottom: 8 }}
+                >
+                  <option value="cover">cover</option>
+                  <option value="contain">contain</option>
+                </select>
+              </>
+            ) : null}
+          </>
+        )}
+        {!isBasic && t === "beforeAfter" ? (
+          <>
+            <label style={LABEL_STYLE}>Before URL</label>
+            <input
+              type="text"
+              value={String(raw?.before ?? "")}
+              onChange={(e) => patchMediaAt(slotIndex, { before: e.target.value })}
+              style={{ ...INPUT_STYLE, marginBottom: 8 }}
+            />
+            <label style={LABEL_STYLE}>After URL</label>
+            <input
+              type="text"
+              value={String(raw?.after ?? "")}
+              onChange={(e) => patchMediaAt(slotIndex, { after: e.target.value })}
+              style={{ ...INPUT_STYLE, marginBottom: 8 }}
+            />
+            <label style={LABEL_STYLE}>Alt (before)</label>
+            <input
+              type="text"
+              value={String(raw?.altBefore ?? "")}
+              onChange={(e) => patchMediaAt(slotIndex, { altBefore: e.target.value })}
+              style={{ ...INPUT_STYLE, marginBottom: 8 }}
+            />
+            <label style={LABEL_STYLE}>Alt (after)</label>
+            <input
+              type="text"
+              value={String(raw?.altAfter ?? "")}
+              onChange={(e) => patchMediaAt(slotIndex, { altAfter: e.target.value })}
+              style={{ ...INPUT_STYLE, marginBottom: 8 }}
+            />
+            <label style={LABEL_STYLE}>Aspect ratio (CSS)</label>
+            <input
+              type="text"
+              placeholder="16/9"
+              value={String(raw?.aspectRatio ?? "")}
+              onChange={(e) => patchMediaAt(slotIndex, { aspectRatio: e.target.value || undefined })}
+              style={{ ...INPUT_STYLE, marginBottom: 8 }}
+            />
+          </>
+        ) : null}
+        {!isBasic && canBleed ? (
+          <label
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              cursor: "pointer",
+              fontSize: 13,
+              marginTop: 8,
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={raw?.fullBleed === true}
+              onChange={(e) => patchMediaAt(slotIndex, { fullBleed: e.target.checked })}
+            />
+            Full bleed
+          </label>
+        ) : null}
+      </div>
+    );
   }
 
   const hasMediaPanel =
@@ -239,10 +450,15 @@ export default function NodeInspector({
             }}
             style={{ ...SELECT_STYLE, flex: "0 0 auto", width: 90 }}
           >
-            <option value="link">link</option>
-            <option value="goto">goto</option>
-            <option value="next">next</option>
-            <option value="back">back</option>
+            {(["link", "goto", "next", "back"] as const).map((opt) => {
+              const allowed = learnButtonTypeOptions;
+              const ok = !allowed || allowed.includes(opt);
+              return (
+                <option key={opt} value={opt} disabled={!ok}>
+                  {opt === "next" ? "Next" : opt === "back" ? "Back" : opt === "goto" ? "Go to slide" : "Link"}
+                </option>
+              );
+            })}
           </select>
         </div>
       ))}
@@ -505,14 +721,146 @@ export default function NodeInspector({
           </div>
         </InspectorCollapsible>
 
+        <InspectorCollapsible title="Reveal & staged teaching" defaultOpen={false}>
+          {layoutAuthoringLocked ? (
+            <p style={{ fontSize: 12, color: "var(--color-text-secondary, #5f6368)", margin: "0 0 10px", lineHeight: 1.45 }}>
+              {LEARN_REVEAL_SECTION_INTRO}
+            </p>
+          ) : null}
+          <label style={LABEL_STYLE}>Reveal mode</label>
+          <select
+            value={(node.presentation?.reveal as string | undefined) ?? "none"}
+            onChange={(e) => {
+              const v = e.target.value as "none" | "byBlock" | "custom";
+              if (v === "none") onChange({ presentation: { reveal: "none" } });
+              else if (v === "byBlock") onChange({ presentation: { reveal: "byBlock" } });
+              else {
+                const n = content.length;
+                onChange({
+                  presentation: {
+                    reveal: "custom",
+                    revealSequence: Array.from({ length: n }, (_, i) => `block:${i}`),
+                  },
+                });
+              }
+            }}
+            style={SELECT_STYLE}
+            aria-label="Reveal mode"
+          >
+            <option value="none">Show all at once</option>
+            <option value="byBlock">Step through blocks (in order)</option>
+            <option value="custom" disabled={content.length === 0}>
+              Custom sequence{content.length === 0 ? " — add content blocks first" : ""}
+            </option>
+          </select>
+          {node.presentation?.reveal === "custom" ? (
+            <div style={{ marginTop: 10 }}>
+              <button
+                type="button"
+                style={MINI_BTN}
+                onClick={() =>
+                  onChange({
+                    presentation: {
+                      reveal: "custom",
+                      revealSequence: Array.from({ length: content.length }, (_, i) => `block:${i}`),
+                    },
+                  })
+                }
+              >
+                Sync sequence to blocks
+              </button>
+              <label style={{ ...LABEL_STYLE, marginTop: 8 }}>Sequence (comma-separated block:0, block:1, …)</label>
+              <input
+                type="text"
+                value={(node.presentation?.revealSequence ?? []).join(", ")}
+                onChange={(e) => {
+                  const parts = e.target.value
+                    .split(/[,\s]+/)
+                    .map((s) => s.trim())
+                    .filter((s) => /^block:\d+$/.test(s));
+                  onChange({
+                    presentation: { reveal: "custom", revealSequence: parts },
+                  });
+                }}
+                style={INPUT_STYLE}
+                aria-label="Reveal sequence"
+              />
+            </div>
+          ) : null}
+        </InspectorCollapsible>
+
+        {layoutAuthoringLocked ? (
+          <InspectorCollapsible title="Blueprint (regions)" defaultOpen={false}>
+            <p style={{ fontSize: 12, color: "var(--color-text-secondary, #5f6368)", margin: "0 0 8px", lineHeight: 1.45 }}>
+              <strong>Auto</strong> uses all regions. <strong>Explicit</strong> limits which outline fields and rich blocks
+              compile into the slide (e.g. hide badge or comparison).
+            </p>
+            <label style={LABEL_STYLE}>Mode</label>
+            <select
+              value={(node.blueprint?.mode as string | undefined) === "explicit" ? "explicit" : "auto"}
+              onChange={(e) => {
+                const mode = e.target.value as "auto" | "explicit";
+                if (mode === "auto") {
+                  onChange({ blueprint: undefined });
+                  return;
+                }
+                const tid = node.templateId ?? "";
+                const opts = BLUEPRINT_REGION_OPTIONS[tid] ?? BLUEPRINT_REGION_OPTIONS.introStamped ?? [];
+                const ids = opts.map((o) => o.id);
+                onChange({ blueprint: { mode: "explicit", activeRegions: ids.length ? [...ids] : ["body"] } });
+              }}
+              style={SELECT_STYLE}
+              aria-label="Blueprint mode"
+            >
+              <option value="auto">Auto (all regions)</option>
+              <option value="explicit">Explicit</option>
+            </select>
+            {node.blueprint?.mode === "explicit" ? (
+              <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 6 }}>
+                {(BLUEPRINT_REGION_OPTIONS[node.templateId ?? ""] ?? BLUEPRINT_REGION_OPTIONS.introStamped ?? []).map(
+                  (opt) => {
+                    const active = new Set(node.blueprint?.activeRegions ?? []);
+                    const checked = active.has(opt.id);
+                    return (
+                      <label
+                        key={opt.id}
+                        style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, cursor: "pointer" }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => {
+                            const next = new Set(node.blueprint?.activeRegions ?? []);
+                            if (next.has(opt.id)) next.delete(opt.id);
+                            else next.add(opt.id);
+                            const arr = [...next];
+                            onChange({
+                              blueprint: { mode: "explicit", activeRegions: arr.length ? arr : ["body"] },
+                            });
+                          }}
+                        />
+                        {opt.label} <span style={{ opacity: 0.65, fontSize: 11 }}>({opt.id})</span>
+                      </label>
+                    );
+                  }
+                )}
+                {!BLUEPRINT_REGION_OPTIONS[node.templateId ?? ""]?.length ? (
+                  <p style={{ fontSize: 11, margin: 0, color: "var(--color-text-secondary, #5f6368)" }}>
+                    No region list for this template — use Auto or add options in blueprint config.
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
+          </InspectorCollapsible>
+        ) : null}
+
         {!isBasic ? (
           <InspectorCollapsible title="Layout" defaultOpen>
             <div>
-              <label style={LABEL_STYLE}>Layout</label>
               {slideLayoutPreview && layoutTileOptions.length > 0 ? (
                 <div style={{ marginBottom: 10 }}>
                   <LayoutTilePicker
-                    title="Live preview"
+                    title={layoutAuthoringLocked ? "Live layout styles" : "Live preview"}
                     value={layoutValue}
                     options={layoutTileOptions}
                     onChange={(id) => onChange({ layout: id })}
@@ -520,6 +868,12 @@ export default function NodeInspector({
                     variant="section"
                   />
                 </div>
+              ) : null}
+              {layoutAuthoringLocked ? (
+                <p style={{ fontSize: 12, color: "var(--color-text-secondary, #5f6368)", margin: "0 0 10px", lineHeight: 1.45 }}>
+                  <strong>Learn authoring:</strong> tap a layout to preview it on the canvas. Default layout comes from the
+                  slide type; your choice is stored on this screen until you change slide type or recompile from outline.
+                </p>
               ) : null}
               <label style={{ ...LABEL_STYLE, marginTop: slideLayoutPreview ? 4 : 0 }}>Layout (list)</label>
               <select
@@ -541,6 +895,7 @@ export default function NodeInspector({
         <InspectorCollapsible title="Content" defaultOpen>
           <SlideContentBlocksEditor
             content={content}
+            hideRawJson={layoutAuthoringLocked}
             onChange={(next: LandingContentBlock[]) => onChange({ content: next as EditableNode["content"] })}
           />
         </InspectorCollapsible>
@@ -550,11 +905,135 @@ export default function NodeInspector({
             walkthrough={node.walkthrough}
             trackerResponse={node.trackerResponse}
             onPatch={(patch) => onChange(patch as Partial<EditableNode>)}
+            learnWalkthroughIntro={layoutAuthoringLocked ? LEARN_WALKTHROUGH_SECTION_INTRO : undefined}
           />
         </InspectorCollapsible>
 
         <InspectorCollapsible title="Advanced" defaultOpen={false}>
-          {mediaPanel}
+          {layoutAuthoringLocked ? (
+            <>
+              <p
+                style={{
+                  fontSize: 11,
+                  color: "var(--color-text-secondary, #5f6368)",
+                  lineHeight: 1.4,
+                  margin: "0 0 10px",
+                }}
+              >
+                {LEARN_MEDIA_SECTION_INTRO}
+              </p>
+              {media.length === 0 ? (
+                <button
+                  type="button"
+                  style={MINI_BTN}
+                  onClick={() => onChange({ media: [{ type: "image", src: "", alt: "" }] })}
+                >
+                  + Add first media slot
+                </button>
+              ) : (
+                media.map((_, idx) => renderLearnMediaSlot(idx))
+              )}
+              {media.length > 0 ? (
+                <button
+                  type="button"
+                  style={MINI_BTN}
+                  onClick={() => onChange({ media: [...media, { type: "image", src: "", alt: "" }] })}
+                >
+                  + Add media slot
+                </button>
+              ) : null}
+            </>
+          ) : (
+            <>
+              {mediaPanel}
+              {media.length > 1
+                ? media.slice(1).map((raw, j) => {
+                    const slotIndex = j + 1;
+                    const m = raw as Record<string, unknown>;
+                    const t = m?.type;
+                    return (
+                      <div
+                        key={slotIndex}
+                        style={{
+                          marginTop: 14,
+                          paddingTop: 12,
+                          borderTop: "1px solid var(--color-border, #dadce0)",
+                        }}
+                      >
+                        <div style={LABEL_STYLE}>
+                          Media slot {slotIndex + 1} ({String(t ?? "?")})
+                        </div>
+                        <button
+                          type="button"
+                          style={{ ...MINI_BTN, marginTop: 4 }}
+                          onClick={() => removeMediaAt(slotIndex)}
+                        >
+                          Remove this slot
+                        </button>
+                        {(t === "image" || t === "video") && (
+                          <>
+                            <label style={{ ...LABEL_STYLE, marginTop: 8 }}>Source URL</label>
+                            <input
+                              type="text"
+                              value={String(m.src ?? "")}
+                              onChange={(e) => patchMediaAt(slotIndex, { src: e.target.value })}
+                              style={{ ...INPUT_STYLE, marginBottom: 8 }}
+                            />
+                            {t === "image" ? (
+                              <>
+                                <label style={LABEL_STYLE}>Alt</label>
+                                <input
+                                  type="text"
+                                  value={String(m.alt ?? "")}
+                                  onChange={(e) => patchMediaAt(slotIndex, { alt: e.target.value })}
+                                  style={INPUT_STYLE}
+                                />
+                              </>
+                            ) : null}
+                            {t === "video" && !isBasic ? (
+                              <>
+                                <label style={{ ...LABEL_STYLE, marginTop: 8 }}>Poster URL</label>
+                                <input
+                                  type="text"
+                                  value={String(m.poster ?? "")}
+                                  onChange={(e) => patchMediaAt(slotIndex, { poster: e.target.value || undefined })}
+                                  style={INPUT_STYLE}
+                                />
+                              </>
+                            ) : null}
+                          </>
+                        )}
+                        {t === "beforeAfter" && !isBasic ? (
+                          <>
+                            <label style={LABEL_STYLE}>Before URL</label>
+                            <input
+                              type="text"
+                              value={String(m.before ?? "")}
+                              onChange={(e) => patchMediaAt(slotIndex, { before: e.target.value })}
+                              style={INPUT_STYLE}
+                            />
+                            <label style={LABEL_STYLE}>After URL</label>
+                            <input
+                              type="text"
+                              value={String(m.after ?? "")}
+                              onChange={(e) => patchMediaAt(slotIndex, { after: e.target.value })}
+                              style={INPUT_STYLE}
+                            />
+                          </>
+                        ) : null}
+                      </div>
+                    );
+                  })
+                : null}
+              <button
+                type="button"
+                style={MINI_BTN}
+                onClick={() => onChange({ media: [...media, { type: "image", src: "", alt: "" }] })}
+              >
+                + Add media slot
+              </button>
+            </>
+          )}
           {!isBasic ? (
             <div>
               <label style={LABEL_STYLE}>Next screen</label>
@@ -766,11 +1245,13 @@ export default function NodeInspector({
           walkthrough={node.walkthrough}
           trackerResponse={node.trackerResponse}
           onPatch={(patch) => onChange(patch as Partial<EditableNode>)}
+          learnWalkthroughIntro={layoutAuthoringLocked ? LEARN_WALKTHROUGH_SECTION_INTRO : undefined}
         />
       </div>
 
       <SlideContentBlocksEditor
         content={content}
+        hideRawJson={layoutAuthoringLocked}
         onChange={(next: LandingContentBlock[]) => onChange({ content: next as EditableNode["content"] })}
       />
     </div>
